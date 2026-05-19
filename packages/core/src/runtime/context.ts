@@ -1,0 +1,89 @@
+import type { LifecycleEvent, WorkflowManifest } from "@ecp/types"
+import type { PendingMutation, StoreStateHandle } from "@ecp/types"
+import type { StoreContext } from "./store.js"
+
+/** Run-level context. @category Runtime */
+export interface RunContext {
+  id: string
+  input: Record<string, unknown>
+}
+
+/** Step execution context. @category Runtime */
+export interface StepExecutionContext {
+  id: string
+  capabilityId: string
+  label?: string
+}
+
+/** Capability invocation context. @category Runtime */
+export interface CapabilityContext {
+  store: StoreContext
+  state: Readonly<Record<string, unknown>>
+  run: RunContext
+  step: StepExecutionContext
+  logger: Logger
+  usage: UsageLedger
+  capabilities: {
+    call(id: string, input: unknown): Promise<unknown>
+  }
+}
+
+/** Lifecycle hook context. @category Runtime */
+export interface LifecycleContext {
+  event: LifecycleEvent
+  workflow: WorkflowManifest
+  run: RunContext
+  step?: StepExecutionContext
+  state: Record<string, unknown>
+}
+
+/** Policy evaluation context. @category Policies */
+export interface PolicyContext {
+  workflow: WorkflowManifest
+  run: RunContext
+  step: StepExecutionContext
+  state: Record<string, unknown>
+  input: Record<string, unknown>
+  output?: unknown
+  mutableStateHandles?: StoreStateHandle[]
+  pendingMutations?: PendingMutation[]
+  proposedState?: Record<string, unknown>
+  usage: UsageLedger
+}
+
+/** Minimal logger. @category Runtime */
+export interface Logger {
+  info(message: string, meta?: Record<string, unknown>): void
+  warn(message: string, meta?: Record<string, unknown>): void
+  error(message: string, meta?: Record<string, unknown>): void
+}
+
+/** Usage tracking. @category Runtime */
+export interface UsageLedger {
+  modelCalls: number
+  costUsd: number
+  tokens: number
+  increment(partial: Partial<Pick<UsageLedger, "modelCalls" | "costUsd" | "tokens">>): void
+}
+
+/** Create a usage ledger. */
+export function createUsageLedger(): UsageLedger {
+  const ledger = { modelCalls: 0, costUsd: 0, tokens: 0 }
+  return {
+    ...ledger,
+    increment(partial) {
+      if (partial.modelCalls) ledger.modelCalls += partial.modelCalls
+      if (partial.costUsd) ledger.costUsd += partial.costUsd
+      if (partial.tokens) ledger.tokens += partial.tokens
+    },
+  }
+}
+
+/** Console logger implementation. */
+export function createConsoleLogger(): Logger {
+  return {
+    info: (m, meta) => console.log(m, meta ?? ""),
+    warn: (m, meta) => console.warn(m, meta ?? ""),
+    error: (m, meta) => console.error(m, meta ?? ""),
+  }
+}

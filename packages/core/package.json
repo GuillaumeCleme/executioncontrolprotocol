@@ -1,0 +1,32 @@
+{
+  "name": "@ecp/core",
+  "version": "1.0.0",
+  "description": "ECP fluent API, environment, registry, and local runtime",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@ecp/types": "1.0.0",
+    "esbuild": "^0.25.0",
+    "esbuild-wasm": "^0.25.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

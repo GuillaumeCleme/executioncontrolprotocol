@@ -1,26 +1,19 @@
-/**
- * Remove TypeScript emit folders and composite build info so no stale commands
- * (e.g. renamed CLI topics) remain under dist/.
- */
-import { existsSync, rmSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { rmSync, readdirSync, statSync } from "node:fs"
+import { join } from "node:path"
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1")
 
-const paths = [
-  "packages/spec/dist",
-  "packages/spec/tsconfig.tsbuildinfo",
-  "packages/plugins/dist",
-  "packages/plugins/tsconfig.tsbuildinfo",
-  "packages/runtime/dist",
-  "packages/runtime/tsconfig.tsbuildinfo",
-  "packages/cli/dist",
-  "packages/cli/tsconfig.tsbuildinfo",
-];
-
-for (const rel of paths) {
-  const p = join(root, rel);
-  if (!existsSync(p)) continue;
-  rmSync(p, { recursive: true, force: true });
+function walk(dir) {
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name)
+    if (statSync(p).isDirectory()) {
+      if (name === "dist" || name === "node_modules" || name.endsWith(".tsbuildinfo")) {
+        if (name === "dist" || name.endsWith(".tsbuildinfo")) rmSync(p, { recursive: true, force: true })
+      } else {
+        walk(p)
+      }
+    }
+  }
 }
+
+walk(join(root, "packages"))

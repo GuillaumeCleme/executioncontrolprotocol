@@ -1,0 +1,18 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/types" },
+    { "path": "packages/core" },
+    { "path": "packages/policies" },
+    { "path": "packages/mcp" },
+    { "path": "packages/extensions/memory" },
+    { "path": "packages/extensions/openai" },
+    { "path": "packages/extensions/ollama" },
+    { "path": "packages/extensions/slack" },
+    { "path": "packages/extensions/storage" },
+    { "path": "packages/extensions/telemetry" },
+    { "path": "packages/extensions/index" },
+    { "path": "packages/runtimes/temporal" },
+    { "path": "packages/cli" }
+  ]
+}

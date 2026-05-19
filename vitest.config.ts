@@ -1,20 +1,12 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
   test: {
     globals: true,
     coverage: {
       provider: "v8",
-      include: ["packages/*/src/**/*.ts"],
-      exclude: ["**/*.test.ts", "**/index.ts", "**/types.ts"],
-      thresholds: {
-        "packages/runtime/src/secrets/**": {
-          statements: 70,
-          branches: 60,
-          functions: 59,
-          lines: 70,
-        },
-      },
+      include: ["packages/*/src/**/*.ts", "packages/extensions/*/src/**/*.ts"],
+      exclude: ["**/*.test.ts", "**/index.ts"],
     },
     projects: [
       {
@@ -22,13 +14,12 @@ export default defineConfig({
         test: {
           name: "unit",
           include: [
-            "packages/spec/test/**/*.test.ts",
-            "packages/runtime/test/**/*.test.ts",
-            "packages/cli/test/**/*.test.ts",
-          ],
-          exclude: [
-            "packages/runtime/test/integration/**",
-            "packages/runtime/test/e2e/**",
+            "packages/types/**/*.test.ts",
+            "packages/core/test/**/*.test.ts",
+            "packages/policies/**/*.test.ts",
+            "packages/cli/**/*.test.ts",
+            "packages/mcp/**/*.test.ts",
+            "packages/extensions/**/*.test.ts",
           ],
         },
       },
@@ -36,16 +27,16 @@ export default defineConfig({
         extends: true,
         test: {
           name: "integration",
-          include: ["packages/runtime/test/integration/**/*.test.ts"],
+          include: ["packages/mcp/test/integration/**/*.test.ts"],
         },
       },
       {
         extends: true,
         test: {
           name: "e2e",
-          include: ["packages/runtime/test/e2e/**/*.test.ts"],
+          include: ["packages/extensions/ollama/test/e2e/**/*.test.ts"],
         },
       },
     ],
   },
-});
+})

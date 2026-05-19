@@ -1,0 +1,37 @@
+import { describe, expect, it } from "vitest"
+import { compileWorkflowSource, compileAndValidateWorkflowSource } from "../src/compile/index.js"
+import { registerTestExtension } from "../src/testing/test-extension.js"
+import { environment, extension, runtime, LOCAL_RUNTIME_ID } from "../src/index.js"
+
+const SAMPLE_TS = `
+import { workflow, step } from "@ecp/core"
+export default workflow("Compiled")
+  .run([step("@ecp/test.echo", "E").with({ value: 1 }).as("out")])
+`
+
+describe("compileWorkflowSource", () => {
+  it("compiles TypeScript workflow source", async () => {
+    registerTestExtension()
+    const result = await compileWorkflowSource({
+      source: SAMPLE_TS,
+      filename: "workflow.ts",
+    })
+    expect(result.ok).toBe(true)
+    expect(result.manifest?.schema).toBe("@ecp.workflow")
+    expect(result.manifest?.steps[0]?.commitAs).toBe("out")
+  })
+
+  it("validates against environment descriptor", async () => {
+    registerTestExtension()
+    const env = environment("t")
+      .withRuntime(runtime(LOCAL_RUNTIME_ID))
+      .withExtensions([extension("@ecp/test").with({})])
+    const descriptor = await env.describe()
+    const result = await compileAndValidateWorkflowSource({
+      source: SAMPLE_TS,
+      filename: "workflow.ts",
+      descriptor,
+    })
+    expect(result.ok).toBe(true)
+  })
+})
