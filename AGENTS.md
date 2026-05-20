@@ -25,14 +25,18 @@ npm run test:unit
 
 ### CLI
 
+Oclif v4 (`@oclif/core`). Commands live in `packages/cli/src/commands/`; build with `npm run build` before `npm link` or tests.
+
 ```sh
+ecp run examples/01-echo/workflow.ts --env examples/01-echo/environment.ts
+ecp validate examples/01-echo/workflow.ts --env examples/01-echo/environment.ts
 ecp compile examples/01-echo/workflow.ts -o /tmp/workflow.json
-ecp validate /tmp/workflow.json --env examples/01-echo/environment.ts
-ecp run /tmp/workflow.json --env examples/01-echo/environment.ts
 ecp describe --env examples/01-echo/environment.ts
 ecp search "echo" --env examples/01-echo/environment.ts
-ecp mcp serve --env examples/01-echo/environment.ts --transport stdio
+ecp run --help
 ```
+
+Local dev: `npm start -w @ecp/cli` (runs `bin/dev.js` after build).
 
 ### Fluent API quickstart
 

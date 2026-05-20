@@ -1712,7 +1712,6 @@ Do not implement in v1:
 
 This specification should be implementable directly by coding agents.
 
-
 Yes. The implementation plan is still strong, but it needs a focused update to the **state/store model**, **refs**, **capability context**, **policy context**, and **runtime commit phase**.
 
 Below are the edits I would merge into the implementation spec.

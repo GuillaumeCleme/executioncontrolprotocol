@@ -17,7 +17,7 @@ export default defineConfig({
             "packages/types/**/*.test.ts",
             "packages/core/test/**/*.test.ts",
             "packages/policies/**/*.test.ts",
-            "packages/cli/**/*.test.ts",
+            "packages/cli/test/**/*.test.ts",
             "packages/mcp/**/*.test.ts",
             "packages/extensions/**/*.test.ts",
           ],

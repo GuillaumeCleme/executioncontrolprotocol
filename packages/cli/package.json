@@ -4,13 +4,31 @@
   "description": "ECP command-line interface",
   "license": "Apache-2.0",
   "type": "module",
-  "bin": { "ecp": "./bin/ecp.js" },
-  "main": "./dist/main.js",
-  "scripts": { "build": "tsc -b" },
+  "bin": {
+    "ecp": "./bin/run.js"
+  },
+  "files": [
+    "bin/run.js",
+    "bin/run.cmd",
+    "bin/dev.js",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node ./bin/dev.js"
+  },
   "dependencies": {
     "@ecp/core": "1.0.0",
-    "@ecp/mcp": "1.0.0",
-    "@ecp/types": "1.0.0"
+    "@ecp/types": "1.0.0",
+    "@oclif/core": "^4.10.0"
   },
-  "devDependencies": { "typescript": "^5.7.0" }
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "oclif": {
+    "bin": "ecp",
+    "commands": "./dist/commands",
+    "dirname": "ecp",
+    "topicSeparator": " "
+  }
 }
