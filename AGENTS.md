@@ -19,7 +19,8 @@
 ```sh
 npm install
 npm run build
-npm run check    # build + lint + test:unit + test:integration + test:e2e
+npm run generate:schema   # writes packages/types/dist/schemas/*.json
+npm run check    # build + generate:schema + lint + test:unit + test:integration + test:e2e
 npm run test:unit
 ```
 

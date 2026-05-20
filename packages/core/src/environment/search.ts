@@ -1,27 +1,77 @@
 import { LATEST_ECP_VERSION } from "@ecp/types"
-import type { EnvironmentDescriptor, SearchOptions, SearchResult } from "@ecp/types"
+import type { EnvironmentDescriptor, SearchOptions, SearchResult, SearchResultItem } from "@ecp/types"
 
-/** Fuzzy search over environment capabilities. */
+function tokenize(query: string): string[] {
+  return query.toLowerCase().split(/\s+/).filter(Boolean)
+}
+
+function scoreText(text: string, tokens: string[]): number {
+  if (tokens.length === 0) return 0
+  const hay = text.toLowerCase()
+  let matched = 0
+  for (const t of tokens) {
+    if (hay.includes(t)) matched++
+  }
+  return matched / tokens.length
+}
+
+/** Fuzzy search over environment descriptor sections. */
 export function searchCapabilities(
   query: string,
   descriptor: EnvironmentDescriptor,
   options?: SearchOptions
 ): SearchResult {
-  const q = query.toLowerCase()
+  const tokens = tokenize(query)
   const types = options?.types ?? ["capability"]
-  const results: SearchResult["results"] = []
+  const results: SearchResultItem[] = []
 
   if (types.includes("capability")) {
     for (const cap of descriptor.capabilities) {
-      const text = `${cap.id} ${cap.label ?? ""}`.toLowerCase()
-      const score = text.includes(q) ? 0.9 : 0
+      const text = `${cap.id} ${cap.label ?? ""} ${cap.extension ?? ""}`
+      const score = scoreText(text, tokens)
       if (score > 0) {
-        results.push({
-          type: "capability",
+        const base = {
+          type: "capability" as const,
           id: cap.id,
           label: cap.label,
           score,
-          reason: `Matches query '${query}'`,
+          reason: `Matched ${Math.round(score * 100)}% of query tokens`,
+        }
+        const item: SearchResultItem = { ...base }
+        if (options?.include?.includes("inputSchema")) item.inputSchema = cap.inputSchema
+        if (options?.include?.includes("outputSchema")) item.outputSchema = cap.outputSchema
+        results.push(item)
+      }
+    }
+  }
+
+  if (types.includes("extension")) {
+    for (const ext of descriptor.extensions) {
+      const text = `${ext.id} ${ext.label ?? ""}`
+      const score = scoreText(text, tokens)
+      if (score > 0) {
+        results.push({
+          type: "extension",
+          id: ext.id,
+          label: ext.label,
+          score,
+          reason: `Extension matched query`,
+        })
+      }
+    }
+  }
+
+  if (types.includes("policy")) {
+    for (const pol of descriptor.policies) {
+      const text = `${pol.id} ${pol.label ?? ""} ${pol.summary ?? ""}`
+      const score = scoreText(text, tokens)
+      if (score > 0) {
+        results.push({
+          type: "policy",
+          id: pol.id,
+          label: pol.label,
+          score,
+          reason: `Policy matched query`,
         })
       }
     }

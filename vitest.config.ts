@@ -1,6 +1,26 @@
+import path from "node:path"
+import { fileURLToPath } from "node:url"
 import { defineConfig } from "vitest/config"
 
+const repoRoot = path.dirname(fileURLToPath(import.meta.url))
+
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@ecp/types": path.resolve(repoRoot, "packages/types/src/index.ts"),
+      "@ecp/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
+      "@ecp/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
+      "@ecp/extension-memory": path.resolve(
+        repoRoot,
+        "packages/extensions/memory/src/index.ts"
+      ),
+      "@ecp/extension-openai": path.resolve(
+        repoRoot,
+        "packages/extensions/openai/src/index.ts"
+      ),
+      "@ecp/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
+    },
+  },
   test: {
     globals: true,
     coverage: {

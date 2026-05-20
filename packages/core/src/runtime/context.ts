@@ -35,6 +35,8 @@ export interface LifecycleContext {
   run: RunContext
   step?: StepExecutionContext
   state: Record<string, unknown>
+  /** Step capability output when available (e.g. `step:completed`). */
+  output?: unknown
 }
 
 /** Policy evaluation context. @category Policies */

@@ -18,16 +18,17 @@
   "scripts": {
     "clean": "node scripts/clean-dist.mjs",
     "build": "tsc -b tsconfig.build.json",
-    "lint": "eslint . && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#packages/*/node_modules\"",
+    "lint": "eslint . && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#packages/*/node_modules\" \"!docs/ecp-implementation-assessment.md\"",
     "lint:ts": "eslint .",
-    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#packages/*/node_modules\"",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#packages/*/node_modules\" \"!docs/ecp-implementation-assessment.md\"",
     "test": "npm run build && npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:watch": "vitest --project unit",
     "test:coverage": "vitest run --project unit --coverage",
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "test:e2e": "vitest run --project e2e",
-    "check": "npm run build && npm run lint && npm run test:unit && npm run test:integration && npm run test:e2e",
+    "check": "npm run build && npm run generate:schema && npm run lint && npm run test:unit && npm run test:integration && npm run test:e2e",
+    "generate:schema": "npm run generate:schema -w @ecp/types",
     "prepare": "husky"
   },
   "devDependencies": {

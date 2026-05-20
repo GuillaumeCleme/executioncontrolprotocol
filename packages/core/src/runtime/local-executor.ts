@@ -1,5 +1,6 @@
 import { LATEST_ECP_VERSION } from "@ecp/types"
 import type {
+  PendingMutation,
   RunResult,
   StepNode,
   StepRunRecord,
@@ -15,12 +16,14 @@ import {
   type PolicyContext,
 } from "./context.js"
 import { emitLifecycle } from "./lifecycle.js"
+import { pendingToMutationRecords } from "./mutation-records.js"
 import { evaluatePolicies } from "./policy-engine.js"
 import { resolveStepInput } from "./resolve-input.js"
 import {
   collectStateHandles,
   createMutationBuffer,
   createTransactionalStore,
+  type MutationBuffer,
 } from "./store.js"
 import { commitTransaction } from "./commit.js"
 
@@ -39,6 +42,17 @@ function evalExpr(
     return cur === expected
   }
   return true
+}
+
+type StepRunCtx = {
+  manifest: WorkflowManifest
+  runId: string
+  state: Record<string, unknown>
+  history: Record<string, StepRunRecord>
+  usage: ReturnType<typeof createUsageLedger>
+  logger: ReturnType<typeof createConsoleLogger>
+  context: RuntimeExecutionContext
+  extensionHooks: import("../definitions/types.js").HookDefinition[]
 }
 
 /** Local in-process runtime executor. @category Runtime */
@@ -119,41 +133,15 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
     }
   }
 
-  private async runNodes(
-    nodes: WorkflowNode[],
-    ctx: {
-      manifest: WorkflowManifest
-      runId: string
-      state: Record<string, unknown>
-      history: Record<string, StepRunRecord>
-      usage: ReturnType<typeof createUsageLedger>
-      logger: ReturnType<typeof createConsoleLogger>
-      context: RuntimeExecutionContext
-      extensionHooks: import("../definitions/types.js").HookDefinition[]
-    }
-  ): Promise<void> {
+  private async runNodes(nodes: WorkflowNode[], ctx: StepRunCtx): Promise<void> {
     for (const node of nodes) {
       await this.runNode(node, ctx)
     }
   }
 
-  private async runNode(
-    node: WorkflowNode,
-    ctx: {
-      manifest: WorkflowManifest
-      runId: string
-      state: Record<string, unknown>
-      history: Record<string, StepRunRecord>
-      usage: ReturnType<typeof createUsageLedger>
-      logger: ReturnType<typeof createConsoleLogger>
-      context: RuntimeExecutionContext
-      extensionHooks: import("../definitions/types.js").HookDefinition[]
-    }
-  ): Promise<void> {
+  private async runNode(node: WorkflowNode, ctx: StepRunCtx): Promise<void> {
     if (node.type === "parallel") {
-      await Promise.all(
-        node.branches.map((branch) => this.runNodes(branch, ctx))
-      )
+      await Promise.all(node.branches.map((branch) => this.runNodes(branch, ctx)))
       return
     }
     if (node.type === "branch") {
@@ -182,19 +170,7 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
     await this.executeStep(step, ctx)
   }
 
-  private async executeStep(
-    step: StepNode,
-    ctx: {
-      manifest: WorkflowManifest
-      runId: string
-      state: Record<string, unknown>
-      history: Record<string, StepRunRecord>
-      usage: ReturnType<typeof createUsageLedger>
-      logger: ReturnType<typeof createConsoleLogger>
-      context: RuntimeExecutionContext
-      extensionHooks: import("../definitions/types.js").HookDefinition[]
-    }
-  ): Promise<void> {
+  private async executeStep(step: StepNode, ctx: StepRunCtx): Promise<void> {
     const cap = ctx.context.registry.getCapability(step.uses)
     if (!cap) {
       throw new Error(`Unknown capability: ${step.uses}`)
@@ -206,145 +182,167 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
       label: step.label,
     }
 
-    await emitLifecycle("step:before", ctx.extensionHooks, {
-      event: "step:before",
-      workflow: ctx.manifest,
-      run: { id: ctx.runId, input: ctx.context.input },
-      step: stepCtx,
-      state: ctx.state,
-    })
-
-    const resolvedInput = resolveStepInput(step.input, ctx.state)
-    const mutableHandles = collectStateHandles(resolvedInput)
-
-    const policyCtxBase: Omit<PolicyContext, "output" | "pendingMutations" | "proposedState"> = {
-      workflow: ctx.manifest,
-      run: { id: ctx.runId, input: ctx.context.input },
-      step: stepCtx,
-      state: ctx.state,
-      input: resolvedInput,
-      mutableStateHandles: [...mutableHandles].map((p) => ({
-        path: p,
-        __brand: undefined,
-      })),
-      usage: ctx.usage,
-    }
-
-    const preDecision = await evaluatePolicies(
-      "policy:pre",
-      ctx.context.bindings.policyHooks,
-      policyCtxBase as PolicyContext
-    )
-    if (preDecision.type === "deny") {
-      ctx.history[step.id] = { status: "failed" }
-      return
-    }
-
-    const buffer = createMutationBuffer(ctx.state, mutableHandles)
-    const store = createTransactionalStore({
-      state: ctx.state,
-      buffer,
-      allowedHandles: mutableHandles,
-    })
-
-    const extId = step.uses.replace(/\.[^.]+$/, "")
-    const extBinding = ctx.context.bindings.extensions.find(
-      (e) => e.id === extId
-    )
-    const capCtx: CapabilityContext & {
-      extensionConfig?: Record<string, unknown>
-    } = {
-      store,
-      state: ctx.state,
-      run: { id: ctx.runId, input: ctx.context.input },
-      step: stepCtx,
-      logger: ctx.logger,
-      usage: ctx.usage,
-      extensionConfig: extBinding?.config,
-      capabilities: {
-        call: async (id, input) => {
-          const c = ctx.context.registry.getCapability(id)
-          if (!c) throw new Error(`Unknown capability: ${id}`)
-          return c.handler(input, capCtx)
-        },
-      },
-    }
-
-    await emitLifecycle("step:started", ctx.extensionHooks, {
-      event: "step:started",
-      workflow: ctx.manifest,
-      run: { id: ctx.runId, input: ctx.context.input },
-      step: stepCtx,
-      state: ctx.state,
-    })
-
+    const stepRecord: StepRunRecord = { status: "failed" }
     let output: unknown
+    let buffer: (MutationBuffer & { push(m: PendingMutation): void }) | undefined
+    let policyCtxBase: Omit<
+      PolicyContext,
+      "output" | "pendingMutations" | "proposedState"
+    >
+
+    const lifecycleBase = {
+      workflow: ctx.manifest,
+      run: { id: ctx.runId, input: ctx.context.input },
+      step: stepCtx,
+      state: ctx.state,
+    }
+
+    const runStepFinally = async (): Promise<void> => {
+      await emitLifecycle("step:finally", ctx.extensionHooks, {
+        event: "step:finally",
+        ...lifecycleBase,
+      })
+      await evaluatePolicies(
+        "policy:finally",
+        ctx.context.bindings.policyHooks,
+        {
+          ...policyCtxBase,
+          output,
+        } as PolicyContext
+      )
+    }
+
     try {
-      output = await cap.handler(resolvedInput, capCtx)
-    } catch {
-      buffer.discard()
-      ctx.history[step.id] = { status: "failed" }
-      return
-    }
+      await emitLifecycle("step:before", ctx.extensionHooks, {
+        event: "step:before",
+        ...lifecycleBase,
+      })
 
-    const proposedState = buffer.preview(ctx.state)
-    const postDecision = await evaluatePolicies(
-      "policy:post",
-      ctx.context.bindings.policyHooks,
-      {
-        ...policyCtxBase,
-        output,
-        pendingMutations: buffer.pending(),
-        proposedState,
-      } as PolicyContext
-    )
+      const resolvedInput = resolveStepInput(step.input, ctx.state)
+      const mutableHandles = collectStateHandles(resolvedInput)
+      const stateBeforeMutations = structuredClone(ctx.state)
 
-    if (postDecision.type === "deny" || postDecision.type === "pause") {
-      buffer.discard()
-      ctx.history[step.id] = {
-        status: postDecision.type === "pause" ? "paused" : "failed",
-        output,
+      policyCtxBase = {
+        workflow: ctx.manifest,
+        run: { id: ctx.runId, input: ctx.context.input },
+        step: stepCtx,
+        state: ctx.state,
+        input: resolvedInput,
+        mutableStateHandles: [...mutableHandles].map((p) => ({
+          path: p,
+          __brand: undefined,
+        })),
+        usage: ctx.usage,
       }
-      return
-    }
 
-    commitTransaction({
-      state: ctx.state,
-      mutations: buffer.pending(),
-      output,
-      commitAs: step.commitAs,
-      commitMode: step.commitMode,
-    })
+      const preDecision = await evaluatePolicies(
+        "policy:pre",
+        ctx.context.bindings.policyHooks,
+        policyCtxBase as PolicyContext
+      )
 
-    ctx.history[step.id] = {
-      status: "completed",
-      output,
-      committedAs: step.commitAs ?? null,
-    }
+      if (preDecision.type === "deny") {
+        stepRecord.status = "failed"
+        return
+      }
+      if (preDecision.type === "pause") {
+        stepRecord.status = "paused"
+        return
+      }
 
-    await emitLifecycle("step:completed", ctx.extensionHooks, {
-      event: "step:completed",
-      workflow: ctx.manifest,
-      run: { id: ctx.runId, input: ctx.context.input },
-      step: stepCtx,
-      state: ctx.state,
-    })
+      buffer = createMutationBuffer(ctx.state, mutableHandles)
+      const store = createTransactionalStore({
+        state: ctx.state,
+        buffer,
+        allowedHandles: mutableHandles,
+      })
 
-    await emitLifecycle("step:finally", ctx.extensionHooks, {
-      event: "step:finally",
-      workflow: ctx.manifest,
-      run: { id: ctx.runId, input: ctx.context.input },
-      step: stepCtx,
-      state: ctx.state,
-    })
+      const extId = step.uses.replace(/\.[^.]+$/, "")
+      const extBinding = ctx.context.bindings.extensions.find((e) => e.id === extId)
+      const capCtx: CapabilityContext & {
+        extensionConfig?: Record<string, unknown>
+      } = {
+        store,
+        state: ctx.state,
+        run: { id: ctx.runId, input: ctx.context.input },
+        step: stepCtx,
+        logger: ctx.logger,
+        usage: ctx.usage,
+        extensionConfig: extBinding?.config,
+        capabilities: {
+          call: async (id, input) => {
+            const c = ctx.context.registry.getCapability(id)
+            if (!c) throw new Error(`Unknown capability: ${id}`)
+            return c.handler(input, capCtx)
+          },
+        },
+      }
 
-    await evaluatePolicies(
-      "policy:finally",
-      ctx.context.bindings.policyHooks,
-      {
-        ...policyCtxBase,
+      await emitLifecycle("step:started", ctx.extensionHooks, {
+        event: "step:started",
+        ...lifecycleBase,
+      })
+
+      try {
+        output = await cap.handler(resolvedInput, capCtx)
+      } catch {
+        buffer.discard()
+        await emitLifecycle("step:failed", ctx.extensionHooks, {
+          event: "step:failed",
+          ...lifecycleBase,
+        })
+        stepRecord.status = "failed"
+        return
+      }
+
+      const proposedState = buffer.preview(ctx.state)
+      const postDecision = await evaluatePolicies(
+        "policy:post",
+        ctx.context.bindings.policyHooks,
+        {
+          ...policyCtxBase,
+          output,
+          pendingMutations: buffer.pending(),
+          proposedState,
+        } as PolicyContext
+      )
+
+      if (postDecision.type === "deny" || postDecision.type === "pause") {
+        buffer.discard()
+        stepRecord.status = postDecision.type === "pause" ? "paused" : "failed"
+        stepRecord.output = output
+        return
+      }
+
+      const pending = buffer.pending()
+      commitTransaction({
+        state: ctx.state,
+        mutations: pending,
         output,
-      } as PolicyContext
-    )
+        commitAs: step.commitAs,
+        commitMode: step.commitMode,
+      })
+
+      stepRecord.status = "completed"
+      stepRecord.output = output
+      stepRecord.committedAs = step.commitAs ?? null
+      stepRecord.mutations = pendingToMutationRecords(
+        pending,
+        step.id,
+        step.uses,
+        stateBeforeMutations
+      )
+
+      await emitLifecycle("step:completed", ctx.extensionHooks, {
+        event: "step:completed",
+        ...lifecycleBase,
+        output,
+      })
+    } finally {
+      ctx.history[step.id] = stepRecord
+      if (policyCtxBase!) {
+        await runStepFinally()
+      }
+    }
   }
 }

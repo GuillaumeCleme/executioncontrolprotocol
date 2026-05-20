@@ -130,6 +130,10 @@ export interface SearchResultItem {
   label?: string
   score: number
   reason?: string
+  /** Present when requested via {@link SearchOptions.include}. */
+  inputSchema?: unknown
+  /** Present when requested via {@link SearchOptions.include}. */
+  outputSchema?: unknown
 }
 
 /** Search response. @category Environment */

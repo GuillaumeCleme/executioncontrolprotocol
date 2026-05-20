@@ -10,13 +10,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./schemas/*": "./dist/schemas/*"
   },
   "files": ["dist", "README.md"],
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsc -b && node scripts/generate-schemas.mjs",
+    "generate:schema": "node scripts/generate-schemas.mjs"
   },
   "devDependencies": {
+    "ajv": "^8.17.1",
+    "ts-json-schema-generator": "^2.3.0",
     "typescript": "^5.7.0"
   }
 }

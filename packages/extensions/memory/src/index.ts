@@ -33,7 +33,13 @@ export const memoryExtension = defineExtension("@ecp", "memory")
       }),
   ])
   .withHooks([
-    hook("step:completed", async () => undefined),
+    hook("step:completed", async (ctx) => {
+      if (ctx.output === undefined || !ctx.step) return
+      const col = "step-outputs"
+      const list = store.get(col) ?? []
+      list.push({ stepId: ctx.step.id, output: ctx.output })
+      store.set(col, list)
+    }),
     hook("run:finally", async () => undefined),
   ])
   .build()

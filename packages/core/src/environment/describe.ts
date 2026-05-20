@@ -2,8 +2,10 @@ import { LATEST_ECP_VERSION } from "@ecp/types"
 import type {
   CapabilityDescription,
   DescribeQuery,
+  DescribeSelection,
   EnvironmentDescriptor,
   ExtensionDescription,
+  PolicyDescription,
 } from "@ecp/types"
 import type { Registry } from "../registry/registry.js"
 import type { EnvironmentManifest } from "@ecp/types"
@@ -12,10 +14,30 @@ function fuzzyMatch(haystack: string, needle: string): boolean {
   return haystack.toLowerCase().includes(needle.toLowerCase())
 }
 
-function pickFields<T extends object>(
-  obj: T,
-  include?: string[]
-): Partial<T> {
+function tokenMatchScore(text: string, query: string): number {
+  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean)
+  if (tokens.length === 0) return 0
+  const hay = text.toLowerCase()
+  let matched = 0
+  for (const t of tokens) {
+    if (hay.includes(t)) matched++
+  }
+  return matched / tokens.length
+}
+
+function matchesSelection(
+  text: string,
+  id: string,
+  selection?: DescribeSelection
+): boolean {
+  if (!selection?.match) return true
+  const mode = selection.mode ?? "fuzzy"
+  if (mode === "exact") return id === selection.match
+  if (mode === "partial") return fuzzyMatch(text, selection.match)
+  return fuzzyMatch(text, selection.match) || tokenMatchScore(text, selection.match) > 0
+}
+
+function pickFields<T extends object>(obj: T, include?: string[]): Partial<T> {
   if (!include || include.length === 0) return obj
   const out: Partial<T> = {}
   for (const key of include) {
@@ -24,29 +46,24 @@ function pickFields<T extends object>(
   return out
 }
 
+function applyLimit<T>(items: T[], limit?: number): T[] {
+  if (limit === undefined) return items
+  return items.slice(0, limit)
+}
+
 /** Build environment descriptor from registry + bindings. */
 export async function buildDescriptor(
   registry: Registry,
   manifest: EnvironmentManifest,
   query?: DescribeQuery
 ): Promise<EnvironmentDescriptor> {
-
   const caps: CapabilityDescription[] = []
   for (const extBinding of manifest.extensions ?? []) {
     const def = registry.getExtension(String(extBinding.id))
     if (!def) continue
     for (const cap of def.capabilities) {
-      let include = true
-      if (query?.capabilities?.match) {
-        const mode = query.capabilities.mode ?? "fuzzy"
-        const match = query.capabilities.match
-        const text = `${cap.id} ${cap.name}`
-        include =
-          mode === "exact"
-            ? cap.id === match
-            : fuzzyMatch(text, match)
-      }
-      if (!include) continue
+      const text = `${cap.id} ${cap.name}`
+      if (!matchesSelection(text, cap.id, query?.capabilities)) continue
       const desc: CapabilityDescription = {
         id: cap.id,
         label: cap.name,
@@ -60,42 +77,77 @@ export async function buildDescriptor(
     }
   }
 
-  const limit = query?.capabilities?.limit ?? caps.length
-  const extensions: ExtensionDescription[] = (manifest.extensions ?? []).map(
-    (e, i) => ({
-      id: String(e.id),
-      label: e.label,
-      order: e.order ?? i,
-      capabilities: registry.getExtension(String(e.id))?.capabilities.map((c) => c.id) ?? [],
-    })
+  const extensions: ExtensionDescription[] = applyLimit(
+    (manifest.extensions ?? [])
+      .map((e, i) => {
+        const def = registry.getExtension(String(e.id))
+        const text = `${e.id} ${e.label ?? ""} ${def?.name ?? ""}`
+        if (!matchesSelection(text, String(e.id), query?.extensions)) return null
+        const desc: ExtensionDescription = {
+          id: String(e.id),
+          label: e.label,
+          order: e.order ?? i,
+          capabilities: def?.capabilities.map((c) => c.id) ?? [],
+        }
+        return pickFields(desc, query?.extensions?.include) as ExtensionDescription
+      })
+      .filter((x): x is ExtensionDescription => x !== null),
+    query?.extensions?.limit
   )
+
+  const policies: PolicyDescription[] = applyLimit(
+    (manifest.policies ?? [])
+      .map((p) => {
+        const def = registry.getPolicy(String(p.id))
+        const text = `${p.id} ${p.label ?? ""} ${def?.name ?? ""}`
+        if (!matchesSelection(text, String(p.id), query?.policies)) return null
+        const desc: PolicyDescription = {
+          id: String(p.id),
+          label: p.label,
+          summary: def?.name,
+          config: p.config,
+          configSchema: def?.configSchema,
+        }
+        return pickFields(desc, query?.policies?.include) as PolicyDescription
+      })
+      .filter((x): x is PolicyDescription => x !== null),
+    query?.policies?.limit
+  )
+
+  const runtimeId = String(manifest.runtime?.id ?? "@ecp/local")
+  const runtimeLabel = manifest.runtime?.label
+  const runtimeText = `${runtimeId} ${runtimeLabel ?? ""}`
+  const includeRuntime =
+    !query?.runtime?.match || matchesSelection(runtimeText, runtimeId, query.runtime)
 
   return {
     schema: "@ecp.environment.describe",
     version: LATEST_ECP_VERSION,
     environment: manifest.environment,
-    runtime: {
-      id: String(manifest.runtime?.id ?? "@ecp/local"),
-      label: manifest.runtime?.label,
-      features: {
-        loops: true,
-        parallel: true,
-        branches: true,
-        pauses: true,
-        cancellation: true,
-      },
-    },
+    runtime: includeRuntime
+      ? {
+          id: runtimeId,
+          label: runtimeLabel,
+          features: {
+            loops: true,
+            parallel: true,
+            branches: true,
+            pauses: true,
+            cancellation: true,
+          },
+        }
+      : {
+          id: runtimeId,
+          features: {
+            loops: false,
+            parallel: false,
+            branches: false,
+            pauses: false,
+            cancellation: false,
+          },
+        },
     extensions,
-    capabilities: caps.slice(0, limit),
-    policies: (manifest.policies ?? []).map((p) => {
-      const def = registry.getPolicy(String(p.id))
-      return {
-        id: String(p.id),
-        label: p.label,
-        summary: def?.name,
-        config: p.config,
-        configSchema: def?.configSchema,
-      }
-    }),
+    capabilities: applyLimit(caps, query?.capabilities?.limit),
+    policies,
   }
 }
