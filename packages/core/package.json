@@ -14,6 +14,54 @@
     "./browser": {
       "types": "./dist/browser.d.ts",
       "import": "./dist/browser.js"
+    },
+    "./environment": {
+      "types": "./dist/environment/environment.d.ts",
+      "import": "./dist/environment/environment.js"
+    },
+    "./environment/config-resolver": {
+      "types": "./dist/environment/config-resolver.d.ts",
+      "import": "./dist/environment/config-resolver.js"
+    },
+    "./definitions/types": {
+      "types": "./dist/definitions/types.d.ts",
+      "import": "./dist/definitions/types.js"
+    },
+    "./registry": {
+      "types": "./dist/registry/registry.d.ts",
+      "import": "./dist/registry/registry.js"
+    },
+    "./bindings/extension": {
+      "types": "./dist/bindings/extension.d.ts",
+      "import": "./dist/bindings/extension.js"
+    },
+    "./bindings/runtime": {
+      "types": "./dist/bindings/runtime.d.ts",
+      "import": "./dist/bindings/runtime.js"
+    },
+    "./bindings/policy": {
+      "types": "./dist/bindings/policy.d.ts",
+      "import": "./dist/bindings/policy.js"
+    },
+    "./config-schema": {
+      "types": "./dist/config-schema/index.d.ts",
+      "import": "./dist/config-schema/index.js"
+    },
+    "./runtime/context": {
+      "types": "./dist/runtime/context.d.ts",
+      "import": "./dist/runtime/context.js"
+    },
+    "./registry/errors": {
+      "types": "./dist/registry/errors.d.ts",
+      "import": "./dist/registry/errors.js"
+    },
+    "./runtime/in-memory-executor": {
+      "types": "./dist/runtime/in-memory-executor.d.ts",
+      "import": "./dist/runtime/in-memory-executor.js"
+    },
+    "./runtime/executor": {
+      "types": "./dist/runtime/executor.d.ts",
+      "import": "./dist/runtime/executor.js"
     }
   },
   "files": ["dist", "README.md"],

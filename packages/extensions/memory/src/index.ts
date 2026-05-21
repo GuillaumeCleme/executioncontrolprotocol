@@ -44,9 +44,9 @@ export const memoryExtension = defineExtension("@ecp", "memory")
   ])
   .build()
 
-export function registerMemoryExtension(): void {
+export async function registerMemoryExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/memory")) {
-    globalRegistry.registerExtension(memoryExtension)
+    await globalRegistry.registerExtension(memoryExtension)
   }
 }
 

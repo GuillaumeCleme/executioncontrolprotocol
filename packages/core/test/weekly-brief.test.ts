@@ -23,11 +23,11 @@ export default workflow("Weekly leadership brief")
 
 describe("examples/02-weekly-brief", () => {
   it("workflow compiles against registered extensions", async () => {
-    registerMemoryExtension()
-    registerOpenaiExtension()
-    registerSlackExtension()
+    await registerMemoryExtension()
+    await registerOpenaiExtension()
+    await registerSlackExtension()
 
-    const env = environment("weekly-brief", "Weekly brief").withExtensions([
+    const env = (await environment("weekly-brief", "Weekly brief")).withExtensions([
         extension("@ecp/memory", "Memory").with({ hydrateModels: true, collections: ["leadership"] }),
         extension("@ecp/openai", "OpenAI").with({ defaultModel: "gpt-4o-mini" }),
         extension("@ecp/slack", "Slack").with({}),

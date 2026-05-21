@@ -46,8 +46,8 @@ export const processEnvExtension = defineExtension("@ecp", "process-env")
   .build()
 
 /** Register `@ecp/process-env`. */
-export function registerProcessEnvExtension(registry = globalRegistry): void {
+export async function registerProcessEnvExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
-    registry.registerExtension(processEnvExtension)
+    await registry.registerExtension(processEnvExtension)
   }
 }

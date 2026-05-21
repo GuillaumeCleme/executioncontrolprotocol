@@ -57,8 +57,28 @@ await env.run(manifest)
 
 ### Browser
 
+**Mechanism vs policy:** `@ecp/browser-registry` handles freeze, `globalThis.ecp`, and auto-bind. **`@ecp/registry-control`** (bound as a policy) authorizes dynamic extension registration via `policy:pre` and `registryRequest` on the policy context.
+
 ```ts
-import { compileAndValidateWorkflowSource, workflow, step, environment } from "@ecp/browser"
+import { environment, workflow, step, extension, policy } from "@ecp/browser"
+
+const env = await environment("demo") // binds registry-control + browser-registry (global `ecp`)
+
+await env.describe()
+await globalThis.ecp.registerExtension(customerExtension)
+
+await env.run(workflow)
 ```
+
+**Lifecycle:** `describe()` / `search()` emit `environment:created` and `environment:configuring` only. First `run()` emits `environment:ready` then `environment:beforeRun`.
+
+**Tests:**
+
+```sh
+npm run test:browser:install   # once per machine
+npm run test:browser           # Vitest browser project (Chromium); separate from test:unit
+```
+
+CI runs the `browser` job in `.github/workflows/ci-pipeline.yml` (not part of `npm run check`).
 
 Build order: `tsc -b tsconfig.build.json` (types → core → … → cli).

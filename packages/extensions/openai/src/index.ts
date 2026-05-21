@@ -93,9 +93,9 @@ export const openaiExtension = defineExtension("@ecp", "openai")
   .build()
 
 /** Register @ecp/openai. */
-export function registerOpenaiExtension(): void {
+export async function registerOpenaiExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/openai")) {
-    globalRegistry.registerExtension(openaiExtension)
+    await globalRegistry.registerExtension(openaiExtension)
   }
 }
 

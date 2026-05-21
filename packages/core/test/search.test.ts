@@ -7,7 +7,7 @@ describe("environment.search", () => {
   })
 
   it("ranks multi-token queries", async () => {
-    const env = createTestEnvironment("s").withExtensions([
+    const env = (await createTestEnvironment("s")).withExtensions([
       extension("@ecp/test", "T").with({}),
     ])
 
@@ -18,7 +18,7 @@ describe("environment.search", () => {
   })
 
   it("includes schemas when requested", async () => {
-    const env = createTestEnvironment("s").withExtensions([
+    const env = (await createTestEnvironment("s")).withExtensions([
       extension("@ecp/test", "T").with({}),
     ])
 

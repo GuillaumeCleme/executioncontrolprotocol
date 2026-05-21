@@ -5,8 +5,8 @@ import {
   array,
   string,
   type EnvironmentConfigResolver,
+  type LifecycleContext,
 } from "@ecp/core"
-import type { LifecycleContext } from "@ecp/core"
 
 const EXT_ID = "@ecp/browser-local-config"
 
@@ -64,8 +64,10 @@ export const browserLocalConfigExtension = defineExtension("@ecp", "browser-loca
   .build()
 
 /** Register `@ecp/browser-local-config`. */
-export function registerBrowserLocalConfigExtension(registry = globalRegistry): void {
+export async function registerBrowserLocalConfigExtension(
+  registry = globalRegistry
+): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
-    registry.registerExtension(browserLocalConfigExtension)
+    await registry.registerExtension(browserLocalConfigExtension)
   }
 }

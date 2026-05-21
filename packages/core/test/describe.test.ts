@@ -4,12 +4,12 @@ import { registerStandardPolicies } from "@ecp/policies"
 import { createTestEnvironment } from "./helpers.js"
 
 describe("environment.describe", () => {
-  beforeEach(() => {
-    registerStandardPolicies()
+  beforeEach(async () => {
+    await registerStandardPolicies()
   })
 
   it("filters capabilities by match and include", async () => {
-    const env = createTestEnvironment("d", "D").withExtensions([
+    const env = (await createTestEnvironment("d", "D")).withExtensions([
       extension("@ecp/test", "T").with({}),
     ])
       .withPolicies([policy("@ecp/budget", "B").with({})])
@@ -27,7 +27,7 @@ describe("environment.describe", () => {
   })
 
   it("filters policies section", async () => {
-    const env = createTestEnvironment("d").withExtensions([
+    const env = (await createTestEnvironment("d")).withExtensions([
       extension("@ecp/test", "T").with({}),
     ])
       .withPolicies([policy("@ecp/budget", "B").with({ maxModelCalls: 1 })])

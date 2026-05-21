@@ -17,21 +17,22 @@ import {
 } from "../src/testing/test-lifecycle-extension.js"
 import { registerStandardPolicies } from "@ecp/policies"
 
-function testEnv(extraPolicies: ReturnType<typeof policy>[] = []) {
-  return createTestEnvironment("lifecycle-test")
+async function testEnv(extraPolicies: ReturnType<typeof policy>[] = []) {
+  const base = await createTestEnvironment("lifecycle-test")
+  return base
     .withExtensions([extension("@ecp/lifecycle-spy", "Spy").with({})])
     .withPolicies(extraPolicies)
 }
 
 describe("step lifecycle ordering", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetLifecycleSpy()
-    registerLifecycleSpyExtension()
-    registerStandardPolicies()
+    await registerLifecycleSpyExtension()
+    await registerStandardPolicies()
   })
 
   it("happy path emits step:before → step:started → step:completed → step:finally", async () => {
-    const env = testEnv()
+    const env = await testEnv()
     const manifest = workflow("Happy")
       .run([
         step("@ecp/lifecycle-spy.echo", "Echo")
@@ -64,9 +65,9 @@ describe("step lifecycle ordering", () => {
         }),
       ])
       .build()
-    globalRegistry.registerPolicy(denyPolicy)
+    await globalRegistry.registerPolicy(denyPolicy)
 
-    const env = testEnv([policy("@ecp/deny-pre-test").with({ capabilityId: "@ecp/lifecycle-spy.echo" })])
+    const env = await testEnv([policy("@ecp/deny-pre-test").with({ capabilityId: "@ecp/lifecycle-spy.echo" })])
     resetLifecycleSpy()
     registerLifecycleSpyExtension()
 
@@ -85,7 +86,7 @@ describe("step lifecycle ordering", () => {
   })
 
   it("policy:pre pause skips capability and sets paused status", async () => {
-    const env = testEnv([
+    const env = await testEnv([
       policy("@ecp/approval").with({
         requireApprovalFor: ["@ecp/lifecycle-spy.echo"],
       }),
@@ -105,7 +106,7 @@ describe("step lifecycle ordering", () => {
   })
 
   it("capability throw emits step:failed and step:finally without commit", async () => {
-    const env = testEnv()
+    const env = await testEnv()
     const manifest = workflow("Throw")
       .run([
         step("@ecp/lifecycle-spy.throw", "Throw").as("out"),

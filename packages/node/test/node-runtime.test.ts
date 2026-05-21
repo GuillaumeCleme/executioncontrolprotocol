@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest"
 import { workflow, step, extension, env, registerTestExtension } from "@ecp/core"
 import { environment, setMemorySecret, registerNodeDefaults } from "../src/index.js"
 import { resolveEnvConfigAsync } from "@ecp/core"
+import { registerRuntimeConformanceTests } from "../../core/test/runtime-conformance.js"
+import { createTestEnvironment } from "../../core/test/helpers.js"
+
+registerRuntimeConformanceTests("@ecp/node", () => createTestEnvironment("node-conformance"))
 
 describe("@ecp/node runtime", () => {
   it("runs echo workflow", async () => {
-    registerTestExtension()
-    const env = environment("node-test").withExtensions([extension("@ecp/test").with({})])
+    await registerTestExtension()
+    const env = (await environment("node-test")).withExtensions([extension("@ecp/test").with({})])
     const manifest = workflow("Echo")
       .run([step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("echo")])
       .toManifest()
@@ -19,7 +23,7 @@ describe("@ecp/node runtime", () => {
 describe("@ecp/process-env and secrets", () => {
   it("process env resolver reads process.env", async () => {
     process.env.ECP_TEST_KEY = "from-process"
-    registerNodeDefaults()
+    await registerNodeDefaults()
     const config = await resolveEnvConfigAsync(
       { v: env("ECP_TEST_KEY") },
       [

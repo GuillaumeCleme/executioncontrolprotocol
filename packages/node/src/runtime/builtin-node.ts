@@ -15,8 +15,8 @@ export const nodeRuntimeDefinition = defineRuntime("@ecp", "node")
   .withExecutor(new NodeRuntimeExecutor())
 
 /** Register `@ecp/node` on the global registry. */
-export function registerNodeRuntime(registry = globalRegistry): void {
+export async function registerNodeRuntime(registry = globalRegistry): Promise<void> {
   if (!registry.getRuntime(NODE_RUNTIME_ID)) {
-    registry.registerRuntime(nodeRuntimeDefinition)
+    await registry.registerRuntime(nodeRuntimeDefinition)
   }
 }

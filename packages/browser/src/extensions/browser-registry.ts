@@ -3,48 +3,43 @@ import {
   hook,
   globalRegistry,
   boolean,
-  array,
   string,
-  matchesAnyNamespace,
   RegistryRegistrationDeniedError,
+  type Environment,
   type EnvironmentLifecycleHost,
+  type ExtensionDefinition,
+  type LifecycleContext,
 } from "@ecp/core"
-import type { ExtensionDefinition, LifecycleContext, PolicyDefinition, RuntimeDefinition } from "@ecp/core"
+import type { RegistryRegistrationRequest } from "@ecp/types"
 
 const EXT_ID = "@ecp/browser-registry"
 
-type RegistryApi = {
-  registerExtension(def: ExtensionDefinition): void
-  registerPolicy(def: PolicyDefinition): void
-  registerRuntime(def: RuntimeDefinition): void
-  freeze(reason?: string): void
-  isFrozen(): boolean
+/** Browser global registration surface. @category Extensions */
+export interface BrowserEcpGlobal {
+  /** Active environment when browser-registry is configured. */
+  getEnvironment(): Environment | undefined
+  /** Register an extension definition (policy-governed). */
+  registerExtension(def: ExtensionDefinition): Promise<void>
+  /** Freeze the environment registry. */
+  freezeRegistry(reason?: string): void
+  /** Whether the registry rejects new registrations. */
+  isRegistryFrozen(): boolean
 }
 
 let activeHost: EnvironmentLifecycleHost | undefined
-let globalApi: RegistryApi | undefined
+let globalApi: BrowserEcpGlobal | undefined
+let attachedGlobalName: string | undefined
 
-function guardForConfig(
-  cfg: Record<string, unknown>
-): (kind: "runtime" | "extension" | "policy", id: string) => void {
-  const allowed = (cfg.allowedNamespaces as string[] | undefined) ?? ["@ecp/demo", "@customer/*"]
-  const denied = (cfg.deniedNamespaces as string[] | undefined) ?? []
-  return (_kind, id) => {
-    if (matchesAnyNamespace(id, denied)) {
-      throw new RegistryRegistrationDeniedError(id)
-    }
-    if (!matchesAnyNamespace(id, allowed)) {
-      throw new RegistryRegistrationDeniedError(id, `Namespace not allowed: ${id}`)
-    }
-  }
+function getExtensionConfig(ctx: LifecycleContext): Record<string, unknown> {
+  return (ctx as LifecycleContext & { extensionConfig?: Record<string, unknown> })
+    .extensionConfig ?? {}
 }
 
 function attachBrowserRegistry(ctx: LifecycleContext): void {
   const host = ctx.environment
-  if (!host) return
+  if (!host?.evaluateRegistryRegistration) return
   activeHost = host
-  const cfg = (ctx as LifecycleContext & { extensionConfig?: Record<string, unknown> })
-    .extensionConfig ?? {}
+  const cfg = getExtensionConfig(ctx)
   const registry = host.getRegistry()
   const allowReg = cfg.allowRuntimeRegistration !== false
 
@@ -52,37 +47,48 @@ function attachBrowserRegistry(ctx: LifecycleContext): void {
     registry.freeze("frozen:true")
   }
 
-  registry.setRegistrationGuard(guardForConfig(cfg))
+  registry.setRegistrationGuard(async (request: RegistryRegistrationRequest) => {
+    if (request.kind !== "extension") {
+      throw new RegistryRegistrationDeniedError(
+        request.id,
+        "Dynamic policy/runtime registration is not allowed"
+      )
+    }
+    if (!allowReg) {
+      throw new Error("Runtime registration disabled")
+    }
+    await host.evaluateRegistryRegistration!({
+      ...request,
+      autoBindRequested: cfg.autoBindRegisteredExtensions === true,
+    })
+  })
 
   if (cfg.exposeGlobal === true && typeof globalThis !== "undefined") {
-    const globalName = (cfg.globalName as string | undefined) ?? "ECP"
-    const api: RegistryApi = {
-      registerExtension(def) {
+    const globalName = (cfg.globalName as string | undefined) ?? "ecp"
+    const env = host as Environment
+    const api: BrowserEcpGlobal = {
+      getEnvironment: () => env,
+      async registerExtension(def) {
         if (!allowReg) throw new Error("Runtime registration disabled")
-        registry.registerExtension(def)
-        if (cfg.autoBindRegisteredExtensions) {
-          host.addExtensionBinding?.(def.id, {})
+        await registry.registerExtension(def, {
+          source: { type: "browser-global" },
+          autoBindRequested: cfg.autoBindRegisteredExtensions === true,
+        })
+        if (cfg.autoBindRegisteredExtensions === true) {
+          env.addExtensionBinding(def.id, {})
         }
       },
-      registerPolicy(def) {
-        if (!allowReg) throw new Error("Runtime registration disabled")
-        registry.registerPolicy(def)
-      },
-      registerRuntime(def) {
-        if (!allowReg) throw new Error("Runtime registration disabled")
-        registry.registerRuntime(def)
-      },
-      freeze: (r) => registry.freeze(r),
-      isFrozen: () => registry.isFrozen(),
+      freezeRegistry: (r) => registry.freeze(r),
+      isRegistryFrozen: () => registry.isFrozen(),
     }
     globalApi = api
+    attachedGlobalName = globalName
     ;(globalThis as Record<string, unknown>)[globalName] = api
   }
 }
 
 function maybeFreezeOnReady(ctx: LifecycleContext): void {
-  const cfg = (ctx as LifecycleContext & { extensionConfig?: Record<string, unknown> })
-    .extensionConfig ?? {}
+  const cfg = getExtensionConfig(ctx)
   const registry = ctx.environment?.getRegistry()
   if (!registry) return
   if (cfg.frozen === true || cfg.freezeOnReady === true) {
@@ -91,29 +97,34 @@ function maybeFreezeOnReady(ctx: LifecycleContext): void {
 }
 
 function maybeFreezeOnFirstRun(ctx: LifecycleContext): void {
-  const cfg = (ctx as LifecycleContext & { extensionConfig?: Record<string, unknown> })
-    .extensionConfig ?? {}
+  const cfg = getExtensionConfig(ctx)
   const registry = ctx.environment?.getRegistry()
   if (!registry) return
-  if (cfg.freezeOnFirstRun === true) {
+  if (cfg.freezeOnFirstRun === true && !registry.isFrozen()) {
     registry.freeze("freezeOnFirstRun")
   }
 }
 
 function detachBrowserRegistry(ctx: LifecycleContext): void {
-  const cfg = (ctx as LifecycleContext & { extensionConfig?: Record<string, unknown> })
-    .extensionConfig ?? {}
-  if (cfg.exposeGlobal === true && typeof globalThis !== "undefined") {
-    const globalName = (cfg.globalName as string | undefined) ?? "ECP"
-    delete (globalThis as Record<string, unknown>)[globalName]
+  const cfg = getExtensionConfig(ctx)
+  if (
+    cfg.exposeGlobal === true &&
+    attachedGlobalName &&
+    typeof globalThis !== "undefined"
+  ) {
+    const g = globalThis as Record<string, unknown>
+    if (g[attachedGlobalName] === globalApi) {
+      delete g[attachedGlobalName]
+    }
   }
   ctx.environment?.getRegistry().setRegistrationGuard(undefined)
   activeHost = undefined
   globalApi = undefined
+  attachedGlobalName = undefined
 }
 
 /** Expose browser global registry API when configured. */
-export function exposeBrowserRegistry(): RegistryApi | undefined {
+export function exposeBrowserRegistry(): BrowserEcpGlobal | undefined {
   return globalApi
 }
 
@@ -126,9 +137,7 @@ export const browserRegistryExtension = defineExtension("@ecp", "browser-registr
     allowRuntimeRegistration: boolean().default(true),
     autoBindRegisteredExtensions: boolean().default(false),
     exposeGlobal: boolean().default(false),
-    globalName: string().default("ECP"),
-    allowedNamespaces: array(string()).default(["@ecp/demo", "@customer/*"]),
-    deniedNamespaces: array(string()).default([]),
+    globalName: string().default("ecp"),
   })
   .withHooks([
     hook("environment:configuring", attachBrowserRegistry),
@@ -139,9 +148,9 @@ export const browserRegistryExtension = defineExtension("@ecp", "browser-registr
   .build()
 
 /** Register `@ecp/browser-registry`. */
-export function registerBrowserRegistryExtension(registry = globalRegistry): void {
+export async function registerBrowserRegistryExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
-    registry.registerExtension(browserRegistryExtension)
+    await registry.registerExtension(browserRegistryExtension)
   }
 }
 

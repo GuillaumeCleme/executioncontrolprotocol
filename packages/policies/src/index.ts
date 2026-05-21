@@ -3,6 +3,7 @@ import type { PolicyDecision } from "@ecp/types"
 import { definePolicy, hook, globalRegistry } from "@ecp/core"
 import { boolean, number } from "@ecp/core"
 import { z } from "zod"
+import { registerRegistryControlPolicy } from "./registry-control.js"
 
 type PolicyHookFn = (
   ctx: PolicyContext & { config: Record<string, unknown> }
@@ -94,15 +95,23 @@ export const stateControlPolicy = definePolicy("@ecp", "state-control")
   ])
   .build()
 
+export {
+  registryControlPolicy,
+  registerRegistryControlPolicy,
+  REGISTRY_CONTROL_POLICY_ID,
+  type RegistryControlPolicyConfig,
+} from "./registry-control.js"
+
 /** Register all standard policies. @category Policies */
-export function registerStandardPolicies(): void {
-  if (!globalRegistry.getPolicy("@ecp/budget")) {
-    globalRegistry.registerPolicy(budgetPolicy)
+export async function registerStandardPolicies(registry = globalRegistry): Promise<void> {
+  if (!registry.getPolicy("@ecp/budget")) {
+    await registry.registerPolicy(budgetPolicy)
   }
-  if (!globalRegistry.getPolicy("@ecp/approval")) {
-    globalRegistry.registerPolicy(approvalPolicy)
+  if (!registry.getPolicy("@ecp/approval")) {
+    await registry.registerPolicy(approvalPolicy)
   }
-  if (!globalRegistry.getPolicy("@ecp/state-control")) {
-    globalRegistry.registerPolicy(stateControlPolicy)
+  if (!registry.getPolicy("@ecp/state-control")) {
+    await registry.registerPolicy(stateControlPolicy)
   }
+  await registerRegistryControlPolicy(registry)
 }

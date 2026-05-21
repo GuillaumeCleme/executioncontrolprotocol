@@ -61,8 +61,8 @@ const lifecycleSpyExtension = defineExtension("@ecp", "lifecycle-spy")
   .build()
 
 /** Register lifecycle spy extension on global registry. */
-export function registerLifecycleSpyExtension(): void {
+export async function registerLifecycleSpyExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/lifecycle-spy")) {
-    globalRegistry.registerExtension(lifecycleSpyExtension)
+    await globalRegistry.registerExtension(lifecycleSpyExtension)
   }
 }

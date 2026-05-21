@@ -4,8 +4,8 @@ import {
   globalRegistry,
   boolean,
   type EnvironmentConfigResolver,
+  type LifecycleContext,
 } from "@ecp/core"
-import type { LifecycleContext } from "@ecp/core"
 
 const EXT_ID = "@ecp/browser-session-config"
 
@@ -84,8 +84,10 @@ export const browserSessionConfigExtension = defineExtension("@ecp", "browser-se
   .build()
 
 /** Register `@ecp/browser-session-config`. */
-export function registerBrowserSessionConfigExtension(registry = globalRegistry): void {
+export async function registerBrowserSessionConfigExtension(
+  registry = globalRegistry
+): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
-    registry.registerExtension(browserSessionConfigExtension)
+    await registry.registerExtension(browserSessionConfigExtension)
   }
 }

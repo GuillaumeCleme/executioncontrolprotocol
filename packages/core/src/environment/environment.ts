@@ -3,6 +3,7 @@ import type {
   DescribeQuery,
   EnvironmentDescriptor,
   EnvironmentManifest,
+  RegistryRegistrationRequest,
   RunResult,
   SearchOptions,
   SearchResult,
@@ -14,8 +15,11 @@ import { extension, type ExtensionBindingBuilder } from "../bindings/extension.j
 import type { PolicyBindingBuilder } from "../bindings/policy.js"
 import type { RuntimeBindingBuilder } from "../bindings/runtime.js"
 import { Registry, globalRegistry } from "../registry/registry.js"
+import { RegistryRegistrationDeniedError } from "../registry/errors.js"
 import type { RuntimeExecutor } from "../runtime/executor.js"
-import type { EnvironmentLifecycleHost } from "../runtime/context.js"
+import type { EnvironmentLifecycleHost, PolicyContext } from "../runtime/context.js"
+import { createUsageLedger } from "../runtime/context.js"
+import { evaluatePolicies } from "../runtime/policy-engine.js"
 import {
   manifestConfig,
   resolveBindingsForRun,
@@ -25,6 +29,8 @@ import type { EnvironmentConfigResolver } from "./config-resolver.js"
 import { buildDescriptor } from "./describe.js"
 import { searchCapabilities } from "./search.js"
 import { validateEnvironmentWithWorkflow } from "../validate/environment.js"
+import type { HookDefinition } from "../definitions/types.js"
+
 function resolveId(ref: NamespacedId | { id: NamespacedId } | string): NamespacedId {
   if (typeof ref === "string") return ref as NamespacedId
   if ("id" in ref) return ref.id
@@ -40,6 +46,11 @@ function emptyWorkflowStub(): WorkflowManifest {
   }
 }
 
+const REGISTRY_CHECK_STEP = {
+  id: "registry-check",
+  capabilityId: "registry.registerExtension",
+} as const
+
 /** Run options. @category Environment */
 export interface RunOptions {
   input?: Record<string, unknown>
@@ -53,6 +64,7 @@ export interface RunOptions {
  */
 export class Environment implements EnvironmentLifecycleHost {
   private resolved?: ResolvedBindings
+  private discoveryPrepared = false
   private readonly configResolvers: EnvironmentConfigResolver[] = []
 
   constructor(
@@ -94,6 +106,48 @@ export class Environment implements EnvironmentLifecycleHost {
 
   private invalidatePrepared(): void {
     this.resolved = undefined
+    this.discoveryPrepared = false
+  }
+
+  private collectPolicyHooks(
+    event: import("@ecp/types").PolicyLifecycleEvent
+  ): Array<{ hook: HookDefinition; config: Record<string, unknown> }> {
+    return this.policyBindings.flatMap((b) => {
+      const id = resolveId(b.getRef())
+      const def = this.registry.getPolicy(id)
+      if (!def) return []
+      return def.hooks
+        .filter((h) => h.event === event)
+        .map((hook) => ({ hook, config: b.getConfig() }))
+    })
+  }
+
+  /** Evaluate bound policies before registry accepts a registration. */
+  async evaluateRegistryRegistration(request: RegistryRegistrationRequest): Promise<void> {
+    await this.prepareForDiscovery()
+    const ctx: PolicyContext = {
+      workflow: emptyWorkflowStub(),
+      run: { id: this.envId, input: {} },
+      step: REGISTRY_CHECK_STEP,
+      state: {},
+      input: {},
+      usage: createUsageLedger(),
+      scope: "environment",
+      operation:
+        request.kind === "extension"
+          ? "registry.registerExtension"
+          : request.kind === "policy"
+            ? "registry.registerPolicy"
+            : "registry.registerRuntime",
+      registryRequest: request,
+    }
+    const decision = await evaluatePolicies("policy:pre", this.collectPolicyHooks("policy:pre"), ctx)
+    if (decision.type === "deny") {
+      throw new RegistryRegistrationDeniedError(
+        request.id,
+        decision.reason ?? "Registration denied by policy"
+      )
+    }
   }
 
   private async emitEnvironmentEvent(
@@ -124,8 +178,9 @@ export class Environment implements EnvironmentLifecycleHost {
     }
   }
 
-  private async prepare(): Promise<ResolvedBindings> {
-    if (this.resolved) return this.resolved
+  /** Discovery path: configuring only (no ready). */
+  private async prepareForDiscovery(): Promise<void> {
+    if (this.discoveryPrepared) return
 
     await this.emitEnvironmentEvent("environment:created")
 
@@ -134,8 +189,15 @@ export class Environment implements EnvironmentLifecycleHost {
     }
 
     await this.emitEnvironmentEvent("environment:configuring")
+    this.discoveryPrepared = true
+  }
 
-    const rtId = resolveId(this.runtimeBinding.getRef())
+  /** Run path: full binding resolution and ready. */
+  private async prepareForRun(): Promise<ResolvedBindings> {
+    await this.prepareForDiscovery()
+    if (this.resolved) return this.resolved
+
+    const rtId = resolveId(this.runtimeBinding!.getRef())
     const rtDef = this.registry.getRuntime(rtId)
     if (!rtDef) throw new Error(`Runtime ${rtId} is not registered`)
 
@@ -167,8 +229,8 @@ export class Environment implements EnvironmentLifecycleHost {
     this.resolved = await resolveBindingsForRun(
       {
         id: rtId,
-        label: this.runtimeBinding.getLabel(),
-        rawConfig: this.runtimeBinding.getConfig(),
+        label: this.runtimeBinding!.getLabel(),
+        rawConfig: this.runtimeBinding!.getConfig(),
       },
       extensionBindings,
       policyBindings,
@@ -183,14 +245,14 @@ export class Environment implements EnvironmentLifecycleHost {
 
   private resolveBindings(): ResolvedBindings {
     if (!this.resolved) {
-      throw new Error("Environment not prepared; call run(), validate(), or describe() first")
+      throw new Error("Environment not prepared for run; call run() or validate(workflow) first")
     }
     return this.resolved
   }
 
-  /** Prepare bindings and emit environment lifecycle events. */
+  /** Prepare bindings for execution and emit environment:ready. */
   async ensureReady(): Promise<void> {
-    await this.prepare()
+    await this.prepareForRun()
   }
 
   compile(): EnvironmentManifest {
@@ -226,25 +288,26 @@ export class Environment implements EnvironmentLifecycleHost {
   }
 
   async validate(workflow?: WorkflowManifest): Promise<ValidationResult> {
-    await this.prepare()
-    if (!workflow) {
-      return {
-        schema: "@ecp.validation.result",
-        version: LATEST_ECP_VERSION,
-        valid: true,
-        errors: [],
-        warnings: [],
-      }
+    if (workflow) {
+      await this.prepareForRun()
+      return validateEnvironmentWithWorkflow(
+        workflow,
+        await this.describe(),
+        this.resolveBindings()
+      )
     }
-    return validateEnvironmentWithWorkflow(
-      workflow,
-      await this.describe(),
-      this.resolveBindings()
-    )
+    await this.prepareForDiscovery()
+    return {
+      schema: "@ecp.validation.result",
+      version: LATEST_ECP_VERSION,
+      valid: true,
+      errors: [],
+      warnings: [],
+    }
   }
 
   async describe(query?: DescribeQuery): Promise<EnvironmentDescriptor> {
-    await this.prepare()
+    await this.prepareForDiscovery()
     return buildDescriptor(this.registry, this.compile(), query)
   }
 
@@ -263,8 +326,12 @@ export class Environment implements EnvironmentLifecycleHost {
   }
 
   async run(workflow: WorkflowManifest, options?: RunOptions): Promise<RunResult> {
-    await this.prepare()
-    const validation = await this.validate(workflow)
+    await this.prepareForRun()
+    const validation = await validateEnvironmentWithWorkflow(
+      workflow,
+      await this.describe(),
+      this.resolveBindings()
+    )
     if (!validation.valid) {
       throw new Error(
         `Workflow validation failed: ${validation.errors.map((e) => e.message).join("; ")}`
@@ -299,6 +366,6 @@ export class Environment implements EnvironmentLifecycleHost {
  * Create an ECP environment (no default runtime; bind with `.withRuntime(...)`).
  * @category Environment
  */
-export function environment(id: string, label?: string): Environment {
-  return new Environment(id, label, undefined, [], [], globalRegistry)
+export function environment(id: string, label?: string, registry: Registry = globalRegistry): Environment {
+  return new Environment(id, label, undefined, [], [], registry)
 }

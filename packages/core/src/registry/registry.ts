@@ -1,4 +1,4 @@
-import type { CapabilityId, NamespacedId } from "@ecp/types"
+import type { CapabilityId, NamespacedId, RegistryRegistrationRequest } from "@ecp/types"
 import type {
   CapabilityDefinition,
   ExtensionDefinition,
@@ -9,9 +9,8 @@ import { RegistryFrozenError } from "./errors.js"
 
 /** Guard invoked before registry registration. @category Runtime */
 export type RegistryRegistrationGuard = (
-  kind: "runtime" | "extension" | "policy",
-  id: string
-) => void
+  request: RegistryRegistrationRequest
+) => void | Promise<void>
 
 /**
  * Global definition registry.
@@ -47,22 +46,43 @@ export class Registry {
     return this.freezeReason
   }
 
-  private assertCanRegister(kind: "runtime" | "extension" | "policy", id: string): void {
+  private buildRequest(
+    kind: RegistryRegistrationRequest["kind"],
+    def: { id: string },
+    extra?: Partial<RegistryRegistrationRequest>
+  ): RegistryRegistrationRequest {
+    return {
+      kind,
+      id: def.id as NamespacedId,
+      definition: def,
+      ...extra,
+    }
+  }
+
+  private async assertCanRegister(request: RegistryRegistrationRequest): Promise<void> {
     if (this.frozen) {
       throw new RegistryFrozenError(this.freezeReason)
     }
-    this.guard?.(kind, id)
+    if (this.guard) {
+      await this.guard(request)
+    }
   }
 
   /** Register a runtime definition. */
-  registerRuntime(def: RuntimeDefinition): void {
-    this.assertCanRegister("runtime", def.id)
+  async registerRuntime(
+    def: RuntimeDefinition,
+    extra?: Partial<RegistryRegistrationRequest>
+  ): Promise<void> {
+    await this.assertCanRegister(this.buildRequest("runtime", def, extra))
     this.runtimes.set(def.id, def)
   }
 
   /** Register an extension and its capabilities. */
-  registerExtension(def: ExtensionDefinition): void {
-    this.assertCanRegister("extension", def.id)
+  async registerExtension(
+    def: ExtensionDefinition,
+    extra?: Partial<RegistryRegistrationRequest>
+  ): Promise<void> {
+    await this.assertCanRegister(this.buildRequest("extension", def, extra))
     this.extensions.set(def.id, def)
     for (const cap of def.capabilities) {
       this.capabilities.set(cap.id, cap)
@@ -70,8 +90,11 @@ export class Registry {
   }
 
   /** Register a policy definition. */
-  registerPolicy(def: PolicyDefinition): void {
-    this.assertCanRegister("policy", def.id)
+  async registerPolicy(
+    def: PolicyDefinition,
+    extra?: Partial<RegistryRegistrationRequest>
+  ): Promise<void> {
+    await this.assertCanRegister(this.buildRequest("policy", def, extra))
     this.policies.set(def.id, def)
   }
 

@@ -32,9 +32,9 @@ export const storageExtension = defineExtension("@ecp", "storage")
   .build()
 
 /** Register @ecp/storage. */
-export function registerStorageExtension(): void {
+export async function registerStorageExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/storage")) {
-    globalRegistry.registerExtension(storageExtension)
+    await globalRegistry.registerExtension(storageExtension)
   }
 }
 

@@ -12,9 +12,9 @@ export const telemetryExtension = defineExtension("@ecp", "telemetry")
   ])
   .build()
 
-export function registerTelemetryExtension(): void {
+export async function registerTelemetryExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/telemetry")) {
-    globalRegistry.registerExtension(telemetryExtension)
+    await globalRegistry.registerExtension(telemetryExtension)
   }
 }
 

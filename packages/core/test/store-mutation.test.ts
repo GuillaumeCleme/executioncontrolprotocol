@@ -9,14 +9,14 @@ import { registerStandardPolicies } from "@ecp/policies"
 import { createTransactionalStore, createMutationBuffer } from "../src/runtime/store.js"
 
 describe("store mutations", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     resetLifecycleSpy()
-    registerLifecycleSpyExtension()
-    registerStandardPolicies()
+    await registerLifecycleSpyExtension()
+    await registerStandardPolicies()
   })
 
   it("commits merge via state() handle after successful step", async () => {
-    const env = createTestEnvironment("store-test").withExtensions([
+    const env = (await createTestEnvironment("store-test")).withExtensions([
       extension("@ecp/lifecycle-spy", "Spy").with({}),
     ])
 
@@ -51,7 +51,7 @@ describe("store mutations", () => {
   })
 
   it("state-control policy denies disallowed mutable path", async () => {
-    const env = createTestEnvironment("store-policy")
+    const env = (await createTestEnvironment("store-policy"))
       .withExtensions([extension("@ecp/lifecycle-spy", "Spy").with({})])
       .withPolicies([
         policy("@ecp/state-control").with({

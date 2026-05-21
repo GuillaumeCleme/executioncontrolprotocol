@@ -1,8 +1,8 @@
 import { environment, extension } from "@ecp/node"
 import { registerTestExtension } from "@ecp/core"
 
-registerTestExtension()
+await registerTestExtension()
 
-export default environment("echo-dev", "Echo development").withExtensions([
+export default (await environment("echo-dev", "Echo development")).withExtensions([
   extension("@ecp/test", "Test").with({}),
 ])

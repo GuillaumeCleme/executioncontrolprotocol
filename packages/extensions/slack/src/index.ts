@@ -18,9 +18,9 @@ export const slackExtension = defineExtension("@ecp", "slack")
   ])
   .build()
 
-export function registerSlackExtension(): void {
+export async function registerSlackExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/slack")) {
-    globalRegistry.registerExtension(slackExtension)
+    await globalRegistry.registerExtension(slackExtension)
   }
 }
 

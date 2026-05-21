@@ -25,7 +25,12 @@ export {
   registerBrowserLocalConfigExtension,
 } from "./extensions/browser-local-config.js"
 
-export { registerBrowserDefaults, environment } from "./environment.js"
+export {
+  registerBrowserDefaults,
+  environment,
+  createBrowserDemoEnvironment,
+} from "./environment.js"
+export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
 
 export {
   workflow,
@@ -53,8 +58,4 @@ export {
   Environment,
   Registry,
   globalRegistry,
-  registerTestExtension,
-  compileWorkflowSource,
-  compileAndValidateWorkflowSource,
-  validateWorkflow,
 } from "@ecp/core"

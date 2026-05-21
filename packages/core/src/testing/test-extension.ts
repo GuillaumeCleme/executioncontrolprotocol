@@ -16,8 +16,10 @@ const testExtension = defineExtension("@ecp", "test")
   .build()
 
 /** Register @ecp/test.echo for examples and tests. */
-export function registerTestExtension(): void {
-  if (!globalRegistry.getExtension("@ecp/test")) {
-    globalRegistry.registerExtension(testExtension)
+export async function registerTestExtension(
+  registry = globalRegistry
+): Promise<void> {
+  if (!registry.getExtension("@ecp/test")) {
+    await registry.registerExtension(testExtension)
   }
 }

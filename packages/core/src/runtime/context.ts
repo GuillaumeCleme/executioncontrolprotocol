@@ -1,4 +1,9 @@
-import type { LifecycleEvent, WorkflowManifest } from "@ecp/types"
+import type {
+  LifecycleEvent,
+  PolicyEvaluationScope,
+  RegistryRegistrationRequest,
+  WorkflowManifest,
+} from "@ecp/types"
 import type { PendingMutation, StoreStateHandle } from "@ecp/types"
 import type { StoreContext } from "./store.js"
 
@@ -33,6 +38,8 @@ export interface EnvironmentLifecycleHost {
   registerConfigResolver(resolver: import("../environment/config-resolver.js").EnvironmentConfigResolver): void
   getRegistry(): import("../registry/registry.js").Registry
   addExtensionBinding?(ref: import("@ecp/types").NamespacedId, config?: Record<string, unknown>): void
+  /** Evaluate bound policies before accepting a registry registration. */
+  evaluateRegistryRegistration?(request: RegistryRegistrationRequest): Promise<void>
 }
 
 /** Lifecycle hook context. @category Runtime */
@@ -60,6 +67,12 @@ export interface PolicyContext {
   pendingMutations?: PendingMutation[]
   proposedState?: Record<string, unknown>
   usage: UsageLedger
+  /** Non-step policy scope (e.g. environment registry checks). */
+  scope?: PolicyEvaluationScope
+  /** Operation identifier for environment-scoped checks. */
+  operation?: string
+  /** Present when evaluating dynamic registry registration. */
+  registryRequest?: RegistryRegistrationRequest
 }
 
 /** Minimal logger. @category Runtime */

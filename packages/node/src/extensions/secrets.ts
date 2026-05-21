@@ -72,8 +72,8 @@ export const secretsExtension = defineExtension("@ecp", "secrets")
   .build()
 
 /** Register `@ecp/secrets`. */
-export function registerSecretsExtension(registry = globalRegistry): void {
+export async function registerSecretsExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
-    registry.registerExtension(secretsExtension)
+    await registry.registerExtension(secretsExtension)
   }
 }

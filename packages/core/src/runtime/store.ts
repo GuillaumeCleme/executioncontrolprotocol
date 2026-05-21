@@ -1,5 +1,8 @@
 import type { PendingMutation, StoreStateHandle } from "@ecp/types"
-import { randomUUID } from "node:crypto"
+
+function randomUUID(): string {
+  return globalThis.crypto.randomUUID()
+}
 
 export interface StoreReadOptions {
   includePending?: boolean

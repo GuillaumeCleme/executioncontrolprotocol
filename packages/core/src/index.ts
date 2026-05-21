@@ -25,7 +25,7 @@ export { parallel, branch, loop } from "./workflow/flow.js"
 export { environment, Environment, type RunOptions } from "./environment/environment.js"
 export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
 export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
-export { Registry, globalRegistry } from "./registry/registry.js"
+export { Registry, globalRegistry, type RegistryRegistrationGuard } from "./registry/registry.js"
 export {
   RegistryFrozenError,
   RegistryRegistrationDeniedError,
@@ -39,6 +39,7 @@ export type {
   LifecycleContext,
   EnvironmentLifecycleHost,
 } from "./runtime/context.js"
+export { createUsageLedger } from "./runtime/context.js"
 export { registerTestExtension } from "./testing/test-extension.js"
 
 export {

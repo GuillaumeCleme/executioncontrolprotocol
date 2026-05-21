@@ -57,7 +57,11 @@ export async function loadEnvironmentModule(path: string): Promise<Environment> 
   const mod = await loadBundledModule<Record<string, unknown>>(source, abs)
   const exp = mod.default ?? mod.environment
   if (!exp) throw new Error(`Environment module must export default or 'environment'`)
-  const value = typeof exp === "function" ? (exp as () => Environment)() : (exp as Environment)
+  const raw =
+    typeof exp === "function"
+      ? (exp as () => Environment | Promise<Environment>)()
+      : (exp as Environment | Promise<Environment>)
+  const value = await Promise.resolve(raw)
   if (!value || typeof value.run !== "function") {
     throw new Error("Environment export must be an Environment instance")
   }

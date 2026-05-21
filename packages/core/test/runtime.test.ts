@@ -4,7 +4,7 @@ import { createTestEnvironment } from "./helpers.js"
 
 describe("node runtime", () => {
   it("runs echo workflow", async () => {
-    const env = createTestEnvironment("test", "Test")
+    const env = await createTestEnvironment("test", "Test")
     const manifest = workflow("Echo run")
       .run([step("@ecp/test.echo", "Echo").with({ value: "hello" }).as("echo")])
       .toManifest()

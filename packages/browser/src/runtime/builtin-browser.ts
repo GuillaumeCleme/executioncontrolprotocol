@@ -16,8 +16,8 @@ export const browserRuntimeDefinition = defineRuntime("@ecp", "browser")
   .withExecutor(new BrowserRuntimeExecutor())
 
 /** Register `@ecp/browser` on the global registry. */
-export function registerBrowserRuntime(registry = globalRegistry): void {
+export async function registerBrowserRuntime(registry = globalRegistry): Promise<void> {
   if (!registry.getRuntime(BROWSER_RUNTIME_ID)) {
-    registry.registerRuntime(browserRuntimeDefinition)
+    await registry.registerRuntime(browserRuntimeDefinition)
   }
 }

@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest"
 import { workflow, step, extension, registerTestExtension } from "@ecp/core"
-import { environment } from "../src/index.js"
+import { createBrowserTestEnvironment } from "./helpers.js"
+import { registerRuntimeConformanceTests } from "../../core/test/runtime-conformance.js"
+
+registerRuntimeConformanceTests("@ecp/browser", () => createBrowserTestEnvironment("browser-conformance"))
 
 describe("@ecp/browser runtime", () => {
   it("runs echo workflow", async () => {
-    registerTestExtension()
-    const env = environment("browser-test").withExtensions([extension("@ecp/test").with({})])
+    await registerTestExtension()
+    const env = (await createBrowserTestEnvironment("browser-test")).withExtensions([
+      extension("@ecp/test").with({}),
+    ])
     const manifest = workflow("Browser Echo")
       .run([step("@ecp/test.echo", "Echo").with({ value: "hello browser" }).as("echo")])
       .toManifest()

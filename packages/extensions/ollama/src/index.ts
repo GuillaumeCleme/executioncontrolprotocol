@@ -82,9 +82,9 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
   .build()
 
 /** Register @ecp/ollama. */
-export function registerOllamaExtension(): void {
+export async function registerOllamaExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/ollama")) {
-    globalRegistry.registerExtension(ollamaExtension)
+    await globalRegistry.registerExtension(ollamaExtension)
   }
 }
 

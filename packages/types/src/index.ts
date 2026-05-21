@@ -53,3 +53,8 @@ export type {
 } from "./lifecycle.js"
 export type { PendingMutation, MutationRecord, StoreStateHandle } from "./store.js"
 export type { RunRequest, RunResult, StepRunRecord } from "./run.js"
+export type {
+  RegistryRegistrationRequest,
+  RegistryRegistrationSourceType,
+  PolicyEvaluationScope,
+} from "./registry.js"

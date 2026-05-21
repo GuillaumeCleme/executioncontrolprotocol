@@ -46,6 +46,9 @@ export async function evaluatePolicies(
       mutableStateHandles: ctx.mutableStateHandles,
       pendingMutations: ctx.pendingMutations,
       proposedState: ctx.proposedState,
+      scope: ctx.scope,
+      operation: ctx.operation,
+      registryRequest: ctx.registryRequest,
       config,
     } as import("./context.js").LifecycleContext & { config: Record<string, unknown> })
     if (result && typeof result === "object" && "type" in result) {

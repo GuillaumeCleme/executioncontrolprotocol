@@ -3,19 +3,19 @@ import { Registry, RegistryFrozenError } from "../src/registry/registry.js"
 import { defineExtension } from "../src/definitions/extension.js"
 
 describe("Registry freeze", () => {
-  it("prevents registration after freeze", () => {
+  it("prevents registration after freeze", async () => {
     const reg = new Registry()
     const ext = defineExtension("@ecp", "demo").withConfig({}).build()
     reg.freeze("test")
-    expect(() => reg.registerExtension(ext)).toThrow(RegistryFrozenError)
+    await expect(reg.registerExtension(ext)).rejects.toThrow(RegistryFrozenError)
   })
 
-  it("runs registration guard before freeze check", () => {
+  it("runs registration guard before freeze check", async () => {
     const reg = new Registry()
-    reg.setRegistrationGuard((_k, id) => {
-      if (id === "@ecp/blocked") throw new Error("denied")
+    reg.setRegistrationGuard((request) => {
+      if (request.id === "@ecp/blocked") throw new Error("denied")
     })
     const ext = defineExtension("@ecp", "blocked").withConfig({}).build()
-    expect(() => reg.registerExtension(ext)).toThrow("denied")
+    await expect(reg.registerExtension(ext)).rejects.toThrow("denied")
   })
 })

@@ -22,15 +22,18 @@ const spyExt = defineExtension("@ecp", "env-spy")
     hook("environment:beforeRun", async (ctx) => {
       events.push(ctx.event)
     }),
+    hook("environment:shutdown", async (ctx) => {
+      events.push(ctx.event)
+    }),
   ])
   .build()
 
 describe("environment lifecycle", () => {
-  it("emits created, configuring, ready, and beforeRun", async () => {
+  it("emits discovery events on describe and run events on run", async () => {
     events.length = 0
-    registerNodeRuntime()
+    await registerNodeRuntime()
     if (!globalRegistry.getExtension("@ecp/env-spy")) {
-      globalRegistry.registerExtension(spyExt)
+      await globalRegistry.registerExtension(spyExt)
     }
     const env = environment("evt")
       .withRuntime(runtime(NODE_RUNTIME_ID))
@@ -39,7 +42,7 @@ describe("environment lifecycle", () => {
     await env.describe()
     expect(events).toContain("environment:created")
     expect(events).toContain("environment:configuring")
-    expect(events).toContain("environment:ready")
+    expect(events).not.toContain("environment:ready")
 
     events.length = 0
     await env.run({
@@ -48,6 +51,11 @@ describe("environment lifecycle", () => {
       workflow: { id: "empty" },
       steps: [],
     })
+    expect(events).toContain("environment:ready")
     expect(events).toContain("environment:beforeRun")
+
+    events.length = 0
+    await env.dispose()
+    expect(events).toContain("environment:shutdown")
   })
 })

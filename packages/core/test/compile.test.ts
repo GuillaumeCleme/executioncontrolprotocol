@@ -12,7 +12,7 @@ export default workflow("Compiled")
 
 describe("compileWorkflowSource", () => {
   it("compiles TypeScript workflow source", async () => {
-    registerTestExtension()
+    await registerTestExtension()
     const result = await compileWorkflowSource({
       source: SAMPLE_TS,
       filename: "workflow.ts",
@@ -23,7 +23,7 @@ describe("compileWorkflowSource", () => {
   })
 
   it("validates against environment descriptor", async () => {
-    const env = createTestEnvironment("t").withExtensions([extension("@ecp/test").with({})])
+    const env = (await createTestEnvironment("t")).withExtensions([extension("@ecp/test").with({})])
     const descriptor = await env.describe()
     const result = await compileAndValidateWorkflowSource({
       source: SAMPLE_TS,
