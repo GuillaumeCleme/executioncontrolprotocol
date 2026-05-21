@@ -114,7 +114,7 @@ export async function buildDescriptor(
     query?.policies?.limit
   )
 
-  const runtimeId = String(manifest.runtime?.id ?? "@ecp/local")
+  const runtimeId = String(manifest.runtime?.id ?? "@ecp/node")
   const runtimeLabel = manifest.runtime?.label
   const runtimeText = `${runtimeId} ${runtimeLabel ?? ""}`
   const includeRuntime =

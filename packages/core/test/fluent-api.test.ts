@@ -21,7 +21,7 @@ import {
   hook,
   WorkflowBuilder,
 } from "../src/index.js"
-import { LOCAL_RUNTIME_ID, localRuntimeDefinition } from "../src/runtime/builtin-local.js"
+import { NODE_RUNTIME_ID, nodeRuntimeDefinition } from "@ecp/node"
 
 describe("fluent API surface", () => {
   it("workflow builder chains", () => {
@@ -52,7 +52,7 @@ describe("fluent API surface", () => {
     expect(typeof e.with).toBe("function")
     expect(e.getConfig()).toEqual({ a: 1 })
 
-    const r = runtime(LOCAL_RUNTIME_ID, "R").with({})
+    const r = runtime(NODE_RUNTIME_ID, "R").with({})
     expect(typeof r.with).toBe("function")
 
     const p = policy("@ecp/budget", "P").with({ maxModelCalls: 1 })
@@ -104,8 +104,8 @@ describe("fluent API surface", () => {
   })
 
   it("runtime definition uses withExecutor terminator", () => {
-    expect(localRuntimeDefinition.executor).toBeDefined()
-    expect(defineRuntime("@ecp", "x").withConfig({}).withExecutor(localRuntimeDefinition.executor).id).toBe(
+    expect(nodeRuntimeDefinition.executor).toBeDefined()
+    expect(defineRuntime("@ecp", "x").withConfig({}).withExecutor(nodeRuntimeDefinition.executor).id).toBe(
       "@ecp/x"
     )
   })

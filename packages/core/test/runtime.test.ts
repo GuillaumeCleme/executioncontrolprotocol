@@ -1,15 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { environment, extension, workflow, step, runtime } from "../src/index.js"
-import { registerTestExtension } from "../src/testing/test-extension.js"
-import { LOCAL_RUNTIME_ID } from "../src/runtime/builtin-local.js"
+import { workflow, step } from "../src/index.js"
+import { createTestEnvironment } from "./helpers.js"
 
-describe("local runtime", () => {
+describe("node runtime", () => {
   it("runs echo workflow", async () => {
-    registerTestExtension()
-    const env = environment("test", "Test")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
-      .withExtensions([extension("@ecp/test", "Test Ext").with({})])
-
+    const env = createTestEnvironment("test", "Test")
     const manifest = workflow("Echo run")
       .run([step("@ecp/test.echo", "Echo").with({ value: "hello" }).as("echo")])
       .toManifest()

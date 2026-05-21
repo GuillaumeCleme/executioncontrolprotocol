@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ecp/core": "1.0.0",
+    "@ecp/node": "1.0.0",
     "@ecp/types": "1.0.0",
     "@oclif/core": "^4.10.0"
   },

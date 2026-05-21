@@ -5,8 +5,10 @@
 | Path | Purpose |
 | ---- | ------- |
 | `packages/types/` | Protocol types (`@ecp/types`) |
-| `packages/core/` | Fluent API, environment, local runtime (`@ecp/core`) |
-| `packages/core/src/browser.ts` | Browser authoring: compile + validate + builders |
+| `packages/core/` | Fluent API, environment, in-memory engine (`@ecp/core`) |
+| `packages/node/` | Node runtime (`@ecp/node`), process-env, secrets |
+| `packages/browser/` | Browser runtime (`@ecp/browser`), registry, session config |
+| `packages/core/src/browser.ts` | Browser authoring subset: compile + validate + builders |
 | `packages/mcp/` | MCP adapter (`@ecp/mcp`) |
 | `packages/cli/` | `ecp` CLI (`@ecp/cli`) |
 | `packages/policies/` | Budget, approval, state-control (`@ecp/policies`) |
@@ -43,25 +45,20 @@ Local dev: `npm start -w @ecp/cli` (runs `bin/dev.js` after build).
 
 ```ts
 import { workflow, step, ref, environment, extension, runtime } from "@ecp/core"
-import { registerTestExtension } from "@ecp/core"
-import { LOCAL_RUNTIME_ID } from "@ecp/core"
+import { workflow, step, environment, extension } from "@ecp/node"
 
-registerTestExtension()
 const manifest = workflow("My flow")
   .run([step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("echo")])
   .toManifest()
 
-const env = environment("dev")
-  .withRuntime(runtime(LOCAL_RUNTIME_ID))
-  .withExtensions([extension("@ecp/test").with({})])
-
+const env = environment("dev").withExtensions([extension("@ecp/test").with({})])
 await env.run(manifest)
 ```
 
 ### Browser
 
 ```ts
-import { compileAndValidateWorkflowSource, workflow, step } from "@ecp/core/browser"
+import { compileAndValidateWorkflowSource, workflow, step, environment } from "@ecp/browser"
 ```
 
 Build order: `tsc -b tsconfig.build.json` (types → core → … → cli).

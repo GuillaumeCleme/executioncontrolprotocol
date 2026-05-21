@@ -3,6 +3,8 @@
   "references": [
     { "path": "packages/types" },
     { "path": "packages/core" },
+    { "path": "packages/node" },
+    { "path": "packages/browser" },
     { "path": "packages/policies" },
     { "path": "packages/mcp" },
     { "path": "packages/extensions/memory" },

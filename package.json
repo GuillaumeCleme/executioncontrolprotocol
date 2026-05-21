@@ -9,6 +9,8 @@
   "workspaces": [
     "packages/types",
     "packages/core",
+    "packages/node",
+    "packages/browser",
     "packages/mcp",
     "packages/cli",
     "packages/policies",

@@ -28,6 +28,13 @@ export interface CapabilityContext {
   }
 }
 
+/** Host surface exposed on environment lifecycle hooks. @category Environment */
+export interface EnvironmentLifecycleHost {
+  registerConfigResolver(resolver: import("../environment/config-resolver.js").EnvironmentConfigResolver): void
+  getRegistry(): import("../registry/registry.js").Registry
+  addExtensionBinding?(ref: import("@ecp/types").NamespacedId, config?: Record<string, unknown>): void
+}
+
 /** Lifecycle hook context. @category Runtime */
 export interface LifecycleContext {
   event: LifecycleEvent
@@ -37,6 +44,8 @@ export interface LifecycleContext {
   state: Record<string, unknown>
   /** Step capability output when available (e.g. `step:completed`). */
   output?: unknown
+  /** Present on `environment:*` events. */
+  environment?: EnvironmentLifecycleHost
 }
 
 /** Policy evaluation context. @category Policies */

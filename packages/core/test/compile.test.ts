@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { compileWorkflowSource, compileAndValidateWorkflowSource } from "../src/compile/index.js"
 import { registerTestExtension } from "../src/testing/test-extension.js"
-import { environment, extension, runtime, LOCAL_RUNTIME_ID } from "../src/index.js"
+import { extension } from "../src/index.js"
+import { createTestEnvironment } from "./helpers.js"
 
 const SAMPLE_TS = `
 import { workflow, step } from "@ecp/core"
@@ -22,10 +23,7 @@ describe("compileWorkflowSource", () => {
   })
 
   it("validates against environment descriptor", async () => {
-    registerTestExtension()
-    const env = environment("t")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
-      .withExtensions([extension("@ecp/test").with({})])
+    const env = createTestEnvironment("t").withExtensions([extension("@ecp/test").with({})])
     const descriptor = await env.describe()
     const result = await compileAndValidateWorkflowSource({
       source: SAMPLE_TS,

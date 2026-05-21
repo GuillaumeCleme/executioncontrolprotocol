@@ -1,16 +1,14 @@
 import { describe, expect, it, beforeEach } from "vitest"
 import {
-  environment,
   extension,
   workflow,
   step,
-  runtime,
   policy,
   definePolicy,
   hook,
   globalRegistry,
 } from "../src/index.js"
-import { LOCAL_RUNTIME_ID } from "../src/runtime/builtin-local.js"
+import { createTestEnvironment } from "./helpers.js"
 import {
   registerLifecycleSpyExtension,
   resetLifecycleSpy,
@@ -20,8 +18,7 @@ import {
 import { registerStandardPolicies } from "@ecp/policies"
 
 function testEnv(extraPolicies: ReturnType<typeof policy>[] = []) {
-  return environment("lifecycle-test")
-    .withRuntime(runtime(LOCAL_RUNTIME_ID))
+  return createTestEnvironment("lifecycle-test")
     .withExtensions([extension("@ecp/lifecycle-spy", "Spy").with({})])
     .withPolicies(extraPolicies)
 }

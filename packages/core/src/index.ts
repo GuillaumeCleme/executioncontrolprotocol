@@ -8,6 +8,13 @@ export { expr } from "./helpers/expr.js"
 
 export * from "./config-schema/index.js"
 export * from "./definitions/index.js"
+export type {
+  ExtensionDefinition,
+  RuntimeDefinition,
+  PolicyDefinition,
+  CapabilityDefinition,
+  HookDefinition,
+} from "./definitions/types.js"
 export { step } from "./bindings/step.js"
 export { runtime } from "./bindings/runtime.js"
 export { extension } from "./bindings/extension.js"
@@ -16,9 +23,22 @@ export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 
 export { environment, Environment, type RunOptions } from "./environment/environment.js"
+export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
+export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
 export { Registry, globalRegistry } from "./registry/registry.js"
-export { registerLocalRuntime, localRuntimeDefinition, LOCAL_RUNTIME_ID } from "./runtime/builtin-local.js"
-export type { PolicyContext, CapabilityContext, LifecycleContext } from "./runtime/context.js"
+export {
+  RegistryFrozenError,
+  RegistryRegistrationDeniedError,
+} from "./registry/errors.js"
+export { matchesNamespace, matchesAnyNamespace } from "./registry/namespace.js"
+export { InMemoryRuntimeExecutor } from "./runtime/in-memory-executor.js"
+export type { RuntimeExecutor, RuntimeExecutionContext } from "./runtime/executor.js"
+export type {
+  PolicyContext,
+  CapabilityContext,
+  LifecycleContext,
+  EnvironmentLifecycleHost,
+} from "./runtime/context.js"
 export { registerTestExtension } from "./testing/test-extension.js"
 
 export {

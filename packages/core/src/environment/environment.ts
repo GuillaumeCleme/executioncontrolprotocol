@@ -10,36 +10,50 @@ import type {
   WorkflowManifest,
 } from "@ecp/types"
 import type { NamespacedId } from "@ecp/types"
-import type { ExtensionBindingBuilder } from "../bindings/extension.js"
+import { extension, type ExtensionBindingBuilder } from "../bindings/extension.js"
 import type { PolicyBindingBuilder } from "../bindings/policy.js"
-import { runtime } from "../bindings/runtime.js"
 import type { RuntimeBindingBuilder } from "../bindings/runtime.js"
 import { Registry, globalRegistry } from "../registry/registry.js"
-import { LOCAL_RUNTIME_ID, registerLocalRuntime } from "../runtime/builtin-local.js"
 import type { RuntimeExecutor } from "../runtime/executor.js"
-import { resolveEnvConfig, type ResolvedBindings } from "./bindings.js"
+import type { EnvironmentLifecycleHost } from "../runtime/context.js"
+import {
+  manifestConfig,
+  resolveBindingsForRun,
+  type ResolvedBindings,
+} from "./bindings.js"
+import type { EnvironmentConfigResolver } from "./config-resolver.js"
 import { buildDescriptor } from "./describe.js"
 import { searchCapabilities } from "./search.js"
 import { validateEnvironmentWithWorkflow } from "../validate/environment.js"
-
 function resolveId(ref: NamespacedId | { id: NamespacedId } | string): NamespacedId {
   if (typeof ref === "string") return ref as NamespacedId
   if ("id" in ref) return ref.id
   return ref as NamespacedId
 }
 
+function emptyWorkflowStub(): WorkflowManifest {
+  return {
+    schema: "@ecp.workflow",
+    version: LATEST_ECP_VERSION,
+    workflow: { id: "environment-stub" },
+    steps: [],
+  }
+}
+
 /** Run options. @category Environment */
 export interface RunOptions {
   input?: Record<string, unknown>
   dryRun?: boolean
+  signal?: AbortSignal
 }
 
 /**
  * Configured ECP environment.
  * @category Environment
  */
-export class Environment {
+export class Environment implements EnvironmentLifecycleHost {
   private resolved?: ResolvedBindings
+  private readonly configResolvers: EnvironmentConfigResolver[] = []
 
   constructor(
     private readonly envId: string,
@@ -48,74 +62,142 @@ export class Environment {
     private extensionBindings: ExtensionBindingBuilder[] = [],
     private policyBindings: PolicyBindingBuilder[] = [],
     private readonly registry: Registry = globalRegistry
-  ) {
-    registerLocalRuntime()
+  ) {}
+
+  registerConfigResolver(resolver: EnvironmentConfigResolver): void {
+    this.configResolvers.push(resolver)
   }
 
   withRuntime(binding: RuntimeBindingBuilder): this {
     this.runtimeBinding = binding
+    this.invalidatePrepared()
     return this
   }
 
   withExtensions(bindings: ExtensionBindingBuilder[]): this {
     this.extensionBindings = bindings
+    this.invalidatePrepared()
     return this
   }
 
   withPolicies(bindings: PolicyBindingBuilder[]): this {
     this.policyBindings = bindings
+    this.invalidatePrepared()
     return this
   }
 
-  private resolveBindings(): ResolvedBindings {
+  /** Dynamically add an extension binding (e.g. browser registry auto-bind). */
+  addExtensionBinding(ref: NamespacedId, config: Record<string, unknown> = {}): void {
+    this.extensionBindings.push(extension(ref).with(config))
+    this.invalidatePrepared()
+  }
+
+  private invalidatePrepared(): void {
+    this.resolved = undefined
+  }
+
+  private async emitEnvironmentEvent(
+    event: import("@ecp/types").EnvironmentLifecycleEvent
+  ): Promise<void> {
+    const base = {
+      event,
+      workflow: emptyWorkflowStub(),
+      run: { id: this.envId, input: {} },
+      state: {},
+      environment: this,
+    }
+    for (const binding of this.extensionBindings) {
+      const id = resolveId(binding.getRef())
+      const def = this.registry.getExtension(id)
+      if (!def) continue
+      const hooks = [...def.hooks]
+        .filter((h) => h.event === event)
+        .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
+      for (const h of hooks) {
+        await h.handler({
+          ...base,
+          extensionConfig: binding.getConfig(),
+        } as import("../runtime/context.js").LifecycleContext & {
+          extensionConfig?: Record<string, unknown>
+        })
+      }
+    }
+  }
+
+  private async prepare(): Promise<ResolvedBindings> {
     if (this.resolved) return this.resolved
 
-    const rtRef = this.runtimeBinding?.getRef() ?? LOCAL_RUNTIME_ID
-    const rtId = resolveId(rtRef)
+    await this.emitEnvironmentEvent("environment:created")
+
+    if (!this.runtimeBinding) {
+      throw new Error("Environment requires a runtime binding (.withRuntime(...))")
+    }
+
+    await this.emitEnvironmentEvent("environment:configuring")
+
+    const rtId = resolveId(this.runtimeBinding.getRef())
     const rtDef = this.registry.getRuntime(rtId)
     if (!rtDef) throw new Error(`Runtime ${rtId} is not registered`)
 
-    const extensions = this.extensionBindings.map((b, i) => ({
+    const extensionBindings = this.extensionBindings.map((b, i) => ({
       id: resolveId(b.getRef()),
       label: b.getLabel(),
       order: i,
-      config: resolveEnvConfig(b.getConfig()),
+      rawConfig: b.getConfig(),
     }))
 
-    const policies = this.policyBindings.map((b, i) => ({
+    const policyBindings = this.policyBindings.map((b, i) => ({
       id: resolveId(b.getRef()),
       label: b.getLabel(),
       order: i,
-      config: resolveEnvConfig(b.getConfig()),
+      rawConfig: b.getConfig(),
     }))
 
-    const extensionHooks = extensions.flatMap((ext) => {
+    const extensionHooks = extensionBindings.flatMap((ext) => {
       const def = this.registry.getExtension(ext.id)
       return def?.hooks ?? []
     })
 
-    const policyHooks = policies.flatMap((pol) => {
+    const policyHooks = policyBindings.flatMap((pol) => {
       const def = this.registry.getPolicy(pol.id)
       if (!def) return []
-      return def.hooks.map((hook) => ({ hook, config: pol.config }))
+      return def.hooks.map((hook) => ({ hook, config: pol.rawConfig }))
     })
 
-    this.resolved = {
-      runtime: {
+    this.resolved = await resolveBindingsForRun(
+      {
         id: rtId,
-        label: this.runtimeBinding?.getLabel(),
-        config: resolveEnvConfig(this.runtimeBinding?.getConfig() ?? {}),
+        label: this.runtimeBinding.getLabel(),
+        rawConfig: this.runtimeBinding.getConfig(),
       },
-      extensions,
-      policies,
+      extensionBindings,
+      policyBindings,
       extensionHooks,
       policyHooks,
+      this.configResolvers
+    )
+
+    await this.emitEnvironmentEvent("environment:ready")
+    return this.resolved
+  }
+
+  private resolveBindings(): ResolvedBindings {
+    if (!this.resolved) {
+      throw new Error("Environment not prepared; call run(), validate(), or describe() first")
     }
     return this.resolved
   }
 
+  /** Prepare bindings and emit environment lifecycle events. */
+  async ensureReady(): Promise<void> {
+    await this.prepare()
+  }
+
   compile(): EnvironmentManifest {
-    const bindings = this.resolveBindings()
+    if (!this.runtimeBinding) {
+      throw new Error("Environment requires a runtime binding (.withRuntime(...))")
+    }
+    const rtId = resolveId(this.runtimeBinding.getRef())
     return {
       schema: "@ecp.environment",
       version: LATEST_ECP_VERSION,
@@ -124,26 +206,27 @@ export class Environment {
         ...(this.envLabel ? { label: this.envLabel } : {}),
       },
       runtime: {
-        id: bindings.runtime.id,
-        ...(bindings.runtime.label ? { label: bindings.runtime.label } : {}),
-        config: bindings.runtime.config,
+        id: rtId,
+        ...(this.runtimeBinding.getLabel() ? { label: this.runtimeBinding.getLabel() } : {}),
+        config: manifestConfig(this.runtimeBinding.getConfig()),
       },
-      extensions: bindings.extensions.map((e) => ({
-        id: e.id,
-        ...(e.label ? { label: e.label } : {}),
-        order: e.order,
-        config: e.config,
+      extensions: this.extensionBindings.map((b, i) => ({
+        id: resolveId(b.getRef()),
+        ...(b.getLabel() ? { label: b.getLabel() } : {}),
+        order: i,
+        config: manifestConfig(b.getConfig()),
       })),
-      policies: bindings.policies.map((p) => ({
-        id: p.id,
-        ...(p.label ? { label: p.label } : {}),
-        order: p.order,
-        config: p.config,
+      policies: this.policyBindings.map((b, i) => ({
+        id: resolveId(b.getRef()),
+        ...(b.getLabel() ? { label: b.getLabel() } : {}),
+        order: i,
+        config: manifestConfig(b.getConfig()),
       })),
     }
   }
 
   async validate(workflow?: WorkflowManifest): Promise<ValidationResult> {
+    await this.prepare()
     if (!workflow) {
       return {
         schema: "@ecp.validation.result",
@@ -161,10 +244,10 @@ export class Environment {
   }
 
   async describe(query?: DescribeQuery): Promise<EnvironmentDescriptor> {
+    await this.prepare()
     return buildDescriptor(this.registry, this.compile(), query)
   }
 
-  /** Registry used by this environment. */
   getRegistry(): Registry {
     return this.registry
   }
@@ -174,10 +257,13 @@ export class Environment {
     return searchCapabilities(query, descriptor, options)
   }
 
-  async run(
-    workflow: WorkflowManifest,
-    options?: RunOptions
-  ): Promise<RunResult> {
+  async dispose(): Promise<void> {
+    await this.emitEnvironmentEvent("environment:shutdown")
+    this.invalidatePrepared()
+  }
+
+  async run(workflow: WorkflowManifest, options?: RunOptions): Promise<RunResult> {
+    await this.prepare()
     const validation = await this.validate(workflow)
     if (!validation.valid) {
       throw new Error(
@@ -193,27 +279,26 @@ export class Environment {
       }
     }
 
+    await this.emitEnvironmentEvent("environment:beforeRun")
+
     const bindings = this.resolveBindings()
-    const rtId = bindings.runtime.id
-    const rtDef = this.registry.getRuntime(rtId)!
+    const rtDef = this.registry.getRuntime(bindings.runtime.id)!
     const executor: RuntimeExecutor = rtDef.executor
 
     return executor.execute(workflow, {
-      runId: crypto.randomUUID(),
+      runId: globalThis.crypto.randomUUID(),
       input: options?.input ?? {},
       registry: this.registry,
       bindings,
+      signal: options?.signal,
     })
   }
 }
 
 /**
- * Create an ECP environment.
+ * Create an ECP environment (no default runtime; bind with `.withRuntime(...)`).
  * @category Environment
  */
 export function environment(id: string, label?: string): Environment {
-  registerLocalRuntime()
-  return new Environment(id, label, undefined, [], [], globalRegistry).withRuntime(
-    runtime(LOCAL_RUNTIME_ID, "Local Runtime")
-  )
+  return new Environment(id, label, undefined, [], [], globalRegistry)
 }

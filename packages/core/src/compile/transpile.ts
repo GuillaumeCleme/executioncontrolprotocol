@@ -1,3 +1,6 @@
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
+
 /** Whether filename indicates TypeScript. */
 export function isTypeScriptFile(filename: string): boolean {
   return /\.tsx?$/i.test(filename)
@@ -53,6 +56,7 @@ export async function bundleWorkflowSource(
   }
 
   const esbuild = await import("esbuild")
+  const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..")
   const loader = filename.endsWith(".tsx")
     ? "tsx"
     : filename.endsWith(".ts")
@@ -71,6 +75,13 @@ export async function bundleWorkflowSource(
     target: "node22",
     write: false,
     packages: "bundle",
+    alias: {
+      "@ecp/core": join(repoRoot, "packages/core/dist/index.js"),
+      "@ecp/node": join(repoRoot, "packages/node/dist/index.js"),
+      "@ecp/browser": join(repoRoot, "packages/browser/dist/index.js"),
+      "@ecp/types": join(repoRoot, "packages/types/dist/index.js"),
+      "@ecp/policies": join(repoRoot, "packages/policies/dist/index.js"),
+    },
   })
   const file = result.outputFiles[0]
   if (!file) throw new Error("esbuild produced no output")

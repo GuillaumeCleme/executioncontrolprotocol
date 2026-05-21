@@ -1,5 +1,4 @@
-import { environment, extension, runtime, env } from "@ecp/core"
-import { LOCAL_RUNTIME_ID } from "@ecp/core"
+import { environment, extension, env } from "@ecp/node"
 import { registerMemoryExtension } from "@ecp/extension-memory"
 import { registerOpenaiExtension } from "@ecp/extension-openai"
 import { registerSlackExtension } from "@ecp/extension-slack"
@@ -9,14 +8,13 @@ registerOpenaiExtension()
 registerSlackExtension()
 
 export default environment("weekly-brief", "Weekly brief")
-  .withRuntime(runtime(LOCAL_RUNTIME_ID))
   .withExtensions([
     extension("@ecp/memory", "Memory").with({
       hydrateModels: true,
       collections: ["leadership"],
     }),
     extension("@ecp/openai", "OpenAI").with({
-      apiKey: env("OPENAI_API_KEY"),
+      apiKey: env("OPENAI_API_KEY", { optional: true }),
       defaultModel: "gpt-4o-mini",
     }),
     extension("@ecp/slack", "Slack").with({

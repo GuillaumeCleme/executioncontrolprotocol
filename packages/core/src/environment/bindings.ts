@@ -1,5 +1,10 @@
-import type { EnvValue, NamespacedId } from "@ecp/types"
+import type { NamespacedId } from "@ecp/types"
 import type { HookDefinition } from "../definitions/types.js"
+import {
+  cloneConfigForManifest,
+  resolveEnvConfigAsync,
+  type EnvironmentConfigResolver,
+} from "./config-resolver.js"
 
 /** Resolved runtime binding. */
 export interface ResolvedRuntimeBinding {
@@ -33,32 +38,62 @@ export interface ResolvedBindings {
   policyHooks: Array<{ hook: HookDefinition; config: Record<string, unknown> }>
 }
 
-/** Resolve $env in config at environment bind time. */
-export function resolveEnvConfig(
-  config: Record<string, unknown>
-): Record<string, unknown> {
-  const out: Record<string, unknown> = {}
-  for (const [k, v] of Object.entries(config)) {
-    out[k] = resolveEnvValue(v)
-  }
-  return out
+/** Unresolved config for environment manifests (keeps `$env` placeholders). */
+export function manifestConfig(config: Record<string, unknown>): Record<string, unknown> {
+  return cloneConfigForManifest(config)
 }
 
-function resolveEnvValue(v: unknown): unknown {
-  if (v !== null && typeof v === "object" && "$env" in v) {
-    const e = v as EnvValue
-    const val = process.env[e.$env]
-    if (val === undefined) {
-      if (e.optional) return e.fallback
-      throw new Error(`Environment variable ${e.$env} is not set`)
-    }
-    return val
+/** Resolve bindings for execution using the config resolver chain. */
+export async function resolveBindingsForRun(
+  runtimeBinding: {
+    id: NamespacedId
+    label?: string
+    rawConfig: Record<string, unknown>
+  },
+  extensionBindings: Array<{
+    id: NamespacedId
+    label?: string
+    order: number
+    rawConfig: Record<string, unknown>
+  }>,
+  policyBindings: Array<{
+    id: NamespacedId
+    label?: string
+    order: number
+    rawConfig: Record<string, unknown>
+  }>,
+  extensionHooks: HookDefinition[],
+  policyHooks: Array<{ hook: HookDefinition; config: Record<string, unknown> }>,
+  resolvers: EnvironmentConfigResolver[]
+): Promise<ResolvedBindings> {
+  return {
+    runtime: {
+      id: runtimeBinding.id,
+      label: runtimeBinding.label,
+      config: await resolveEnvConfigAsync(runtimeBinding.rawConfig, resolvers),
+    },
+    extensions: await Promise.all(
+      extensionBindings.map(async (b) => ({
+        id: b.id,
+        label: b.label,
+        order: b.order,
+        config: await resolveEnvConfigAsync(b.rawConfig, resolvers),
+      }))
+    ),
+    policies: await Promise.all(
+      policyBindings.map(async (b) => ({
+        id: b.id,
+        label: b.label,
+        order: b.order,
+        config: await resolveEnvConfigAsync(b.rawConfig, resolvers),
+      }))
+    ),
+    extensionHooks,
+    policyHooks: await Promise.all(
+      policyHooks.map(async (p) => ({
+        hook: p.hook,
+        config: await resolveEnvConfigAsync(p.config, resolvers),
+      }))
+    ),
   }
-  if (Array.isArray(v)) return v.map(resolveEnvValue)
-  if (v !== null && typeof v === "object") {
-    const o: Record<string, unknown> = {}
-    for (const [k, c] of Object.entries(v)) o[k] = resolveEnvValue(c)
-    return o
-  }
-  return v
 }

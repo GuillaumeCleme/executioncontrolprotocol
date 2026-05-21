@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { compileWorkflowSource } from "../src/compile/index.js"
-import { environment, extension, runtime, LOCAL_RUNTIME_ID } from "../src/index.js"
+import { extension } from "../src/index.js"
+import { environment } from "@ecp/node"
 import { registerMemoryExtension } from "@ecp/extension-memory"
 import { registerOpenaiExtension } from "@ecp/extension-openai"
 import { registerSlackExtension } from "@ecp/extension-slack"
@@ -26,9 +27,7 @@ describe("examples/02-weekly-brief", () => {
     registerOpenaiExtension()
     registerSlackExtension()
 
-    const env = environment("weekly-brief", "Weekly brief")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
-      .withExtensions([
+    const env = environment("weekly-brief", "Weekly brief").withExtensions([
         extension("@ecp/memory", "Memory").with({ hydrateModels: true, collections: ["leadership"] }),
         extension("@ecp/openai", "OpenAI").with({ defaultModel: "gpt-4o-mini" }),
         extension("@ecp/slack", "Slack").with({}),

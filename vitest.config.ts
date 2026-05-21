@@ -10,6 +10,8 @@ export default defineConfig({
       "@ecp/types": path.resolve(repoRoot, "packages/types/src/index.ts"),
       "@ecp/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
       "@ecp/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
+      "@ecp/node": path.resolve(repoRoot, "packages/node/src/index.ts"),
+      "@ecp/browser": path.resolve(repoRoot, "packages/browser/src/index.ts"),
       "@ecp/extension-memory": path.resolve(
         repoRoot,
         "packages/extensions/memory/src/index.ts"
@@ -40,6 +42,8 @@ export default defineConfig({
             "packages/cli/test/**/*.test.ts",
             "packages/mcp/**/*.test.ts",
             "packages/extensions/**/*.test.ts",
+            "packages/node/**/*.test.ts",
+            "packages/browser/**/*.test.ts",
           ],
         },
       },

@@ -7,7 +7,6 @@ import type {
   WorkflowManifest,
   WorkflowNode,
 } from "@ecp/types"
-import { randomUUID } from "node:crypto"
 import type { RuntimeExecutor, RuntimeExecutionContext } from "./executor.js"
 import {
   createConsoleLogger,
@@ -27,6 +26,16 @@ import {
 } from "./store.js"
 import { commitTransaction } from "./commit.js"
 
+function newRunId(): string {
+  return globalThis.crypto.randomUUID()
+}
+
+function throwIfAborted(signal?: AbortSignal): void {
+  if (signal?.aborted) {
+    throw new DOMException("Run aborted", "AbortError")
+  }
+}
+
 function evalExpr(
   expr: import("@ecp/types").ExprValue | undefined,
   state: Record<string, unknown>
@@ -44,6 +53,22 @@ function evalExpr(
   return true
 }
 
+async function runWithConcurrency<T>(
+  tasks: Array<() => Promise<T>>,
+  maxConcurrency: number
+): Promise<T[]> {
+  const results: T[] = new Array(tasks.length)
+  let index = 0
+  const workers = Array.from({ length: Math.min(maxConcurrency, tasks.length) }, async () => {
+    while (index < tasks.length) {
+      const i = index++
+      results[i] = await tasks[i]!()
+    }
+  })
+  await Promise.all(workers)
+  return results
+}
+
 type StepRunCtx = {
   manifest: WorkflowManifest
   runId: string
@@ -53,35 +78,46 @@ type StepRunCtx = {
   logger: ReturnType<typeof createConsoleLogger>
   context: RuntimeExecutionContext
   extensionHooks: import("../definitions/types.js").HookDefinition[]
+  signal?: AbortSignal
+  maxConcurrency: number
 }
 
-/** Local in-process runtime executor. @category Runtime */
-export class LocalRuntimeExecutor implements RuntimeExecutor {
+/** Platform-neutral in-memory workflow executor. @category Runtime */
+export class InMemoryRuntimeExecutor implements RuntimeExecutor {
   async execute(
     manifest: WorkflowManifest,
     context: RuntimeExecutionContext
   ): Promise<RunResult> {
-    const runId = randomUUID()
+    const runId = context.runId || newRunId()
+    const signal = context.signal
+    const maxConcurrency =
+      context.maxConcurrency ??
+      (context.bindings.runtime.config.maxConcurrency as number | undefined) ??
+      4
+
     const state: Record<string, unknown> = { ...context.input }
     const history: Record<string, StepRunRecord> = {}
     const usage = createUsageLedger()
     const logger = createConsoleLogger()
     const extensionHooks = context.bindings.extensionHooks
 
-    await emitLifecycle("run:before", extensionHooks, {
-      event: "run:before",
+    const runBase = {
       workflow: manifest,
       run: { id: runId, input: context.input },
       state,
+    }
+
+    await emitLifecycle("run:before", extensionHooks, {
+      event: "run:before",
+      ...runBase,
     })
     await emitLifecycle("run:started", extensionHooks, {
       event: "run:started",
-      workflow: manifest,
-      run: { id: runId, input: context.input },
-      state,
+      ...runBase,
     })
 
     try {
+      throwIfAborted(signal)
       await this.runNodes(manifest.steps, {
         manifest,
         runId,
@@ -91,12 +127,13 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
         logger,
         context,
         extensionHooks,
+        signal,
+        maxConcurrency,
       })
 
       await emitLifecycle("run:completed", extensionHooks, {
         event: "run:completed",
-        workflow: manifest,
-        run: { id: runId, input: context.input },
+        ...runBase,
         state,
       })
 
@@ -108,11 +145,25 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
         history,
         usage: { ...usage },
       }
-    } catch {
+    } catch (err) {
+      if (signal?.aborted || (err instanceof DOMException && err.name === "AbortError")) {
+        await emitLifecycle("run:cancelled", extensionHooks, {
+          event: "run:cancelled",
+          ...runBase,
+          state,
+        })
+        return {
+          schema: "@ecp.run.result",
+          version: LATEST_ECP_VERSION,
+          run: { id: runId, status: "cancelled" },
+          state,
+          history,
+          usage: { ...usage },
+        }
+      }
       await emitLifecycle("run:failed", extensionHooks, {
         event: "run:failed",
-        workflow: manifest,
-        run: { id: runId, input: context.input },
+        ...runBase,
         state,
       })
       return {
@@ -126,8 +177,7 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
     } finally {
       await emitLifecycle("run:finally", extensionHooks, {
         event: "run:finally",
-        workflow: manifest,
-        run: { id: runId, input: context.input },
+        ...runBase,
         state,
       })
     }
@@ -135,13 +185,17 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
 
   private async runNodes(nodes: WorkflowNode[], ctx: StepRunCtx): Promise<void> {
     for (const node of nodes) {
+      throwIfAborted(ctx.signal)
       await this.runNode(node, ctx)
     }
   }
 
   private async runNode(node: WorkflowNode, ctx: StepRunCtx): Promise<void> {
     if (node.type === "parallel") {
-      await Promise.all(node.branches.map((branch) => this.runNodes(branch, ctx)))
+      const tasks = node.branches.map(
+        (branch) => () => this.runNodes(branch, ctx)
+      )
+      await runWithConcurrency(tasks, ctx.maxConcurrency)
       return
     }
     if (node.type === "branch") {
@@ -156,6 +210,7 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
     if (node.type === "loop") {
       let rounds = 0
       while (!node.until || !evalExpr(node.until, ctx.state)) {
+        throwIfAborted(ctx.signal)
         if (node.maxRounds !== undefined && rounds >= node.maxRounds) break
         await this.runNodes(node.steps, ctx)
         rounds++
@@ -171,6 +226,8 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
   }
 
   private async executeStep(step: StepNode, ctx: StepRunCtx): Promise<void> {
+    throwIfAborted(ctx.signal)
+
     const cap = ctx.context.registry.getCapability(step.uses)
     if (!cap) {
       throw new Error(`Unknown capability: ${step.uses}`)
@@ -202,14 +259,16 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
         event: "step:finally",
         ...lifecycleBase,
       })
-      await evaluatePolicies(
-        "policy:finally",
-        ctx.context.bindings.policyHooks,
-        {
-          ...policyCtxBase,
-          output,
-        } as PolicyContext
-      )
+      if (policyCtxBase!) {
+        await evaluatePolicies(
+          "policy:finally",
+          ctx.context.bindings.policyHooks,
+          {
+            ...policyCtxBase,
+            output,
+          } as PolicyContext
+        )
+      }
     }
 
     try {
@@ -249,6 +308,8 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
         stepRecord.status = "paused"
         return
       }
+
+      throwIfAborted(ctx.signal)
 
       buffer = createMutationBuffer(ctx.state, mutableHandles)
       const store = createTransactionalStore({
@@ -295,6 +356,8 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
         return
       }
 
+      throwIfAborted(ctx.signal)
+
       const proposedState = buffer.preview(ctx.state)
       const postDecision = await evaluatePolicies(
         "policy:post",
@@ -312,6 +375,16 @@ export class LocalRuntimeExecutor implements RuntimeExecutor {
         stepRecord.status = postDecision.type === "pause" ? "paused" : "failed"
         stepRecord.output = output
         return
+      }
+
+      if (ctx.signal?.aborted) {
+        buffer.discard()
+        await emitLifecycle("step:cancelled", ctx.extensionHooks, {
+          event: "step:cancelled",
+          ...lifecycleBase,
+        })
+        stepRecord.status = "cancelled"
+        throw new DOMException("Step aborted", "AbortError")
       }
 
       const pending = buffer.pending()

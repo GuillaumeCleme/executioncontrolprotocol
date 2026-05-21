@@ -1,18 +1,17 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import { environment, extension, runtime, policy, registerTestExtension } from "../src/index.js"
-import { LOCAL_RUNTIME_ID } from "../src/runtime/builtin-local.js"
+import { extension, policy } from "../src/index.js"
 import { registerStandardPolicies } from "@ecp/policies"
+import { createTestEnvironment } from "./helpers.js"
 
 describe("environment.describe", () => {
   beforeEach(() => {
-    registerTestExtension()
     registerStandardPolicies()
   })
 
   it("filters capabilities by match and include", async () => {
-    const env = environment("d", "D")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
-      .withExtensions([extension("@ecp/test", "T").with({})])
+    const env = createTestEnvironment("d", "D").withExtensions([
+      extension("@ecp/test", "T").with({}),
+    ])
       .withPolicies([policy("@ecp/budget", "B").with({})])
 
     const desc = await env.describe({
@@ -28,9 +27,9 @@ describe("environment.describe", () => {
   })
 
   it("filters policies section", async () => {
-    const env = environment("d")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
-      .withExtensions([extension("@ecp/test", "T").with({})])
+    const env = createTestEnvironment("d").withExtensions([
+      extension("@ecp/test", "T").with({}),
+    ])
       .withPolicies([policy("@ecp/budget", "B").with({ maxModelCalls: 1 })])
 
     const desc = await env.describe({

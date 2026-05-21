@@ -44,6 +44,7 @@ export type {
   ValidationSeverity,
 } from "./validation.js"
 export type {
+  EnvironmentLifecycleEvent,
   RunLifecycleEvent,
   StepLifecycleEvent,
   PolicyLifecycleEvent,

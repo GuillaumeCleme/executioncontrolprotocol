@@ -1,14 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import {
-  environment,
-  extension,
-  workflow,
-  step,
-  runtime,
-  policy,
-  state,
-} from "../src/index.js"
-import { LOCAL_RUNTIME_ID } from "../src/runtime/builtin-local.js"
+import { extension, workflow, step, policy, state } from "../src/index.js"
+import { createTestEnvironment } from "./helpers.js"
 import {
   registerLifecycleSpyExtension,
   resetLifecycleSpy,
@@ -24,9 +16,9 @@ describe("store mutations", () => {
   })
 
   it("commits merge via state() handle after successful step", async () => {
-    const env = environment("store-test")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
-      .withExtensions([extension("@ecp/lifecycle-spy", "Spy").with({})])
+    const env = createTestEnvironment("store-test").withExtensions([
+      extension("@ecp/lifecycle-spy", "Spy").with({}),
+    ])
 
     const manifest = workflow("Merge")
       .run([
@@ -59,8 +51,7 @@ describe("store mutations", () => {
   })
 
   it("state-control policy denies disallowed mutable path", async () => {
-    const env = environment("store-policy")
-      .withRuntime(runtime(LOCAL_RUNTIME_ID))
+    const env = createTestEnvironment("store-policy")
       .withExtensions([extension("@ecp/lifecycle-spy", "Spy").with({})])
       .withPolicies([
         policy("@ecp/state-control").with({

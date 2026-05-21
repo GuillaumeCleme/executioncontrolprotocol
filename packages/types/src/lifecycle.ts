@@ -23,8 +23,17 @@ export type PolicyLifecycleEvent =
   | "policy:post"
   | "policy:finally"
 
+/** Environment lifecycle events. @category Lifecycle */
+export type EnvironmentLifecycleEvent =
+  | "environment:created"
+  | "environment:configuring"
+  | "environment:ready"
+  | "environment:beforeRun"
+  | "environment:shutdown"
+
 /** All public lifecycle events. @category Lifecycle */
 export type LifecycleEvent =
+  | EnvironmentLifecycleEvent
   | RunLifecycleEvent
   | StepLifecycleEvent
   | PolicyLifecycleEvent
