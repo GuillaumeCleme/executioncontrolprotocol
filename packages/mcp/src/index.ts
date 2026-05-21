@@ -2,7 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
 import type { Environment } from "@ecp/core"
-import type { WorkflowManifest } from "@ecp/types"
+import type { EcpEncodeInput, WorkflowManifest } from "@ecp/types"
+import { ECP_FORMATS } from "@ecp/types"
 import { createServer } from "node:http"
 
 /** Options for MCP server creation. @category MCP */
@@ -87,6 +88,48 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
       runs.set(result.run.id, result)
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      }
+    }
+  )
+
+  const formatSchema = z.enum(["json", "toon", "fluent"])
+
+  server.tool(
+    "ecp.encode",
+    {
+      source: z.union([z.record(z.unknown()), z.string()]),
+      format: formatSchema.optional(),
+      compact: z.boolean().optional(),
+    },
+    async ({ source, format, compact }) => {
+      let op = environment.encode(source as EcpEncodeInput["source"])
+      if (format === "toon") op = op.uses("@ecp/format-toon")
+      else if (format === "fluent") op = op.uses("@ecp/format-fluent")
+      if (compact) op = op.compact()
+      const encoded = await op.process()
+      return {
+        content: [{ type: "text", text: JSON.stringify(encoded, null, 2) }],
+      }
+    }
+  )
+
+  server.tool(
+    "ecp.decode",
+    {
+      content: z.union([z.record(z.unknown()), z.string()]),
+      format: z.enum(["json", "toon"]).optional(),
+      strict: z.boolean().optional(),
+      targetSchema: z.string().optional(),
+    },
+    async ({ content, format, strict, targetSchema }) => {
+      let op = environment.decode(content)
+      if (format === "toon") op = op.uses("@ecp/format-toon")
+      if (strict) op = op.strict()
+      if (targetSchema) op = op.to(targetSchema as "@ecp.workflow")
+      else if (!format || format === ECP_FORMATS.JSON) op = op.to("@ecp.workflow")
+      const decoded = await op.process()
+      return {
+        content: [{ type: "text", text: JSON.stringify(decoded, null, 2) }],
       }
     }
   )

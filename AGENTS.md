@@ -36,8 +36,21 @@ ecp validate examples/01-echo/workflow.ts --env examples/01-echo/environment.ts
 ecp compile examples/01-echo/workflow.ts -o /tmp/workflow.json
 ecp describe --env examples/01-echo/environment.ts
 ecp search "echo" --env examples/01-echo/environment.ts
+ecp encode workflow.json --format toon --env examples/01-echo/environment.ts -o workflow.toon
+ecp decode workflow.toon --format toon --env examples/01-echo/environment.ts -o workflow.json
+ecp encode workflow.json --format fluent --env examples/01-echo/environment.ts -o workflow.generated.ts
 ecp run --help
 ```
+
+### Environment encoding and decoding
+
+`env.encode(input)` and `env.decode(input)` are utility operations (not workflow runs; no run/step lifecycle).
+
+- `env.encode(input).uses("@ecp/format-toon").process()` resolves `@ecp/format-toon.encode`
+- `env.decode(input).uses("@ecp/format-toon").process()` resolves `@ecp/format-toon.decode`
+- Omit `.uses(...)` for canonical JSON (`@ecp.workflow` manifest)
+- Packages: `@ecp/format-toon` (encode + decode), `@ecp/format-fluent` (encode only; forward path is `compileWorkflowSource`)
+- MCP tools: `ecp.encode`, `ecp.decode` on `createEcpMcpServer`
 
 Local dev: `npm start -w @ecp/cli` (runs `bin/dev.js` after build).
 

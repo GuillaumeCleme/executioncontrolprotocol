@@ -13,6 +13,8 @@
     { "path": "packages/extensions/slack" },
     { "path": "packages/extensions/storage" },
     { "path": "packages/extensions/telemetry" },
+    { "path": "packages/extensions/format-toon" },
+    { "path": "packages/extensions/format-fluent" },
     { "path": "packages/extensions/index" },
     { "path": "packages/runtimes/temporal" },
     { "path": "packages/cli" }

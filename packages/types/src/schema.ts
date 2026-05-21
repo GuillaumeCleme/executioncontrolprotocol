@@ -10,6 +10,8 @@ export type EcpSchema =
   | "@ecp.run.result"
   | "@ecp.run.event"
   | "@ecp.validation.result"
+  | "@ecp.encoded"
+  | "@ecp.decoded"
 
 /** Namespaced definition id (`@namespace/name`). @category Common */
 export type NamespacedId = `@${string}/${string}`

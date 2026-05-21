@@ -23,6 +23,8 @@ const schemas = [
   { type: "RunRequest", file: "run.request.json" },
   { type: "ValidationResult", file: "validation.result.json" },
   { type: "SearchResult", file: "environment.search.json" },
+  { type: "EncodedArtifactDocument", file: "encoded.json" },
+  { type: "DecodeResultDocument", file: "decoded.json" },
 ]
 
 for (const { type, file } of schemas) {

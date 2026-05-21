@@ -49,6 +49,17 @@ export {
   type CompileWorkflowSourceOptions,
 } from "./compile/index.js"
 export { validateWorkflow } from "./validate/workflow.js"
+export {
+  EcpError,
+  normalizeWorkflowManifest,
+  ecpEncodeInputSchema,
+  ecpDecodeInputSchema,
+  ecpEncodedArtifactSchema,
+  ecpDecodeResultSchema,
+  type EncodeOperationBuilder,
+  type DecodeOperationBuilder,
+  type UtilityCapabilityContext,
+} from "./encoding/index.js"
 export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
 
 export {

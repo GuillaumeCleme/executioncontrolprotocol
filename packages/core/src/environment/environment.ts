@@ -30,6 +30,12 @@ import { buildDescriptor } from "./describe.js"
 import { searchCapabilities } from "./search.js"
 import { validateEnvironmentWithWorkflow } from "../validate/environment.js"
 import type { HookDefinition } from "../definitions/types.js"
+import {
+  createDecodeBuilder,
+  createEncodeBuilder,
+  type DecodeOperationBuilder,
+  type EncodeOperationBuilder,
+} from "../encoding/index.js"
 
 function resolveId(ref: NamespacedId | { id: NamespacedId } | string): NamespacedId {
   if (typeof ref === "string") return ref as NamespacedId
@@ -313,6 +319,34 @@ export class Environment implements EnvironmentLifecycleHost {
 
   getRegistry(): Registry {
     return this.registry
+  }
+
+  /** Environment id (for utility operations). @category Environment */
+  getEnvId(): string {
+    return this.envId
+  }
+
+  /** Environment label when set. @category Environment */
+  getEnvLabel(): string | undefined {
+    return this.envLabel
+  }
+
+  /**
+   * Encode a document via format extensions or default JSON codec.
+   * Does not emit workflow lifecycle events.
+   * @category Environment
+   */
+  encode(input: unknown): EncodeOperationBuilder {
+    return createEncodeBuilder(this, input)
+  }
+
+  /**
+   * Decode encoded content via format extensions or default JSON codec.
+   * Does not emit workflow lifecycle events.
+   * @category Environment
+   */
+  decode(input: unknown): DecodeOperationBuilder {
+    return createDecodeBuilder(this, input)
   }
 
   async search(query: string, options?: SearchOptions): Promise<SearchResult> {

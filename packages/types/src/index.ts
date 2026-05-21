@@ -58,3 +58,17 @@ export type {
   RegistryRegistrationSourceType,
   PolicyEvaluationScope,
 } from "./registry.js"
+export {
+  ECP_FORMAT_CAPABILITY_NAMES,
+  ECP_FORMATS,
+  ECP_ENCODING_ERROR_CODES,
+} from "./encoding.js"
+export type {
+  EcpEncodingErrorCode,
+  EncodedArtifact,
+  EncodedArtifactDocument,
+  DecodeResult,
+  DecodeResultDocument,
+  EcpEncodeInput,
+  EcpDecodeInput,
+} from "./encoding.js"

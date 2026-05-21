@@ -12,7 +12,9 @@
     "@ecp/extension-openai": "1.0.0",
     "@ecp/extension-slack": "1.0.0",
     "@ecp/extension-storage": "1.0.0",
-    "@ecp/extension-telemetry": "1.0.0"
+    "@ecp/extension-telemetry": "1.0.0",
+    "@ecp/format-toon": "1.0.0",
+    "@ecp/format-fluent": "1.0.0"
   },
   "devDependencies": { "typescript": "^5.7.0" }
 }

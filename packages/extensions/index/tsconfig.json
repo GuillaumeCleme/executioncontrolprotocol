@@ -8,6 +8,8 @@
     { "path": "../ollama" },
     { "path": "../slack" },
     { "path": "../storage" },
-    { "path": "../telemetry" }
+    { "path": "../telemetry" },
+    { "path": "../format-toon" },
+    { "path": "../format-fluent" }
   ]
 }

@@ -1,3 +1,5 @@
+# ECP browser review — policy-governed registration
+
 Yes, that is the right instinct.
 
 Namespace validation for **dynamic extension registration** should be policy-governed, not hard-coded as extension config.
@@ -61,7 +63,7 @@ policy("@ecp/registry-control").with({
 
 Mostly yes, with one small addition.
 
-The current lifecycle has `policy:pre`, `policy:post`, and `policy:finally`; policies already govern execution decisions in the core spec. The implementation plan also expanded policy context to inspect state mutations before commit, which proves the policy system can evaluate non-capability runtime actions when the runtime exposes the right context. 
+The current lifecycle has `policy:pre`, `policy:post`, and `policy:finally`; policies already govern execution decisions in the core spec. The implementation plan also expanded policy context to inspect state mutations before commit, which proves the policy system can evaluate non-capability runtime actions when the runtime exposes the right context.
 
 For dynamic registry, we need the same pattern:
 

@@ -68,6 +68,8 @@ export default defineConfig({
         "packages/extensions/openai/src/index.ts"
       ),
       "@ecp/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
+      "@ecp/format-toon": path.resolve(repoRoot, "packages/extensions/format-toon/src/index.ts"),
+      "@ecp/format-fluent": path.resolve(repoRoot, "packages/extensions/format-fluent/src/index.ts"),
     },
   },
   test: {

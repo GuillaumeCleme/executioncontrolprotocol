@@ -1,9 +1,11 @@
-Below is a coding-agent-ready plan split into two tracks:
+# ECP browser review
+
+Coding-agent-ready plan split into two tracks:
 
 1. **Validation plan** for the implementation we just defined.
 2. **Full implementation plan** for dynamic browser extension registration.
 
-This assumes the latest decisions are source of truth: `@ecp/browser` includes the browser runtime; `@ecp/node` replaces the old local runtime; browser-specific behavior is implemented through normal ECP extensions, not a new plugin concept; and `state()` mutations remain staged and policy-validated. The existing implementation already has the core fluent API, environment model, registry, `state()`, lifecycle, policies, and runtime internals that we are building on. 
+This assumes the latest decisions are source of truth: `@ecp/browser` includes the browser runtime; `@ecp/node` replaces the old local runtime; browser-specific behavior is implemented through normal ECP extensions, not a new plugin concept; and `state()` mutations remain staged and policy-validated. The existing implementation already has the core fluent API, environment model, registry, `state()`, lifecycle, policies, and runtime internals that we are building on.
 
 ---
 
@@ -29,7 +31,7 @@ The implementation should prove five things:
 
 Validate that `@ecp/core` is platform-neutral.
 
-### Must pass
+### Core package must pass
 
 ```txt
 @ecp/core must not import:
@@ -77,7 +79,7 @@ describe("@ecp/core package boundary", () => {
 
 Validate that `@ecp/browser` imports cleanly in a real browser bundle.
 
-### Must pass
+### Browser package must pass
 
 ```txt
 - Vite build succeeds
@@ -119,7 +121,7 @@ expect(result.state?.echo).toEqual({ message: "Hello browser" });
 
 Validate that `@ecp/node` replaces the old local runtime.
 
-### Must pass
+### Node package must pass
 
 ```txt
 - NODE_RUNTIME_ID === "@ecp/node"
@@ -145,7 +147,7 @@ Expected result: **no source references**.
 
 Validate that Node and browser runtimes both use the shared in-memory executor.
 
-### Must pass
+### Runtime conformance must pass
 
 | Test               | Expected                                      |
 | ------------------ | --------------------------------------------- |
@@ -202,11 +204,11 @@ environment:beforeRun
 environment:shutdown
 ```
 
-The previous lifecycle already included run, step, and policy scopes, with public lifecycle hooks limited to those scopes. We are now adding environment as the fourth lifecycle scope, while keeping state mutation events internal/audit-only. 
+The previous lifecycle already included run, step, and policy scopes, with public lifecycle hooks limited to those scopes. We are now adding environment as the fourth lifecycle scope, while keeping state mutation events internal/audit-only.
 
 ## 4.1 Event ordering test
 
-### Test
+### Environment lifecycle ordering test
 
 ```ts
 it("fires environment lifecycle events in order", async () => {
@@ -269,11 +271,11 @@ Keep `environment:created` internal/observable in logs only.
 
 This is mandatory because the browser runtime must preserve the latest state model.
 
-The `state()` source-of-truth says that `state()` resolves to a mutable handle, `ref()` resolves to a raw committed value, store writes require `state()` handles, mutations are staged, policies inspect them, and staged mutations plus `.as()` output commit transactionally. 
+The `state()` source-of-truth says that `state()` resolves to a mutable handle, `ref()` resolves to a raw committed value, store writes require `state()` handles, mutations are staged, policies inspect them, and staged mutations plus `.as()` output commit transactionally.
 
 ## 5.1 Store write requires `state()` handle
 
-### Test
+### State handle requirement test
 
 ```ts
 it("rejects store writes with raw string paths", async () => {
@@ -294,7 +296,7 @@ it("rejects store writes with raw string paths", async () => {
 
 ## 5.2 Mutations are staged until `policy:post`
 
-### Test
+### Staged mutations test
 
 ```ts
 it("does not expose staged mutations as committed state before policy post", async () => {
@@ -322,7 +324,7 @@ it("does not expose staged mutations as committed state before policy post", asy
 
 ## 5.3 Policy denial prevents mutation and `.as()` commit
 
-### Test
+### Policy post denial test
 
 ```ts
 it("denies both pending mutations and .as() commit when policy:post denies", async () => {
@@ -345,7 +347,7 @@ it("denies both pending mutations and .as() commit when policy:post denies", asy
 
 ## 5.4 Capability failure discards mutations
 
-### Test
+### Capability failure mutation test
 
 ```ts
 it("discards staged mutations when capability throws", async () => {
@@ -364,7 +366,7 @@ The browser and node config/secrets extensions depend on `$env` resolving throug
 
 ## 6.1 Resolver order
 
-### Test
+### Config resolver order test
 
 ```ts
 it("resolves env values using extension binding order", async () => {
@@ -401,7 +403,7 @@ Validate secret values do not appear in:
 - validation errors
 ```
 
-### Test
+### Secret serialization test
 
 ```ts
 it("does not serialize resolved secrets", async () => {
@@ -465,7 +467,7 @@ Run the shared runtime conformance suite in browser mode.
 
 ## 8.1 Process env extension
 
-### Test
+### Process env resolver test
 
 ```ts
 it("resolves env() from process.env", async () => {

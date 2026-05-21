@@ -15,6 +15,8 @@ describe("ecp --help", () => {
   it("prints top-level help", { timeout: 60_000 }, () => {
     const out = execSync(`node "${runJs}" --help`, { cwd: repoRoot, encoding: "utf8" })
     expect(out).toMatch(/\bcompile\b/)
+    expect(out).toMatch(/\bencode\b/)
+    expect(out).toMatch(/\bdecode\b/)
     expect(out).toMatch(/\brun\b/)
     expect(out).not.toMatch(/\bmcp\b/)
   })
@@ -22,6 +24,8 @@ describe("ecp --help", () => {
   it("prints per-command help", { timeout: 60_000 }, () => {
     runHelp("run")
     runHelp("compile")
+    runHelp("encode")
+    runHelp("decode")
     runHelp("validate")
     runHelp("describe")
     runHelp("search")
