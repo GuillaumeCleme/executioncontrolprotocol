@@ -58,6 +58,8 @@ export function createDecodeBuilder(
       return builder
     },
     async process<T = unknown>(): Promise<DecodeResult<T>> {
+      await env.ensureBoundExtensionsRegistered()
+
       const ctx = createUtilityCapabilityContext(
         env.getEnvId(),
         env.getEnvLabel(),

@@ -19,7 +19,7 @@ describe("compileWorkflowSource", () => {
     })
     expect(result.ok).toBe(true)
     expect(result.manifest?.schema).toBe("@ecp.workflow")
-    expect(result.manifest?.steps[0]?.commitAs).toBe("out")
+    expect(result.manifest?.steps[0]?.as).toBe("out")
   })
 
   it("validates against environment descriptor", async () => {

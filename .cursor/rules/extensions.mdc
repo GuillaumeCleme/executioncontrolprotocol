@@ -1,0 +1,46 @@
+---
+description: How to build ECP extensions (first-party and third-party) without host/runtime coupling
+globs: packages/extensions/**/*
+alwaysApply: false
+---
+
+# ECP extension packages
+
+Treat every extension under `packages/extensions/` as if it were published for **third-party** authors: environment-agnostic, minimal dependencies, no imports from Node/Browser host packages unless the extension *is* a runtime or host adapter.
+
+## Dependencies
+
+| Package | Use for |
+| ------- | ------- |
+| `@ecp/types` | Protocol types (`WorkflowManifest`, `EcpSchema`, `EncodedArtifact`, capability IDs, etc.) |
+| `@ecp/core` | `defineExtension`, `capabilityFor`, `catalogExtension`, Zod config helpers, shared validation (`validateWorkflow`), encoding error types |
+| Third-party libs | Format/SDK deps only (e.g. `@toon-format/toon`) scoped to the extension’s job |
+
+**Do not** depend on `@ecp/node`, `@ecp/browser`, `@ecp/cli`, or `@ecp/mcp` in extension `dependencies` or `devDependencies`.
+
+Runtimes and policies follow the same boundary unless they intentionally implement a host (`@ecp/node` runtime, browser registry, etc.).
+
+## Registration and discovery
+
+1. Build an `ExtensionDefinition` with `defineExtension("@vendor", "name").withCapabilities([...]).build()`.
+2. Call `catalogExtension(def)` at module load in `src/index.ts` so consumers can bind with `extension("@vendor/name")` after `import "@vendor/package"`.
+3. Optionally export `registerVendorExtension(registry?)` that registers on a `Registry` when hosts need eager registration.
+
+Consumers (apps, examples, CLI env files) bind extensions in **environment modules**; extension packages must not assume Node `process.env`, browser `globalThis`, or a specific runtime.
+
+## Capability handlers
+
+- Handlers receive typed inputs and a **utility** or **capability** context from `@ecp/core`; avoid reaching into `Environment` internals.
+- Use `capabilityFor("@vendor/name", "capability-id")` for stable capability IDs.
+- Encode/decode/format capabilities: accept `unknown` documents, infer `schema` when present, validate known `EcpSchema` values with diagnostics; do not throw on unknown schemas unless `strict` decode is requested.
+
+## Tests
+
+- Test the extension in isolation: fixtures for `@ecp.workflow`, `@ecp.environment`, `@ecp.environment.describe`, etc.
+- Use `environment()` from `@ecp/core` for `encode`/`decode` integration tests (no runtime binding required).
+- Do **not** import `@ecp/node` to call `describe()`, `run()`, or wire runtimes; that belongs in `@ecp/core` / `@ecp/node` tests.
+- In-repo stub: `import "@ecp/core/testing"` and `extension("@ecp/test")` only when a test must invoke a real capability handler.
+
+## Environment modules (apps/examples, not extensions)
+
+Application `environment.ts` files may import `@ecp/node` or `@ecp/browser` for `environment()`, secrets, and runtime defaults. That layer composes extensions; it is not part of the extension package contract.

@@ -58,8 +58,8 @@ function normalizeStepNode(node: StepNode): StepNode {
   }
   if (node.label) out.label = node.label
   if (node.input) out.input = normalizeInputValue(node.input) as StepNode["input"]
-  if (node.commitAs) out.commitAs = node.commitAs
-  if (node.commitMode) out.commitMode = node.commitMode as CommitMode
+  if (node.as) out.as = node.as
+  if (node.mode) out.mode = node.mode as CommitMode
   if (node.when) out.when = normalizeExpr(node.when) as StepNode["when"]
   return out
 }

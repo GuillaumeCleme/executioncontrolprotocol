@@ -2,42 +2,44 @@ import {
   ECP_ENCODING_ERROR_CODES,
   LATEST_ECP_VERSION,
 } from "@ecp/types"
-import type { DecodeResult, EcpDecodeInput, WorkflowManifest } from "@ecp/types"
-import { EcpError, validateWorkflow, type UtilityCapabilityContext } from "@ecp/core"
-import { parseToonWorkflow } from "./parser.js"
+import type { DecodeResult, EcpDecodeInput, EcpSchema } from "@ecp/types"
+import { EcpError, type UtilityCapabilityContext } from "@ecp/core"
+import { getEcpSchema } from "./schema.js"
+import { decodeDocumentFromToon } from "./toon-codec.js"
+import { validateEcpDocument, validationToDiagnostics } from "./validate-document.js"
 
 /**
- * Decode TOON text to workflow manifest.
+ * Decode TOON text to an ECP document via `@toon-format/toon` (schema-agnostic).
+ * Known schemas are validated; `strict` fails only when validation does not pass.
  * @category Encoding
  */
-export function decodeToonToWorkflow(
+export function decodeFromToon(
   input: EcpDecodeInput,
   _ctx: UtilityCapabilityContext
-): DecodeResult<WorkflowManifest> {
-  const target = input.targetSchema ?? "@ecp.workflow"
-
-  if (target !== "@ecp.workflow") {
-    throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_UNSUPPORTED_TARGET_SCHEMA, {
-      message: "TOON decoder only supports @ecp.workflow.",
-    })
-  }
-
+): DecodeResult {
   const content = String(input.content)
-  let document: WorkflowManifest
+  let document: unknown
+
   try {
-    document = parseToonWorkflow(content)
+    document = decodeDocumentFromToon(content, {
+      strict: input.options?.strict ?? true,
+    })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED, {
-      message: `TOON parse failed: ${message}`,
+      message: `TOON decode failed: ${message}`,
     })
   }
 
-  const validation = validateWorkflow(document)
+  const targetSchema: EcpSchema | undefined =
+    input.targetSchema ?? getEcpSchema(document)
 
-  if (!validation.valid && input.options?.strict) {
+  const validation = validateEcpDocument(document, targetSchema)
+  const diagnostics = validationToDiagnostics(validation)
+
+  if (input.options?.strict && !validation.valid) {
     throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED, {
-      message: "TOON decoded into an invalid workflow manifest.",
+      message: `Decoded document failed validation for ${targetSchema ?? "unknown schema"}.`,
       diagnostics: validation.errors,
     })
   }
@@ -45,8 +47,11 @@ export function decodeToonToWorkflow(
   return {
     schema: "@ecp.decoded",
     version: LATEST_ECP_VERSION,
-    targetSchema: "@ecp.workflow",
+    targetSchema,
     document,
-    diagnostics: [...validation.errors, ...validation.warnings],
+    diagnostics,
   }
 }
+
+/** @deprecated Use {@link decodeFromToon}. @category Encoding */
+export const decodeToonToWorkflow = decodeFromToon

@@ -25,13 +25,13 @@ function renderStep(step: StepNode, needs: ImportNeeds, indent: string): string 
     )
     lines.push(`${indent}  .with({ ${inputParts.join(", ")} })`)
   }
-  if (step.commitAs) {
-    if (step.commitMode) {
+  if (step.as) {
+    if (step.mode) {
       lines.push(
-        `${indent}  .as(${JSON.stringify(step.commitAs)}, { mode: ${JSON.stringify(step.commitMode)} })`
+        `${indent}  .as(${JSON.stringify(step.as)}, { mode: ${JSON.stringify(step.mode)} })`
       )
     } else {
-      lines.push(`${indent}  .as(${JSON.stringify(step.commitAs)})`)
+      lines.push(`${indent}  .as(${JSON.stringify(step.as)})`)
     }
   }
   return lines.join("\n")

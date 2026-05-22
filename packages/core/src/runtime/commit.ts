@@ -27,10 +27,10 @@ export function commitTransaction(options: {
   state: Record<string, unknown>
   mutations: PendingMutation[]
   output: unknown
-  commitAs?: string
-  commitMode?: CommitMode
+  as?: string
+  mode?: CommitMode
 }): void {
-  const { state, mutations, output, commitAs, commitMode = "create" } = options
+  const { state, mutations, output, as: commitKey, mode: commitMode = "create" } = options
 
   for (const m of mutations) {
     if (m.op === "merge" && typeof m.value === "object") {
@@ -49,22 +49,22 @@ export function commitTransaction(options: {
     }
   }
 
-  if (!commitAs) return
+  if (!commitKey) return
 
-  const existing = state[commitAs]
+  const existing = state[commitKey]
   if (commitMode === "create" && existing !== undefined) {
-    throw new Error(`State key '${commitAs}' already exists (mode: create)`)
+    throw new Error(`State key '${commitKey}' already exists (mode: create)`)
   }
   if (commitMode === "merge" && typeof output === "object" && output !== null) {
-    state[commitAs] = {
+    state[commitKey] = {
       ...(typeof existing === "object" && existing !== null ? existing : {}),
       ...output,
     }
   } else if (commitMode === "append") {
     const arr = Array.isArray(existing) ? [...existing] : []
     arr.push(output)
-    state[commitAs] = arr
+    state[commitKey] = arr
   } else {
-    state[commitAs] = output
+    state[commitKey] = output
   }
 }

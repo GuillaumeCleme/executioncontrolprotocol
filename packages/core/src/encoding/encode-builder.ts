@@ -68,6 +68,8 @@ export function createEncodeBuilder(
       return builder
     },
     async process(): Promise<EncodedArtifact> {
+      await env.ensureBoundExtensionsRegistered()
+
       const sourceSchema = getEcpSchema(state.source)
       const ctx = createUtilityCapabilityContext(
         env.getEnvId(),

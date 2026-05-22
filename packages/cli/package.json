@@ -5,9 +5,10 @@
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
-    "ecp": "./bin/run.js"
+    "ecp": "./bin/ecp.js"
   },
   "files": [
+    "bin/ecp.js",
     "bin/run.js",
     "bin/run.cmd",
     "bin/dev.js",

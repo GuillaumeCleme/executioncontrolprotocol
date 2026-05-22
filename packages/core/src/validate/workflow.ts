@@ -9,11 +9,11 @@ function collectStepCommits(
   for (const node of nodes) {
     if (!node.type || node.type === "step") {
       const step = node as import("@ecp/types").StepNode
-      if (step.commitAs) {
-        if (commits.has(step.commitAs)) {
-          commits.set(step.commitAs, "duplicate")
+      if (step.as) {
+        if (commits.has(step.as)) {
+          commits.set(step.as, "duplicate")
         } else {
-          commits.set(step.commitAs, step.id)
+          commits.set(step.as, step.id)
         }
       }
     } else if (node.type === "parallel") {
@@ -50,8 +50,8 @@ export function validateWorkflow(
       result.valid = false
       result.errors.push({
         code: "DUPLICATE_COMMIT_AS",
-        message: `Duplicate commitAs key '${key}'`,
-        path: `workflow.commitAs.${key}`,
+        message: `Duplicate as key '${key}'`,
+        path: `workflow.as.${key}`,
       })
     }
   }

@@ -14,7 +14,7 @@
       "input": {
         "value": "hello from fluent API"
       },
-      "commitAs": "echo"
+      "as": "echo"
     }
   ]
 }

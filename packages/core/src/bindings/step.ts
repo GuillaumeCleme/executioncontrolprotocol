@@ -11,8 +11,8 @@ export interface AsOptions {
 /** Fluent step builder. @category Workflow */
 export class StepBuilder {
   private input: Record<string, InputValue> = {}
-  private commitAs?: string
-  private commitMode?: CommitMode
+  private asKey?: string
+  private asMode?: CommitMode
   private whenExpr?: ExprValue
   private stepId?: string
 
@@ -35,8 +35,8 @@ export class StepBuilder {
 
   /** Commit output to workflow state. */
   as(key: string, options?: AsOptions): this {
-    this.commitAs = key
-    if (options?.mode) this.commitMode = options.mode
+    this.asKey = key
+    if (options?.mode) this.asMode = options.mode
     return this
   }
 
@@ -55,8 +55,8 @@ export class StepBuilder {
       ...(this.label ? { label: this.label } : {}),
       uses: this.uses,
       ...(Object.keys(this.input).length > 0 ? { input: this.input } : {}),
-      ...(this.commitAs ? { commitAs: this.commitAs } : {}),
-      ...(this.commitMode ? { commitMode: this.commitMode } : {}),
+      ...(this.asKey ? { as: this.asKey } : {}),
+      ...(this.asMode ? { mode: this.asMode } : {}),
       ...(this.whenExpr ? { when: this.whenExpr } : {}),
     }
   }

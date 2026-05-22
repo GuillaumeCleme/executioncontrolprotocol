@@ -12,7 +12,7 @@ describe("workflow builder", () => {
     expect(manifest.version).toBe("1.0")
     expect(manifest.steps[0]).toMatchObject({
       uses: "@ecp/test.echo",
-      commitAs: "echo",
+      as: "echo",
     })
   })
 

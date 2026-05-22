@@ -49,22 +49,42 @@ ecp run --help
 - `env.encode(input).uses("@ecp/format-toon").process()` resolves `@ecp/format-toon.encode`
 - `env.decode(input).uses("@ecp/format-toon").process()` resolves `@ecp/format-toon.decode`
 - Omit `.uses(...)` for canonical JSON (`@ecp.workflow` manifest)
-- Packages: `@ecp/format-toon` (encode + decode), `@ecp/format-fluent` (encode only; forward path is `compileWorkflowSource`)
+- Packages: `@ecp/format-toon` (encode + decode via `@toon-format/toon`; validates `@ecp.workflow`, `@ecp.environment`, describe/search; other schemas encode without validation errors), `@ecp/format-fluent` (encode only; forward path is `compileWorkflowSource`)
 - MCP tools: `ecp.encode`, `ecp.decode` on `createEcpMcpServer`
+
+### Extension catalog and binding
+
+Extension packages call `catalogExtension(def)` at module load. **Examples use string bindings:** `extension("@ecp/format-toon").with({})` after `import "@ecp/format-toon"` (catalog lookup). For the in-repo stub, `import "@ecp/core/testing"` then `extension("@ecp/test").with({})`.
+
+`ensureBoundExtensionsRegistered()` runs automatically before `encode`, `decode`, `describe`, and `run` — no separate `await register*()` in environment modules when the package catalogs on import.
+
+### Extension authoring (third-party parity)
+
+Built-in packages under `packages/extensions/` follow the same rules as external extension authors. See [`.cursor/rules/extensions.mdc`](.cursor/rules/extensions.mdc).
+
+| Do | Don't |
+| ---- | ----- |
+| Depend on `@ecp/types` + `@ecp/core` (+ focused third-party libs) | Import `@ecp/node`, `@ecp/browser`, `@ecp/cli`, or `@ecp/mcp` from an extension package |
+| `catalogExtension(def)` on package load; optional `register*Extension(registry?)` | Call `describe()` / `run()` or require a host runtime inside extension tests |
+| Test with document **fixtures** and `environment()` from `@ecp/core` for encode/decode | Pull in `nodeEnvironment()` to build discovery payloads |
+
+**Apps and examples** compose extensions in `environment.ts` using `@ecp/node` or `@ecp/browser` — that host layer is separate from extension package code.
 
 Local dev: `npm start -w @ecp/cli` (runs `bin/dev.js` after build).
 
 ### Fluent API quickstart
 
 ```ts
-import { workflow, step, ref, environment, extension, runtime } from "@ecp/core"
-import { workflow, step, environment, extension } from "@ecp/node"
+import { workflow, step } from "@ecp/core"
+import { environment, extension } from "@ecp/node"
+import "@ecp/core/testing"
 
 const manifest = workflow("My flow")
   .run([step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("echo")])
   .toManifest()
+// Manifest steps use the same verbs as the fluent API: `.as("echo")` → `as: "echo"`; optional `{ mode }` → `mode: "create" | ...`
 
-const env = environment("dev").withExtensions([extension("@ecp/test").with({})])
+const env = (await environment("dev")).withExtensions([extension("@ecp/test").with({})])
 await env.run(manifest)
 ```
 

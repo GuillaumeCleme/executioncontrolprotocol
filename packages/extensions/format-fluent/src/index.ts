@@ -1,5 +1,7 @@
-import { globalRegistry } from "@ecp/core"
+import { catalogExtension, globalRegistry } from "@ecp/core"
 import { formatFluentExtension } from "./extension.js"
+
+catalogExtension(formatFluentExtension)
 
 export { formatFluentExtension } from "./extension.js"
 export { encodeWorkflowToFluent } from "./encode.js"

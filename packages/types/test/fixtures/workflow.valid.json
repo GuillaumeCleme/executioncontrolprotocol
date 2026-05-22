@@ -8,7 +8,7 @@
       "id": "echo",
       "uses": "@ecp/test.echo",
       "input": { "value": "hi" },
-      "commitAs": "echo"
+      "as": "echo"
     }
   ]
 }

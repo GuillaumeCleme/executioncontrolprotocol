@@ -63,7 +63,7 @@ describe("env.encode/decode", () => {
       .process()
     expect(encoded.format).toBe("toon")
     expect(String(encoded.content)).toContain("schema: @ecp.workflow")
-    expect(String(encoded.content)).toContain("step collect")
+    expect(String(encoded.content)).toContain("steps[")
   })
 })
 

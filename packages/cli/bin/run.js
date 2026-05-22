@@ -1,7 +1,4 @@
 #!/usr/bin/env node
 
-import { execute } from "@oclif/core"
-
-process.noDeprecation = true
-
-await execute({ dir: import.meta.url })
+/** @deprecated Use `ecp.js`; kept for tests and `run.cmd`. */
+import "./ecp.js"

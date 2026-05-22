@@ -27,6 +27,15 @@ export type { EnvironmentConfigResolver } from "./environment/config-resolver.js
 export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
 export { Registry, globalRegistry, type RegistryRegistrationGuard } from "./registry/registry.js"
 export {
+  catalogExtension,
+  getCatalogedExtension,
+  resolveExtensionDefinition,
+  isExtensionDefinition,
+  listCatalogedExtensionIds,
+  normalizeExtensionId,
+} from "./registry/extension-catalog.js"
+export { ensureBoundExtensionsRegistered } from "./registry/ensure-bound-extensions.js"
+export {
   RegistryFrozenError,
   RegistryRegistrationDeniedError,
 } from "./registry/errors.js"
@@ -40,7 +49,7 @@ export type {
   EnvironmentLifecycleHost,
 } from "./runtime/context.js"
 export { createUsageLedger } from "./runtime/context.js"
-export { registerTestExtension } from "./testing/test-extension.js"
+export { registerTestExtension, testExtension } from "./testing/test-extension.js"
 
 export {
   compileWorkflowSource,

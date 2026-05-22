@@ -22,8 +22,10 @@ export interface StepNode {
   label?: string
   uses: CapabilityId | string
   input?: Record<string, InputValue>
-  commitAs?: string
-  commitMode?: CommitMode
+  /** State key for committed output (fluent `.as()`). */
+  as?: string
+  /** Commit mode when `as` is set (fluent `.as(key, { mode })`). */
+  mode?: CommitMode
   when?: ExprValue
 }
 

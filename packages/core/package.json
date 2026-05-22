@@ -62,6 +62,10 @@
     "./runtime/executor": {
       "types": "./dist/runtime/executor.d.ts",
       "import": "./dist/runtime/executor.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
     }
   },
   "files": ["dist", "README.md"],

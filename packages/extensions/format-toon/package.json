@@ -1,7 +1,7 @@
 {
   "name": "@ecp/format-toon",
   "version": "1.0.0",
-  "description": "ECP TOON format extension for workflow manifests",
+  "description": "ECP TOON format extension using @toon-format/toon (schema-agnostic with optional ECP validation)",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -12,13 +12,17 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b"
   },
   "dependencies": {
     "@ecp/core": "1.0.0",
     "@ecp/types": "1.0.0",
+    "@toon-format/toon": "^2.3.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

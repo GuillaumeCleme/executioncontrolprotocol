@@ -2,6 +2,7 @@ import type { LifecycleEvent } from "@ecp/types"
 import { defineExtension } from "../definitions/extension.js"
 import { capabilityFor } from "../definitions/capability.js"
 import { hook } from "../definitions/hook.js"
+import { catalogExtension } from "../registry/extension-catalog.js"
 import { globalRegistry } from "../registry/registry.js"
 import { z } from "zod"
 
@@ -23,7 +24,8 @@ function spyHook(event: LifecycleEvent) {
   })
 }
 
-const lifecycleSpyExtension = defineExtension("@ecp", "lifecycle-spy")
+/** Lifecycle spy extension for conformance tests. @category Testing */
+export const lifecycleSpyExtension = defineExtension("@ecp", "lifecycle-spy")
   .withConfig({})
   .withCapabilities([
     capabilityFor("@ecp/lifecycle-spy", "echo")
@@ -59,6 +61,8 @@ const lifecycleSpyExtension = defineExtension("@ecp", "lifecycle-spy")
     spyHook("step:finally"),
   ])
   .build()
+
+catalogExtension(lifecycleSpyExtension)
 
 /** Register lifecycle spy extension on global registry. */
 export async function registerLifecycleSpyExtension(): Promise<void> {

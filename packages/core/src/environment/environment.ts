@@ -15,6 +15,7 @@ import { extension, type ExtensionBindingBuilder } from "../bindings/extension.j
 import type { PolicyBindingBuilder } from "../bindings/policy.js"
 import type { RuntimeBindingBuilder } from "../bindings/runtime.js"
 import { Registry, globalRegistry } from "../registry/registry.js"
+import { ensureBoundExtensionsRegistered as ensureBoundExtensions } from "../registry/ensure-bound-extensions.js"
 import { RegistryRegistrationDeniedError } from "../registry/errors.js"
 import type { RuntimeExecutor } from "../runtime/executor.js"
 import type { EnvironmentLifecycleHost, PolicyContext } from "../runtime/context.js"
@@ -188,6 +189,8 @@ export class Environment implements EnvironmentLifecycleHost {
   private async prepareForDiscovery(): Promise<void> {
     if (this.discoveryPrepared) return
 
+    await this.ensureBoundExtensionsRegistered()
+
     await this.emitEnvironmentEvent("environment:created")
 
     if (!this.runtimeBinding) {
@@ -319,6 +322,15 @@ export class Environment implements EnvironmentLifecycleHost {
 
   getRegistry(): Registry {
     return this.registry
+  }
+
+  /**
+   * Register extension definitions for all bindings (catalog lookup or inline def).
+   * Idempotent; safe to call before encode, decode, describe, or run.
+   * @category Environment
+   */
+  async ensureBoundExtensionsRegistered(): Promise<void> {
+    await ensureBoundExtensions(this.extensionBindings, this.registry)
   }
 
   /** Environment id (for utility operations). @category Environment */

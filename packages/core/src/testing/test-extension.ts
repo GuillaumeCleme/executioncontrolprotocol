@@ -1,9 +1,11 @@
 import { defineExtension } from "../definitions/extension.js"
 import { capabilityFor } from "../definitions/capability.js"
+import { catalogExtension } from "../registry/extension-catalog.js"
 import { globalRegistry } from "../registry/registry.js"
 import { z } from "zod"
 
-const testExtension = defineExtension("@ecp", "test")
+/** In-repo stub extension for examples and tests. @category Testing */
+export const testExtension = defineExtension("@ecp", "test")
   .withConfig({})
   .withCapabilities([
     capabilityFor("@ecp/test", "echo")
@@ -14,6 +16,8 @@ const testExtension = defineExtension("@ecp", "test")
       })),
   ])
   .build()
+
+catalogExtension(testExtension)
 
 /** Register @ecp/test.echo for examples and tests. */
 export async function registerTestExtension(

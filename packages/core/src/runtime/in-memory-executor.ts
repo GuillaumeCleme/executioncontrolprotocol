@@ -392,13 +392,13 @@ export class InMemoryRuntimeExecutor implements RuntimeExecutor {
         state: ctx.state,
         mutations: pending,
         output,
-        commitAs: step.commitAs,
-        commitMode: step.commitMode,
+        as: step.as,
+        mode: step.mode,
       })
 
       stepRecord.status = "completed"
       stepRecord.output = output
-      stepRecord.committedAs = step.commitAs ?? null
+      stepRecord.committedAs = step.as ?? null
       stepRecord.mutations = pendingToMutationRecords(
         pending,
         step.id,
