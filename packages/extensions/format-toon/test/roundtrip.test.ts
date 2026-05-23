@@ -8,8 +8,19 @@ import {
   step,
   ref,
   normalizeWorkflowManifest,
+  runtime,
 } from "@ecp/core"
+import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
 import { registerFormatToonExtension } from "../src/index.js"
+import type { Ecp } from "@ecp/core"
+
+async function initToonEcp(): Promise<Ecp> {
+  await registerNodeRuntime()
+  const env = environment("test")
+    .withRuntime(runtime(NODE_RUNTIME_ID))
+    .withExtensions([extension("@ecp/format-toon").with({})])
+  return env.init()
+}
 import { encodeDocumentToToon, decodeDocumentFromToon } from "../src/toon-codec.js"
 
 /** JSON-safe describe fixture (no Zod schemas). Extension tests must not depend on live describe(). */
@@ -40,12 +51,11 @@ describe("TOON round trip (@toon-format/toon)", () => {
       ])
       .toManifest()
 
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
+    const ecp = await initToonEcp()
 
-    const toon = await env.encode(manifest).uses("@ecp/format-toon").process()
-    const decoded = await env.decode(toon.result).uses("@ecp/format-toon").process()
+    const toon = await ecp.encode(manifest).uses("@ecp/format-toon").process()
+    const decoded = await ecp.decode(toon.result).uses("@ecp/format-toon").process()
+    await ecp.terminate()
     const step0 = (decoded.result as WorkflowManifest).steps[0] as StepNode
     expect(step0.input?.context).toEqual({ $ref: "state.signals.results" })
   })
@@ -57,12 +67,11 @@ describe("TOON round trip (@toon-format/toon)", () => {
       .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
+    const ecp = await initToonEcp()
 
-    const toon = await env.encode(manifest).uses("@ecp/format-toon").process()
-    const decoded = await env.decode(toon.result).uses("@ecp/format-toon").process()
+    const toon = await ecp.encode(manifest).uses("@ecp/format-toon").process()
+    const decoded = await ecp.decode(toon.result).uses("@ecp/format-toon").process()
+    await ecp.terminate()
 
     expect(normalizeWorkflowManifest(decoded.result as WorkflowManifest)).toEqual(
       normalizeWorkflowManifest(manifest)
@@ -85,14 +94,13 @@ describe("TOON round trip (@toon-format/toon)", () => {
   it("round trips environment describe via encode/decode", async () => {
     await registerFormatToonExtension()
     const descriptor = sampleDescribeFixture()
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
+    const ecp = await initToonEcp()
 
-    const encoded = await env.encode(descriptor).uses("@ecp/format-toon").process()
+    const encoded = await ecp.encode(descriptor).uses("@ecp/format-toon").process()
     expect(encoded.sourceSchema).toBe("@ecp.environment.describe")
 
-    const decoded = await env.decode(encoded.result).uses("@ecp/format-toon").process()
+    const decoded = await ecp.decode(encoded.result).uses("@ecp/format-toon").process()
+    await ecp.terminate()
     expect(decoded.targetSchema).toBe("@ecp.environment.describe")
     expect(decoded.result).toEqual(descriptor)
   })
@@ -103,11 +111,9 @@ describe("TOON round trip (@toon-format/toon)", () => {
       .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
+    const ecp = await initToonEcp()
 
-    const encoded = await env
+    const encoded = await ecp
       .encode(manifest)
       .uses("@ecp/format-toon")
       .to("@ecp.workflow")
@@ -116,17 +122,17 @@ describe("TOON round trip (@toon-format/toon)", () => {
 
     expect(encoded.success).toBe(true)
     expect(String(encoded.result)).not.toMatch(/^\s*schema:/m)
+    await ecp.terminate()
   })
 
   it("encodes unknown schema without validation errors", async () => {
     await registerFormatToonExtension()
     const doc = { schema: "@ecp.custom.future", version: "1.0", data: { ok: true } }
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
-    const encoded = await env.encode(doc).uses("@ecp/format-toon").process()
+    const ecp = await initToonEcp()
+    const encoded = await ecp.encode(doc).uses("@ecp/format-toon").process()
     expect(encoded.diagnostics).toEqual([])
-    const decoded = await env.decode(encoded.result).uses("@ecp/format-toon").process()
+    const decoded = await ecp.decode(encoded.result).uses("@ecp/format-toon").process()
+    await ecp.terminate()
     expect(decoded.result).toEqual(doc)
   })
 })

@@ -19,8 +19,11 @@
   },
   "dependencies": {
     "@ecp/core": "1.0.0",
-    "@ecp/types": "1.0.0",
+    "@ecp/demo": "1.0.0",
+    "@ecp/format-mermaid": "1.0.0",
+    "@ecp/format-toon": "1.0.0",
     "@ecp/policies": "1.0.0",
+    "@ecp/types": "1.0.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {

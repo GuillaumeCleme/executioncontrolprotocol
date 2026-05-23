@@ -40,7 +40,8 @@ describe("examples/02-weekly-brief", () => {
     expect(compiled.ok).toBe(true)
     expect(compiled.manifest?.steps).toHaveLength(3)
 
-    const desc = await env.describe()
+    const ecp = await env.init()
+    const desc = await ecp.describe()
     expect(desc.capabilities.some((c) => c.id === "@ecp/memory.search")).toBe(true)
     expect(desc.capabilities.some((c) => c.id === "@ecp/openai.generate")).toBe(true)
   })

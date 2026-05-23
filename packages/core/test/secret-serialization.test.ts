@@ -10,7 +10,7 @@ describe("secret serialization", () => {
       extension("@ecp/secrets").with({ provider: "memory" }),
       extension("@ecp/test").with({ token: envRef("API_KEY") }),
     ])
-    await env.describe()
+    await env.init()
     const manifest = env.compile()
     const json = JSON.stringify(manifest)
     expect(json).not.toContain("super-secret-value")

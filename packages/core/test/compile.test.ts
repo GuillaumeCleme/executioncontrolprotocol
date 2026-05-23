@@ -24,7 +24,8 @@ describe("compileWorkflowSource", () => {
 
   it("validates against environment descriptor", async () => {
     const env = (await createTestEnvironment("t")).withExtensions([extension("@ecp/test").with({})])
-    const descriptor = await env.describe()
+    const ecp = await env.init()
+    const descriptor = await ecp.describe()
     const result = await compileAndValidateWorkflowSource({
       source: SAMPLE_TS,
       filename: "workflow.ts",

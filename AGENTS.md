@@ -44,15 +44,15 @@ ecp run --help
 
 ### Operational instance (`env.init()`)
 
-`await env.init()` returns an **`Ecp`** instance for encode/decode/patch/validate/describe/search (no `run` on `Ecp`; use `env.run()` on the environment builder). Lifecycle: `environment:configuring` → bind extensions → `environment:ready`. Call `ecp.terminate()` to emit `environment:terminate`.
+`await env.init()` returns an **`Ecp`** instance for all operational APIs: `run`, `encode`, `decode`, `patch`, `validate`, `describe`, `search`, and `invoke` (when implemented). Lifecycle: `environment:configuring` → bind extensions → `environment:ready`. Call `ecp.terminate()` to emit `environment:terminate`.
 
 ### Environment encoding, decoding, and patch
 
 Utility operations do not emit run/step lifecycle hooks.
 
 - Results use **`@ecp.encode.result`** / **`@ecp.decode.result`** / **`@ecp.patch.result`** with `success`, **`.result`**, `validation`, and `diagnostics` (not `.content` / `.document`).
-- `env.encode(source).uses("@ecp/format-toon").to("@ecp.workflow").with({ headers: false }).process()`
-- `env.decode(input).uses("@ecp/format-toon").to("@ecp.patch").process()` — decode input field is **`input`** in `EcpDecodeInput` payloads to extensions.
+- `ecp.encode(source).uses("@ecp/format-toon").to("@ecp.workflow").with({ headers: false }).process()`
+- `ecp.decode(input).uses("@ecp/format-toon").to("@ecp.patch").process()` — decode input field is **`input`** in `EcpDecodeInput` payloads to extensions.
 - `ecp.patch(manifest).with(patchDocOrShorthand).process()` — patch paths use **`steps[<stepId>].field`** (globally unique step IDs; `WorkflowBuilder.toManifest()` assigns unique IDs).
 - Omit `.uses(...)` for canonical JSON passthrough.
 - **Fluent authoring (core):** `workflow(...).toManifest()` / `compileWorkflowSource` (Fluent/TS → manifest); `renderWorkflowToFluent` / `workflow(...).toFluentSource()` / `ecp.encode(...).as("fluent")` (manifest → Fluent source). No `@ecp/format-fluent` extension.
@@ -92,7 +92,8 @@ const manifest = workflow("My flow")
 // Manifest steps use the same verbs as the fluent API: `.as("echo")` → `as: "echo"`; optional `{ mode }` → `mode: "create" | ...`
 
 const env = (await environment("dev")).withExtensions([extension("@ecp/test").with({})])
-await env.run(manifest)
+const ecp = await env.init()
+await ecp.run(manifest)
 ```
 
 ### Browser
@@ -104,13 +105,13 @@ import { environment, workflow, step, extension, policy } from "@ecp/browser"
 
 const env = await environment("demo") // binds registry-control + browser-registry (global `ecp`)
 
-await env.describe()
+const ecp = await env.init()
 await globalThis.ecp.registerExtension(customerExtension)
 
-await env.run(workflow)
+await ecp.run(workflow)
 ```
 
-**Lifecycle:** `describe()` / `search()` emit `environment:created` and `environment:configuring` only. First `run()` emits `environment:ready` then `environment:beforeRun`. Registry freeze is configured with **`freezeOn`**: `"environment:ready"` | `"environment:beforeRun"` | `"manual"` (default in demo: `"environment:beforeRun"`).
+**Lifecycle:** `init()` emits `environment:created`, `environment:configuring`, and `environment:ready`. `run()` emits `environment:beforeRun`. Registry freeze is configured with **`freezeOn`**: `"environment:ready"` | `"environment:beforeRun"` | `"manual"` (default in demo: `"environment:beforeRun"`).
 
 **Tests:**
 

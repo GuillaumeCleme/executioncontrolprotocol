@@ -7,7 +7,7 @@ import { createBrowserTestEnvironment } from "./helpers.js"
 describe("globalThis.ecp", () => {
   it("exposes registerExtension and freeze helpers only", async () => {
     const env = await createBrowserTestEnvironment("global-api")
-    await env.describe()
+    await env.init()
     const ecp = (globalThis as Record<string, unknown>).ecp as Record<string, unknown>
     expect(ecp).toBeDefined()
     expect(typeof ecp.registerExtension).toBe("function")
@@ -19,15 +19,15 @@ describe("globalThis.ecp", () => {
 
   it("removes global on shutdown", async () => {
     const env = await createBrowserTestEnvironment("global-shutdown")
-    await env.describe()
+    const operational = await env.init()
     expect((globalThis as Record<string, unknown>).ecp).toBeDefined()
-    await env.dispose()
+    await operational.terminate()
     expect((globalThis as Record<string, unknown>).ecp).toBeUndefined()
   })
 
   it("freezes via freezeRegistry and blocks further registration", async () => {
     const env = await createBrowserTestEnvironment("global-freeze")
-    await env.describe()
+    await env.init()
     const ecp = (globalThis as {
       ecp?: {
         registerExtension: (d: ReturnType<typeof defineExtension>) => Promise<void>

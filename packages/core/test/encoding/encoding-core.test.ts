@@ -4,13 +4,13 @@ import {
   extension,
   workflow,
   step,
-  runtime,
   registerTestExtension,
   hook,
   defineExtension,
 } from "../../src/index.js"
-import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
+import { NODE_RUNTIME_ID, registerNodeRuntime, runtime } from "@ecp/node"
 import { registerFormatToonExtension } from "@ecp/format-toon"
+import { initEncodingTestEcp } from "../helpers.js"
 
 const sampleManifest = workflow("Weekly Brief")
   .id("weekly-brief")
@@ -22,44 +22,46 @@ const sampleManifest = workflow("Weekly Brief")
   ])
   .toManifest()
 
-describe("env.encode/decode", () => {
-  it("returns an encode operation builder", () => {
-    const env = environment("test")
-    const builder = env.encode(sampleManifest)
+describe("ecp.encode/decode", () => {
+  it("returns an encode operation builder", async () => {
+    const ecp = await initEncodingTestEcp()
+    const builder = ecp.encode(sampleManifest)
     expect(builder.uses).toBeTypeOf("function")
     expect(builder.process).toBeTypeOf("function")
+    await ecp.terminate()
   })
 
   it("encodes JSON by default when no extension is used", async () => {
-    const env = environment("test")
-    const encoded = await env.encode(sampleManifest).process()
+    const ecp = await initEncodingTestEcp()
+    const encoded = await ecp.encode(sampleManifest).process()
     expect(encoded.schema).toBe("@ecp.encode.result")
     expect(encoded.success).toBe(true)
     expect(encoded.format).toBe("json")
     expect(encoded.result).toEqual(sampleManifest)
+    await ecp.terminate()
   })
 
   it("decodes JSON by default when no extension is used", async () => {
-    const env = environment("test")
-    const decoded = await env.decode(JSON.stringify(sampleManifest)).process()
+    const ecp = await initEncodingTestEcp()
+    const decoded = await ecp.decode(JSON.stringify(sampleManifest)).process()
     expect(decoded.schema).toBe("@ecp.decode.result")
     expect(decoded.success).toBe(true)
     expect(decoded.result).toEqual(sampleManifest)
+    await ecp.terminate()
   })
 
   it("fails when encoder extension is not registered", async () => {
-    const env = environment("test")
+    const ecp = await initEncodingTestEcp()
     await expect(
-      env.encode(sampleManifest).uses("@ecp/format-toon").process()
+      ecp.encode(sampleManifest).uses("@ecp/format-toon").process()
     ).rejects.toThrow(/not registered/)
+    await ecp.terminate()
   })
 
   it("encodes TOON when extension is registered", async () => {
     await registerFormatToonExtension()
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
-    const encoded = await env
+    const ecp = await initEncodingTestEcp([extension("@ecp/format-toon").with({})])
+    const encoded = await ecp
       .encode(sampleManifest)
       .uses("@ecp/format-toon")
       .to("@ecp.workflow")
@@ -68,6 +70,7 @@ describe("env.encode/decode", () => {
     expect(encoded.success).toBe(true)
     expect(String(encoded.result)).toContain("schema: @ecp.workflow")
     expect(String(encoded.result)).toContain("steps[")
+    await ecp.terminate()
   })
 })
 
@@ -88,18 +91,19 @@ describe("encode/decode lifecycle isolation", () => {
       ])
       .build()
 
-    const env = environment("test").withExtensions([
+    const ecp = await initEncodingTestEcp([
       extension("@ecp/test").with({}),
       extension(spy).with({}),
       extension("@ecp/format-toon").with({}),
     ])
 
-    const toon = await env.encode(sampleManifest).uses("@ecp/format-toon").process()
+    const toon = await ecp.encode(sampleManifest).uses("@ecp/format-toon").process()
     expect(toon.success).toBe(true)
-    await env.decode(toon.result).uses("@ecp/format-toon").process()
+    await ecp.decode(toon.result).uses("@ecp/format-toon").process()
 
     expect(events).not.toContain("run:before")
     expect(events).not.toContain("step:before")
+    await ecp.terminate()
   })
 })
 
@@ -114,6 +118,7 @@ describe("env.init", () => {
     expect(ecp.encode).toBeTypeOf("function")
     expect(ecp.decode).toBeTypeOf("function")
     expect(ecp.patch).toBeTypeOf("function")
+    expect(ecp.run).toBeTypeOf("function")
     expect(ecp.terminate).toBeTypeOf("function")
     await ecp.terminate()
   })

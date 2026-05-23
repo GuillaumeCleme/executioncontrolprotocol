@@ -1,4 +1,4 @@
-import { loadWorkflowFile } from "@ecp/core"
+import { loadWorkflowFile } from "@ecp/core/loaders"
 import { runWithCommandError } from "../lib/command-helpers.js"
 import { WorkflowEnvCommand } from "../lib/env-module-command.js"
 
@@ -20,9 +20,9 @@ export default class Validate extends WorkflowEnvCommand {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Validate)
     await runWithCommandError(this, async () => {
-      const env = await this.loadEnv(flags)
+      const ecp = await this.loadEcp(flags)
       const workflow = await loadWorkflowFile(args["workflow-path"])
-      const result = await env.validate(workflow)
+      const result = await ecp.validate(workflow)
       this.log(JSON.stringify(result, null, 2))
       if (!result.valid) this.exit(1)
     })

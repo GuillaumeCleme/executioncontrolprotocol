@@ -24,8 +24,8 @@ export default class Search extends EnvModuleCommand {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Search)
     await runWithCommandError(this, async () => {
-      const env = await this.loadEnv(flags)
-      this.log(JSON.stringify(await env.search(args.query), null, 2))
+      const ecp = await this.loadEcp(flags)
+      this.log(JSON.stringify(await ecp.search(args.query), null, 2))
     })
   }
 }

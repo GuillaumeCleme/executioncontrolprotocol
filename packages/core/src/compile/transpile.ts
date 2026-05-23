@@ -1,37 +1,14 @@
-import { dirname, join } from "node:path"
-import { fileURLToPath } from "node:url"
-
 /** Whether filename indicates TypeScript. */
 export function isTypeScriptFile(filename: string): boolean {
   return /\.tsx?$/i.test(filename)
 }
 
-function isBrowser(): boolean {
-  return (
-    typeof globalThis !== "undefined" &&
-    typeof (globalThis as { window?: unknown }).window !== "undefined"
-  )
-}
-
-/** Transpile TS to ESM using esbuild-wasm (browser) or transform (Node). */
+/** Transpile TS to ESM using esbuild (Node host). */
 export async function transpileWorkflowSource(
   source: string,
   filename: string
 ): Promise<string> {
   if (!isTypeScriptFile(filename)) return source
-
-  if (isBrowser()) {
-    const esbuild = await import("esbuild-wasm")
-    await esbuild.initialize({
-      wasmURL: "https://unpkg.com/esbuild-wasm@0.25.0/esbuild.wasm",
-    })
-    const result = await esbuild.transform(source, {
-      loader: filename.endsWith(".tsx") ? "tsx" : "ts",
-      format: "esm",
-      target: "es2022",
-    })
-    return result.code
-  }
 
   const esbuild = await import("esbuild")
   const result = await esbuild.transform(source, {
@@ -43,7 +20,7 @@ export async function transpileWorkflowSource(
 }
 
 /**
- * Bundle workflow module with dependencies (Node only).
+ * Bundle workflow module with dependencies (Node host).
  * Resolves `@ecp/core` and extension imports.
  */
 export async function bundleWorkflowSource(
@@ -51,10 +28,8 @@ export async function bundleWorkflowSource(
   filename: string,
   resolveDir: string
 ): Promise<string> {
-  if (isBrowser()) {
-    return transpileWorkflowSource(source, filename)
-  }
-
+  const { dirname, join } = await import("node:path")
+  const { fileURLToPath } = await import("node:url")
   const esbuild = await import("esbuild")
   const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..")
   const loader = filename.endsWith(".tsx")
@@ -76,6 +51,9 @@ export async function bundleWorkflowSource(
     write: false,
     packages: "bundle",
     alias: {
+      "@ecp/core/compile": join(repoRoot, "packages/core/dist/compile/entry.js"),
+      "@ecp/core/loaders": join(repoRoot, "packages/core/dist/loaders/index.js"),
+      "@ecp/core/browser": join(repoRoot, "packages/core/dist/browser.js"),
       "@ecp/core": join(repoRoot, "packages/core/dist/index.js"),
       "@ecp/core/testing": join(repoRoot, "packages/core/dist/testing/index.js"),
       "@ecp/node": join(repoRoot, "packages/node/dist/index.js"),

@@ -62,7 +62,7 @@ export async function loadEnvironmentModule(path: string): Promise<Environment> 
       ? (exp as () => Environment | Promise<Environment>)()
       : (exp as Environment | Promise<Environment>)
   const value = await Promise.resolve(raw)
-  if (!value || typeof value.run !== "function") {
+  if (!value || typeof value.init !== "function") {
     throw new Error("Environment export must be an Environment instance")
   }
   return value

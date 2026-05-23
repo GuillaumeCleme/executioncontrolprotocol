@@ -1,5 +1,5 @@
 import { Args, Command, Flags } from "@oclif/core"
-import { compileWorkflowSource } from "@ecp/core"
+import { compileWorkflowSource } from "@ecp/core/compile"
 import { readFile, writeFile } from "node:fs/promises"
 import { runWithCommandError } from "../lib/command-helpers.js"
 

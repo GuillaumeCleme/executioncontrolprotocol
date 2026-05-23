@@ -1,16 +1,25 @@
 import type {
+  CapabilityId,
   DescribeQuery,
   EnvironmentDescriptor,
+  RunResult,
   SearchOptions,
   SearchResult,
   ValidationResult,
   WorkflowManifest,
 } from "@ecp/types"
 import type { Registry } from "../registry/registry.js"
-import type { Environment } from "./environment.js"
-import type { DecodeOperationBuilder } from "../encoding/decode-builder.js"
-import type { EncodeOperationBuilder } from "../encoding/encode-builder.js"
-import type { PatchOperationBuilder } from "../patch/patch-builder.js"
+import type { Environment, RunOptions } from "./environment.js"
+import {
+  createDecodeBuilder,
+  createEncodeBuilder,
+  type DecodeOperationBuilder,
+  type EncodeOperationBuilder,
+} from "../encoding/index.js"
+import { createPatchBuilder, type PatchOperationBuilder } from "../patch/index.js"
+import type { InvokeOperationBuilder } from "../invoke/invoke-builder.js"
+
+export type { RunOptions } from "./environment.js"
 
 /**
  * Initialized operational ECP instance (returned from {@link Environment.init}).
@@ -31,8 +40,12 @@ export interface Ecp {
   decode(input: unknown): DecodeOperationBuilder
   /** Apply a canonical JSON patch to a document. */
   patch<T = unknown>(document: T): PatchOperationBuilder<T>
-  /** Validate a workflow manifest. */
-  validate(workflow: WorkflowManifest): Promise<ValidationResult>
+  /** Validate a workflow manifest or environment-only when omitted. */
+  validate(workflow?: WorkflowManifest): Promise<ValidationResult>
+  /** Execute a workflow manifest. */
+  run(workflow: WorkflowManifest, options?: RunOptions): Promise<RunResult>
+  /** Invoke a registered capability outside workflow execution. */
+  invoke(capabilityId: CapabilityId | string): InvokeOperationBuilder
   /** Underlying registry. */
   getRegistry(): Registry
   /** Terminate the environment and release resources. */
@@ -55,27 +68,35 @@ export class EcpImpl implements Ecp {
   }
 
   describe(query?: DescribeQuery): Promise<EnvironmentDescriptor> {
-    return this.env.describe(query)
+    return this.env.ecpDescribe(query)
   }
 
   search(query: string, options?: SearchOptions): Promise<SearchResult> {
-    return this.env.search(query, options)
+    return this.env.ecpSearch(query, options)
   }
 
   encode(input: unknown): EncodeOperationBuilder {
-    return this.env.encode(input)
+    return createEncodeBuilder(this.env, input)
   }
 
   decode(input: unknown): DecodeOperationBuilder {
-    return this.env.decode(input)
+    return createDecodeBuilder(this.env, input)
   }
 
   patch<T = unknown>(document: T): PatchOperationBuilder<T> {
-    return this.env.patch(document)
+    return createPatchBuilder(document)
   }
 
-  validate(workflow: WorkflowManifest): Promise<ValidationResult> {
-    return this.env.validate(workflow)
+  validate(workflow?: WorkflowManifest): Promise<ValidationResult> {
+    return this.env.ecpValidate(workflow)
+  }
+
+  run(workflow: WorkflowManifest, options?: RunOptions): Promise<RunResult> {
+    return this.env.ecpRun(workflow, options)
+  }
+
+  invoke(capabilityId: CapabilityId | string): InvokeOperationBuilder {
+    return this.env.ecpInvoke(capabilityId as CapabilityId)
   }
 
   getRegistry(): Registry {
@@ -83,6 +104,6 @@ export class EcpImpl implements Ecp {
   }
 
   terminate(): Promise<void> {
-    return this.env.dispose()
+    return this.env.ecpTerminate()
   }
 }

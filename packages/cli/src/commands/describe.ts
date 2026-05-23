@@ -26,11 +26,11 @@ export default class Describe extends EnvModuleCommand {
   async run(): Promise<void> {
     const { flags } = await this.parse(Describe)
     await runWithCommandError(this, async () => {
-      const env = await this.loadEnv(flags)
+      const ecp = await this.loadEcp(flags)
       const query = flags.query
         ? (JSON.parse(await readFile(flags.query, "utf8")) as DescribeQuery)
         : undefined
-      this.log(JSON.stringify(await env.describe(query), null, 2))
+      this.log(JSON.stringify(await ecp.describe(query), null, 2))
     })
   }
 }

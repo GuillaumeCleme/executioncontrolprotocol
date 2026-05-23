@@ -12,6 +12,12 @@ import { BROWSER_RUNTIME_ID, registerBrowserRuntime } from "./runtime/builtin-br
 import { registerBrowserRegistryExtension } from "./extensions/browser-registry.js"
 import { registerBrowserSessionConfigExtension } from "./extensions/browser-session-config.js"
 import { registerBrowserLocalConfigExtension } from "./extensions/browser-local-config.js"
+import { registerFormatToonExtension } from "@ecp/format-toon"
+import { registerFormatMermaidExtension } from "@ecp/format-mermaid"
+import { registerDemoExtension } from "@ecp/demo"
+import "@ecp/format-toon"
+import "@ecp/format-mermaid"
+import "@ecp/demo"
 
 /** Register browser runtime and standard browser extensions. */
 export async function registerBrowserDefaults(registry: Registry = globalRegistry): Promise<void> {
@@ -19,6 +25,9 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerBrowserRegistryExtension(registry)
   await registerBrowserSessionConfigExtension(registry)
   await registerBrowserLocalConfigExtension(registry)
+  await registerFormatToonExtension(registry)
+  await registerFormatMermaidExtension(registry)
+  await registerDemoExtension(registry)
   await registerStandardPolicies(registry)
 }
 
@@ -34,6 +43,9 @@ export function createBrowserDemoEnvironment(
   return coreEnvironment(id, label, registry)
     .withRuntime(runtime(BROWSER_RUNTIME_ID, "Browser Runtime"))
     .withExtensions([
+      extension("@ecp/format-toon").with({}),
+      extension("@ecp/format-mermaid").with({}),
+      extension("@ecp/demo").with({}),
       extension("@ecp/browser-registry").with({
         freezeOn: "environment:beforeRun",
         autoBindRegisteredExtensions: true,

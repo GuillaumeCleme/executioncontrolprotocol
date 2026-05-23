@@ -14,7 +14,8 @@ describe("environment.describe", () => {
     ])
       .withPolicies([policy("@ecp/budget", "B").with({})])
 
-    const desc = await env.describe({
+    const ecp = await env.init()
+    const desc = await ecp.describe({
       capabilities: {
         match: "echo",
         include: ["id", "label"],
@@ -32,7 +33,8 @@ describe("environment.describe", () => {
     ])
       .withPolicies([policy("@ecp/budget", "B").with({ maxModelCalls: 1 })])
 
-    const desc = await env.describe({
+    const ecp = await env.init()
+    const desc = await ecp.describe({
       policies: { match: "budget", include: ["id", "summary"] },
     })
     expect(desc.policies.length).toBeGreaterThan(0)

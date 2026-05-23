@@ -26,4 +26,4 @@ export interface RegistryRegistrationRequest {
 }
 
 /** Policy evaluation scope for non-step checks. @category Policies */
-export type PolicyEvaluationScope = "environment" | "run" | "step"
+export type PolicyEvaluationScope = "environment" | "run" | "step" | "invoke"

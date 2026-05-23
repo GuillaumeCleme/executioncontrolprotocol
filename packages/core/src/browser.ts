@@ -23,3 +23,17 @@ export { parallel, branch, loop } from "./workflow/flow.js"
 
 export { validateWorkflow } from "./validate/workflow.js"
 export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
+
+export {
+  compileWorkflowSource,
+  compileAndValidateWorkflowSource,
+  type CompileWorkflowResult,
+  type CompileWorkflowSourceOptions,
+} from "./compile/index.browser.js"
+
+export {
+  renderWorkflowToFluent,
+  renderWorkflowManifestToFluent,
+  encodeFluent,
+  type RenderWorkflowToFluentOptions,
+} from "./fluent/index.js"

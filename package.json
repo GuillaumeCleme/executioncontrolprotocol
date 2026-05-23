@@ -15,7 +15,8 @@
     "packages/cli",
     "packages/policies",
     "packages/extensions/*",
-    "packages/runtimes/*"
+    "packages/runtimes/*",
+    "apps/*"
   ],
   "scripts": {
     "clean": "node scripts/clean-dist.mjs",

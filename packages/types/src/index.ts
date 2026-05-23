@@ -86,3 +86,5 @@ export type {
   PatchResultDocument,
   EcpPatchDocumentRecord,
 } from "./patch.js"
+export { ECP_INVOKE_ERROR_CODES } from "./invoke.js"
+export type { EcpInvokeErrorCode, InvokeResult, UsageSummary } from "./invoke.js"

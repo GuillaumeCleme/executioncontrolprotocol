@@ -1,39 +1,18 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises"
-import { tmpdir } from "node:os"
-import { join } from "node:path"
-import { pathToFileURL } from "node:url"
 import type { WorkflowManifest } from "@ecp/types"
-import type { WorkflowBuilder } from "../workflow/builder.js"
+import { extractWorkflowFromModule } from "./extract-workflow-module.js"
 
-const WORKFLOW_EXPORT_NAMES = ["default", "workflow", "defaultWorkflow", "manifest"]
+export { extractWorkflowFromModule } from "./extract-workflow-module.js"
 
-/** Extract workflow builder or manifest from evaluated module exports. */
-export function extractWorkflowFromModule(
-  mod: Record<string, unknown>
-): WorkflowManifest {
-  for (const name of WORKFLOW_EXPORT_NAMES) {
-    const exp = mod[name]
-    if (!exp) continue
-    const value = typeof exp === "function" ? (exp as () => unknown)() : exp
-    if (value && typeof value === "object") {
-      if ("toManifest" in value && typeof (value as WorkflowBuilder).toManifest === "function") {
-        return (value as WorkflowBuilder).toManifest()
-      }
-      if ("schema" in value && (value as WorkflowManifest).schema === "@ecp.workflow") {
-        return value as WorkflowManifest
-      }
-    }
-  }
-  throw new Error(
-    "Module must export a workflow builder or @ecp.workflow manifest (default, workflow, or defaultWorkflow)"
-  )
-}
-
-/** Evaluate ESM code in a temp file (Node ESM loader). */
+/** Evaluate ESM workflow module code (Node host: temp file + dynamic import). */
 export async function evaluateWorkflowModule(
   code: string,
   _filename = "workflow.js"
 ): Promise<WorkflowManifest> {
+  const { mkdtemp, rm, writeFile } = await import("node:fs/promises")
+  const { tmpdir } = await import("node:os")
+  const { join } = await import("node:path")
+  const { pathToFileURL } = await import("node:url")
+
   const dir = await mkdtemp(join(tmpdir(), "ecp-compile-"))
   const file = join(dir, "workflow.mjs")
   try {

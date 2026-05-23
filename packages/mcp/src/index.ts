@@ -1,14 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod"
-import type { Environment } from "@ecp/core"
+import type { Ecp } from "@ecp/core"
 import type { EcpEncodeInput, WorkflowManifest } from "@ecp/types"
 import { ECP_FORMATS } from "@ecp/types"
 import { createServer } from "node:http"
 
 /** Options for MCP server creation. @category MCP */
 export interface CreateEcpMcpServerOptions {
-  environment: Environment
+  /** Initialized operational ECP instance. */
+  ecp: Ecp
   name?: string
   version?: string
 }
@@ -16,11 +17,11 @@ export interface CreateEcpMcpServerOptions {
 const runs = new Map<string, import("@ecp/types").RunResult>()
 
 /**
- * Create an MCP server exposing ECP environment APIs.
+ * Create an MCP server exposing ECP operational APIs.
  * @category MCP
  */
 export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServer {
-  const { environment } = options
+  const { ecp } = options
   const server = new McpServer({
     name: options.name ?? "ecp",
     version: options.version ?? "1.0.0",
@@ -33,7 +34,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
       content: [
         {
           type: "text",
-          text: JSON.stringify(await environment.describe(query), null, 2),
+          text: JSON.stringify(await ecp.describe(query), null, 2),
         },
       ],
     })
@@ -47,7 +48,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
         {
           type: "text",
           text: JSON.stringify(
-            await environment.search(query, searchOpts as import("@ecp/types").SearchOptions),
+            await ecp.search(query, searchOpts as import("@ecp/types").SearchOptions),
             null,
             2
           ),
@@ -64,7 +65,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
         {
           type: "text",
           text: JSON.stringify(
-            await environment.validate(workflow as unknown as WorkflowManifest),
+            await ecp.validate(workflow as unknown as WorkflowManifest),
             null,
             2
           ),
@@ -81,7 +82,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
       dryRun: z.boolean().optional(),
     },
     async ({ workflow, input, dryRun }) => {
-      const result = await environment.run(workflow as unknown as WorkflowManifest, {
+      const result = await ecp.run(workflow as unknown as WorkflowManifest, {
         input,
         dryRun,
       })
@@ -102,7 +103,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
       compact: z.boolean().optional(),
     },
     async ({ source, format, compact }) => {
-      let op = environment.encode(source as EcpEncodeInput["source"])
+      let op = ecp.encode(source as EcpEncodeInput["source"])
       if (format === "toon") op = op.uses("@ecp/format-toon")
       else if (format === "fluent") op = op.as("fluent")
       if (compact) op = op.compact()
@@ -122,7 +123,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
       targetSchema: z.string().optional(),
     },
     async ({ content, format, strict, targetSchema }) => {
-      let op = environment.decode(content)
+      let op = ecp.decode(content)
       if (format === "toon") op = op.uses("@ecp/format-toon")
       if (strict) op = op.strict()
       if (targetSchema) op = op.to(targetSchema as "@ecp.workflow")
@@ -155,23 +156,25 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
 
 /** Serve MCP over stdio. @category MCP */
 export async function serveStdio(options: {
-  environment: Environment
+  environment: import("@ecp/core").Environment
   name?: string
   version?: string
 }): Promise<void> {
-  const server = createEcpMcpServer(options)
+  const ecp = await options.environment.init()
+  const server = createEcpMcpServer({ ecp, name: options.name, version: options.version })
   const transport = new StdioServerTransport()
   await server.connect(transport)
 }
 
 /** Serve MCP over HTTP (minimal JSON-RPC bridge). @category MCP */
 export async function serveHttp(options: {
-  environment: Environment
+  environment: import("@ecp/core").Environment
   port?: number
   name?: string
   version?: string
 }): Promise<void> {
-  const server = createEcpMcpServer(options)
+  const ecp = await options.environment.init()
+  const server = createEcpMcpServer({ ecp, name: options.name, version: options.version })
   const port = options.port ?? 8787
   const transport = new StdioServerTransport()
   await server.connect(transport)

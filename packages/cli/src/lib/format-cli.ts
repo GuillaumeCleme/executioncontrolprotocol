@@ -10,7 +10,7 @@ const FORMAT_EXTENSION: Record<CliFormat, string | undefined> = {
 }
 
 /**
- * Map CLI format flag to extension id for `env.encode().uses(...)`.
+ * Map CLI format flag to extension id for `ecp.encode().uses(...)`.
  * @category CLI
  */
 export function formatToExtensionId(format: CliFormat): string | undefined {

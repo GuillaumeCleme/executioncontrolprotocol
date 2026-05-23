@@ -1,5 +1,5 @@
 import { Args, Flags } from "@oclif/core"
-import { loadWorkflowFile } from "@ecp/core"
+import { loadWorkflowFile } from "@ecp/core/loaders"
 import { writeFile } from "node:fs/promises"
 import { runWithCommandError } from "../lib/command-helpers.js"
 import { EnvModuleCommand } from "../lib/env-module-command.js"
@@ -45,10 +45,10 @@ export default class Encode extends EnvModuleCommand {
     const { args, flags } = await this.parse(Encode)
     await runWithCommandError(this, async () => {
       const format = parseCliFormat(flags.format)
-      const env = await this.loadEnv(flags)
+      const ecp = await this.loadEcp(flags)
       const manifest = await loadWorkflowFile(args["input-path"])
 
-      let op = env.encode(manifest)
+      let op = ecp.encode(manifest)
       if (format === ECP_FORMATS.FLUENT) op = op.as("fluent")
       else {
         const extId = formatToExtensionId(format)

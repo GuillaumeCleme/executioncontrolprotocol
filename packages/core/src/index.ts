@@ -22,9 +22,10 @@ export { policy } from "./bindings/policy.js"
 export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 
-export { environment, Environment, type RunOptions } from "./environment/environment.js"
-export { EcpImpl, type Ecp } from "./environment/ecp.js"
+export { environment, Environment } from "./environment/environment.js"
+export { EcpImpl, type Ecp, type RunOptions } from "./environment/ecp.js"
 export { assignUniqueStepIds } from "./workflow/assign-unique-step-ids.js"
+export { createInvokeBuilder, type InvokeOperationBuilder } from "./invoke/index.js"
 export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
 export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
 export { Registry, globalRegistry, type RegistryRegistrationGuard } from "./registry/registry.js"
@@ -53,12 +54,6 @@ export type {
 export { createUsageLedger } from "./runtime/context.js"
 export { registerTestExtension, testExtension } from "./testing/test-extension.js"
 
-export {
-  compileWorkflowSource,
-  compileAndValidateWorkflowSource,
-  type CompileWorkflowResult,
-  type CompileWorkflowSourceOptions,
-} from "./compile/index.js"
 export {
   renderWorkflowToFluent,
   renderWorkflowManifestToFluent,
@@ -90,11 +85,3 @@ export {
   ecpPatchEntrySchema,
 } from "./patch/index.js"
 export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
-
-export {
-  readTextFile,
-  loadWorkflowJson,
-  loadWorkflowFile,
-  loadEnvironmentModule,
-  loadWorkflowModule,
-} from "./loaders/files.js"

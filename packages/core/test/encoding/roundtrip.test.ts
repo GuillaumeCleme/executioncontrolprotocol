@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest"
 import {
-  environment,
   extension,
-  compileWorkflowSource,
   normalizeWorkflowManifest,
   registerTestExtension,
 } from "../../src/index.js"
+import { compileWorkflowSource } from "../../src/compile/index.js"
 import { registerFormatToonExtension } from "@ecp/format-toon"
+import { initEncodingTestEcp } from "../helpers.js"
 
 const fluentSource = `
 import { workflow, step, ref } from "@ecp/core";
@@ -26,9 +26,7 @@ describe("full format round trip", () => {
     await registerTestExtension()
     await registerFormatToonExtension()
 
-    const env = environment("test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
+    const ecp = await initEncodingTestEcp([extension("@ecp/format-toon").with({})])
 
     const compiledA = await compileWorkflowSource({
       source: fluentSource,
@@ -37,13 +35,14 @@ describe("full format round trip", () => {
     expect(compiledA.ok).toBe(true)
     const manifestA = compiledA.manifest!
 
-    const toon = await env.encode(manifestA).uses("@ecp/format-toon").process()
+    const toon = await ecp.encode(manifestA).uses("@ecp/format-toon").process()
 
-    const decoded = await env.decode(toon.result).uses("@ecp/format-toon").process()
+    const decoded = await ecp.decode(toon.result).uses("@ecp/format-toon").process()
 
     const manifestB = decoded.result
 
-    const fluent = await env.encode(manifestB).as("fluent").process()
+    const fluent = await ecp.encode(manifestB).as("fluent").process()
+    await ecp.terminate()
 
     const compiledB = await compileWorkflowSource({
       source: String(fluent.result),

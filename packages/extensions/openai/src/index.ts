@@ -69,6 +69,27 @@ export const openaiExtension = defineExtension("@ecp", "openai")
         )
         return { content }
       }),
+    capabilityFor("@ecp/openai", "generateText")
+      .withInput(GenerateInput)
+      .withOutput(z.object({ text: z.string() }))
+      .withHandler(async (input, ctx) => {
+        const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
+        const apiKey =
+          (cfg.apiKey as string) ?? process.env.OPENAI_API_KEY ?? ""
+        if (!apiKey) throw new Error("OpenAI API key required")
+        const model =
+          (input as z.infer<typeof GenerateInput>).model ??
+          (cfg.defaultModel as string) ??
+          "gpt-4o-mini"
+        ctx.usage.increment({ modelCalls: 1 })
+        const content = await chatComplete(
+          apiKey,
+          model,
+          (input as z.infer<typeof GenerateInput>).prompt,
+          (input as z.infer<typeof GenerateInput>).context
+        )
+        return { text: content }
+      }),
     capabilityFor("@ecp/openai", "evaluate")
       .withInput(
         z.object({

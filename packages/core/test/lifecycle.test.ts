@@ -41,7 +41,8 @@ describe("step lifecycle ordering", () => {
       ])
       .toManifest()
 
-    const result = await env.run(manifest)
+    const ecp = await env.init()
+    const result = await ecp.run(manifest)
     expect(result.run.status).toBe("completed")
     expect(capabilityInvokeCount).toBe(1)
     expect(lifecycleSpyEvents).toEqual([
@@ -75,7 +76,8 @@ describe("step lifecycle ordering", () => {
       .run([step("@ecp/lifecycle-spy.echo", "Echo").with({ value: "x" })])
       .toManifest()
 
-    const result = await env.run(manifest)
+    const ecp = await env.init()
+    const result = await ecp.run(manifest)
     expect(result.history?.echo?.status ?? Object.values(result.history ?? {})[0]?.status).toBe(
       "failed"
     )
@@ -98,7 +100,8 @@ describe("step lifecycle ordering", () => {
       .run([step("@ecp/lifecycle-spy.echo", "Echo").with({ value: "x" }).as("echo")])
       .toManifest()
 
-    const result = await env.run(manifest)
+    const ecp = await env.init()
+    const result = await ecp.run(manifest)
     expect(result.history?.echo?.status).toBe("paused")
     expect(capabilityInvokeCount).toBe(0)
     expect(lifecycleSpyEvents).not.toContain("step:started")
@@ -114,7 +117,8 @@ describe("step lifecycle ordering", () => {
       .toManifest()
 
     const stateBefore = { seed: 1 }
-    const result = await env.run(manifest, { input: stateBefore })
+    const ecp = await env.init()
+    const result = await ecp.run(manifest, { input: stateBefore })
     expect(capabilityInvokeCount).toBe(1)
     expect(lifecycleSpyEvents).toContain("step:failed")
     expect(lifecycleSpyEvents).toContain("step:finally")

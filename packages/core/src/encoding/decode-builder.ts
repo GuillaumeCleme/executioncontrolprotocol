@@ -6,7 +6,7 @@ import type {
   NamespacedId,
 } from "@ecp/types"
 import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION } from "@ecp/types"
-import type { Environment } from "../environment/environment.js"
+import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
 import { decodeJson } from "./json-codec.js"
 import { EcpError } from "./errors.js"
 import { invokeDecodeCapability } from "./invoke-utility.js"
@@ -58,7 +58,7 @@ function validateDecodedDocument(
  * @category Encoding
  */
 export function createDecodeBuilder(
-  env: Environment,
+  env: EncodingEnvironmentHost,
   content: unknown
 ): DecodeOperationBuilder {
   const state: DecodeState = { content, options: {} }

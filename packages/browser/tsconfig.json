@@ -5,6 +5,13 @@
     "rootDir": "src",
     "composite": true
   },
-  "references": [{ "path": "../types" }, { "path": "../core" }, { "path": "../policies" }],
+  "references": [
+    { "path": "../types" },
+    { "path": "../core" },
+    { "path": "../policies" },
+    { "path": "../extensions/format-toon" },
+    { "path": "../extensions/format-mermaid" },
+    { "path": "../extensions/demo" }
+  ],
   "include": ["src/**/*.ts"]
 }

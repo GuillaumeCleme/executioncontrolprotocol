@@ -11,7 +11,8 @@ describe("environment.search", () => {
       extension("@ecp/test", "T").with({}),
     ])
 
-    const result = await env.search("test echo")
+    const ecp = await env.init()
+    const result = await ecp.search("test echo")
     expect(result.results.length).toBeGreaterThan(0)
     expect(result.results[0]?.id).toBe("@ecp/test.echo")
     expect(result.results[0]?.score).toBeGreaterThan(0)
@@ -22,7 +23,8 @@ describe("environment.search", () => {
       extension("@ecp/test", "T").with({}),
     ])
 
-    const result = await env.search("echo", {
+    const ecp = await env.init()
+    const result = await ecp.search("echo", {
       include: ["inputSchema"],
     })
     expect(result.results[0]?.inputSchema).toBeDefined()

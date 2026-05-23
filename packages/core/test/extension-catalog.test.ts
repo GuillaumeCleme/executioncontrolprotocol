@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import { environment, extension, testExtension, getCatalogedExtension } from "../src/index.js"
 import { formatToonExtension } from "@ecp/format-toon"
 import "@ecp/format-toon"
+import { initEncodingTestEcp } from "./helpers.js"
 
 describe("extension catalog", () => {
   it("resolves cataloged extension by string id", () => {
@@ -9,9 +10,7 @@ describe("extension catalog", () => {
   })
 
   it("registers bound extensions on encode without prior registerFormatToonExtension", async () => {
-    const env = environment("catalog-test").withExtensions([
-      extension("@ecp/format-toon").with({}),
-    ])
+    const ecp = await initEncodingTestEcp([extension("@ecp/format-toon").with({})])
 
     const manifest = {
       schema: "@ecp.workflow" as const,
@@ -20,7 +19,8 @@ describe("extension catalog", () => {
       steps: [],
     }
 
-    const encoded = await env.encode(manifest).uses("@ecp/format-toon").process()
+    const encoded = await ecp.encode(manifest).uses("@ecp/format-toon").process()
+    await ecp.terminate()
     expect(encoded.format).toBe("toon")
   })
 

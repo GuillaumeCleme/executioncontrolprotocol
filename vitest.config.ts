@@ -9,10 +9,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@ecp/types": path.resolve(repoRoot, "packages/types/src/index.ts"),
-      "@ecp/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
-      "@ecp/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
-      "@ecp/node": path.resolve(repoRoot, "packages/node/src/index.ts"),
-      "@ecp/browser": path.resolve(repoRoot, "packages/browser/src/index.ts"),
+      "@ecp/core/compile": path.resolve(repoRoot, "packages/core/src/compile/entry.ts"),
+      "@ecp/core/loaders": path.resolve(repoRoot, "packages/core/src/loaders/index.ts"),
       "@ecp/core/browser": path.resolve(repoRoot, "packages/core/src/browser.ts"),
       "@ecp/core/environment": path.resolve(
         repoRoot,
@@ -59,6 +57,10 @@ export default defineConfig({
         repoRoot,
         "packages/core/src/definitions/types.ts"
       ),
+      "@ecp/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
+      "@ecp/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
+      "@ecp/node": path.resolve(repoRoot, "packages/node/src/index.ts"),
+      "@ecp/browser": path.resolve(repoRoot, "packages/browser/src/index.ts"),
       "@ecp/extension-memory": path.resolve(
         repoRoot,
         "packages/extensions/memory/src/index.ts"

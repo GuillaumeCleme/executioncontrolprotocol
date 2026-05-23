@@ -16,13 +16,13 @@ describe("globalThis.ecp in real browser", () => {
   it("registers extension via window.ecp", async () => {
     await registerBrowserDefaults()
     const env = createBrowserDemoEnvironment("real-browser-global")
-    await env.describe()
-    const ecp = (globalThis as {
+    const operational = await env.init()
+    const globalEcp = (globalThis as {
       ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> }
     }).ecp
-    expect(ecp).toBeDefined()
-    await ecp!.registerExtension(customerExt)
-    const desc = await env.describe()
+    expect(globalEcp).toBeDefined()
+    await globalEcp!.registerExtension(customerExt)
+    const desc = await operational.describe()
     expect(desc.capabilities.some((c) => c.id === "@customer/browser-only.ping")).toBe(true)
   })
 })

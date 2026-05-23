@@ -96,10 +96,7 @@ describe("fluent API surface", () => {
     expect(typeof envBuilder.withExtensions).toBe("function")
     expect(typeof envBuilder.withPolicies).toBe("function")
     expect(typeof envBuilder.compile).toBe("function")
-    expect(typeof envBuilder.validate).toBe("function")
-    expect(typeof envBuilder.describe).toBe("function")
-    expect(typeof envBuilder.search).toBe("function")
-    expect(typeof envBuilder.run).toBe("function")
+    expect(typeof envBuilder.init).toBe("function")
     expect(typeof envBuilder.getRegistry).toBe("function")
   })
 

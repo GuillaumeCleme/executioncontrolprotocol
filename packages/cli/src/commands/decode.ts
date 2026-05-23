@@ -46,14 +46,14 @@ export default class Decode extends EnvModuleCommand {
         throw new Error("Fluent decode is not supported; use ecp compile for Fluent → manifest.")
       }
 
-      const env = await this.loadEnv(flags)
+      const ecp = await this.loadEcp(flags)
       const raw = await readFile(args["input-path"], "utf8")
       const content =
         format === "json" && raw.trimStart().startsWith("{")
           ? JSON.parse(raw)
           : raw
 
-      let op = env.decode(content)
+      let op = ecp.decode(content)
       const extId = formatToExtensionId(format)
       if (extId) op = op.uses(extId)
       if (flags.strict) op = op.strict()

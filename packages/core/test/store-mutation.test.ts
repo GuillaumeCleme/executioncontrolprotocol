@@ -28,7 +28,8 @@ describe("store mutations", () => {
       ])
       .toManifest()
 
-    const result = await env.run(manifest)
+    const ecp = await env.init()
+    const result = await ecp.run(manifest)
     expect(result.run.status).toBe("completed")
     expect(result.state?.target).toEqual({ merged: true })
     const stepId = Object.keys(result.history ?? {})[0]!
@@ -67,7 +68,8 @@ describe("store mutations", () => {
       ])
       .toManifest()
 
-    const result = await env.run(manifest)
+    const ecp = await env.init()
+    const result = await ecp.run(manifest)
     const stepId = Object.keys(result.history ?? {})[0]!
     expect(result.history?.[stepId]?.status).toBe("failed")
     expect(result.state?.forbidden).toBeUndefined()

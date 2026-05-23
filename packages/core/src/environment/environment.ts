@@ -31,14 +31,9 @@ import { buildDescriptor } from "./describe.js"
 import { searchCapabilities } from "./search.js"
 import { validateEnvironmentWithWorkflow } from "../validate/environment.js"
 import type { HookDefinition } from "../definitions/types.js"
-import {
-  createDecodeBuilder,
-  createEncodeBuilder,
-  type DecodeOperationBuilder,
-  type EncodeOperationBuilder,
-} from "../encoding/index.js"
-import { createPatchBuilder, type PatchOperationBuilder } from "../patch/index.js"
+import type { EncodingEnvironmentHost } from "./encoding-host.js"
 import { EcpImpl, type Ecp } from "./ecp.js"
+import { createInvokeBuilder } from "../invoke/invoke-builder.js"
 
 function resolveId(ref: NamespacedId | { id: NamespacedId } | string): NamespacedId {
   if (typeof ref === "string") return ref as NamespacedId
@@ -71,7 +66,7 @@ export interface RunOptions {
  * Configured ECP environment.
  * @category Environment
  */
-export class Environment implements EnvironmentLifecycleHost {
+export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmentHost {
   private resolved?: ResolvedBindings
   private discoveryPrepared = false
   private readonly configResolvers: EnvironmentConfigResolver[] = []
@@ -256,9 +251,14 @@ export class Environment implements EnvironmentLifecycleHost {
 
   private resolveBindings(): ResolvedBindings {
     if (!this.resolved) {
-      throw new Error("Environment not prepared for run; call run() or validate(workflow) first")
+      throw new Error("Environment not prepared for run; call init() or validate(workflow) first")
     }
     return this.resolved
+  }
+
+  /** @internal {@link EcpImpl} — resolved bindings after init. */
+  ecpResolveBindings(): ResolvedBindings {
+    return this.resolveBindings()
   }
 
   /** Prepare bindings for execution and emit environment:ready. */
@@ -298,30 +298,6 @@ export class Environment implements EnvironmentLifecycleHost {
     }
   }
 
-  async validate(workflow?: WorkflowManifest): Promise<ValidationResult> {
-    if (workflow) {
-      await this.prepareForRun()
-      return validateEnvironmentWithWorkflow(
-        workflow,
-        await this.describe(),
-        this.resolveBindings()
-      )
-    }
-    await this.prepareForDiscovery()
-    return {
-      schema: "@ecp.validation.result",
-      version: LATEST_ECP_VERSION,
-      valid: true,
-      errors: [],
-      warnings: [],
-    }
-  }
-
-  async describe(query?: DescribeQuery): Promise<EnvironmentDescriptor> {
-    await this.prepareForDiscovery()
-    return buildDescriptor(this.registry, this.compile(), query)
-  }
-
   getRegistry(): Registry {
     return this.registry
   }
@@ -346,32 +322,6 @@ export class Environment implements EnvironmentLifecycleHost {
   }
 
   /**
-   * Encode a document via format extensions or default JSON codec.
-   * Does not emit workflow lifecycle events.
-   * @category Environment
-   */
-  encode(input: unknown): EncodeOperationBuilder {
-    return createEncodeBuilder(this, input)
-  }
-
-  /**
-   * Decode encoded content via format extensions or default JSON codec.
-   * Does not emit workflow lifecycle events.
-   * @category Environment
-   */
-  decode(input: unknown): DecodeOperationBuilder {
-    return createDecodeBuilder(this, input)
-  }
-
-  /**
-   * Apply a canonical JSON patch (not TOON).
-   * @category Environment
-   */
-  patch<T = unknown>(document: T): PatchOperationBuilder<T> {
-    return createPatchBuilder(document)
-  }
-
-  /**
    * Initialize environment for operational use and return an {@link Ecp} instance.
    * @category Environment
    */
@@ -380,21 +330,55 @@ export class Environment implements EnvironmentLifecycleHost {
     return new EcpImpl(this)
   }
 
-  async search(query: string, options?: SearchOptions): Promise<SearchResult> {
-    const descriptor = await this.describe()
+  /** @internal {@link EcpImpl} — describe. */
+  async ecpDescribe(query?: DescribeQuery): Promise<EnvironmentDescriptor> {
+    await this.prepareForDiscovery()
+    return buildDescriptor(this.registry, this.compile(), query)
+  }
+
+  /** @internal {@link EcpImpl} — search. */
+  async ecpSearch(query: string, options?: SearchOptions): Promise<SearchResult> {
+    const descriptor = await this.ecpDescribe()
     return searchCapabilities(query, descriptor, options)
   }
 
-  async dispose(): Promise<void> {
+  /** @internal {@link EcpImpl} — validate. */
+  async ecpValidate(workflow?: WorkflowManifest): Promise<ValidationResult> {
+    if (workflow) {
+      await this.prepareForRun()
+      return validateEnvironmentWithWorkflow(
+        workflow,
+        await this.ecpDescribe(),
+        this.resolveBindings()
+      )
+    }
+    await this.prepareForDiscovery()
+    return {
+      schema: "@ecp.validation.result",
+      version: LATEST_ECP_VERSION,
+      valid: true,
+      errors: [],
+      warnings: [],
+    }
+  }
+
+  /** @internal {@link EcpImpl} — terminate. */
+  async ecpTerminate(): Promise<void> {
     await this.emitEnvironmentEvent("environment:terminate")
     this.invalidatePrepared()
   }
 
-  async run(workflow: WorkflowManifest, options?: RunOptions): Promise<RunResult> {
+  /** @internal {@link EcpImpl} — invoke. */
+  ecpInvoke(capabilityId: import("@ecp/types").CapabilityId) {
+    return createInvokeBuilder(this, capabilityId)
+  }
+
+  /** @internal {@link EcpImpl} — run. */
+  async ecpRun(workflow: WorkflowManifest, options?: RunOptions): Promise<RunResult> {
     await this.prepareForRun()
     const validation = await validateEnvironmentWithWorkflow(
       workflow,
-      await this.describe(),
+      await this.ecpDescribe(),
       this.resolveBindings()
     )
     if (!validation.valid) {

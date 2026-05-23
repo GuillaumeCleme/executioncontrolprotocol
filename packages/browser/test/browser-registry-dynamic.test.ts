@@ -15,11 +15,11 @@ const customerExt = defineExtension("@customer", "image-tools")
 describe("dynamic browser registry", () => {
   it("describes dynamically registered extension", async () => {
     const env = await createBrowserTestEnvironment("dyn-describe")
-    await env.describe()
-    const ecp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })
+    const operational = await env.init()
+    const globalEcp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })
       .ecp
-    await ecp!.registerExtension(customerExt)
-    const descriptor = await env.describe()
+    await globalEcp!.registerExtension(customerExt)
+    const descriptor = await operational.describe()
     expect(descriptor.extensions.some((e) => e.id === "@customer/image-tools")).toBe(true)
     expect(descriptor.capabilities.some((c) => c.id === "@customer/image-tools.caption")).toBe(
       true
@@ -28,11 +28,11 @@ describe("dynamic browser registry", () => {
 
   it("search finds dynamically registered capability", async () => {
     const env = await createBrowserTestEnvironment("dyn-search")
-    await env.describe()
-    const ecp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })
+    const operational = await env.init()
+    const globalEcp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })
       .ecp
-    await ecp!.registerExtension(customerExt)
-    const result = await env.search("caption image")
+    await globalEcp!.registerExtension(customerExt)
+    const result = await operational.search("caption image")
     expect(result.results.some((r) => r.id === "@customer/image-tools.caption")).toBe(true)
   })
 })

@@ -18,3 +18,7 @@ MD035: false
 
 # Allow heading-level jumps — SPEC uses H3 under H1 for design goals
 MD001: false
+
+# Plan docs repeat "Tasks" / "Acceptance criteria" under each phase section
+MD024:
+  siblings_only: true

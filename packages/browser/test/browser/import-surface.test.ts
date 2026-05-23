@@ -16,7 +16,7 @@ describe("browser import surface", () => {
     expect(typeof step).toBe("function")
     const env = await environment("import-test")
     expect(env).toBeDefined()
-    expect(typeof env.describe).toBe("function")
+    expect(typeof env.init).toBe("function")
     expect(runtime("@ecp/browser")).toBeDefined()
     expect(extension("@ecp/browser-registry")).toBeDefined()
   })

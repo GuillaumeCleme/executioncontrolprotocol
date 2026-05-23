@@ -10,8 +10,8 @@ describe("@ecp/browser-session-config in browser", () => {
 
     await registerBrowserDefaults()
     const env = createBrowserDemoEnvironment("session-browser")
-    await env.describe()
-    const desc = await env.describe({
+    const ecp = await env.init()
+    const desc = await ecp.describe({
       extensions: { match: "browser-session" },
     })
     expect(desc.extensions.some((e) => e.id === "@ecp/browser-session-config")).toBe(true)

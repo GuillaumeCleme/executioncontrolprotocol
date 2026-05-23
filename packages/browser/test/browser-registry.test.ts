@@ -31,16 +31,16 @@ describe("@ecp/browser-registry", () => {
       extension("@ecp/browser-local-config").with({}),
     ])
 
-    await env.describe()
-    const ecp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })
+    const operational = await env.init()
+    const globalEcp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })
       .ecp
-    expect(ecp).toBeDefined()
-    await ecp!.registerExtension(customerExt)
+    expect(globalEcp).toBeDefined()
+    await globalEcp!.registerExtension(customerExt)
 
-    const desc = await env.describe()
+    const desc = await operational.describe()
     expect(desc.capabilities.some((c) => c.id === "@customer/demo.echo")).toBe(true)
 
-    await env.run({
+    await operational.run({
       schema: "@ecp.workflow",
       version: "1.0.0",
       workflow: { id: "empty" },
@@ -60,7 +60,7 @@ describe("@ecp/browser-registry", () => {
       }),
     ])
 
-    await env.describe()
+    await env.init()
 
     const ecpExt = defineExtension("@ecp", "blocked")
       .withConfig({})

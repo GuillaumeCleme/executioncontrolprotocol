@@ -1,6 +1,6 @@
 import type { EncodeResult, EcpFormatOptions, EcpSchema, EcpVersion, NamespacedId } from "@ecp/types"
 import { ECP_FORMATS, LATEST_ECP_VERSION } from "@ecp/types"
-import type { Environment } from "../environment/environment.js"
+import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
 import { encodeFluent } from "../fluent/encode-fluent.js"
 import { encodeJson, encodeFailure, getEcpSchema } from "./json-codec.js"
 import { invokeEncodeCapability } from "./invoke-utility.js"
@@ -35,7 +35,7 @@ interface EncodeState {
  * @category Encoding
  */
 export function createEncodeBuilder(
-  env: Environment,
+  env: EncodingEnvironmentHost,
   source: unknown
 ): EncodeOperationBuilder {
   const state: EncodeState = { source, options: {} }

@@ -3,10 +3,10 @@ import {
   environment,
   extension,
   runtime,
-  compileWorkflowSource,
   normalizeWorkflowManifest,
   registerTestExtension,
 } from "../../src/index.js"
+import { compileWorkflowSource } from "../../src/compile/index.js"
 import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import type { WorkflowManifest } from "@ecp/types"

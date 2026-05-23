@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest"
 import {
-  environment,
   workflow,
   step,
   ref,
-  compileWorkflowSource,
   normalizeWorkflowManifest,
   renderWorkflowToFluent,
   encodeFluent,
 } from "../../src/index.js"
+import { compileWorkflowSource } from "../../src/compile/index.js"
 import { ECP_FORMATS } from "@ecp/types"
+import { initEncodingTestEcp } from "../helpers.js"
 
 describe("renderWorkflowToFluent", () => {
   it("renders workflow manifest to Fluent API source", () => {
@@ -79,8 +79,9 @@ describe("env.encode built-in fluent", () => {
       .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
-    const env = environment("test")
-    const encoded = await env.encode(manifest).as("fluent").process()
+    const ecp = await initEncodingTestEcp()
+    const encoded = await ecp.encode(manifest).as("fluent").process()
+    await ecp.terminate()
 
     expect(encoded.success).toBe(true)
     expect(encoded.format).toBe("fluent")

@@ -1,6 +1,6 @@
 import { Args, Command, Flags } from "@oclif/core"
-import { loadEnvironmentModule } from "@ecp/core"
-import type { Environment } from "@ecp/core"
+import { loadEnvironmentModule } from "@ecp/core/loaders"
+import type { Ecp } from "@ecp/core"
 
 /** Shared `--env` flag for commands that load an environment module. */
 export const envModuleFlags = {
@@ -20,9 +20,10 @@ export abstract class EnvModuleCommand extends Command {
     ...envModuleFlags,
   }
 
-  /** Load environment from parsed flags. */
-  protected async loadEnv(flags: { env: string }): Promise<Environment> {
-    return loadEnvironmentModule(flags.env)
+  /** Load and initialize operational ECP from parsed flags. */
+  protected async loadEcp(flags: { env: string }): Promise<Ecp> {
+    const env = await loadEnvironmentModule(flags.env)
+    return env.init()
   }
 }
 

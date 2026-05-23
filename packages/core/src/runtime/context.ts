@@ -73,6 +73,8 @@ export interface PolicyContext {
   operation?: string
   /** Present when evaluating dynamic registry registration. */
   registryRequest?: RegistryRegistrationRequest
+  /** Present when {@link PolicyEvaluationScope} is `invoke`. */
+  capabilityId?: import("@ecp/types").CapabilityId
 }
 
 /** Minimal logger. @category Runtime */

@@ -30,7 +30,15 @@ export {
   environment,
   createBrowserDemoEnvironment,
 } from "./environment.js"
+export { createEcp, type BrowserOperationalEcp, type CreateEcpOptions } from "./create-ecp.js"
+export {
+  BrowserAuthoringService,
+  type AuthoringPanels,
+  type CreateWorkflowResult,
+  type PatchWorkflowResult,
+} from "./authoring/browser-authoring-service.js"
 export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
+export type { Ecp } from "@ecp/core"
 
 export {
   workflow,

@@ -44,7 +44,6 @@ export {
   Registry,
   globalRegistry,
   registerTestExtension,
-  compileWorkflowSource,
-  compileAndValidateWorkflowSource,
   validateWorkflow,
 } from "@ecp/core"
+export { compileWorkflowSource, compileAndValidateWorkflowSource } from "@ecp/core/compile"
