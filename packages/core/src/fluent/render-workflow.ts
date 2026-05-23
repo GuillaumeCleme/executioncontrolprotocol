@@ -2,6 +2,12 @@ import type { WorkflowManifest } from "@ecp/types"
 import { renderNodes } from "./render-node.js"
 import { createImportNeeds } from "./render-value.js"
 
+/** Options for rendering a manifest to Fluent source. @category Fluent */
+export interface RenderWorkflowToFluentOptions {
+  /** Prefer compact output (reserved for future formatting). */
+  compact?: boolean
+}
+
 function renderImports(needs: ReturnType<typeof createImportNeeds>): string {
   const names: string[] = ["workflow", "step"]
   if (needs.ref) names.push("ref")
@@ -15,11 +21,11 @@ function renderImports(needs: ReturnType<typeof createImportNeeds>): string {
 
 /**
  * Render workflow manifest to Fluent API TypeScript source.
- * @category Encoding
+ * @category Fluent
  */
-export function renderWorkflowManifestToFluent(
+export function renderWorkflowToFluent(
   manifest: WorkflowManifest,
-  _options?: { compact?: boolean }
+  _options?: RenderWorkflowToFluentOptions
 ): string {
   const needs = createImportNeeds()
   const nodes = renderNodes(manifest.steps, needs, "    ")
@@ -31,3 +37,6 @@ export function renderWorkflowManifestToFluent(
   body += `  .run([\n${nodes},\n  ]);\n`
   return header + body
 }
+
+/** @deprecated Use {@link renderWorkflowToFluent}. @category Fluent */
+export const renderWorkflowManifestToFluent = renderWorkflowToFluent

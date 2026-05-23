@@ -9,7 +9,6 @@ import {
 } from "../../src/index.js"
 import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
 import { registerFormatToonExtension } from "@ecp/format-toon"
-import { registerFormatFluentExtension } from "@ecp/format-fluent"
 import type { WorkflowManifest } from "@ecp/types"
 
 const fluentSource = `
@@ -29,14 +28,12 @@ describe("patch compaction loop", () => {
     await registerNodeRuntime()
     await registerTestExtension()
     await registerFormatToonExtension()
-    await registerFormatFluentExtension()
 
     const env = environment("test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-      extension("@ecp/test").with({}),
-      extension("@ecp/format-toon").with({}),
-      extension("@ecp/format-fluent").with({}),
+        extension("@ecp/test").with({}),
+        extension("@ecp/format-toon").with({}),
       ])
     const ecp = await env.init()
 
@@ -96,7 +93,7 @@ describe("patch compaction loop", () => {
 
     const fluent = await ecp
       .encode(decoded.result as WorkflowManifest)
-      .uses("@ecp/format-fluent")
+      .as("fluent")
       .process()
     expect(fluent.success).toBe(true)
 

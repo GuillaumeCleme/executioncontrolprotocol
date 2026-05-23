@@ -3,6 +3,7 @@ import { loadWorkflowFile } from "@ecp/core"
 import { writeFile } from "node:fs/promises"
 import { runWithCommandError } from "../lib/command-helpers.js"
 import { EnvModuleCommand } from "../lib/env-module-command.js"
+import { ECP_FORMATS } from "@ecp/types"
 import { formatToExtensionId, parseCliFormat } from "../lib/format-cli.js"
 
 /** Encode a workflow manifest to TOON, Fluent, or JSON. */
@@ -48,8 +49,11 @@ export default class Encode extends EnvModuleCommand {
       const manifest = await loadWorkflowFile(args["input-path"])
 
       let op = env.encode(manifest)
-      const extId = formatToExtensionId(format)
-      if (extId) op = op.uses(extId)
+      if (format === ECP_FORMATS.FLUENT) op = op.as("fluent")
+      else {
+        const extId = formatToExtensionId(format)
+        if (extId) op = op.uses(extId)
+      }
       if (flags.compact) op = op.compact()
 
       const encoded = await op.process()

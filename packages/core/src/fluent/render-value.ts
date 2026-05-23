@@ -1,6 +1,6 @@
 import type { InputValue } from "@ecp/types"
 
-/** Track which helpers are required. @category Encoding */
+/** Track which helpers are required. @category Fluent */
 export interface ImportNeeds {
   workflow: boolean
   step: boolean
@@ -12,6 +12,7 @@ export interface ImportNeeds {
   branch: boolean
 }
 
+/** @category Fluent */
 export function createImportNeeds(): ImportNeeds {
   return {
     workflow: true,
@@ -27,7 +28,7 @@ export function createImportNeeds(): ImportNeeds {
 
 /**
  * Render input value to TypeScript expression.
- * @category Encoding
+ * @category Fluent
  */
 export function renderInputValue(value: InputValue, needs: ImportNeeds): string {
   if (value !== null && typeof value === "object" && !Array.isArray(value)) {

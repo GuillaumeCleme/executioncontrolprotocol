@@ -28,6 +28,10 @@ Runtimes and policies follow the same boundary unless they intentionally impleme
 
 Consumers (apps, examples, CLI env files) bind extensions in **environment modules**; extension packages must not assume Node `process.env`, browser `globalThis`, or a specific runtime.
 
+## Fluent authoring (not an extension)
+
+Manifest ↔ Fluent API conversion lives in **`@ecp/core`** (`renderWorkflowToFluent`, `compileWorkflowSource`, `encodeFluent`, `ecp.encode().as("fluent")`). Do not add a `@ecp/format-fluent` extension package. Extension format packages are for optional encodings (e.g. `@ecp/format-toon`, `@ecp/format-mermaid`).
+
 ## Capability handlers
 
 - Handlers receive typed inputs and a **utility** or **capability** context from `@ecp/core`; avoid reaching into `Environment` internals.

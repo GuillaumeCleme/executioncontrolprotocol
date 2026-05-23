@@ -55,7 +55,8 @@ Utility operations do not emit run/step lifecycle hooks.
 - `env.decode(input).uses("@ecp/format-toon").to("@ecp.patch").process()` — decode input field is **`input`** in `EcpDecodeInput` payloads to extensions.
 - `ecp.patch(manifest).with(patchDocOrShorthand).process()` — patch paths use **`steps[<stepId>].field`** (globally unique step IDs; `WorkflowBuilder.toManifest()` assigns unique IDs).
 - Omit `.uses(...)` for canonical JSON passthrough.
-- Packages: `@ecp/format-toon` (TOON via `@toon-format/toon`; `headers` / `compact` options; validates workflow, environment, `@ecp.patch`), `@ecp/format-fluent` (encode only; does not emit step `.id()` in source).
+- **Fluent authoring (core):** `workflow(...).toManifest()` / `compileWorkflowSource` (Fluent/TS → manifest); `renderWorkflowToFluent` / `workflow(...).toFluentSource()` / `ecp.encode(...).as("fluent")` (manifest → Fluent source). No `@ecp/format-fluent` extension.
+- **TOON (extension):** `@ecp/format-toon` via `.uses("@ecp/format-toon")`; `headers` / `compact` options; validates workflow, environment, `@ecp.patch`.
 - MCP tools: `ecp.encode`, `ecp.decode` on `createEcpMcpServer`
 
 ### Extension catalog and binding

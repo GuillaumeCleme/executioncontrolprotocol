@@ -1,6 +1,7 @@
 import type { EncodeResult, EcpFormatOptions, EcpSchema, EcpVersion, NamespacedId } from "@ecp/types"
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { ECP_FORMATS, LATEST_ECP_VERSION } from "@ecp/types"
 import type { Environment } from "../environment/environment.js"
+import { encodeFluent } from "../fluent/encode-fluent.js"
 import { encodeJson, encodeFailure, getEcpSchema } from "./json-codec.js"
 import { invokeEncodeCapability } from "./invoke-utility.js"
 import { resolveEncoder } from "./resolve.js"
@@ -95,6 +96,14 @@ export function createEncodeBuilder(
             diagnostics: [...validation.errors, ...validation.warnings],
           }) as EncodeResult<T>
         }
+      }
+
+      if (state.format === ECP_FORMATS.FLUENT) {
+        return encodeFluent(state.source, {
+          ...state.options,
+          sourceSchema,
+          sourceVersion: state.targetVersion,
+        }) as EncodeResult<T>
       }
 
       if (!state.extensionId) {

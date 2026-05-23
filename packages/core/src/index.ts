@@ -59,6 +59,12 @@ export {
   type CompileWorkflowResult,
   type CompileWorkflowSourceOptions,
 } from "./compile/index.js"
+export {
+  renderWorkflowToFluent,
+  renderWorkflowManifestToFluent,
+  encodeFluent,
+  type RenderWorkflowToFluentOptions,
+} from "./fluent/index.js"
 export { validateWorkflow } from "./validate/workflow.js"
 export {
   EcpError,

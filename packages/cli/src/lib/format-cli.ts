@@ -6,7 +6,7 @@ export type CliFormat = "json" | "toon" | "fluent"
 const FORMAT_EXTENSION: Record<CliFormat, string | undefined> = {
   json: undefined,
   toon: "@ecp/format-toon",
-  fluent: "@ecp/format-fluent",
+  fluent: undefined,
 }
 
 /**

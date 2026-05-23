@@ -7,7 +7,6 @@ import {
   registerTestExtension,
 } from "../../src/index.js"
 import { registerFormatToonExtension } from "@ecp/format-toon"
-import { registerFormatFluentExtension } from "@ecp/format-fluent"
 
 const fluentSource = `
 import { workflow, step, ref } from "@ecp/core";
@@ -26,11 +25,9 @@ describe("full format round trip", () => {
   it("round trips Fluent → JSON → TOON → JSON → Fluent", async () => {
     await registerTestExtension()
     await registerFormatToonExtension()
-    await registerFormatFluentExtension()
 
     const env = environment("test").withExtensions([
       extension("@ecp/format-toon").with({}),
-      extension("@ecp/format-fluent").with({}),
     ])
 
     const compiledA = await compileWorkflowSource({
@@ -46,10 +43,7 @@ describe("full format round trip", () => {
 
     const manifestB = decoded.result
 
-    const fluent = await env
-      .encode(manifestB)
-      .uses("@ecp/format-fluent")
-      .process()
+    const fluent = await env.encode(manifestB).as("fluent").process()
 
     const compiledB = await compileWorkflowSource({
       source: String(fluent.result),

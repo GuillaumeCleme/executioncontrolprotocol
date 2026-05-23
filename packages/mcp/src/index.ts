@@ -104,7 +104,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
     async ({ source, format, compact }) => {
       let op = environment.encode(source as EcpEncodeInput["source"])
       if (format === "toon") op = op.uses("@ecp/format-toon")
-      else if (format === "fluent") op = op.uses("@ecp/format-fluent")
+      else if (format === "fluent") op = op.as("fluent")
       if (compact) op = op.compact()
       const encoded = await op.process()
       return {

@@ -83,10 +83,6 @@ export async function bundleWorkflowSource(
       "@ecp/types": join(repoRoot, "packages/types/dist/index.js"),
       "@ecp/policies": join(repoRoot, "packages/policies/dist/index.js"),
       "@ecp/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
-      "@ecp/format-fluent": join(
-        repoRoot,
-        "packages/extensions/format-fluent/dist/index.js"
-      ),
     },
   })
   const file = result.outputFiles[0]

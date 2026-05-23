@@ -5,7 +5,6 @@ export { registerSlackExtension, slackExtension } from "@ecp/extension-slack"
 export { registerStorageExtension, storageExtension } from "@ecp/extension-storage"
 export { registerTelemetryExtension, telemetryExtension } from "@ecp/extension-telemetry"
 export { registerFormatToonExtension, formatToonExtension } from "@ecp/format-toon"
-export { registerFormatFluentExtension, formatFluentExtension } from "@ecp/format-fluent"
 
 import { registerMemoryExtension } from "@ecp/extension-memory"
 import { registerOpenaiExtension } from "@ecp/extension-openai"
@@ -14,7 +13,6 @@ import { registerSlackExtension } from "@ecp/extension-slack"
 import { registerStorageExtension } from "@ecp/extension-storage"
 import { registerTelemetryExtension } from "@ecp/extension-telemetry"
 import { registerFormatToonExtension } from "@ecp/format-toon"
-import { registerFormatFluentExtension } from "@ecp/format-fluent"
 
 /** Register all bundled extensions. */
 export async function registerAllExtensions(): Promise<void> {
@@ -25,5 +23,4 @@ export async function registerAllExtensions(): Promise<void> {
   await registerStorageExtension()
   await registerTelemetryExtension()
   await registerFormatToonExtension()
-  await registerFormatFluentExtension()
 }

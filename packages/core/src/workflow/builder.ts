@@ -4,6 +4,10 @@ import { slugify } from "../util/slug.js"
 import type { StepBuilder } from "../bindings/step.js"
 import { validateWorkflow } from "../validate/workflow.js"
 import { assignUniqueStepIds } from "./assign-unique-step-ids.js"
+import {
+  renderWorkflowToFluent,
+  type RenderWorkflowToFluentOptions,
+} from "../fluent/render-workflow.js"
 
 type NodeInput = StepBuilder | WorkflowNode
 
@@ -46,6 +50,11 @@ export class WorkflowBuilder {
       },
       steps: this.nodes,
     })
+  }
+
+  /** Render this workflow as Fluent API TypeScript source. */
+  toFluentSource(options?: RenderWorkflowToFluentOptions): string {
+    return renderWorkflowToFluent(this.toManifest(), options)
   }
 
   /** Validate against optional environment descriptor. */

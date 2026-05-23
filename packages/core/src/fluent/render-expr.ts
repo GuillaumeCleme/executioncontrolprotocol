@@ -2,7 +2,7 @@ import type { ExprValue } from "@ecp/types"
 
 /**
  * Render expression to Fluent `expr.*` call.
- * @category Encoding
+ * @category Fluent
  */
 export function renderExprValue(expr: ExprValue): string {
   if ("eq" in expr && Array.isArray(expr.eq)) {
