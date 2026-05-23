@@ -53,10 +53,15 @@ export default class Encode extends EnvModuleCommand {
       if (flags.compact) op = op.compact()
 
       const encoded = await op.process()
+      if (!encoded.success) {
+        throw new Error(
+          encoded.diagnostics.map((d) => d.message).join("; ") || "Encode failed"
+        )
+      }
       const out =
-        typeof encoded.content === "string"
-          ? encoded.content
-          : JSON.stringify(encoded.content, null, flags.compact ? 0 : 2)
+        typeof encoded.result === "string"
+          ? encoded.result
+          : JSON.stringify(encoded.result, null, flags.compact ? 0 : 2)
 
       if (flags.output) await writeFile(flags.output, out, "utf8")
       else this.log(out)

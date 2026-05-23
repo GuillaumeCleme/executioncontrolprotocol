@@ -3,8 +3,8 @@ import {
   ECP_FORMATS,
   LATEST_ECP_VERSION,
 } from "@ecp/types"
-import type { EcpEncodeInput, EncodedArtifact, WorkflowManifest } from "@ecp/types"
-import { EcpError, validateWorkflow, type UtilityCapabilityContext } from "@ecp/core"
+import type { EcpEncodeInput, EncodeResult, WorkflowManifest } from "@ecp/types"
+import { encodeFailure, validateWorkflow, type UtilityCapabilityContext } from "@ecp/core"
 import { renderWorkflowManifestToFluent } from "./render-workflow.js"
 
 /**
@@ -14,19 +14,29 @@ import { renderWorkflowManifestToFluent } from "./render-workflow.js"
 export function encodeWorkflowToFluent(
   input: EcpEncodeInput,
   _ctx: UtilityCapabilityContext
-): EncodedArtifact<string> {
+): EncodeResult<string> {
   if (input.sourceSchema && input.sourceSchema !== "@ecp.workflow") {
-    throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_UNSUPPORTED_SOURCE_SCHEMA, {
-      message: "Fluent encoder only supports @ecp.workflow.",
+    return encodeFailure({
+      format: ECP_FORMATS.FLUENT,
+      sourceSchema: input.sourceSchema,
+      diagnostics: [
+        {
+          severity: "error",
+          code: ECP_ENCODING_ERROR_CODES.FORMAT_UNSUPPORTED_SOURCE_SCHEMA,
+          message: "Fluent encoder only supports @ecp.workflow.",
+        },
+      ],
     })
   }
 
   const manifest = input.source as WorkflowManifest
   const validation = validateWorkflow(manifest)
   if (!validation.valid) {
-    throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_ENCODE_FAILED, {
-      message: `Invalid workflow manifest: ${validation.errors.map((e) => e.message).join("; ")}`,
-      diagnostics: validation.errors,
+    return encodeFailure({
+      format: ECP_FORMATS.FLUENT,
+      sourceSchema: "@ecp.workflow",
+      validation,
+      diagnostics: [...validation.errors, ...validation.warnings],
     })
   }
 
@@ -35,12 +45,14 @@ export function encodeWorkflowToFluent(
   })
 
   return {
-    schema: "@ecp.encoded",
+    schema: "@ecp.encode.result",
     version: LATEST_ECP_VERSION,
+    success: true,
     format: ECP_FORMATS.FLUENT,
     mediaType: "text/typescript",
     sourceSchema: "@ecp.workflow",
-    content,
+    sourceVersion: input.sourceVersion,
+    result: content,
     diagnostics: [],
   }
 }

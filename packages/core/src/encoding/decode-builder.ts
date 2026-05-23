@@ -1,5 +1,11 @@
-import type { DecodeResult, EcpSchema, NamespacedId } from "@ecp/types"
-import { ECP_ENCODING_ERROR_CODES } from "@ecp/types"
+import type {
+  DecodeResult,
+  EcpDecodeOptions,
+  EcpSchema,
+  EcpVersion,
+  NamespacedId,
+} from "@ecp/types"
+import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION } from "@ecp/types"
 import type { Environment } from "../environment/environment.js"
 import { decodeJson } from "./json-codec.js"
 import { EcpError } from "./errors.js"
@@ -7,18 +13,17 @@ import { invokeDecodeCapability } from "./invoke-utility.js"
 import { resolveDecoder } from "./resolve.js"
 import { createUtilityCapabilityContext } from "./utility-context.js"
 import { validateWorkflow } from "../validate/workflow.js"
+import { ecpPatchDocumentSchema } from "../patch/patch-document.js"
+import { zodIssuesToValidationIssues } from "../validate/zod-mapper.js"
+import { emptyValidationResult } from "../validate/workflow-schema.js"
 
-/** Fluent builder for `env.decode()`. @category Encoding */
+/** Fluent builder for `ecp.decode()`. @category Encoding */
 export interface DecodeOperationBuilder {
-  /** Select format extension. */
   uses(extensionId: NamespacedId | string): this
-  /** Source format hint. */
   from(format: string): this
-  /** Expected target schema. */
-  to(targetSchema: EcpSchema): this
-  /** Fail when decoded document is invalid. */
+  to(targetSchema: EcpSchema, version?: EcpVersion): this
+  with(options: EcpDecodeOptions): this
   strict(enabled?: boolean): this
-  /** Run decode operation. */
   process<T = unknown>(): Promise<DecodeResult<T>>
 }
 
@@ -27,7 +32,25 @@ interface DecodeState {
   extensionId?: string
   format?: string
   targetSchema?: EcpSchema
-  strict?: boolean
+  targetVersion?: EcpVersion
+  options: EcpDecodeOptions
+}
+
+function validateDecodedDocument(
+  document: unknown,
+  targetSchema?: EcpSchema
+): import("@ecp/types").ValidationResult {
+  if (targetSchema === "@ecp.workflow") {
+    return validateWorkflow(document as import("@ecp/types").WorkflowManifest)
+  }
+  if (targetSchema === "@ecp.patch") {
+    const parsed = ecpPatchDocumentSchema.safeParse(document)
+    if (parsed.success) return emptyValidationResult(true)
+    const result = emptyValidationResult(false)
+    result.errors.push(...zodIssuesToValidationIssues(parsed.error.issues))
+    return result
+  }
+  return emptyValidationResult(true)
 }
 
 /**
@@ -38,7 +61,7 @@ export function createDecodeBuilder(
   env: Environment,
   content: unknown
 ): DecodeOperationBuilder {
-  const state: DecodeState = { content }
+  const state: DecodeState = { content, options: {} }
 
   const builder: DecodeOperationBuilder = {
     uses(extensionId: NamespacedId | string) {
@@ -49,12 +72,17 @@ export function createDecodeBuilder(
       state.format = format
       return builder
     },
-    to(targetSchema: EcpSchema) {
+    to(targetSchema: EcpSchema, version?: EcpVersion) {
       state.targetSchema = targetSchema
+      state.targetVersion = version ?? LATEST_ECP_VERSION
+      return builder
+    },
+    with(options: EcpDecodeOptions) {
+      state.options = { ...state.options, ...options }
       return builder
     },
     strict(enabled = true) {
-      state.strict = enabled
+      state.options.strict = enabled
       return builder
     },
     async process<T = unknown>(): Promise<DecodeResult<T>> {
@@ -69,39 +97,47 @@ export function createDecodeBuilder(
       let result: DecodeResult<T>
 
       if (!state.extensionId) {
+        const target = state.targetSchema ?? "@ecp.workflow"
+        const validation = validateDecodedDocument(
+          typeof state.content === "string" ? JSON.parse(state.content) : state.content,
+          target
+        )
         result = decodeJson<T>(state.content, {
-          targetSchema: state.targetSchema ?? "@ecp.workflow",
+          targetSchema: target,
+          targetVersion: state.targetVersion,
+          validation,
         }) as DecodeResult<T>
       } else {
         const cap = resolveDecoder(env.getRegistry(), state.extensionId)
         const raw = await invokeDecodeCapability(
           cap,
           {
-            content: state.content,
+            input: state.content,
             format: state.format,
             targetSchema: state.targetSchema,
-            options: { strict: state.strict },
+            targetVersion: state.targetVersion,
+            options: state.options,
           },
           ctx
         )
         result = raw as DecodeResult<T>
+        const target = state.targetSchema ?? result.targetSchema
+        if (result.success && result.result !== undefined && target) {
+          const validation = validateDecodedDocument(result.result, target)
+          result = {
+            ...result,
+            validation,
+            success: result.success && validation.valid,
+            diagnostics: [...result.diagnostics, ...validation.errors, ...validation.warnings],
+          }
+        }
       }
 
-      const target = state.targetSchema ?? result.targetSchema ?? "@ecp.workflow"
-      if (target === "@ecp.workflow" && result.document) {
-        const validation = validateWorkflow(
-          result.document as unknown as import("@ecp/types").WorkflowManifest
-        )
-        result = {
-          ...result,
-          diagnostics: [...(result.diagnostics ?? []), ...validation.errors, ...validation.warnings],
-        }
-        if (state.strict && !validation.valid) {
-          throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED, {
-            message: "Decoded document is not a valid workflow manifest.",
-            diagnostics: validation.errors,
-          })
-        }
+      if (state.options.strict && !result.success) {
+        throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED, {
+          message: "Decode failed in strict mode.",
+          diagnostics: result.diagnostics,
+        })
       }
 
       return result

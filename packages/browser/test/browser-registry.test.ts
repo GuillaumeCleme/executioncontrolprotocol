@@ -22,7 +22,7 @@ describe("@ecp/browser-registry", () => {
 
     const env = (await createBrowserTestEnvironment("reg-test")).withExtensions([
       extension("@ecp/browser-registry").with({
-        freezeOnFirstRun: true,
+        freezeOn: "environment:beforeRun",
         autoBindRegisteredExtensions: true,
         exposeGlobal: true,
         globalName: "ecp",

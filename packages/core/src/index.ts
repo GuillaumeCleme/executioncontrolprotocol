@@ -23,6 +23,8 @@ export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 
 export { environment, Environment, type RunOptions } from "./environment/environment.js"
+export { EcpImpl, type Ecp } from "./environment/ecp.js"
+export { assignUniqueStepIds } from "./workflow/assign-unique-step-ids.js"
 export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
 export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
 export { Registry, globalRegistry, type RegistryRegistrationGuard } from "./registry/registry.js"
@@ -61,14 +63,26 @@ export { validateWorkflow } from "./validate/workflow.js"
 export {
   EcpError,
   normalizeWorkflowManifest,
+  encodeFailure,
+  decodeFailure,
   ecpEncodeInputSchema,
   ecpDecodeInputSchema,
-  ecpEncodedArtifactSchema,
+  ecpEncodeResultSchema,
   ecpDecodeResultSchema,
   type EncodeOperationBuilder,
   type DecodeOperationBuilder,
   type UtilityCapabilityContext,
 } from "./encoding/index.js"
+export {
+  buildStepIndex,
+  resolveEcpPatchPath,
+  applyPatch,
+  createPatchBuilder,
+  type PatchOperationBuilder,
+  type StepIndex,
+  ecpPatchDocumentSchema,
+  ecpPatchEntrySchema,
+} from "./patch/index.js"
 export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
 
 export {

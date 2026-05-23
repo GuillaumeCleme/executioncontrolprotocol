@@ -22,7 +22,7 @@ const spyExt = defineExtension("@ecp", "env-spy")
     hook("environment:beforeRun", async (ctx) => {
       events.push(ctx.event)
     }),
-    hook("environment:shutdown", async (ctx) => {
+    hook("environment:terminate", async (ctx) => {
       events.push(ctx.event)
     }),
   ])
@@ -56,6 +56,6 @@ describe("environment lifecycle", () => {
 
     events.length = 0
     await env.dispose()
-    expect(events).toContain("environment:shutdown")
+    expect(events).toContain("environment:terminate")
   })
 })

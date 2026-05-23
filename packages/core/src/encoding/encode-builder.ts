@@ -1,35 +1,32 @@
-import type { EncodedArtifact, NamespacedId } from "@ecp/types"
+import type { EncodeResult, EcpFormatOptions, EcpSchema, EcpVersion, NamespacedId } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@ecp/types"
 import type { Environment } from "../environment/environment.js"
-import { encodeJson, getEcpSchema } from "./json-codec.js"
+import { encodeJson, encodeFailure, getEcpSchema } from "./json-codec.js"
 import { invokeEncodeCapability } from "./invoke-utility.js"
 import { resolveEncoder } from "./resolve.js"
 import { createUtilityCapabilityContext } from "./utility-context.js"
+import { validateWorkflow } from "../validate/workflow.js"
 
-/** Fluent builder for `env.encode()`. @category Encoding */
+/** Fluent builder for `ecp.encode()`. @category Encoding */
 export interface EncodeOperationBuilder {
-  /** Select format extension (e.g. `@ecp/format-toon`). */
   uses(extensionId: NamespacedId | string): this
-  /** Alias for format id string. */
   as(format: string): this
-  /** Request compact output. */
+  to(schema: EcpSchema, version?: EcpVersion): this
+  with(options: EcpFormatOptions): this
   compact(enabled?: boolean): this
-  /** Return string content for JSON codec. */
   asString(): this
-  /** Return object content for JSON codec. */
   asObject(): this
-  /** Fields to include when supported. */
   include(fields: string[]): this
-  /** Run encode operation. */
-  process(): Promise<EncodedArtifact>
+  process<T = unknown>(): Promise<EncodeResult<T>>
 }
 
 interface EncodeState {
   source: unknown
   extensionId?: string
   format?: string
-  compact?: boolean
-  as?: "object" | "string"
-  include?: string[]
+  targetSchema?: EcpSchema
+  targetVersion?: EcpVersion
+  options: EcpFormatOptions
 }
 
 /**
@@ -40,7 +37,7 @@ export function createEncodeBuilder(
   env: Environment,
   source: unknown
 ): EncodeOperationBuilder {
-  const state: EncodeState = { source }
+  const state: EncodeState = { source, options: {} }
 
   const builder: EncodeOperationBuilder = {
     uses(extensionId: NamespacedId | string) {
@@ -51,38 +48,61 @@ export function createEncodeBuilder(
       state.format = format
       return builder
     },
+    to(schema: EcpSchema, version?: EcpVersion) {
+      state.targetSchema = schema
+      state.targetVersion = version ?? LATEST_ECP_VERSION
+      return builder
+    },
+    with(options: EcpFormatOptions) {
+      state.options = { ...state.options, ...options }
+      return builder
+    },
     compact(enabled = true) {
-      state.compact = enabled
+      state.options.compact = enabled
       return builder
     },
     asString() {
-      state.as = "string"
+      state.options.as = "string"
       return builder
     },
     asObject() {
-      state.as = "object"
+      state.options.as = "object"
       return builder
     },
     include(fields: string[]) {
-      state.include = fields
+      state.options.include = fields
       return builder
     },
-    async process(): Promise<EncodedArtifact> {
+    async process<T = unknown>(): Promise<EncodeResult<T>> {
       await env.ensureBoundExtensionsRegistered()
 
-      const sourceSchema = getEcpSchema(state.source)
+      const sourceSchema = state.targetSchema ?? getEcpSchema(state.source)
       const ctx = createUtilityCapabilityContext(
         env.getEnvId(),
         env.getEnvLabel(),
         env.getRegistry()
       )
 
+      if (sourceSchema === "@ecp.workflow") {
+        const validation = validateWorkflow(
+          state.source as import("@ecp/types").WorkflowManifest
+        )
+        if (!validation.valid) {
+          return encodeFailure({
+            format: state.format ?? "json",
+            sourceSchema,
+            validation,
+            diagnostics: [...validation.errors, ...validation.warnings],
+          }) as EncodeResult<T>
+        }
+      }
+
       if (!state.extensionId) {
         return encodeJson(state.source, {
-          compact: state.compact,
-          as: state.as,
+          ...state.options,
           sourceSchema,
-        })
+          sourceVersion: state.targetVersion,
+        }) as EncodeResult<T>
       }
 
       const cap = resolveEncoder(env.getRegistry(), state.extensionId)
@@ -91,16 +111,13 @@ export function createEncodeBuilder(
         {
           source: state.source,
           sourceSchema,
+          sourceVersion: state.targetVersion,
           format: state.format,
-          options: {
-            compact: state.compact,
-            include: state.include,
-            as: state.as,
-          },
+          options: state.options,
         },
         ctx
       )
-      return result as EncodedArtifact
+      return result as EncodeResult<T>
     },
   }
 

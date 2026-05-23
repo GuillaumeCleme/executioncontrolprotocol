@@ -1,4 +1,8 @@
-import { validateWorkflow, zodIssuesToValidationIssues } from "@ecp/core"
+import {
+  ecpPatchDocumentSchema,
+  validateWorkflow,
+  zodIssuesToValidationIssues,
+} from "@ecp/core"
 import type { EcpSchema, ValidationIssue, ValidationResult } from "@ecp/types"
 import { LATEST_ECP_VERSION } from "@ecp/types"
 import { z } from "zod"
@@ -105,6 +109,7 @@ export const TOON_VALIDATED_ECP_SCHEMAS = [
   "@ecp.environment",
   "@ecp.environment.describe",
   "@ecp.environment.search",
+  "@ecp.patch",
 ] as const satisfies readonly EcpSchema[]
 
 /** Union of schemas with built-in TOON validation. @category Encoding */
@@ -158,6 +163,8 @@ export function validateEcpDocument(
       return zodToResult(environmentDescribeSchema.safeParse(document))
     case "@ecp.environment.search":
       return zodToResult(environmentSearchSchema.safeParse(document))
+    case "@ecp.patch":
+      return zodToResult(ecpPatchDocumentSchema.safeParse(document))
     default:
       return emptyValidation(true)
   }

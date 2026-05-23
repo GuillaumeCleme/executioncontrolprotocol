@@ -42,14 +42,20 @@ ecp encode workflow.json --format fluent --env examples/01-echo/environment.ts -
 ecp run --help
 ```
 
-### Environment encoding and decoding
+### Operational instance (`env.init()`)
 
-`env.encode(input)` and `env.decode(input)` are utility operations (not workflow runs; no run/step lifecycle).
+`await env.init()` returns an **`Ecp`** instance for encode/decode/patch/validate/describe/search (no `run` on `Ecp`; use `env.run()` on the environment builder). Lifecycle: `environment:configuring` → bind extensions → `environment:ready`. Call `ecp.terminate()` to emit `environment:terminate`.
 
-- `env.encode(input).uses("@ecp/format-toon").process()` resolves `@ecp/format-toon.encode`
-- `env.decode(input).uses("@ecp/format-toon").process()` resolves `@ecp/format-toon.decode`
-- Omit `.uses(...)` for canonical JSON (`@ecp.workflow` manifest)
-- Packages: `@ecp/format-toon` (encode + decode via `@toon-format/toon`; validates `@ecp.workflow`, `@ecp.environment`, describe/search; other schemas encode without validation errors), `@ecp/format-fluent` (encode only; forward path is `compileWorkflowSource`)
+### Environment encoding, decoding, and patch
+
+Utility operations do not emit run/step lifecycle hooks.
+
+- Results use **`@ecp.encode.result`** / **`@ecp.decode.result`** / **`@ecp.patch.result`** with `success`, **`.result`**, `validation`, and `diagnostics` (not `.content` / `.document`).
+- `env.encode(source).uses("@ecp/format-toon").to("@ecp.workflow").with({ headers: false }).process()`
+- `env.decode(input).uses("@ecp/format-toon").to("@ecp.patch").process()` — decode input field is **`input`** in `EcpDecodeInput` payloads to extensions.
+- `ecp.patch(manifest).with(patchDocOrShorthand).process()` — patch paths use **`steps[<stepId>].field`** (globally unique step IDs; `WorkflowBuilder.toManifest()` assigns unique IDs).
+- Omit `.uses(...)` for canonical JSON passthrough.
+- Packages: `@ecp/format-toon` (TOON via `@toon-format/toon`; `headers` / `compact` options; validates workflow, environment, `@ecp.patch`), `@ecp/format-fluent` (encode only; does not emit step `.id()` in source).
 - MCP tools: `ecp.encode`, `ecp.decode` on `createEcpMcpServer`
 
 ### Extension catalog and binding
@@ -103,7 +109,7 @@ await globalThis.ecp.registerExtension(customerExtension)
 await env.run(workflow)
 ```
 
-**Lifecycle:** `describe()` / `search()` emit `environment:created` and `environment:configuring` only. First `run()` emits `environment:ready` then `environment:beforeRun`.
+**Lifecycle:** `describe()` / `search()` emit `environment:created` and `environment:configuring` only. First `run()` emits `environment:ready` then `environment:beforeRun`. Registry freeze is configured with **`freezeOn`**: `"environment:ready"` | `"environment:beforeRun"` | `"manual"` (default in demo: `"environment:beforeRun"`).
 
 **Tests:**
 

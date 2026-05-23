@@ -1,4 +1,6 @@
 import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@ecp/types"
+import { ECP_PATCH_ERROR_CODES } from "@ecp/types"
+import { buildStepIndex } from "../patch/step-index.js"
 import { emptyValidationResult, workflowManifestSchema } from "./workflow-schema.js"
 import { zodIssuesToValidationIssues } from "./zod-mapper.js"
 
@@ -41,6 +43,16 @@ export function validateWorkflow(
     result.valid = false
     result.errors.push(...zodIssuesToValidationIssues(parsed.error.issues))
     return result
+  }
+
+  const stepIndex = buildStepIndex(manifest)
+  for (const id of stepIndex.duplicates) {
+    result.valid = false
+    result.errors.push({
+      code: ECP_PATCH_ERROR_CODES.DUPLICATE_STEP_ID,
+      message: `Duplicate step id: ${id}`,
+      path: `workflow.steps.${id}`,
+    })
   }
 
   const commits = new Map<string, string>()

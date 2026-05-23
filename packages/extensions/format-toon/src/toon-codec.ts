@@ -15,7 +15,8 @@ export function encodeDocumentToToon(
   options: EncodeDocumentToToonOptions = {}
 ): string {
   return toonEncode(document, {
-    indent: options.compact ? 0 : 2,
+    indent: 2,
+    keyFolding: options.compact ? "safe" : "off",
   })
 }
 
@@ -23,6 +24,8 @@ export function encodeDocumentToToon(
 export interface DecodeDocumentFromToonOptions {
   /** Pass through to the TOON decoder (array length checks, etc.). */
   strict?: boolean
+  /** When true, expand dotted keys produced by compact (`keyFolding: safe`) encoding. */
+  compact?: boolean
 }
 
 /**
@@ -35,5 +38,6 @@ export function decodeDocumentFromToon(
 ): unknown {
   return toonDecode(text, {
     strict: options.strict ?? true,
+    expandPaths: options.compact ? "safe" : "off",
   })
 }

@@ -35,8 +35,7 @@ export function createBrowserDemoEnvironment(
     .withRuntime(runtime(BROWSER_RUNTIME_ID, "Browser Runtime"))
     .withExtensions([
       extension("@ecp/browser-registry").with({
-        freezeOnFirstRun: true,
-        freezeOnReady: false,
+        freezeOn: "environment:beforeRun",
         autoBindRegisteredExtensions: true,
         exposeGlobal: true,
         globalName: "ecp",

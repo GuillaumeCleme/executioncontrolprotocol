@@ -60,7 +60,12 @@ export default class Decode extends EnvModuleCommand {
       op = op.to("@ecp.workflow")
 
       const decoded = await op.process()
-      const json = JSON.stringify(decoded.document, null, 2)
+      if (!decoded.success) {
+        throw new Error(
+          decoded.diagnostics.map((d) => d.message).join("; ") || "Decode failed"
+        )
+      }
+      const json = JSON.stringify(decoded.result, null, 2)
 
       if (flags.output) await writeFile(flags.output, json, "utf8")
       else this.log(json)

@@ -23,8 +23,10 @@ const schemas = [
   { type: "RunRequest", file: "run.request.json" },
   { type: "ValidationResult", file: "validation.result.json" },
   { type: "SearchResult", file: "environment.search.json" },
-  { type: "EncodedArtifactDocument", file: "encoded.json" },
-  { type: "DecodeResultDocument", file: "decoded.json" },
+  { type: "EncodeResultDocument", file: "encode.result.json" },
+  { type: "DecodeResultDocument", file: "decode.result.json" },
+  { type: "EcpPatchDocumentRecord", file: "patch.json" },
+  { type: "PatchResultDocument", file: "patch.result.json" },
 ]
 
 for (const { type, file } of schemas) {

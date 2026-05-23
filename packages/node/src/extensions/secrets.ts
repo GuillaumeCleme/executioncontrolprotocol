@@ -67,7 +67,7 @@ export const secretsExtension = defineExtension("@ecp", "secrets")
   })
   .withHooks([
     hook("environment:configuring", attachSecretsResolver),
-    hook("environment:shutdown", () => undefined),
+    hook("environment:terminate", () => undefined),
   ])
   .build()
 

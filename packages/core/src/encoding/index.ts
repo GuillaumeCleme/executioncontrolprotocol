@@ -7,7 +7,13 @@ export {
   createDecodeBuilder,
   type DecodeOperationBuilder,
 } from "./decode-builder.js"
-export { encodeJson, decodeJson, getEcpSchema } from "./json-codec.js"
+export {
+  encodeJson,
+  decodeJson,
+  getEcpSchema,
+  encodeFailure,
+  decodeFailure,
+} from "./json-codec.js"
 export { normalizeWorkflowManifest } from "./normalize-workflow.js"
 export {
   normalizeNamespacedId,
@@ -23,6 +29,6 @@ export {
 export {
   ecpEncodeInputSchema,
   ecpDecodeInputSchema,
-  ecpEncodedArtifactSchema,
+  ecpEncodeResultSchema,
   ecpDecodeResultSchema,
 } from "./schemas.js"

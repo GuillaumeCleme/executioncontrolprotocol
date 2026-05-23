@@ -42,9 +42,9 @@ describe("full format round trip", () => {
 
     const toon = await env.encode(manifestA).uses("@ecp/format-toon").process()
 
-    const decoded = await env.decode(toon.content).uses("@ecp/format-toon").process()
+    const decoded = await env.decode(toon.result).uses("@ecp/format-toon").process()
 
-    const manifestB = decoded.document
+    const manifestB = decoded.result
 
     const fluent = await env
       .encode(manifestB)
@@ -52,7 +52,7 @@ describe("full format round trip", () => {
       .process()
 
     const compiledB = await compileWorkflowSource({
-      source: String(fluent.content),
+      source: String(fluent.result),
       filename: "workflow.generated.ts",
     })
 

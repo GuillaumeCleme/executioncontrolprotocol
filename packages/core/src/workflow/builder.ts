@@ -3,6 +3,7 @@ import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, Workflo
 import { slugify } from "../util/slug.js"
 import type { StepBuilder } from "../bindings/step.js"
 import { validateWorkflow } from "../validate/workflow.js"
+import { assignUniqueStepIds } from "./assign-unique-step-ids.js"
 
 type NodeInput = StepBuilder | WorkflowNode
 
@@ -36,7 +37,7 @@ export class WorkflowBuilder {
 
   /** Alias for compile(). */
   toManifest(): WorkflowManifest {
-    return {
+    return assignUniqueStepIds({
       schema: "@ecp.workflow",
       version: LATEST_ECP_VERSION,
       workflow: {
@@ -44,7 +45,7 @@ export class WorkflowBuilder {
         label: this.label,
       },
       steps: this.nodes,
-    }
+    })
   }
 
   /** Validate against optional environment descriptor. */

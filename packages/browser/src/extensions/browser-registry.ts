@@ -43,10 +43,6 @@ function attachBrowserRegistry(ctx: LifecycleContext): void {
   const registry = host.getRegistry()
   const allowReg = cfg.allowRuntimeRegistration !== false
 
-  if (cfg.frozen === true) {
-    registry.freeze("frozen:true")
-  }
-
   registry.setRegistrationGuard(async (request: RegistryRegistrationRequest) => {
     if (request.kind !== "extension") {
       throw new RegistryRegistrationDeniedError(
@@ -87,21 +83,12 @@ function attachBrowserRegistry(ctx: LifecycleContext): void {
   }
 }
 
-function maybeFreezeOnReady(ctx: LifecycleContext): void {
+function maybeFreezeOn(ctx: LifecycleContext, hook: string): void {
   const cfg = getExtensionConfig(ctx)
   const registry = ctx.environment?.getRegistry()
-  if (!registry) return
-  if (cfg.frozen === true || cfg.freezeOnReady === true) {
-    registry.freeze("freezeOnReady")
-  }
-}
-
-function maybeFreezeOnFirstRun(ctx: LifecycleContext): void {
-  const cfg = getExtensionConfig(ctx)
-  const registry = ctx.environment?.getRegistry()
-  if (!registry) return
-  if (cfg.freezeOnFirstRun === true && !registry.isFrozen()) {
-    registry.freeze("freezeOnFirstRun")
+  if (!registry || registry.isFrozen()) return
+  if (cfg.freezeOn === hook) {
+    registry.freeze(hook)
   }
 }
 
@@ -131,9 +118,7 @@ export function exposeBrowserRegistry(): BrowserEcpGlobal | undefined {
 /** Hook-only dynamic registry extension for browser. @category Extensions */
 export const browserRegistryExtension = defineExtension("@ecp", "browser-registry")
   .withConfig({
-    frozen: boolean().default(false),
-    freezeOnReady: boolean().default(false),
-    freezeOnFirstRun: boolean().default(true),
+    freezeOn: string().default("environment:beforeRun"),
     allowRuntimeRegistration: boolean().default(true),
     autoBindRegisteredExtensions: boolean().default(false),
     exposeGlobal: boolean().default(false),
@@ -141,9 +126,9 @@ export const browserRegistryExtension = defineExtension("@ecp", "browser-registr
   })
   .withHooks([
     hook("environment:configuring", attachBrowserRegistry),
-    hook("environment:ready", maybeFreezeOnReady),
-    hook("environment:beforeRun", maybeFreezeOnFirstRun),
-    hook("environment:shutdown", detachBrowserRegistry),
+    hook("environment:ready", (ctx) => maybeFreezeOn(ctx, "environment:ready")),
+    hook("environment:beforeRun", (ctx) => maybeFreezeOn(ctx, "environment:beforeRun")),
+    hook("environment:terminate", detachBrowserRegistry),
   ])
   .build()
 

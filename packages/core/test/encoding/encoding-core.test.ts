@@ -4,10 +4,12 @@ import {
   extension,
   workflow,
   step,
+  runtime,
   registerTestExtension,
   hook,
   defineExtension,
 } from "../../src/index.js"
+import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 
 const sampleManifest = workflow("Weekly Brief")
@@ -31,25 +33,25 @@ describe("env.encode/decode", () => {
   it("encodes JSON by default when no extension is used", async () => {
     const env = environment("test")
     const encoded = await env.encode(sampleManifest).process()
-    expect(encoded.schema).toBe("@ecp.encoded")
+    expect(encoded.schema).toBe("@ecp.encode.result")
+    expect(encoded.success).toBe(true)
     expect(encoded.format).toBe("json")
-    expect(encoded.content).toEqual(sampleManifest)
+    expect(encoded.result).toEqual(sampleManifest)
   })
 
   it("decodes JSON by default when no extension is used", async () => {
     const env = environment("test")
     const decoded = await env.decode(JSON.stringify(sampleManifest)).process()
-    expect(decoded.schema).toBe("@ecp.decoded")
-    expect(decoded.document).toEqual(sampleManifest)
+    expect(decoded.schema).toBe("@ecp.decode.result")
+    expect(decoded.success).toBe(true)
+    expect(decoded.result).toEqual(sampleManifest)
   })
 
   it("fails when encoder extension is not registered", async () => {
     const env = environment("test")
     await expect(
       env.encode(sampleManifest).uses("@ecp/format-toon").process()
-    ).rejects.toMatchObject({
-      code: "FORMAT_EXTENSION_NOT_FOUND",
-    })
+    ).rejects.toThrow(/not registered/)
   })
 
   it("encodes TOON when extension is registered", async () => {
@@ -60,10 +62,12 @@ describe("env.encode/decode", () => {
     const encoded = await env
       .encode(sampleManifest)
       .uses("@ecp/format-toon")
+      .to("@ecp.workflow")
       .process()
     expect(encoded.format).toBe("toon")
-    expect(String(encoded.content)).toContain("schema: @ecp.workflow")
-    expect(String(encoded.content)).toContain("steps[")
+    expect(encoded.success).toBe(true)
+    expect(String(encoded.result)).toContain("schema: @ecp.workflow")
+    expect(String(encoded.result)).toContain("steps[")
   })
 })
 
@@ -78,26 +82,39 @@ describe("encode/decode lifecycle isolation", () => {
         hook("run:before", async () => {
           events.push("run:before")
         }),
-        hook("step:started", async () => {
-          events.push("step:started")
+        hook("step:before", async () => {
+          events.push("step:before")
         }),
       ])
       .build()
 
-    const { globalRegistry } = await import("../../src/registry/registry.js")
-    if (!globalRegistry.getExtension("@ecp/telemetry-spy")) {
-      await globalRegistry.registerExtension(spy)
-    }
-
     const env = environment("test").withExtensions([
-      extension("@ecp/telemetry-spy").with({}),
+      extension("@ecp/test").with({}),
+      extension(spy).with({}),
       extension("@ecp/format-toon").with({}),
     ])
 
     const toon = await env.encode(sampleManifest).uses("@ecp/format-toon").process()
+    expect(toon.success).toBe(true)
+    await env.decode(toon.result).uses("@ecp/format-toon").process()
 
-    await env.decode(toon.content).uses("@ecp/format-toon").process()
+    expect(events).not.toContain("run:before")
+    expect(events).not.toContain("step:before")
+  })
+})
 
-    expect(events).toEqual([])
+describe("env.init", () => {
+  it("initializes an Ecp operational instance", async () => {
+    await registerNodeRuntime()
+    await registerTestExtension()
+    const env = environment("test")
+      .withRuntime(runtime(NODE_RUNTIME_ID))
+      .withExtensions([extension("@ecp/test").with({})])
+    const ecp = await env.init()
+    expect(ecp.encode).toBeTypeOf("function")
+    expect(ecp.decode).toBeTypeOf("function")
+    expect(ecp.patch).toBeTypeOf("function")
+    expect(ecp.terminate).toBeTypeOf("function")
+    await ecp.terminate()
   })
 })

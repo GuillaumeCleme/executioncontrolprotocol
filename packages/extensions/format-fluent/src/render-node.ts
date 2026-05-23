@@ -12,9 +12,6 @@ function renderStep(step: StepNode, needs: ImportNeeds, indent: string): string 
   const lines: string[] = []
   const labelArg = step.label ? `, ${JSON.stringify(step.label)}` : ""
   lines.push(`${indent}step(${JSON.stringify(step.uses)}${labelArg})`)
-  if (step.id) {
-    lines.push(`${indent}  .id(${JSON.stringify(step.id)})`)
-  }
   if (step.when) {
     needs.expr = true
     lines.push(`${indent}  .when(${renderExprValue(step.when)})`)

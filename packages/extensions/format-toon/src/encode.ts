@@ -3,37 +3,62 @@ import {
   ECP_FORMATS,
   LATEST_ECP_VERSION,
 } from "@ecp/types"
-import type { EcpEncodeInput, EncodedArtifact } from "@ecp/types"
-import { EcpError, type UtilityCapabilityContext } from "@ecp/core"
-import { getEcpSchema } from "./schema.js"
+import type { EcpEncodeInput, EncodeResult } from "@ecp/types"
+import { EcpError, encodeFailure, validateWorkflow, type UtilityCapabilityContext } from "@ecp/core"
 import { encodeDocumentToToon } from "./toon-codec.js"
 import { validateEcpDocument, validationToDiagnostics } from "./validate-document.js"
 
+function stripDocumentHeaders(doc: Record<string, unknown>): Record<string, unknown> {
+  const rest = { ...doc }
+  delete rest.schema
+  delete rest.version
+  return rest
+}
+
 /**
- * Encode an ECP document to TOON via `@toon-format/toon` (schema-agnostic).
- * Known schemas are validated; diagnostics are attached without rejecting unknown types.
+ * Encode document to TOON via `@toon-format/toon`.
  * @category Encoding
  */
 export function encodeToToon(
   input: EcpEncodeInput,
   _ctx: UtilityCapabilityContext
-): EncodedArtifact<string> {
-  const sourceSchema = input.sourceSchema ?? getEcpSchema(input.source)
+): EncodeResult<string> {
+  const sourceSchema = input.sourceSchema
   const validation = validateEcpDocument(input.source, sourceSchema)
+  const diagnostics = validationToDiagnostics(validation)
+
+  if (sourceSchema === "@ecp.workflow") {
+    const wfValidation = validateWorkflow(input.source as import("@ecp/types").WorkflowManifest)
+    if (!wfValidation.valid) {
+      return encodeFailure({
+        format: ECP_FORMATS.TOON,
+        sourceSchema,
+        validation: wfValidation,
+        diagnostics: [...diagnostics, ...wfValidation.errors, ...wfValidation.warnings],
+      })
+    }
+  }
+
+  const headers = input.options?.headers !== false
+  const compact = input.options?.compact ?? false
 
   try {
-    const content = encodeDocumentToToon(input.source, {
-      compact: input.options?.compact ?? false,
-    })
+    let payload = input.source
+    if (!headers && payload !== null && typeof payload === "object") {
+      payload = stripDocumentHeaders(payload as Record<string, unknown>)
+    }
+    const content = encodeDocumentToToon(payload, { compact })
 
     return {
-      schema: "@ecp.encoded",
+      schema: "@ecp.encode.result",
       version: LATEST_ECP_VERSION,
+      success: true,
       format: ECP_FORMATS.TOON,
       mediaType: "text/ecp-toon",
       sourceSchema,
-      content,
-      diagnostics: validationToDiagnostics(validation),
+      sourceVersion: input.sourceVersion,
+      result: content,
+      diagnostics,
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)

@@ -3,53 +3,87 @@ import {
   LATEST_ECP_VERSION,
 } from "@ecp/types"
 import type { DecodeResult, EcpDecodeInput, EcpSchema } from "@ecp/types"
-import { EcpError, type UtilityCapabilityContext } from "@ecp/core"
-import { getEcpSchema } from "./schema.js"
+import { EcpError, decodeFailure, validateWorkflow, type UtilityCapabilityContext } from "@ecp/core"
 import { decodeDocumentFromToon } from "./toon-codec.js"
 import { validateEcpDocument, validationToDiagnostics } from "./validate-document.js"
+import { getEcpSchema } from "./schema.js"
+
+function wrapHeaderless(
+  document: unknown,
+  targetSchema: EcpSchema
+): Record<string, unknown> {
+  if (document !== null && typeof document === "object" && "schema" in document) {
+    return document as Record<string, unknown>
+  }
+  return {
+    schema: targetSchema,
+    version: LATEST_ECP_VERSION,
+    ...(document as Record<string, unknown>),
+  }
+}
 
 /**
- * Decode TOON text to an ECP document via `@toon-format/toon` (schema-agnostic).
- * Known schemas are validated; `strict` fails only when validation does not pass.
+ * Decode TOON text to an ECP document via `@toon-format/toon`.
  * @category Encoding
  */
 export function decodeFromToon(
   input: EcpDecodeInput,
   _ctx: UtilityCapabilityContext
 ): DecodeResult {
-  const content = String(input.content)
-  let document: unknown
+  const targetSchema = input.targetSchema ?? "@ecp.workflow"
+  const content = String(input.input)
+  const headersOpt = input.options?.headers ?? "auto"
+  const hasHeaders =
+    headersOpt === true || (headersOpt === "auto" && /^\s*schema\s*:/m.test(content))
 
+  let document: unknown
   try {
     document = decodeDocumentFromToon(content, {
       strict: input.options?.strict ?? true,
+      compact: input.options?.compact ?? false,
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED, {
-      message: `TOON decode failed: ${message}`,
+    return decodeFailure({
+      targetSchema,
+      diagnostics: [
+        {
+          severity: "error",
+          code: ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED,
+          message: `TOON decode failed: ${message}`,
+        },
+      ],
     })
   }
 
-  const targetSchema: EcpSchema | undefined =
-    input.targetSchema ?? getEcpSchema(document)
+  if (!hasHeaders) {
+    document = wrapHeaderless(document, targetSchema)
+  }
 
-  const validation = validateEcpDocument(document, targetSchema)
+  let validation = validateEcpDocument(document, targetSchema)
+  if (targetSchema === "@ecp.workflow") {
+    validation = validateWorkflow(document as import("@ecp/types").WorkflowManifest)
+  }
+
   const diagnostics = validationToDiagnostics(validation)
+  const success = validation.valid
 
-  if (input.options?.strict && !validation.valid) {
+  if (!success && input.options?.strict) {
     throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED, {
-      message: `Decoded document failed validation for ${targetSchema ?? "unknown schema"}.`,
+      message: `Decoded document failed validation for ${targetSchema}.`,
       diagnostics: validation.errors,
     })
   }
 
   return {
-    schema: "@ecp.decoded",
+    schema: "@ecp.decode.result",
     version: LATEST_ECP_VERSION,
-    targetSchema,
-    document,
-    diagnostics,
+    success,
+    targetSchema: getEcpSchema(document) ?? targetSchema,
+    targetVersion: input.targetVersion,
+    result: document,
+    validation,
+    diagnostics: [...diagnostics, ...validation.errors, ...validation.warnings],
   }
 }
 

@@ -1,21 +1,14 @@
-import { LATEST_ECP_VERSION, ECP_FORMATS } from "@ecp/types"
-import type { DecodeResult, EcpSchema, EncodedArtifact } from "@ecp/types"
-
-/** Options for JSON encode. @category Encoding */
-export interface EncodeJsonOptions {
-  /** Compact JSON (no pretty-print). */
-  compact?: boolean
-  /** Return string content instead of object. */
-  as?: "object" | "string"
-  /** Known source schema. */
-  sourceSchema?: EcpSchema
-}
-
-/** Options for JSON decode. @category Encoding */
-export interface DecodeJsonOptions {
-  /** Expected target schema. */
-  targetSchema?: EcpSchema
-}
+import { ECP_FORMATS, LATEST_ECP_VERSION } from "@ecp/types"
+import type {
+  DecodeResult,
+  EcpFormatOptions,
+  EcpDecodeOptions,
+  EcpSchema,
+  EcpVersion,
+  EncodeResult,
+  ValidationResult,
+} from "@ecp/types"
+import { emptyValidationResult } from "../validate/workflow-schema.js"
 
 /**
  * Infer ECP schema from a document object.
@@ -29,33 +22,56 @@ export function getEcpSchema(value: unknown): EcpSchema | undefined {
   return undefined
 }
 
+function failureDiagnostics(validation?: ValidationResult) {
+  return validation ? [...validation.errors, ...validation.warnings] : []
+}
+
 /**
  * Encode a document as canonical JSON.
  * @category Encoding
  */
-export function encodeJson(input: unknown, options: EncodeJsonOptions = {}): EncodedArtifact {
+export function encodeJson(
+  input: unknown,
+  options: EcpFormatOptions & { sourceSchema?: EcpSchema; sourceVersion?: string } = {}
+): EncodeResult {
   const sourceSchema = options.sourceSchema ?? getEcpSchema(input)
   const compact = options.compact ?? false
+  const validation = emptyValidationResult(true)
 
-  if (options.as === "string") {
-    return {
-      schema: "@ecp.encoded",
-      version: LATEST_ECP_VERSION,
-      format: ECP_FORMATS.JSON,
-      mediaType: "application/ecp+json",
-      sourceSchema,
-      content: JSON.stringify(input, null, compact ? 0 : 2),
-    }
-  }
+  const resultPayload =
+    options.as === "string"
+      ? JSON.stringify(input, null, compact ? 0 : 2)
+      : input
 
   return {
-    schema: "@ecp.encoded",
+    schema: "@ecp.encode.result",
     version: LATEST_ECP_VERSION,
+    success: true,
     format: ECP_FORMATS.JSON,
     mediaType: "application/ecp+json",
     sourceSchema,
-    content: input,
+    sourceVersion: options.sourceVersion as EcpVersion | undefined,
+    result: resultPayload,
+    validation,
+    diagnostics: failureDiagnostics(validation),
   }
+}
+
+/**
+ * Build a failed encode result envelope.
+ * @category Encoding
+ */
+export function encodeFailure<T = unknown>(
+  partial: Partial<EncodeResult<T>> & { diagnostics: EncodeResult["diagnostics"] }
+): EncodeResult<T> {
+  return {
+    schema: "@ecp.encode.result",
+    version: LATEST_ECP_VERSION,
+    success: false,
+    format: partial.format ?? ECP_FORMATS.JSON,
+    ...partial,
+    diagnostics: partial.diagnostics,
+  } as EncodeResult<T>
 }
 
 /**
@@ -64,16 +80,60 @@ export function encodeJson(input: unknown, options: EncodeJsonOptions = {}): Enc
  */
 export function decodeJson<T = unknown>(
   input: unknown,
-  options: DecodeJsonOptions = {}
+  options: EcpDecodeOptions & {
+    targetSchema?: EcpSchema
+    targetVersion?: string
+    validation?: ValidationResult
+  } = {}
 ): DecodeResult<T> {
-  const document =
-    typeof input === "string" ? (JSON.parse(input) as T) : (input as T)
+  let document: T
+  try {
+    document =
+      typeof input === "string" ? (JSON.parse(input) as T) : (input as T)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return {
+      schema: "@ecp.decode.result",
+      version: LATEST_ECP_VERSION,
+      success: false,
+      targetSchema: options.targetSchema,
+      diagnostics: [
+        {
+          severity: "error",
+          message: `JSON parse failed: ${message}`,
+          code: "FORMAT_DECODE_FAILED",
+        },
+      ],
+    }
+  }
+
+  const validation = options.validation ?? emptyValidationResult(true)
+  const success = validation.valid
 
   return {
-    schema: "@ecp.decoded",
+    schema: "@ecp.decode.result",
     version: LATEST_ECP_VERSION,
+    success,
     targetSchema: options.targetSchema ?? getEcpSchema(document),
-    document,
-    diagnostics: [],
+    targetVersion: options.targetVersion as EcpVersion | undefined,
+    result: document,
+    validation,
+    diagnostics: failureDiagnostics(validation),
+  }
+}
+
+/**
+ * Build a failed decode result envelope.
+ * @category Encoding
+ */
+export function decodeFailure(
+  partial: Partial<DecodeResult> & { diagnostics: DecodeResult["diagnostics"] }
+): DecodeResult {
+  return {
+    schema: "@ecp.decode.result",
+    version: LATEST_ECP_VERSION,
+    success: false,
+    ...partial,
+    diagnostics: partial.diagnostics,
   }
 }

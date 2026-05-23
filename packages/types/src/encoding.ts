@@ -1,6 +1,7 @@
 import type { EcpSchema } from "./schema.js"
 import type { EcpVersion } from "./version.js"
 import type { ValidationIssue } from "./validation.js"
+import type { ValidationResult } from "./validation.js"
 
 /** Reserved capability names for format extensions. @category Encoding */
 export const ECP_FORMAT_CAPABILITY_NAMES = {
@@ -32,74 +33,74 @@ export const ECP_ENCODING_ERROR_CODES = {
 export type EcpEncodingErrorCode =
   (typeof ECP_ENCODING_ERROR_CODES)[keyof typeof ECP_ENCODING_ERROR_CODES]
 
-/** Encoded artifact from `env.encode().process()`. @category Encoding */
-export interface EncodedArtifact<T = unknown> {
-  /** Schema discriminator. */
-  schema: "@ecp.encoded"
-  /** Protocol version. */
+/** Standard format encoder options. @category Encoding */
+export interface EcpFormatOptions extends Record<string, unknown> {
+  /** Include schema/version headers in encoded output. Default true. */
+  headers?: boolean
+  /** Prefer compact output. Default false. */
+  compact?: boolean
+  /** Return string content instead of object (JSON codec). */
+  as?: "object" | "string"
+  /** Fields to include when supported by the encoder. */
+  include?: string[]
+}
+
+/** Standard format decoder options. @category Encoding */
+export interface EcpDecodeOptions extends Record<string, unknown> {
+  /** Fail on invalid syntax or schema mismatch. */
+  strict?: boolean
+  /** Header expectation. Default `"auto"`. */
+  headers?: boolean | "auto"
+  /** Match compact TOON encoding (`keyFolding: safe`). Default false. */
+  compact?: boolean
+}
+
+/** Encode operation result. @category Encoding */
+export interface EncodeResult<T = unknown> {
+  schema: "@ecp.encode.result"
   version: EcpVersion
-  /** Format identifier (e.g. `json`, `toon`, `fluent`). */
+  success: boolean
   format: string
-  /** Optional MIME type. */
-  mediaType?: string
-  /** Source document schema when known. */
   sourceSchema?: EcpSchema
-  /** Encoded payload. */
-  content: T
-  /** Non-fatal issues from the encoder. */
-  diagnostics?: ValidationIssue[]
+  sourceVersion?: EcpVersion
+  mediaType?: string
+  result?: T
+  validation?: ValidationResult
+  diagnostics: ValidationIssue[]
 }
 
-/** Decode result from `env.decode().process()`. @category Encoding */
+/** Decode operation result. @category Encoding */
 export interface DecodeResult<T = unknown> {
-  /** Schema discriminator. */
-  schema: "@ecp.decoded"
-  /** Protocol version. */
+  schema: "@ecp.decode.result"
   version: EcpVersion
-  /** Target document schema when known. */
+  success: boolean
   targetSchema?: EcpSchema
-  /** Decoded document. */
-  document: T
-  /** Validation or parse diagnostics. */
-  diagnostics?: ValidationIssue[]
+  targetVersion?: EcpVersion
+  result?: T
+  validation?: ValidationResult
+  diagnostics: ValidationIssue[]
 }
 
-/** Concrete encoded artifact for schema generation. @category Encoding */
-export type EncodedArtifactDocument = EncodedArtifact<unknown>
+/** Concrete encode result for schema generation. @category Encoding */
+export type EncodeResultDocument = EncodeResult<unknown>
 
 /** Concrete decode result for schema generation. @category Encoding */
 export type DecodeResultDocument = DecodeResult<unknown>
 
 /** Input to `{extensionId}.encode` capabilities. @category Encoding */
 export interface EcpEncodeInput {
-  /** Source document to encode. */
   source: unknown
-  /** Source schema when known. */
   sourceSchema?: EcpSchema
-  /** Target format hint. */
+  sourceVersion?: EcpVersion
   format?: string
-  /** Encoder options. */
-  options?: {
-    /** Compact output (format-specific). */
-    compact?: boolean
-    /** Fields to include when supported. */
-    include?: string[]
-    /** Return shape for JSON codec. */
-    as?: "object" | "string"
-  }
+  options?: EcpFormatOptions
 }
 
 /** Input to `{extensionId}.decode` capabilities. @category Encoding */
 export interface EcpDecodeInput {
-  /** Encoded content to decode. */
-  content: unknown
-  /** Source format hint. */
+  input: unknown
   format?: string
-  /** Expected target schema. */
   targetSchema?: EcpSchema
-  /** Decoder options. */
-  options?: {
-    /** Fail when decoded document is invalid. */
-    strict?: boolean
-  }
+  targetVersion?: EcpVersion
+  options?: EcpDecodeOptions
 }

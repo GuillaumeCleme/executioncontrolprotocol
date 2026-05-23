@@ -37,6 +37,8 @@ import {
   type DecodeOperationBuilder,
   type EncodeOperationBuilder,
 } from "../encoding/index.js"
+import { createPatchBuilder, type PatchOperationBuilder } from "../patch/index.js"
+import { EcpImpl, type Ecp } from "./ecp.js"
 
 function resolveId(ref: NamespacedId | { id: NamespacedId } | string): NamespacedId {
   if (typeof ref === "string") return ref as NamespacedId
@@ -361,13 +363,30 @@ export class Environment implements EnvironmentLifecycleHost {
     return createDecodeBuilder(this, input)
   }
 
+  /**
+   * Apply a canonical JSON patch (not TOON).
+   * @category Environment
+   */
+  patch<T = unknown>(document: T): PatchOperationBuilder<T> {
+    return createPatchBuilder(document)
+  }
+
+  /**
+   * Initialize environment for operational use and return an {@link Ecp} instance.
+   * @category Environment
+   */
+  async init(): Promise<Ecp> {
+    await this.prepareForRun()
+    return new EcpImpl(this)
+  }
+
   async search(query: string, options?: SearchOptions): Promise<SearchResult> {
     const descriptor = await this.describe()
     return searchCapabilities(query, descriptor, options)
   }
 
   async dispose(): Promise<void> {
-    await this.emitEnvironmentEvent("environment:shutdown")
+    await this.emitEnvironmentEvent("environment:terminate")
     this.invalidatePrepared()
   }
 

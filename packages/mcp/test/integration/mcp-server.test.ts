@@ -42,8 +42,8 @@ describe("createEcpMcpServer", () => {
       .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
     const encoded = await env.encode(manifest).uses("@ecp/format-toon").process()
-    const decoded = await env.decode(encoded.content).uses("@ecp/format-toon").process()
-    expect(normalizeWorkflowManifest(decoded.document)).toEqual(
+    const decoded = await env.decode(encoded.result).uses("@ecp/format-toon").process()
+    expect(normalizeWorkflowManifest(decoded.result as import("@ecp/types").WorkflowManifest)).toEqual(
       normalizeWorkflowManifest(manifest)
     )
     const server = createEcpMcpServer({ environment: env })

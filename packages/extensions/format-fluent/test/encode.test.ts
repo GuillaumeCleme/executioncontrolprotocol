@@ -33,8 +33,8 @@ describe("Fluent encoder", () => {
       .process()
 
     expect(encoded.format).toBe("fluent")
-    expect(String(encoded.content)).toContain("export default workflow")
-    expect(String(encoded.content)).toContain("step(")
+    expect(String(encoded.result)).toContain("export default workflow")
+    expect(String(encoded.result)).toContain("step(")
   })
 
   it("generated Fluent source compiles back to manifest", async () => {
@@ -56,10 +56,10 @@ describe("Fluent encoder", () => {
       .uses("@ecp/format-fluent")
       .process()
 
-    expect(String(encoded.content)).toContain('ref("signals.results")')
+    expect(String(encoded.result)).toContain('ref("signals.results")')
 
     const compiled = await compileWorkflowSource({
-      source: String(encoded.content),
+      source: String(encoded.result),
       filename: "generated.workflow.ts",
     })
 

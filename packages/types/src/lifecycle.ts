@@ -29,7 +29,7 @@ export type EnvironmentLifecycleEvent =
   | "environment:configuring"
   | "environment:ready"
   | "environment:beforeRun"
-  | "environment:shutdown"
+  | "environment:terminate"
 
 /** All public lifecycle events. @category Lifecycle */
 export type LifecycleEvent =

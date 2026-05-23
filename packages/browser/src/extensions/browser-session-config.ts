@@ -79,7 +79,7 @@ export const browserSessionConfigExtension = defineExtension("@ecp", "browser-se
   })
   .withHooks([
     hook("environment:configuring", attachSessionResolver),
-    hook("environment:shutdown", clearSession),
+    hook("environment:terminate", clearSession),
   ])
   .build()
 

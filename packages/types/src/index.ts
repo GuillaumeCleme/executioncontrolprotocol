@@ -65,10 +65,24 @@ export {
 } from "./encoding.js"
 export type {
   EcpEncodingErrorCode,
-  EncodedArtifact,
-  EncodedArtifactDocument,
+  EcpFormatOptions,
+  EcpDecodeOptions,
+  EncodeResult,
+  EncodeResultDocument,
   DecodeResult,
   DecodeResultDocument,
   EcpEncodeInput,
   EcpDecodeInput,
 } from "./encoding.js"
+export { ECP_PATCH_ERROR_CODES } from "./patch-errors.js"
+export type { EcpPatchErrorCode } from "./patch-errors.js"
+export type {
+  PatchMode,
+  EcpPatchEntry,
+  EcpPatchDocument,
+  EcpPatchInput,
+  AppliedPatchEntry,
+  PatchResult,
+  PatchResultDocument,
+  EcpPatchDocumentRecord,
+} from "./patch.js"

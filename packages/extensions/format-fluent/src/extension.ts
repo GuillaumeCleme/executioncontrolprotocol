@@ -1,8 +1,8 @@
 import {
   capabilityFor,
   defineExtension,
-  ecpEncodedArtifactSchema,
   ecpEncodeInputSchema,
+  ecpEncodeResultSchema,
 } from "@ecp/core"
 import { encodeWorkflowToFluent } from "./encode.js"
 
@@ -11,7 +11,7 @@ export const formatFluentExtension = defineExtension("@ecp", "format-fluent")
   .withCapabilities([
     capabilityFor("@ecp/format-fluent", "encode")
       .withInput(ecpEncodeInputSchema)
-      .withOutput(ecpEncodedArtifactSchema)
+      .withOutput(ecpEncodeResultSchema)
       .withHandler((input, ctx) =>
         encodeWorkflowToFluent(input as import("@ecp/types").EcpEncodeInput, ctx as never)
       ),
