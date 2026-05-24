@@ -5,7 +5,7 @@ import {
   globalRegistry,
   type Registry,
 } from "@ecp/core"
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION, modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
 
 const GenerateTextInput = z.object({
@@ -17,35 +17,41 @@ const GenerateTextOutput = z.object({
   text: z.string(),
 })
 
+function demoGenerateHandler(input: { prompt?: string }) {
+  const prompt = input.prompt ?? ""
+  if (prompt.includes("@ecp.patch") || prompt.includes("schema @ecp.patch")) {
+    return {
+      text: [
+        'schema: "@ecp.patch"',
+        `version: "${LATEST_ECP_VERSION}"`,
+        "entries[1]{path,value}:",
+        '  steps[echo].input,"{value:\\"patched\\"}"',
+      ].join("\n"),
+    }
+  }
+  return {
+    text: [
+      'schema: "@ecp.workflow"',
+      `version: "${LATEST_ECP_VERSION}"`,
+      "workflow:",
+      "  id: demo-generated",
+      "steps[1]{id,uses,label,as}:",
+      "  echo,@ecp/test.echo,Demo Echo,echo",
+    ].join("\n"),
+  }
+}
+
 /** Demo model provider for offline browser demo. @category Extensions */
 export const demoExtension = defineExtension("@ecp", "demo")
   .withCapabilities([
+    capabilityFor("@ecp/demo", "generate")
+      .withInput(modelGenerateInputSchema)
+      .withOutput(modelGenerateOutputSchema)
+      .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string })),
     capabilityFor("@ecp/demo", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(GenerateTextOutput)
-      .withHandler(async (input) => {
-        const prompt = (input as { prompt?: string }).prompt ?? ""
-        if (prompt.includes("@ecp.patch") || prompt.includes("schema @ecp.patch")) {
-          return {
-            text: [
-              'schema: "@ecp.patch"',
-              `version: "${LATEST_ECP_VERSION}"`,
-              "entries[1]{path,value}:",
-              '  steps[echo].input,"{value:\\"patched\\"}"',
-            ].join("\n"),
-          }
-        }
-        return {
-          text: [
-          'schema: "@ecp.workflow"',
-          `version: "${LATEST_ECP_VERSION}"`,
-          "workflow:",
-          "  id: demo-generated",
-          "steps[1]{id,uses,label,as}:",
-          "  echo,@ecp/test.echo,Demo Echo,echo",
-        ].join("\n"),
-        }
-      }),
+      .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string })),
   ])
   .build()
 

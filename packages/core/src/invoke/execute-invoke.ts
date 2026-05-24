@@ -7,6 +7,8 @@ import {
 } from "@ecp/types"
 import type { Environment } from "../environment/environment.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
+import { isHarnessCapabilityId } from "../harness/harness-catalog.js"
+import { executeHarnessInvoke } from "../harness/execute-harness.js"
 import { createUtilityCapabilityContext } from "../encoding/utility-context.js"
 import { evaluatePolicies } from "../runtime/policy-engine.js"
 import { createUsageLedger, type CapabilityContext, type PolicyContext } from "../runtime/context.js"
@@ -63,10 +65,20 @@ function findExtensionConfig(
 export async function executeInvoke(
   env: Environment,
   capabilityId: CapabilityId,
-  input: unknown
+  input: unknown,
+  providerOverride?: CapabilityId
 ): Promise<InvokeResult> {
   await env.ensureBoundExtensionsRegistered()
   await env.ensureReady()
+
+  if (isHarnessCapabilityId(capabilityId)) {
+    return executeHarnessInvoke(
+      env,
+      capabilityId as import("@ecp/types").HarnessCapabilityId,
+      input,
+      providerOverride
+    )
+  }
 
   const registry = env.getRegistry()
   const cap = registry.getCapability(capabilityId)

@@ -14,6 +14,7 @@ export type EcpSchema =
   | "@ecp.patch.result"
   | "@ecp.encode.result"
   | "@ecp.decode.result"
+  | "@ecp.intent"
 
 /** Namespaced definition id (`@namespace/name`). @category Common */
 export type NamespacedId = `@${string}/${string}`

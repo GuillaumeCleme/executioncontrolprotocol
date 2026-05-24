@@ -53,9 +53,11 @@ export default class Decode extends EnvModuleCommand {
           ? JSON.parse(raw)
           : raw
 
-      let op = ecp.decode(content)
       const extId = formatToExtensionId(format)
-      if (extId) op = op.uses(extId)
+      if (!extId) {
+        throw new Error(`Unknown format: ${format}`)
+      }
+      let op = ecp.decode(content).uses(extId)
       if (flags.strict) op = op.strict()
       op = op.to("@ecp.workflow")
 

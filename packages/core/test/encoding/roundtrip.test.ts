@@ -41,7 +41,7 @@ describe("full format round trip", () => {
 
     const manifestB = decoded.result
 
-    const fluent = await ecp.encode(manifestB).as("fluent").process()
+    const fluent = await ecp.encode(manifestB).uses("@ecp/format-fluent").process()
     await ecp.terminate()
 
     const compiledB = await compileWorkflowSource({

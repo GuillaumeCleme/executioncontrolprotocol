@@ -5,6 +5,7 @@ import {
   globalRegistry,
   type Registry,
 } from "@ecp/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
 import {
   assertModelReady,
@@ -71,6 +72,22 @@ export const chromeAiExtension = defineExtension("@ecp", "chrome-ai")
       .withInput(z.object({}))
       .withOutput(InstallStateSchema)
       .withHandler(async () => getModelInstallState()),
+    capabilityFor("@ecp/chrome-ai", "generate")
+      .withInput(modelGenerateInputSchema)
+      .withOutput(modelGenerateOutputSchema)
+      .withHandler(async (raw) => {
+        const input = raw as z.infer<typeof GenerateTextInput>
+        await assertModelReady()
+        const model = chromeAi()
+        if (!model?.create) {
+          throw new Error("Chrome LanguageModel API is not available")
+        }
+        const session = await model.create({
+          systemPrompt: input.system,
+        })
+        const response = await session.prompt(input.prompt)
+        return { text: response.text }
+      }),
     capabilityFor("@ecp/chrome-ai", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))

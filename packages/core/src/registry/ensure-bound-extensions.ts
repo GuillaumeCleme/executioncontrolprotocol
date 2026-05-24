@@ -2,6 +2,7 @@ import type { NamespacedId } from "@ecp/types"
 import type { ExtensionBindingBuilder } from "../bindings/extension.js"
 import type { Registry } from "./registry.js"
 import { resolveExtensionDefinition, normalizeExtensionId } from "./extension-catalog.js"
+import { registerCoreFormats } from "../formats/register-core-formats.js"
 
 function bindingRefId(ref: NamespacedId | import("../definitions/types.js").ExtensionDefinition | string): NamespacedId {
   if (typeof ref === "string") return normalizeExtensionId(ref)
@@ -18,6 +19,7 @@ export async function ensureBoundExtensionsRegistered(
   bindings: ExtensionBindingBuilder[],
   registry: Registry
 ): Promise<void> {
+  await registerCoreFormats(registry)
   for (const binding of bindings) {
     const ref = binding.getRef()
     const def = resolveExtensionDefinition(ref)

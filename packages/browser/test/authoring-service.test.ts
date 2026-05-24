@@ -1,35 +1,41 @@
 import { describe, expect, it } from "vitest"
-import { extension, registerTestExtension, workflow, step } from "@ecp/core"
+import { registerTestExtension, workflow, step } from "@ecp/core"
 import {
   BrowserAuthoringService,
+  WORKFLOW_AUTHORING_CAPABILITY,
   createBrowserDemoEnvironment,
   createEcp,
   registerBrowserDefaults,
 } from "../src/index.js"
+import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
 
 async function authoringEcp() {
   await registerBrowserDefaults()
   await registerTestExtension()
-  const env = createBrowserDemoEnvironment("authoring-test").withExtensions([
-    extension("@ecp/test").with({}),
-  ])
+  const env = createBrowserDemoEnvironment("authoring-test")
+  env.addExtensionBinding("@ecp/test", {})
   return createEcp(env)
 }
 
 describe("BrowserAuthoringService", () => {
-  it("creates workflow via demo provider invoke", async () => {
+  it("creates workflow via workflow-authoring harness", async () => {
     const ecp = await authoringEcp()
+    const invoked = await ecp
+      .invoke(WORKFLOW_AUTHORING_CAPABILITY)
+      .uses("@ecp/demo.generate")
+      .with({ request: "echo demo workflow" })
+      .process()
+    expect(invoked.success).toBe(true)
+    const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
+    expect(harnessResult.artifact.schema).toBe("@ecp.workflow")
+
     const service = new BrowserAuthoringService(ecp)
-    const result = await service.createWorkflow({
-      userRequest: "echo demo workflow",
-      providerCapabilityId: "@ecp/demo.generateText",
-    })
-    expect(result.manifest.schema).toBe("@ecp.workflow")
-    expect(result.panels.fluent).toContain("workflow")
-    expect(result.panels.toon.length).toBeGreaterThan(0)
-    expect(result.panels.mermaid).toContain("flowchart LR")
-    expect(result.panels.mermaid).not.toContain("no steps")
-    expect(result.panels.mermaid).toContain("Demo Echo")
+    const panels = await service.encodePanels(harnessResult.artifact)
+    expect(panels.fluent).toContain("workflow")
+    expect(panels.toon.length).toBeGreaterThan(0)
+    expect(panels.mermaid).toContain("flowchart LR")
+    expect(panels.mermaid).not.toContain("no steps")
+    expect(panels.mermaid).toContain("Demo Echo")
     await ecp.terminate()
   })
 
@@ -51,11 +57,16 @@ describe("BrowserAuthoringService", () => {
   it("encodePanels includes patch TOON when provided", async () => {
     const ecp = await authoringEcp()
     const service = new BrowserAuthoringService(ecp)
-    const created = await service.createWorkflow({
-      userRequest: "demo",
-      providerCapabilityId: "@ecp/demo.generateText",
-    })
-    const panels = await service.encodePanels(created.manifest, "steps[echo].input:\n  value: patched")
+    const invoked = await ecp
+      .invoke(WORKFLOW_AUTHORING_CAPABILITY)
+      .uses("@ecp/demo.generate")
+      .with({ request: "demo" })
+      .process()
+    const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
+    const panels = await service.encodePanels(
+      harnessResult.artifact,
+      "steps[echo].input:\n  value: patched"
+    )
     expect(panels.patch).toContain("steps[echo]")
     await ecp.terminate()
   })

@@ -1,6 +1,7 @@
 import {
   environment as coreEnvironment,
   extension,
+  harness,
   runtime,
   policy,
   env,
@@ -74,6 +75,20 @@ export function createBrowserDemoEnvironment(
       extension("@ecp/browser-session-config").with({ persist: false }),
       extension("@ecp/browser-local-config").with({}),
       extension("@ecp/browser").with({}),
+    ])
+    .withHarnesses([
+      harness("@ecp/workflow-authoring", "Workflow Authoring")
+        .uses("@ecp/demo.generate")
+        .with({
+          output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
+          context: { includeEnvironmentDescriptor: true, descriptorFormat: "@ecp/format-toon" },
+        }),
+      harness("@ecp/intent-classification", "Intent classification")
+        .uses("@ecp/demo.generate")
+        .with({
+          output: { schema: "@ecp.intent", format: "@ecp/format-json", validate: true },
+          context: { includeEnvironmentDescriptor: false },
+        }),
     ])
     .withPolicies([
       policy("@ecp/registry-control").with({

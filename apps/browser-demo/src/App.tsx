@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { BrowserAuthoringService, installBrowserWorkflowShim, type BrowserOperationalEcp } from "@ecp/browser"
+import {
+  BrowserAuthoringService,
+  INTENT_CLASSIFICATION_CAPABILITY,
+  WORKFLOW_AUTHORING_CAPABILITY,
+  installBrowserWorkflowShim,
+  type BrowserOperationalEcp,
+} from "@ecp/browser"
+import type { EcpIntent, HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import { ECP_INTENT_VALUES } from "@ecp/types"
 import type { Ecp } from "@ecp/core"
 import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@ecp/types"
 import { compileWorkflowSource } from "@ecp/core/browser"
@@ -178,26 +186,59 @@ export function App() {
 
   const runAuthoring = async (userRequest: string, cap: string) => {
     if (!ecp) return
+    const invoked = await ecp
+      .invoke(WORKFLOW_AUTHORING_CAPABILITY)
+      .uses(cap)
+      .with({
+        request: userRequest,
+        ...(manifest ? { manifest } : {}),
+      })
+      .process()
+
+    if (!invoked.success || !invoked.result) {
+      throw new Error(invoked.diagnostics.map((d) => d.message).join("; ") || "Authoring failed")
+    }
+
+    const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
+    const nextManifest = harnessResult.artifact
     const service = new BrowserAuthoringService(ecp as BrowserOperationalEcp)
-    const result = manifest
-      ? await service.patchWorkflow({ userRequest, manifest, providerCapabilityId: cap })
-      : await service.createWorkflow({ userRequest, providerCapabilityId: cap })
+    const panels = await service.encodePanels(nextManifest, harnessResult.raw)
 
     const hadWorkflow = manifest !== null
-    setManifest(result.manifest)
-    setFluent(result.panels.fluent)
-    setJson(result.panels.json)
-    setToon(result.panels.toon)
-    setMermaid(result.panels.mermaid || EMPTY_MERMAID)
-    setPatch(result.panels.patch)
-    setValidation(result.validation)
+    setManifest(nextManifest)
+    setFluent(panels.fluent)
+    setJson(panels.json)
+    setToon(panels.toon)
+    setMermaid(panels.mermaid || EMPTY_MERMAID)
+    setPatch(panels.patch)
+    setValidation(
+      (harnessResult.validation as typeof validation) ??
+        (await ecp.validate(nextManifest))
+    )
 
     if (!hadWorkflow) layout.onFirstWorkflow()
     else layout.openWorkspace()
 
-    const msg = result.validation.valid ? "Updated workflow." : "Workflow has validation issues."
+    const val = harnessResult.validation as { valid?: boolean } | undefined
+    const msg = val?.valid !== false ? "Updated workflow." : "Workflow has validation issues."
     chat.setStatus(msg)
     chat.appendAgent(msg)
+  }
+
+  const classifyIntent = async (message: string, cap: string): Promise<EcpIntent | null> => {
+    if (!ecp) return null
+    try {
+      const invoked = await ecp
+        .invoke(INTENT_CLASSIFICATION_CAPABILITY)
+        .uses(cap)
+        .with({ message })
+        .process()
+      if (!invoked.success || !invoked.result) return null
+      const harnessResult = invoked.result as HarnessInvokeResult<EcpIntent>
+      return harnessResult.artifact
+    } catch {
+      return null
+    }
   }
 
   const onSubmit = async () => {
@@ -208,7 +249,22 @@ export function App() {
     setPrompt("")
 
     try {
-      if (assistantMode === "guided" && !looksLikeWorkflowRequest(userRequest)) {
+      const cap =
+        assistantMode === "guided"
+          ? providerCapabilityId("demo")
+          : providerCapabilityId(providerMode)
+
+      let routeToAuthoring =
+        assistantMode === "authoring" || looksLikeWorkflowRequest(userRequest)
+
+      if (assistantMode === "guided" && !routeToAuthoring) {
+        const intent = await classifyIntent(userRequest, cap)
+        routeToAuthoring =
+          intent?.intent === ECP_INTENT_VALUES.WORKFLOW_CREATE ||
+          intent?.intent === ECP_INTENT_VALUES.WORKFLOW_PATCH
+      }
+
+      if (!routeToAuthoring) {
         const guide = await ecp.invoke(GUIDE_CHAT_CAPABILITY).with({ message: userRequest }).process()
         if (!guide.success || !guide.result) {
           throw new Error(guide.diagnostics.map((d) => d.message).join("; ") || "Guide chat failed")
@@ -220,12 +276,8 @@ export function App() {
       }
 
       chat.setStatus("Generating...")
-      const cap =
-        assistantMode === "guided"
-          ? providerCapabilityId("demo")
-          : providerCapabilityId(providerMode)
       await runAuthoring(userRequest, cap)
-      if (assistantMode === "guided" && looksLikeWorkflowRequest(userRequest)) {
+      if (assistantMode === "guided") {
         setAssistantMode("authoring")
       }
     } catch (err) {

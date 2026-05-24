@@ -18,7 +18,10 @@ export type {
 export { step } from "./bindings/step.js"
 export { runtime } from "./bindings/runtime.js"
 export { extension } from "./bindings/extension.js"
+export { harness } from "./bindings/harness.js"
 export { policy } from "./bindings/policy.js"
+export { registerCoreFormats } from "./formats/register-core-formats.js"
+export * from "./harness/index.js"
 export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 

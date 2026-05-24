@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step, extension, registerTestExtension } from "@ecp/core"
+import { workflow, step, registerTestExtension } from "@ecp/core"
 import { createBrowserTestEnvironment } from "./helpers.js"
 import { registerRuntimeConformanceTests } from "../../core/test/runtime-conformance.js"
 
@@ -8,9 +8,8 @@ registerRuntimeConformanceTests("@ecp/browser", () => createBrowserTestEnvironme
 describe("@ecp/browser runtime", () => {
   it("runs echo workflow", async () => {
     await registerTestExtension()
-    const env = (await createBrowserTestEnvironment("browser-test")).withExtensions([
-      extension("@ecp/test").with({}),
-    ])
+    const env = await createBrowserTestEnvironment("browser-test")
+    env.addExtensionBinding("@ecp/test", {})
     const manifest = workflow("Browser Echo")
       .run([step("@ecp/test.echo", "Echo").with({ value: "hello browser" }).as("echo")])
       .toManifest()

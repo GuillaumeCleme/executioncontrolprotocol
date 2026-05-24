@@ -30,6 +30,7 @@
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "test:e2e": "vitest run --project e2e",
+    "eval:harness": "vitest run --project unit packages/core/test/harness",
     "test:browser:install": "playwright install chromium --with-deps",
     "test:browser": "vitest run --project browser",
     "test:browser:watch": "vitest --project browser",

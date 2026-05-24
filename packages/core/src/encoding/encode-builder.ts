@@ -1,8 +1,8 @@
 import type { EncodeResult, EcpFormatOptions, EcpSchema, EcpVersion, NamespacedId } from "@ecp/types"
-import { ECP_FORMATS, LATEST_ECP_VERSION } from "@ecp/types"
+import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION } from "@ecp/types"
 import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
-import { encodeFluent } from "../fluent/encode-fluent.js"
-import { encodeJson, encodeFailure, getEcpSchema } from "./json-codec.js"
+import { encodeFailure, getEcpSchema } from "./json-codec.js"
+import { EcpError } from "./errors.js"
 import { invokeEncodeCapability } from "./invoke-utility.js"
 import { resolveEncoder } from "./resolve.js"
 import { createUtilityCapabilityContext } from "./utility-context.js"
@@ -11,7 +11,6 @@ import { validateWorkflow } from "../validate/workflow.js"
 /** Fluent builder for `ecp.encode()`. @category Encoding */
 export interface EncodeOperationBuilder {
   uses(extensionId: NamespacedId | string): this
-  as(format: string): this
   to(schema: EcpSchema, version?: EcpVersion): this
   with(options: EcpFormatOptions): this
   compact(enabled?: boolean): this
@@ -24,7 +23,6 @@ export interface EncodeOperationBuilder {
 interface EncodeState {
   source: unknown
   extensionId?: string
-  format?: string
   targetSchema?: EcpSchema
   targetVersion?: EcpVersion
   options: EcpFormatOptions
@@ -43,10 +41,6 @@ export function createEncodeBuilder(
   const builder: EncodeOperationBuilder = {
     uses(extensionId: NamespacedId | string) {
       state.extensionId = String(extensionId)
-      return builder
-    },
-    as(format: string) {
-      state.format = format
       return builder
     },
     to(schema: EcpSchema, version?: EcpVersion) {
@@ -77,6 +71,13 @@ export function createEncodeBuilder(
     async process<T = unknown>(): Promise<EncodeResult<T>> {
       await env.ensureBoundExtensionsRegistered()
 
+      if (!state.extensionId) {
+        throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_ENCODER_NOT_FOUND, {
+          message:
+            "Encode requires .uses(formatterId), e.g. .uses(\"@ecp/format-json\") or .uses(\"@ecp/format-fluent\").",
+        })
+      }
+
       const sourceSchema = state.targetSchema ?? getEcpSchema(state.source)
       const ctx = createUtilityCapabilityContext(
         env.getEnvId(),
@@ -90,28 +91,12 @@ export function createEncodeBuilder(
         )
         if (!validation.valid) {
           return encodeFailure({
-            format: state.format ?? "json",
+            format: "json",
             sourceSchema,
             validation,
             diagnostics: [...validation.errors, ...validation.warnings],
           }) as EncodeResult<T>
         }
-      }
-
-      if (state.format === ECP_FORMATS.FLUENT) {
-        return encodeFluent(state.source, {
-          ...state.options,
-          sourceSchema,
-          sourceVersion: state.targetVersion,
-        }) as EncodeResult<T>
-      }
-
-      if (!state.extensionId) {
-        return encodeJson(state.source, {
-          ...state.options,
-          sourceSchema,
-          sourceVersion: state.targetVersion,
-        }) as EncodeResult<T>
       }
 
       const cap = resolveEncoder(env.getRegistry(), state.extensionId)
@@ -121,7 +106,6 @@ export function createEncodeBuilder(
           source: state.source,
           sourceSchema,
           sourceVersion: state.targetVersion,
-          format: state.format,
           options: state.options,
         },
         ctx

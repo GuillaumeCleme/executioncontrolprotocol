@@ -8,13 +8,13 @@ export type AssistantMode = "guided" | "authoring"
 export const GUIDE_CHAT_CAPABILITY = "@ecp/browser.guideChat"
 
 const PROVIDER_CAPABILITY: Record<ProviderMode, string> = {
-  "chrome-ai": "@ecp/chrome-ai.generateText",
-  openai: "@ecp/openai.generateText",
-  claude: "@ecp/claude.generateText",
-  demo: "@ecp/demo.generateText",
+  "chrome-ai": "@ecp/chrome-ai.generate",
+  openai: "@ecp/openai.generate",
+  claude: "@ecp/claude.generate",
+  demo: "@ecp/demo.generate",
 }
 
-/** Map demo provider mode to a generateText capability id. */
+/** Map provider mode to a harness-compatible generate capability id. */
 export function providerCapabilityId(mode: ProviderMode): string {
   return PROVIDER_CAPABILITY[mode]
 }

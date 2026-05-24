@@ -6,6 +6,7 @@ import {
   string,
   type Registry,
 } from "@ecp/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
 
 const GenerateTextInput = z.object({
@@ -48,6 +49,20 @@ export const claudeExtension = defineExtension("@ecp", "claude")
     defaultModel: string().optional(),
   })
   .withCapabilities([
+    capabilityFor("@ecp/claude", "generate")
+      .withInput(modelGenerateInputSchema)
+      .withOutput(modelGenerateOutputSchema)
+      .withHandler(async (raw, ctx) => {
+        const input = raw as z.infer<typeof GenerateTextInput>
+        const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
+        const apiKey = (cfg.apiKey as string) ?? ""
+        if (!apiKey) throw new Error("Claude API key required")
+        const model =
+          input.model ?? (cfg.defaultModel as string) ?? "claude-3-5-haiku-latest"
+        ctx.usage.increment({ modelCalls: 1 })
+        const text = await claudeComplete(apiKey, model, input.prompt, input.system)
+        return { text }
+      }),
     capabilityFor("@ecp/claude", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))

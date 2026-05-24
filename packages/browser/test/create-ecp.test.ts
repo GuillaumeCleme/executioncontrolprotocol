@@ -11,7 +11,7 @@ describe("createEcp", () => {
     const manifest = workflow("W")
       .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
-    const fluent = await ecp.encode(manifest).as("fluent").process()
+    const fluent = await ecp.encode(manifest).uses("@ecp/format-fluent").process()
     expect(fluent.success).toBe(true)
     expect(String(fluent.result)).toContain("export default workflow")
     await ecp.terminate()

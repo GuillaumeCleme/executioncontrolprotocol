@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
 import {
-  extension,
   defineExtension,
   capabilityFor,
   RegistryFrozenError,
@@ -20,16 +19,7 @@ describe("@ecp/browser-registry", () => {
       ])
       .build()
 
-    const env = (await createBrowserTestEnvironment("reg-test")).withExtensions([
-      extension("@ecp/browser-registry").with({
-        freezeOn: "environment:beforeRun",
-        autoBindRegisteredExtensions: true,
-        exposeGlobal: true,
-        globalName: "ecp",
-      }),
-      extension("@ecp/browser-session-config").with({ persist: false }),
-      extension("@ecp/browser-local-config").with({}),
-    ])
+    const env = await createBrowserTestEnvironment("reg-test")
 
     const operational = await env.init()
     const globalEcp = (globalThis as { ecp?: { registerExtension: (d: typeof customerExt) => Promise<void> } })

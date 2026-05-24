@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect } from "vitest"
 import type { Environment } from "../src/environment/environment.js"
-import { workflow, step, extension, policy } from "../src/index.js"
+import { workflow, step } from "../src/index.js"
 import {
   registerLifecycleSpyExtension,
   lifecycleSpyEvents,
@@ -21,7 +21,8 @@ export function registerRuntimeConformanceTests(
     })
 
     it("runs echo and commits .as() output", async () => {
-      const env = (await createEnv()).withExtensions([extension("@ecp/test").with({})])
+      const env = await createEnv()
+      env.addExtensionBinding("@ecp/test", {})
       const manifest = workflow("Echo")
         .run([step("@ecp/test.echo", "Echo").with({ value: "x" }).as("echo")])
         .toManifest()
@@ -32,14 +33,10 @@ export function registerRuntimeConformanceTests(
     })
 
     it("policy:pre deny skips capability invocation", async () => {
-      const env = (await createEnv())
-        .withExtensions([
-          extension("@ecp/test").with({}),
-          extension("@ecp/lifecycle-spy", "Spy").with({}),
-        ])
-        .withPolicies([
-          policy("@ecp/approval").with({ requireApprovalFor: ["@ecp/test.echo"] }),
-        ])
+      const env = await createEnv()
+      env.addExtensionBinding("@ecp/test", {})
+      env.addExtensionBinding("@ecp/lifecycle-spy", {})
+      env.addPolicyBinding("@ecp/approval", { requireApprovalFor: ["@ecp/test.echo"] })
       lifecycleSpyEvents.length = 0
       const manifest = workflow("Deny")
         .run([step("@ecp/test.echo", "Echo").with({ value: 1 }).as("out")])

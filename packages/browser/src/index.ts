@@ -39,6 +39,11 @@ export {
   type CreateWorkflowResult,
   type PatchWorkflowResult,
 } from "./authoring/browser-authoring-service.js"
+export { encodeAuthoringPanels } from "./authoring/browser-authoring-panels.js"
+export {
+  WORKFLOW_AUTHORING_CAPABILITY,
+  INTENT_CLASSIFICATION_CAPABILITY,
+} from "./authoring/harness-ids.js"
 export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
 export type { Ecp } from "@ecp/core"
 

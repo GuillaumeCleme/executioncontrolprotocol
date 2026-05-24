@@ -1,19 +1,19 @@
 import { defineExtension, capabilityFor, globalRegistry, string, number } from "@ecp/core"
 import { z } from "zod"
 
-const GenerateInput = z.object({
-  prompt: z.string(),
-  context: z.unknown().optional(),
-  model: z.string().optional(),
-})
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
+
+const GenerateInput = modelGenerateInputSchema
 
 async function ollamaChat(
   baseURL: string,
   model: string,
   prompt: string,
+  system?: string,
   context?: unknown
 ): Promise<string> {
   const messages = [
+    ...(system ? [{ role: "system" as const, content: system }] : []),
     ...(context
       ? [{ role: "system" as const, content: JSON.stringify(context) }]
       : []),
@@ -39,25 +39,25 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
   .withCapabilities([
     capabilityFor("@ecp/ollama", "generate")
       .withInput(GenerateInput)
-      .withOutput(z.object({ content: z.string() }))
+      .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
+        const parsed = input as z.infer<typeof GenerateInput>
         const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
         const baseURL =
           (cfg.baseURL as string) ??
           process.env.OLLAMA_BASE_URL ??
           "http://localhost:11434"
         const model =
-          (input as z.infer<typeof GenerateInput>).model ??
-          (cfg.defaultModel as string) ??
-          "gemma3:1b"
+          parsed.model ?? (cfg.defaultModel as string) ?? "gemma3:1b"
         ctx.usage.increment({ modelCalls: 1 })
-        const content = await ollamaChat(
+        const text = await ollamaChat(
           baseURL,
           model,
-          (input as z.infer<typeof GenerateInput>).prompt,
-          (input as z.infer<typeof GenerateInput>).context
+          parsed.prompt,
+          parsed.system,
+          parsed.context
         )
-        return { content }
+        return { text }
       }),
     capabilityFor("@ecp/ollama", "evaluate")
       .withInput(
@@ -72,7 +72,13 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
         const baseURL = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434"
         const prompt = `Reply with JSON only: {"approved":boolean,"feedback":string}. Goal: ${(input as { goal?: string }).goal ?? "review"}`
         try {
-          const content = await ollamaChat(baseURL, "gemma3:1b", prompt, input)
+          const content = await ollamaChat(
+            baseURL,
+            "gemma3:1b",
+            prompt,
+            undefined,
+            input
+          )
           return JSON.parse(content) as { approved: boolean; feedback?: string }
         } catch {
           return { approved: true, feedback: "evaluation skipped" }
