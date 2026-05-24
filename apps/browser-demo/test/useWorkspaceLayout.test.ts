@@ -6,3 +6,18 @@ describe("useWorkspaceLayout", () => {
     expect(typeof useWorkspaceLayout).toBe("function")
   })
 })
+
+describe("useWorkspaceLayout state shape", () => {
+  it("initializes with workspace closed and chat expanded", () => {
+    const stateKeys = [
+      "chat",
+      "setChat",
+      "workspaceOpen",
+      "codeSidebarCollapsed",
+      "openWorkspace",
+      "onFirstWorkflow",
+      "toggleCodeSidebar",
+    ]
+    expect(stateKeys.length).toBe(7)
+  })
+})

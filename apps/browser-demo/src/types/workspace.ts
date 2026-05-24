@@ -1,16 +1,22 @@
-/** Workspace panel layout (open panel count). */
-export type WorkspaceLayout = "empty" | "panels-1" | "panels-2" | "panels-3"
-
 /** Bottom-docked chat panel height mode. */
 export type ChatPanelState = "expanded" | "compact" | "collapsed"
 
-/** Code panel tab ids. */
-export type CodeTab = "fluent" | "json" | "toon" | "patch"
+/** Left sidebar code editor tab. */
+export type CodeEditorTab = "workflow" | "environment"
 
-/** Workflow panel tab ids. */
+/** Workflow format tab (secondary, workflow editor only). */
+export type FormatTab = "fluent" | "json" | "toon" | "patch"
+
+/** Top app bar navigation. */
+export type AppNavTab = "editor" | "validation" | "run"
+
+/** @deprecated Use {@link CodeEditorTab} or {@link FormatTab}. */
+export type CodeTab = FormatTab
+
+/** @deprecated Retired with split layout. */
 export type WorkflowTab = "graph" | "validation" | "run"
 
-/** Environment panel tab ids. */
+/** @deprecated Retired with split layout. */
 export type EnvironmentTab = "overview" | "extensions" | "capabilities"
 
 /** Chat message in history. */

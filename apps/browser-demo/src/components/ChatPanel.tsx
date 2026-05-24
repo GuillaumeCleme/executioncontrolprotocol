@@ -1,10 +1,9 @@
-import type { ChatPanelState } from "../types/workspace.js"
-import type { ChatMessage } from "../types/workspace.js"
+import type { ChatPanelState, ChatMessage } from "../types/workspace.js"
 
 const CHAT_HEIGHT: Record<ChatPanelState, string> = {
-  expanded: "min(68vh, 720px)",
+  expanded: "min(60vh, 640px)",
   compact: "280px",
-  collapsed: "72px",
+  collapsed: "56px",
 }
 
 /** Props for {@link ChatPanel}. */
@@ -20,7 +19,7 @@ export interface ChatPanelProps {
   hero?: boolean
 }
 
-/** Bottom-docked chat panel. */
+/** Floating bottom chat panel (Logic Assistant). */
 export function ChatPanel({
   chat,
   onChatChange,
@@ -33,49 +32,117 @@ export function ChatPanel({
   hero = false,
 }: ChatPanelProps) {
   const visibleMessages = chat === "collapsed" ? messages.slice(-1) : messages.slice(-8)
+  const collapsed = chat === "collapsed"
 
   return (
     <section
-      className={`chat-panel chat-panel--${chat}${hero ? " chat-panel--hero" : ""}`}
+      className={`glass-panel fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 flex-col overflow-hidden rounded-xl border border-outline-variant shadow-2xl transition-all duration-300 ${
+        hero ? "w-[min(720px,92vw)]" : "w-[min(900px,70vw)]"
+      }`}
       style={{ height: CHAT_HEIGHT[chat] }}
+      aria-label="Logic Assistant"
     >
-      <header className="chat-panel__header">
-        <span className="chat-panel__title">{hero ? "ECP Browser Demo" : "Chat"}</span>
-        <span className="chat-panel__status">{status}</span>
-        <div className="chat-panel__controls">
-          <button type="button" onClick={() => onChatChange("expanded")} aria-pressed={chat === "expanded"}>
-            Expand
+      <header className="flex shrink-0 items-center justify-between border-b border-outline-variant bg-surface-container-high/60 p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary-container">
+            <span
+              className="material-symbols-outlined text-sm text-on-primary-container"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              smart_toy
+            </span>
+          </div>
+          <div>
+            <h3 className="font-display text-sm font-semibold leading-tight text-on-surface">
+              {hero ? "ECP Logic Assistant" : "Logic Assistant"}
+            </h3>
+            <p className="text-[11px] text-on-surface-variant">{status || "Solaris Architect"}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="material-symbols-outlined cursor-pointer text-sm text-on-surface-variant hover:text-primary"
+            onClick={() => onChatChange("expanded")}
+            aria-label="Expand chat"
+          >
+            open_in_full
           </button>
-          <button type="button" onClick={() => onChatChange("compact")} aria-pressed={chat === "compact"}>
-            Compact
+          <button
+            type="button"
+            className="material-symbols-outlined cursor-pointer text-sm text-on-surface-variant hover:text-primary"
+            onClick={() => onChatChange(chat === "compact" ? "expanded" : "compact")}
+            aria-label="Toggle chat size"
+          >
+            {chat === "expanded" ? "remove" : "expand"}
           </button>
-          <button type="button" onClick={() => onChatChange("collapsed")} aria-pressed={chat === "collapsed"}>
-            Collapse
+          <button
+            type="button"
+            className="material-symbols-outlined cursor-pointer text-sm text-on-surface-variant hover:text-primary"
+            onClick={() => onChatChange("collapsed")}
+            aria-label="Collapse chat"
+          >
+            close
           </button>
         </div>
       </header>
-      {chat !== "collapsed" ? (
-        <div className="chat-panel__history">
-          {visibleMessages.map((m) => (
-            <div key={m.id} className={`chat-msg chat-msg--${m.role}`}>
-              <strong>{m.role === "user" ? "You" : "Agent"}:</strong> {m.text}
-            </div>
-          ))}
+
+      {!collapsed ? (
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-6">
+          {visibleMessages.length === 0 ? (
+            <p className="text-body text-on-surface-variant">
+              Describe a workflow or change to get started.
+            </p>
+          ) : (
+            visibleMessages.map((m) =>
+              m.role === "user" ? (
+                <div key={m.id} className="ml-auto flex max-w-[80%] flex-row-reverse items-start gap-3">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-highest">
+                    <span className="material-symbols-outlined text-[14px] text-on-surface-variant">person</span>
+                  </div>
+                  <div className="rounded-lg rounded-tr-none border border-primary/20 bg-primary/10 p-3">
+                    <p className="text-body text-on-surface">{m.text}</p>
+                  </div>
+                </div>
+              ) : (
+                <div key={m.id} className="flex max-w-[80%] items-start gap-3">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-highest">
+                    <span className="material-symbols-outlined text-[14px] text-primary">auto_awesome</span>
+                  </div>
+                  <div className="rounded-lg rounded-tl-none border border-outline-variant/30 bg-surface-container-high p-3">
+                    <p className="text-body text-on-surface">{m.text}</p>
+                  </div>
+                </div>
+              )
+            )
+          )}
         </div>
       ) : null}
-      <div className="chat-panel__input-row">
-        <input
-          value={prompt}
-          disabled={disabled}
-          onChange={(e) => onPromptChange(e.target.value)}
-          placeholder="Describe a workflow or change..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter") onSubmit()
-          }}
-        />
-        <button type="button" disabled={disabled} onClick={onSubmit}>
-          Send
-        </button>
+
+      <div className="shrink-0 border-t border-outline-variant bg-surface-container-low/50 p-4">
+        <div className="relative">
+          <input
+            value={prompt}
+            disabled={disabled}
+            onChange={(e) => onPromptChange(e.target.value)}
+            placeholder="Ask assistant to modify logic..."
+            className="w-full rounded border border-outline-variant bg-surface-container-lowest py-3 pl-4 pr-24 text-body text-on-surface outline-none placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") onSubmit()
+            }}
+          />
+          <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2">
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={onSubmit}
+              className="flex h-8 w-8 items-center justify-center rounded bg-primary text-on-primary transition-transform hover:brightness-110 active:scale-90 disabled:opacity-50"
+              aria-label="Send"
+            >
+              <span className="material-symbols-outlined text-[18px]">send</span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   )

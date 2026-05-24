@@ -21,9 +21,9 @@
   "scripts": {
     "clean": "node scripts/clean-dist.mjs",
     "build": "tsc -b tsconfig.build.json",
-    "lint": "eslint . && markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#packages/*/node_modules\" \"!docs/ecp-implementation-assessment.md\"",
+    "lint": "eslint . && markdownlint-cli2",
     "lint:ts": "eslint .",
-    "lint:md": "markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#packages/*/node_modules\" \"!docs/ecp-implementation-assessment.md\"",
+    "lint:md": "markdownlint-cli2",
     "test": "npm run build && npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:watch": "vitest --project unit",
     "test:coverage": "vitest run --project unit --coverage",

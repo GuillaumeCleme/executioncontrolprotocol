@@ -25,12 +25,19 @@ export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProp
   }
 
   return (
-    <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="first-run-title">
-      <div className="modal-card">
-        <h2 id="first-run-title">Choose a model provider</h2>
-        <p className="modal-sub">API keys stay in memory for this session only.</p>
-        <div className="provider-options">
-          <label>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/65"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="first-run-title"
+    >
+      <div className="flex w-[min(420px,92vw)] flex-col gap-4 rounded-xl border border-outline-variant bg-surface-container p-6">
+        <h2 id="first-run-title" className="font-display text-headline text-on-surface">
+          Choose a model provider
+        </h2>
+        <p className="text-body text-on-surface-variant">API keys stay in memory for this session only.</p>
+        <div className="space-y-2">
+          <label className="flex cursor-pointer items-center gap-2 text-body">
             <input
               type="radio"
               name="provider"
@@ -40,15 +47,15 @@ export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProp
             />
             Chrome built-in AI {!chromeAvailable ? "(unavailable)" : ""}
           </label>
-          <label>
+          <label className="flex cursor-pointer items-center gap-2 text-body">
             <input type="radio" name="provider" checked={mode === "openai"} onChange={() => setMode("openai")} />
             OpenAI
           </label>
-          <label>
+          <label className="flex cursor-pointer items-center gap-2 text-body">
             <input type="radio" name="provider" checked={mode === "claude"} onChange={() => setMode("claude")} />
             Claude
           </label>
-          <label>
+          <label className="flex cursor-pointer items-center gap-2 text-body">
             <input type="radio" name="provider" checked={mode === "demo"} onChange={() => setMode("demo")} />
             Demo mode (offline)
           </label>
@@ -59,6 +66,7 @@ export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProp
             placeholder="OpenAI API key"
             value={openaiKey}
             onChange={(e) => setOpenaiKey(e.target.value)}
+            className="rounded border border-outline-variant bg-surface-container-lowest px-3 py-2 text-body text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           />
         ) : null}
         {mode === "claude" ? (
@@ -67,9 +75,14 @@ export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProp
             placeholder="Anthropic API key"
             value={anthropicKey}
             onChange={(e) => setAnthropicKey(e.target.value)}
+            className="rounded border border-outline-variant bg-surface-container-lowest px-3 py-2 text-body text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           />
         ) : null}
-        <button type="button" className="modal-primary" onClick={submit}>
+        <button
+          type="button"
+          onClick={submit}
+          className="rounded bg-primary py-2.5 font-mono text-label font-bold text-on-primary hover:brightness-110"
+        >
           Continue
         </button>
       </div>

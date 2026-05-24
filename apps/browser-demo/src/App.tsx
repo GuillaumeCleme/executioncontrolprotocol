@@ -1,28 +1,32 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { BrowserAuthoringService, installBrowserWorkflowShim, type BrowserOperationalEcp } from "@ecp/browser"
 import type { Ecp } from "@ecp/core"
 import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@ecp/types"
 import { compileWorkflowSource } from "@ecp/core/browser"
 import { ChatPanel } from "./components/ChatPanel.js"
-import { CodePanel } from "./components/CodePanel.js"
-import { EnvironmentPanel } from "./components/EnvironmentPanel.js"
+import { CodeSidebar } from "./components/CodeSidebar.js"
 import { FirstRunModal } from "./components/FirstRunModal.js"
-import { WorkflowPanel } from "./components/WorkflowPanel.js"
+import { MermaidCanvas } from "./components/MermaidCanvas.js"
+import { SplitPane } from "./components/SplitPane.js"
+import { TopAppBar } from "./components/TopAppBar.js"
 import { useChatHistory } from "./hooks/useChatHistory.js"
+import { useSplitPane } from "./hooks/useSplitPane.js"
 import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout.js"
 import { createDemoAppEnvironment } from "./lib/demo-environment.js"
+import { environmentSourceFromDescriptor } from "./lib/environment-source.js"
 import {
   providerCapabilityId,
   readStoredProviderMode,
   storeProviderMode,
   type ProviderMode,
 } from "./lib/provider-mode.js"
-import type { CodeTab, EnvironmentTab, WorkflowTab } from "./types/workspace.js"
+import type { AppNavTab, CodeEditorTab, FormatTab } from "./types/workspace.js"
 
 const EMPTY_MERMAID = "flowchart TD\n  empty[No workflow]"
 
 export function App() {
   const layout = useWorkspaceLayout()
+  const split = useSplitPane()
   const chat = useChatHistory()
   const [ecp, setEcp] = useState<Ecp | null>(null)
   const [providerMode, setProviderMode] = useState<ProviderMode>("demo")
@@ -31,9 +35,9 @@ export function App() {
   const [manifest, setManifest] = useState<WorkflowManifest | null>(null)
   const [validation, setValidation] = useState<ValidationResult | null>(null)
   const [descriptor, setDescriptor] = useState<EnvironmentDescriptor | null>(null)
-  const [codeTab, setCodeTab] = useState<CodeTab>("fluent")
-  const [workflowTab, setWorkflowTab] = useState<WorkflowTab>("graph")
-  const [environmentTab, setEnvironmentTab] = useState<EnvironmentTab>("capabilities")
+  const [editorTab, setEditorTab] = useState<CodeEditorTab>("workflow")
+  const [formatTab, setFormatTab] = useState<FormatTab>("fluent")
+  const [activeNav, setActiveNav] = useState<AppNavTab>("editor")
   const [fluent, setFluent] = useState("// Fluent API will appear here")
   const [json, setJson] = useState("{}")
   const [toon, setToon] = useState("")
@@ -43,17 +47,12 @@ export function App() {
   const [compileError, setCompileError] = useState<string | null>(null)
   const [runOutput, setRunOutput] = useState("")
   const [runBusy, setRunBusy] = useState(false)
-  const [describeBusy, setDescribeBusy] = useState(false)
   const compileTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const refreshDescriptor = useCallback(async (operational: Ecp) => {
-    setDescribeBusy(true)
-    try {
-      setDescriptor(await operational.describe())
-    } finally {
-      setDescribeBusy(false)
-    }
-  }, [])
+  const environmentSource = useMemo(
+    () => environmentSourceFromDescriptor(descriptor),
+    [descriptor]
+  )
 
   useEffect(() => {
     installBrowserWorkflowShim()
@@ -131,7 +130,7 @@ export function App() {
       setValidation(result.validation)
 
       if (!hadWorkflow) layout.onFirstWorkflow()
-      else layout.openWorkflow()
+      else layout.openWorkspace()
 
       const msg = result.validation.valid ? "Updated workflow." : "Workflow has validation issues."
       chat.setStatus(msg)
@@ -160,7 +159,7 @@ export function App() {
         }
         setCompileError(null)
         await applyPanels(compiled.manifest)
-        layout.openWorkflow()
+        layout.openWorkspace()
       })()
     }, 400)
   }
@@ -169,11 +168,11 @@ export function App() {
     if (!ecp || !manifest) return
     setRunBusy(true)
     setRunOutput("")
+    setActiveNav("run")
     try {
       const result = await ecp.run(manifest)
       setRunOutput(JSON.stringify(result, null, 2))
-      setWorkflowTab("run")
-      layout.openWorkflow()
+      layout.openWorkspace()
     } catch (err) {
       setRunOutput(err instanceof Error ? err.message : String(err))
     } finally {
@@ -181,74 +180,64 @@ export function App() {
     }
   }
 
-  const workspaceVisible = layout.workspace !== "empty"
-  const chatHero = !workspaceVisible
+  const onExecute = () => {
+    void onRun()
+  }
+
+  const chatHero = !layout.workspaceOpen
+  const hasWorkflow = manifest !== null
 
   return (
-    <div className={`app-shell app-shell--chat-${layout.chat}`}>
-      {workspaceVisible ? (
-        <main className={`workspace workspace--${layout.workspace}`}>
-          {layout.codeOpen ? (
-            <CodePanel
-              tab={codeTab}
-              onTabChange={setCodeTab}
-              fluent={fluent}
-              json={json}
-              toon={toon}
-              patch={patch}
-              compileError={compileError}
-              onFluentChange={onFluentChange}
-              onClose={layout.closeCode}
+    <div className="flex h-screen flex-col overflow-hidden bg-background">
+      {layout.workspaceOpen ? (
+        <>
+          <TopAppBar
+            activeNav={activeNav}
+            onNavChange={setActiveNav}
+            onExecute={onExecute}
+            executeDisabled={!ecp || !hasWorkflow}
+            executeBusy={runBusy}
+            onSettings={() => setShowModal(true)}
+            validation={validation}
+          />
+          <main className="relative min-h-0 flex-1">
+            <SplitPane
+              leftWidth={split.leftWidth}
+              leftCollapsed={layout.codeSidebarCollapsed}
+              onDividerPointerDown={split.onPointerDown}
+              left={
+                <CodeSidebar
+                  editorTab={editorTab}
+                  onEditorTabChange={setEditorTab}
+                  formatTab={formatTab}
+                  onFormatTabChange={setFormatTab}
+                  fluent={fluent}
+                  json={json}
+                  toon={toon}
+                  patch={patch}
+                  environmentSource={environmentSource}
+                  compileError={compileError}
+                  onFluentChange={onFluentChange}
+                  collapsed={layout.codeSidebarCollapsed}
+                  onToggleCollapse={layout.toggleCodeSidebar}
+                />
+              }
+              right={
+                <MermaidCanvas
+                  mermaid={mermaid}
+                  activeNav={activeNav}
+                  validation={validation}
+                  runOutput={runOutput}
+                  runBusy={runBusy}
+                  onRun={onRun}
+                  hasWorkflow={hasWorkflow}
+                />
+              }
             />
-          ) : (
-            <button type="button" className="workspace-reveal workspace-reveal--code" onClick={layout.openCode}>
-              Code
-            </button>
-          )}
-          {layout.workflowOpen ? (
-            <WorkflowPanel
-              tab={workflowTab}
-              onTabChange={setWorkflowTab}
-              mermaid={mermaid}
-              validation={validation}
-              runOutput={runOutput}
-              runBusy={runBusy}
-              onRun={onRun}
-              onClose={layout.closeWorkflow}
-            />
-          ) : (
-            <button
-              type="button"
-              className="workspace-reveal workspace-reveal--workflow"
-              onClick={layout.openWorkflow}
-            >
-              Workflow
-            </button>
-          )}
-          {layout.environmentOpen ? (
-            <EnvironmentPanel
-              tab={environmentTab}
-              onTabChange={setEnvironmentTab}
-              descriptor={descriptor}
-              providerMode={providerMode}
-              refreshBusy={describeBusy}
-              onRefresh={() => {
-                if (ecp) void refreshDescriptor(ecp)
-              }}
-              onClose={layout.closeEnvironment}
-            />
-          ) : (
-            <button
-              type="button"
-              className="workspace-reveal workspace-reveal--environment"
-              onClick={layout.openEnvironment}
-            >
-              Environment
-            </button>
-          )}
-        </main>
+          </main>
+        </>
       ) : (
-        <div className="canvas-empty" />
+        <main className="node-canvas relative min-h-0 flex-1" />
       )}
 
       <ChatPanel
@@ -262,20 +251,6 @@ export function App() {
         disabled={!ecp || showModal}
         hero={chatHero}
       />
-
-      {!workspaceVisible && manifest ? (
-        <div className="launch-actions">
-          <button type="button" onClick={layout.openWorkflow}>
-            Workflow
-          </button>
-          <button type="button" onClick={layout.openCode}>
-            Code
-          </button>
-          <button type="button" onClick={layout.openEnvironment}>
-            Environment
-          </button>
-        </div>
-      ) : null}
 
       {showModal ? <FirstRunModal chromeAvailable={chromeAvailable} onComplete={onProviderComplete} /> : null}
     </div>

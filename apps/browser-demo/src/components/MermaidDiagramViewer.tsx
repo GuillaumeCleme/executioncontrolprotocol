@@ -46,32 +46,48 @@ export function MermaidDiagramViewer({
   }, [source, baseId])
 
   if (!source.trim() || source.includes("empty[No workflow]")) {
-    return <p className="panel-empty">{emptyMessage}</p>
+    return <p className="text-body text-on-surface-variant">{emptyMessage}</p>
   }
 
   if (error) {
     return (
-      <div className="mermaid-viewer mermaid-viewer--error">
-        <p className="panel-error">{error}</p>
-        <button type="button" className="link-btn" onClick={() => setShowSource((v) => !v)}>
+      <div>
+        <p className="text-body text-error">{error}</p>
+        <button
+          type="button"
+          className="mt-2 font-mono text-label text-primary underline"
+          onClick={() => setShowSource((v) => !v)}
+        >
           {showSource ? "Hide source" : "View source"}
         </button>
-        {showSource ? <pre className="mermaid-source">{source}</pre> : null}
+        {showSource ? (
+          <pre className="mt-2 overflow-auto font-mono text-label text-on-surface-variant whitespace-pre-wrap">
+            {source}
+          </pre>
+        ) : null}
       </div>
     )
   }
 
   if (!svg) {
-    return <p className="panel-empty">Rendering diagram...</p>
+    return <p className="text-body text-on-surface-variant">Rendering diagram...</p>
   }
 
   return (
-    <div className="mermaid-viewer">
-      <div className="mermaid-viewer__diagram" dangerouslySetInnerHTML={{ __html: svg }} />
-      <button type="button" className="link-btn" onClick={() => setShowSource((v) => !v)}>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-auto p-2" dangerouslySetInnerHTML={{ __html: svg }} />
+      <button
+        type="button"
+        className="mt-2 self-start font-mono text-label text-primary underline"
+        onClick={() => setShowSource((v) => !v)}
+      >
         {showSource ? "Hide source" : "View source"}
       </button>
-      {showSource ? <pre className="mermaid-source">{source}</pre> : null}
+      {showSource ? (
+        <pre className="mt-2 max-h-40 overflow-auto font-mono text-label text-on-surface-variant whitespace-pre-wrap">
+          {source}
+        </pre>
+      ) : null}
     </div>
   )
 }
