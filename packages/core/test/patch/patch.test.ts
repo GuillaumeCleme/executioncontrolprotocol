@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step, applyPatch, buildStepIndex } from "../../src/index.js"
+import { workflow, step, applyPatch, buildStepIndex, parallel } from "../../src/index.js"
 import type { WorkflowManifest } from "@ecp/types"
 
 function weeklyBriefManifest(): WorkflowManifest {
@@ -89,6 +89,34 @@ describe("applyPatch", () => {
 
     expect(patched.success).toBe(false)
     expect(patched.diagnostics.some((d) => d.code === "DUPLICATE_STEP_ID")).toBe(true)
+  })
+
+  it("returns PATCH_PATH_NOT_FOUND for unknown step id", () => {
+    const manifest = weeklyBriefManifest()
+    const patched = applyPatch(manifest, {
+      "steps[unknown-step].input": { prompt: "x" },
+    })
+    expect(patched.success).toBe(false)
+    expect(patched.diagnostics.some((d) => d.code === "PATCH_PATH_NOT_FOUND")).toBe(true)
+  })
+
+  it("resolves nested parallel step paths", () => {
+    const manifest = workflow("Nested")
+      .run([
+        parallel([
+          [step("@ecp/test.echo", "Inner").with({ value: "a" }).as("inner")],
+        ]),
+      ])
+      .toManifest()
+    const parallelNode = manifest.steps[0] as import("@ecp/types").ParallelNode
+    const innerStep = parallelNode.branches[0]![0] as import("@ecp/types").StepNode
+    const index = buildStepIndex(manifest)
+    const innerPath = index.pathsById.get(innerStep.id)
+    expect(innerPath).toMatch(/^steps\[0\]\.branches\[/)
+    const patched = applyPatch(manifest, {
+      [`steps[${innerStep.id}].input`]: { value: "patched" },
+    })
+    expect(patched.success).toBe(true)
   })
 })
 

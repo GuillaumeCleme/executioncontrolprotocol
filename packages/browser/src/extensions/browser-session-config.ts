@@ -71,6 +71,11 @@ export function setBrowserSessionValue(name: string, value: unknown): void {
   sessionValues.set(name, value)
 }
 
+/** Read session value from default store (tests / host apps). */
+export function getBrowserSessionValue(name: string): unknown {
+  return sessionValues.get(name)
+}
+
 /** Browser session-only config extension. @category Extensions */
 export const browserSessionConfigExtension = defineExtension("@ecp", "browser-session-config")
   .withConfig({

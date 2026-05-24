@@ -23,4 +23,19 @@ describe("BrowserAuthoringService", () => {
     expect(result.panels.toon.length).toBeGreaterThan(0)
     await ecp.terminate()
   })
+
+  it("encodePanels includes patch TOON when provided", async () => {
+    await registerBrowserDefaults()
+    const env = createBrowserDemoEnvironment("authoring-patch")
+    await registerTestExtension(env.getRegistry())
+    const ecp = await createEcp(env)
+    const service = new BrowserAuthoringService(ecp)
+    const created = await service.createWorkflow({
+      userRequest: "demo",
+      providerCapabilityId: "@ecp/demo.generateText",
+    })
+    const panels = await service.encodePanels(created.manifest, "steps[echo].input:\n  value: patched")
+    expect(panels.patch).toContain("steps[echo]")
+    await ecp.terminate()
+  })
 })

@@ -4,17 +4,44 @@
 
 | Path | Purpose |
 | ---- | ------- |
-| `packages/types/` | Protocol types (`@ecp/types`) |
-| `packages/core/` | Fluent API, environment, in-memory engine (`@ecp/core`) |
-| `packages/node/` | Node runtime (`@ecp/node`), process-env, secrets |
-| `packages/browser/` | Browser runtime (`@ecp/browser`), registry, session config |
-| `packages/core/src/browser.ts` | Browser authoring subset: compile + validate + builders |
+| `packages/types/` | Protocol types (`@ecp/types`) — [README](packages/types/README.md) |
+| `packages/core/` | Fluent API, environment, in-memory engine (`@ecp/core`) — [README](packages/core/README.md) |
+| `packages/node/` | Node runtime host (`@ecp/node`) — [README](packages/node/README.md) |
+| `packages/browser/` | Browser runtime host (`@ecp/browser`) — [README](packages/browser/README.md) |
+| `apps/browser-demo/` | Reference browser demo app (UI only) — [README](apps/browser-demo/README.md) |
 | `packages/mcp/` | MCP adapter (`@ecp/mcp`) |
 | `packages/cli/` | `ecp` CLI (`@ecp/cli`) |
 | `packages/policies/` | Budget, approval, state-control (`@ecp/policies`) |
 | `packages/extensions/*/` | First-party extensions |
 | `archive/legacy-v0.5/` | Archived v0.5 Oclif CLI and snippets |
 | `ecp-overhaul.md` | Implementation spec (source of truth) |
+
+### Package boundaries
+
+**Core is runtime-agnostic.** The main `@ecp/core` barrel has no Node or browser I/O. Host-specific code is on subpaths:
+
+| Subpath | Host |
+| ------- | ---- |
+| `@ecp/core/node` | Node convenience re-export (loaders + compile) |
+| `@ecp/core/compile` | Node esbuild compile |
+| `@ecp/core/loaders` | Node file I/O (CLI) |
+| `@ecp/core/browser` | Browser authoring + esbuild-wasm compile |
+
+**Hosts wrap core; extensions never import hosts.** `@ecp/node` and `@ecp/browser` bind runtimes and config extensions. Extension packages under `packages/extensions/` depend on `@ecp/types` + `@ecp/core` only.
+
+**Browser runtime vs browser demo app:**
+
+| `@ecp/browser` (runtime) | `apps/browser-demo` (app) |
+| ------------------------ | ------------------------- |
+| Executor, registry, session config, `createEcp`, workflow shim | React/Vite UI, chat layout, panels, Mermaid viewer |
+| Optional reference helpers: `createBrowserDemoEnvironment`, `BrowserAuthoringService` | Demo-only: `provider-mode.ts`, first-run modal, localStorage for provider choice |
+| Caller supplies `providerCapabilityId` to authoring | App maps user provider pick → capability id |
+
+Do not add demo UI types (e.g. `ProviderMode`) to `@ecp/browser`; keep them in the demo app.
+
+**Operational APIs live on `Ecp` after `init()`**, not on the `Environment` builder (`run`, `encode`, `decode`, `patch`, `validate`, `describe`, `search`, `invoke`, `terminate`).
+
+**Fluent rendering is in core** — `ecp.encode(...).as("fluent")`; there is no `@ecp/format-fluent` extension.
 
 ### Commands
 
@@ -97,6 +124,8 @@ await ecp.run(manifest)
 ```
 
 ### Browser
+
+Local demo: `npm run dev:browser-demo` (see [apps/browser-demo/README.md](apps/browser-demo/README.md)). Spec: [docs/ecp-browser-demo.md](docs/ecp-browser-demo.md).
 
 **Mechanism vs policy:** `@ecp/browser-registry` handles freeze, `globalThis.ecp`, and auto-bind. **`@ecp/registry-control`** (bound as a policy) authorizes dynamic extension registration via `policy:pre` and `registryRequest` on the policy context.
 

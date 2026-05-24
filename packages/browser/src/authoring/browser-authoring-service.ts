@@ -9,8 +9,10 @@ export interface AuthoringPanels {
   json: string
   /** Compact TOON workflow. */
   toon: string
-  /** Mermaid flowchart. */
+  /** Mermaid flowchart source. */
   mermaid: string
+  /** Latest patch TOON (empty when none). */
+  patch: string
 }
 
 /** Result of creating a workflow from a user prompt. @category Authoring */
@@ -31,6 +33,8 @@ export interface PatchWorkflowResult {
   validation: ValidationResult
   /** Encoded panel content. */
   panels: AuthoringPanels
+  /** Raw patch TOON returned by the model. */
+  patchToon: string
 }
 
 /**
@@ -173,14 +177,14 @@ export class BrowserAuthoringService {
 
     const manifest = patched.result as WorkflowManifest
     const validation = await this.ecp.validate(manifest)
-    const panels = await this.encodePanels(manifest)
-    return { manifest, validation, panels }
+    const panels = await this.encodePanels(manifest, text)
+    return { manifest, validation, panels, patchToon: text }
   }
 
   /** Encode manifest into UI panel strings. @category Authoring */
-  async encodePanels(manifest: WorkflowManifest): Promise<AuthoringPanels> {
+  async encodePanels(manifest: WorkflowManifest, patchToon = ""): Promise<AuthoringPanels> {
     const [fluent, toon, mermaid] = await Promise.all([
-      this.ecp.encode(manifest).as("fluent").process(),
+      this.ecp.encode(manifest).as("fluent").with({ target: "browser", importFrom: "@ecp/browser" }).process(),
       this.ecp
         .encode(manifest)
         .uses("@ecp/format-toon")
@@ -194,6 +198,7 @@ export class BrowserAuthoringService {
       json: JSON.stringify(manifest, null, 2),
       toon: String(toon.result ?? ""),
       mermaid: String(mermaid.result ?? ""),
+      patch: patchToon,
     }
   }
 }

@@ -21,4 +21,6 @@ export interface CompileWorkflowSourceOptions {
   source: string
   filename?: string
   format?: "esm"
+  /** Browser demo: resolve @ecp imports via globalThis.__ecpWorkflowShim. */
+  resolveImports?: "browser-global"
 }

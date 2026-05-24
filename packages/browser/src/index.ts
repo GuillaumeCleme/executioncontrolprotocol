@@ -19,6 +19,7 @@ export {
   setBrowserSessionValue,
   type BrowserSessionConfigController,
 } from "./extensions/browser-session-config.js"
+export { getBrowserSessionValue } from "./extensions/browser-session-config.js"
 
 export {
   browserLocalConfigExtension,
@@ -31,6 +32,7 @@ export {
   createBrowserDemoEnvironment,
 } from "./environment.js"
 export { createEcp, type BrowserOperationalEcp, type CreateEcpOptions } from "./create-ecp.js"
+export { installBrowserWorkflowShim, type BrowserWorkflowShim } from "./workflow-shim.js"
 export {
   BrowserAuthoringService,
   type AuthoringPanels,

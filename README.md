@@ -290,10 +290,11 @@ Instead of defining **fixed workflows**, ECP defines **execution environments fo
 Included in this repository is an example Context manifest:
 [`spec.yaml`](spec.yaml).
 
-See also the [full specification](SPEC.md) and the
-[TypeScript type definitions](packages/spec/src/types/ecp.ts).
-Plugin registration and loader architecture are documented in
-[`ARCHITECTURE.md`](ARCHITECTURE.md).
+See also the [full specification](SPEC.md), the Fluent API monorepo guide
+[`AGENTS.md`](AGENTS.md), and protocol types in
+[`packages/types/`](packages/types/).
+Legacy v0.5 Context manifests and the archived CLI live under
+[`archive/legacy-v0.5/`](archive/legacy-v0.5/).
 
 **Plugin authors (TypeScript):** install [`@executioncontrolprotocol/plugins`](https://www.npmjs.com/package/@executioncontrolprotocol/plugins) for manifest types plus runtime contracts (`ModelProvider`, `MemoryStore`, `ProgressCallback`, extension registration shapes) without depending on the full engine. Example:
 
@@ -364,19 +365,22 @@ See [`examples/single-executor/context.yaml`](examples/single-executor/context.y
 
 ## Repository Structure
 
+This repo is the **ECP Fluent API monorepo** (`@ecp/*`). For commands, package boundaries, and extension rules, start with [`AGENTS.md`](AGENTS.md).
+
 | Path | Description |
 | ---- | ----------- |
-| [`spec.yaml`](spec.yaml) | Canonical example Context manifest |
-| [`SPEC.md`](SPEC.md) | Full protocol specification |
-| **[`SETUP.md`](SETUP.md)** | **Setup guide: install, CLI (global), env vars, Ollama, system config, docs** |
-| [`config/`](config/) | Example system config (`ecp.config.example.yaml`) — allow-list plugins and security; use with `--config` or copy to `./ecp.config.yaml` / `~/.ecp/config.yaml` |
-| [`packages/spec/`](packages/spec/) | TypeScript types, JSON Schema, validators |
-| [`packages/plugins/`](packages/plugins/) | Publishable plugin + manifest types for contributors (`@executioncontrolprotocol/plugins` on npm) |
-| [`packages/runtime/`](packages/runtime/) | Execution engine, providers, protocols |
-| [`packages/cli/`](packages/cli/) | CLI tool (`ecp run` / `ecp validate`) |
-| [`packages/docs/`](packages/docs/) | TypeDoc documentation generator |
-| [`examples/`](examples/) | Example Context manifests |
-| [`evals/`](evals/) | Evaluation cases and rubrics |
+| [`packages/types/`](packages/types/) | Protocol types and generated JSON Schema (`@ecp/types`) |
+| [`packages/core/`](packages/core/) | Runtime-agnostic core: fluent API, environment, encode/decode/patch (`@ecp/core`; subpaths `@ecp/core/node`, `@ecp/core/browser`, …) |
+| [`packages/node/`](packages/node/) | Node runtime host: process env, secrets, compile (`@ecp/node`) |
+| [`packages/browser/`](packages/browser/) | Browser runtime host: registry, session config (`@ecp/browser`) — **not** the demo UI |
+| [`apps/browser-demo/`](apps/browser-demo/) | Reference browser demo app (Vite + React): chat, panels, provider picker |
+| [`packages/cli/`](packages/cli/) | CLI (`ecp run`, `ecp compile`, `ecp encode`, …) |
+| [`packages/extensions/`](packages/extensions/) | First-party extensions (TOON, Mermaid, providers, …) |
+| [`packages/mcp/`](packages/mcp/) | MCP server adapter |
+| [`packages/policies/`](packages/policies/) | Budget, approval, state-control policies |
+| [`examples/`](examples/) | Fluent workflow + environment examples (`workflow.ts`, `environment.ts`) |
+| [`archive/legacy-v0.5/`](archive/legacy-v0.5/) | Archived v0.5 Context YAML CLI and docs |
+| [`ecp-overhaul.md`](ecp-overhaul.md) | Current implementation spec |
 
 ------------------------------------------------------------------------
 

@@ -3,6 +3,7 @@ import {
   extension,
   runtime,
   policy,
+  env,
   Registry,
   globalRegistry,
 } from "@ecp/core"
@@ -15,9 +16,15 @@ import { registerBrowserLocalConfigExtension } from "./extensions/browser-local-
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import { registerFormatMermaidExtension } from "@ecp/format-mermaid"
 import { registerDemoExtension } from "@ecp/demo"
+import { registerChromeAiExtension } from "@ecp/chrome-ai"
+import { registerOpenaiExtension } from "@ecp/extension-openai"
+import { registerClaudeExtension } from "@ecp/claude"
 import "@ecp/format-toon"
 import "@ecp/format-mermaid"
 import "@ecp/demo"
+import "@ecp/chrome-ai"
+import "@ecp/extension-openai"
+import "@ecp/claude"
 
 /** Register browser runtime and standard browser extensions. */
 export async function registerBrowserDefaults(registry: Registry = globalRegistry): Promise<void> {
@@ -28,6 +35,9 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerFormatToonExtension(registry)
   await registerFormatMermaidExtension(registry)
   await registerDemoExtension(registry)
+  await registerChromeAiExtension(registry)
+  await registerOpenaiExtension(registry)
+  await registerClaudeExtension(registry)
   await registerStandardPolicies(registry)
 }
 
@@ -46,6 +56,13 @@ export function createBrowserDemoEnvironment(
       extension("@ecp/format-toon").with({}),
       extension("@ecp/format-mermaid").with({}),
       extension("@ecp/demo").with({}),
+      extension("@ecp/chrome-ai").with({}),
+      extension("@ecp/openai").with({
+        apiKey: env("OPENAI_API_KEY", { optional: true }),
+      }),
+      extension("@ecp/claude").with({
+        apiKey: env("ANTHROPIC_API_KEY", { optional: true }),
+      }),
       extension("@ecp/browser-registry").with({
         freezeOn: "environment:beforeRun",
         autoBindRegisteredExtensions: true,
@@ -57,7 +74,14 @@ export function createBrowserDemoEnvironment(
     ])
     .withPolicies([
       policy("@ecp/registry-control").with({
-        allowedExtensionNamespaces: ["@ecp/demo", "@customer/*", "@ecp/test"],
+        allowedExtensionNamespaces: [
+          "@ecp/demo",
+          "@ecp/chrome-ai",
+          "@ecp/openai",
+          "@ecp/claude",
+          "@customer/*",
+          "@ecp/test",
+        ],
         deniedExtensionNamespaces: [],
         allowDynamicExtensionRegistration: true,
         allowAutoBind: true,

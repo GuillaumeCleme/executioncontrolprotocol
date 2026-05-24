@@ -16,6 +16,7 @@
     "@ecp/format-toon": "1.0.0",
     "@ecp/types": "1.0.0",
     "@monaco-editor/react": "^4.7.0",
+    "mermaid": "^11.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

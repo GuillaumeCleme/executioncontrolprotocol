@@ -11,7 +11,10 @@
     { "path": "../policies" },
     { "path": "../extensions/format-toon" },
     { "path": "../extensions/format-mermaid" },
-    { "path": "../extensions/demo" }
+    { "path": "../extensions/demo" },
+    { "path": "../extensions/chrome-ai" },
+    { "path": "../extensions/claude" },
+    { "path": "../extensions/openai" }
   ],
   "include": ["src/**/*.ts"]
 }

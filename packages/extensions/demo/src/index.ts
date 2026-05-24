@@ -23,8 +23,20 @@ export const demoExtension = defineExtension("@ecp", "demo")
     capabilityFor("@ecp/demo", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(GenerateTextOutput)
-      .withHandler(async (_input) => ({
-        text: [
+      .withHandler(async (input) => {
+        const prompt = (input as { prompt?: string }).prompt ?? ""
+        if (prompt.includes("@ecp.patch") || prompt.includes("schema @ecp.patch")) {
+          return {
+            text: [
+              'schema: "@ecp.patch"',
+              `version: "${LATEST_ECP_VERSION}"`,
+              "entries[1]{path,value}:",
+              '  steps[echo].input,"{value:\\"patched\\"}"',
+            ].join("\n"),
+          }
+        }
+        return {
+          text: [
           'schema: "@ecp.workflow"',
           `version: "${LATEST_ECP_VERSION}"`,
           "workflow:",
@@ -32,7 +44,8 @@ export const demoExtension = defineExtension("@ecp", "demo")
           "steps[1]{id,capabilityId,label,as}:",
           "  echo,@ecp/test.echo,Demo Echo,echo",
         ].join("\n"),
-      })),
+        }
+      }),
   ])
   .build()
 

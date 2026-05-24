@@ -71,6 +71,10 @@ export default defineConfig({
       ),
       "@ecp/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
       "@ecp/format-toon": path.resolve(repoRoot, "packages/extensions/format-toon/src/index.ts"),
+      "@ecp/format-mermaid": path.resolve(repoRoot, "packages/extensions/format-mermaid/src/index.ts"),
+      "@ecp/demo": path.resolve(repoRoot, "packages/extensions/demo/src/index.ts"),
+      "@ecp/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
+      "@ecp/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
     },
   },
   test: {
@@ -94,6 +98,7 @@ export default defineConfig({
             "packages/extensions/**/*.test.ts",
             "packages/node/**/*.test.ts",
             "packages/browser/test/*.test.ts",
+            "apps/browser-demo/test/**/*.test.ts",
           ],
         },
       },

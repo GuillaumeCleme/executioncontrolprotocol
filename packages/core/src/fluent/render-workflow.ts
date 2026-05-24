@@ -6,9 +6,14 @@ import { createImportNeeds } from "./render-value.js"
 export interface RenderWorkflowToFluentOptions {
   /** Prefer compact output (reserved for future formatting). */
   compact?: boolean
+  /** Import module target (`@ecp/core` default, `@ecp/browser` for browser demo). */
+  importFrom?: "@ecp/core" | "@ecp/browser"
 }
 
-function renderImports(needs: ReturnType<typeof createImportNeeds>): string {
+function renderImports(
+  needs: ReturnType<typeof createImportNeeds>,
+  importFrom: "@ecp/core" | "@ecp/browser"
+): string {
   const names: string[] = ["workflow", "step"]
   if (needs.ref) names.push("ref")
   if (needs.state) names.push("state")
@@ -16,7 +21,7 @@ function renderImports(needs: ReturnType<typeof createImportNeeds>): string {
   if (needs.loop) names.push("loop")
   if (needs.parallel) names.push("parallel")
   if (needs.branch) names.push("branch")
-  return `import {\n  ${names.join(",\n  ")},\n} from "@ecp/core";\n\n`
+  return `import {\n  ${names.join(",\n  ")},\n} from "${importFrom}";\n\n`
 }
 
 /**
@@ -27,9 +32,10 @@ export function renderWorkflowToFluent(
   manifest: WorkflowManifest,
   _options?: RenderWorkflowToFluentOptions
 ): string {
+  const importFrom = _options?.importFrom ?? "@ecp/core"
   const needs = createImportNeeds()
   const nodes = renderNodes(manifest.steps, needs, "    ")
-  const header = renderImports(needs)
+  const header = renderImports(needs, importFrom)
   let body = `export default workflow(${JSON.stringify(manifest.workflow.label ?? manifest.workflow.id)})\n`
   if (manifest.workflow.id) {
     body += `  .id(${JSON.stringify(manifest.workflow.id)})\n`
