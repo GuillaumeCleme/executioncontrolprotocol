@@ -49,7 +49,7 @@ Do not add demo UI types (e.g. `ProviderMode`) to `@ecp/browser`; keep them in t
 npm install
 npm run build
 npm run generate:schema   # writes packages/types/dist/schemas/*.json
-npm run check    # build + generate:schema + lint + test:unit + test:integration + test:e2e
+npm run check    # build + generate:schema + lint + typecheck:browser-demo + test:unit + test:integration + test:e2e
 npm run test:unit
 ```
 

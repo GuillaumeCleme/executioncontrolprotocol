@@ -41,7 +41,11 @@ await ecp.run(workflow("Hello").run([step("@ecp/test.echo", "E").with({ value: 1
 
 Use **`@ecp/core/browser`** for `compileWorkflowSource` with `resolveImports: "browser-global"`, and call **`installBrowserWorkflowShim()`** before compile so Fluent source can use `@ecp/browser` imports or the injected shim.
 
-Fluent emission for browser panels should use `ecp.encode(manifest).as("fluent").with({ target: "browser", importFrom: "@ecp/browser" })`.
+Fluent emission for browser panels uses `ecp.encode(manifest).as("fluent").with({ target: "browser", importFrom: "@ecp/browser" })`.
+
+**Compile-on-edit:** `compileWorkflowSource({ resolveImports: "browser-global" })` strips `@ecp/browser` imports and injects `globalThis.__ecpWorkflowShim` (call `installBrowserWorkflowShim()` first). The import is for authoring ergonomics, not a real browser bundle dependency.
+
+**Monaco:** the demo app registers ambient types for `@ecp/browser` so the editor does not show TS2792; that is separate from the esbuild-wasm compile path.
 
 ## Dependencies
 

@@ -107,6 +107,26 @@ body,
   padding: 8px;
 }
 
+.workspace-panel--code {
+  flex: 1;
+  min-height: 0;
+}
+
+.code-editor-host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-readonly {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 12px;
+  overflow: auto;
+}
+
 .panel-pre,
 .mermaid-source {
   margin: 0;

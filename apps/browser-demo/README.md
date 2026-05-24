@@ -31,7 +31,11 @@ npm run build
 npm run dev:browser-demo
 ```
 
+`npm run check` typechecks this app via `npm run typecheck:browser-demo` (project TSC). `npm run dev` does not — use typecheck before shipping UI changes.
+
 Open the URL Vite prints (default `http://localhost:5173`).
+
+**Fluent editor:** Monaco is isolated to `FluentWorkflowEditor` with a virtual `file:///ecp-workflow/workflow.ts` URI (not app paths like `CodePanel.tsx`). In-editor TypeScript validation is off; the red banner above the editor comes from `compileWorkflowSource` (esbuild-wasm + shim).
 
 ## Spec
 

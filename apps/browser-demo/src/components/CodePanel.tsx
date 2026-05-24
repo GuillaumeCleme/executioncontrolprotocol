@@ -1,4 +1,4 @@
-import Editor from "@monaco-editor/react"
+import { FluentWorkflowEditor } from "./FluentWorkflowEditor.js"
 import type { CodeTab } from "../types/workspace.js"
 
 /** Props for {@link CodePanel}. */
@@ -28,9 +28,7 @@ export function CodePanel({
   compileError,
   onClose,
 }: CodePanelProps) {
-  const value = tab === "fluent" ? fluent : tab === "json" ? json : tab === "toon" ? toon : patch
-  const language = tab === "fluent" ? "typescript" : "plaintext"
-  const readOnly = tab !== "fluent"
+  const readOnlyValue = tab === "json" ? json : tab === "toon" ? toon : tab === "patch" ? patch : ""
 
   return (
     <section className="workspace-panel workspace-panel--code">
@@ -55,14 +53,13 @@ export function CodePanel({
       {compileError && tab === "fluent" ? (
         <p className="panel-error panel-error--inline">{compileError}</p>
       ) : null}
-      <Editor
-        height="100%"
-        theme="vs-dark"
-        language={language}
-        value={value}
-        onChange={tab === "fluent" ? onFluentChange : undefined}
-        options={{ minimap: { enabled: false }, fontSize: 13, readOnly }}
-      />
+      <div className="code-editor-host">
+        {tab === "fluent" ? (
+          <FluentWorkflowEditor value={fluent} onChange={onFluentChange} />
+        ) : (
+          <pre className="panel-pre code-readonly">{readOnlyValue}</pre>
+        )}
+      </div>
     </section>
   )
 }
