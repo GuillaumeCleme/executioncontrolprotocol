@@ -2,6 +2,7 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
+import { ecpWorkspaceAliases } from "./vite-ecp-aliases.js"
 
 const stub = join(dirname(fileURLToPath(import.meta.url)), "src/stubs/node-empty.ts")
 
@@ -22,10 +23,11 @@ export default defineConfig({
   resolve: {
     alias: {
       esbuild: "esbuild-wasm",
+      ...ecpWorkspaceAliases,
       ...Object.fromEntries(NODE_BUILTINS.map((id) => [id, stub])),
     },
   },
   optimizeDeps: {
-    exclude: ["@ecp/core", "@ecp/browser"],
+    exclude: ["@ecp/core", "@ecp/browser", "@ecp/format-mermaid", "@ecp/format-toon"],
   },
 })

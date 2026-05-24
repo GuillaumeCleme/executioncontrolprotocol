@@ -1,4 +1,5 @@
 import type { Ecp } from "@ecp/core"
+import { normalizeWorkflowManifest } from "@ecp/core"
 import type { EcpPatchInput, ValidationResult, WorkflowManifest } from "@ecp/types"
 
 /** UI-ready encoded panel outputs. @category Authoring */
@@ -181,21 +182,20 @@ export class BrowserAuthoringService {
     return { manifest, validation, panels, patchToon: text }
   }
 
-  /** Encode manifest into UI panel strings. @category Authoring */
+  /** Encode canonical workflow manifest into independent panel views (no cross-format pipelines). @category Authoring */
   async encodePanels(manifest: WorkflowManifest, patchToon = ""): Promise<AuthoringPanels> {
+    // Single hub: @ecp.workflow manifest (JSON-shaped). TOON/Mermaid/Fluent never feed each other.
+    const canonical = normalizeWorkflowManifest(manifest)
+
     const [fluent, toon, mermaid] = await Promise.all([
-      this.ecp.encode(manifest).as("fluent").with({ target: "browser", importFrom: "@ecp/browser" }).process(),
-      this.ecp
-        .encode(manifest)
-        .uses("@ecp/format-toon")
-        .with({ headers: false, compact: true })
-        .process(),
-      this.ecp.encode(manifest).uses("@ecp/format-mermaid").process(),
+      this.ecp.encode(canonical).as("fluent").with({ target: "browser", importFrom: "@ecp/browser" }).process(),
+      this.ecp.encode(canonical).uses("@ecp/format-toon").with({ headers: false, compact: true }).process(),
+      this.ecp.encode(canonical).uses("@ecp/format-mermaid").with({ direction: "LR" }).process(),
     ])
 
     return {
       fluent: String(fluent.result ?? ""),
-      json: JSON.stringify(manifest, null, 2),
+      json: JSON.stringify(canonical, null, 2),
       toon: String(toon.result ?? ""),
       mermaid: String(mermaid.result ?? ""),
       patch: patchToon,

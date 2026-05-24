@@ -35,7 +35,7 @@ npm run dev:browser-demo
 
 Open the URL Vite prints (default `http://localhost:5173`).
 
-**Fluent editor:** Monaco is isolated to `FluentWorkflowEditor` with a virtual `file:///ecp-workflow/workflow.ts` URI (not app paths like `CodePanel.tsx`). In-editor TypeScript validation is off; the red banner above the editor comes from `compileWorkflowSource` (esbuild-wasm + shim).
+**Panel encoding:** all Code/Workflow views fan out from the canonical **`@ecp.workflow` manifest** (JSON). Mermaid uses `.with({ direction: "LR" })` on `@ecp/format-mermaid` encode (default is `TD`).
 
 ## Spec
 

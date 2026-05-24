@@ -10,6 +10,7 @@ import {
 import { LATEST_ECP_VERSION, type EcpEncodeInput, type EncodeResult } from "@ecp/types"
 import type { WorkflowManifest } from "@ecp/types"
 import { workflowToMermaid } from "./workflow-to-mermaid.js"
+import { type MermaidEncodeOptions } from "./options.js"
 
 function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
   const sourceSchema = input.sourceSchema
@@ -45,7 +46,7 @@ function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
     mediaType: "text/vnd.mermaid",
     sourceSchema,
     sourceVersion: input.sourceVersion,
-    result: workflowToMermaid(input.source as WorkflowManifest),
+    result: workflowToMermaid(input.source as WorkflowManifest, input.options as MermaidEncodeOptions),
     diagnostics: [],
   }
 }
