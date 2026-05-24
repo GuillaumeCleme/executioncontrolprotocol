@@ -62,6 +62,17 @@ export {
 } from "./fluent/index.js"
 export { validateWorkflow } from "./validate/workflow.js"
 export {
+  capabilityIdSchema,
+  commitModeSchema,
+  parseWorkflowManifest,
+  stepNodeSchema,
+  workflowManifestSchema,
+  workflowNodeSchema,
+  type ParsedStepNode,
+  type ParsedWorkflowManifest,
+  type ParsedWorkflowNode,
+} from "./validate/workflow-schema.js"
+export {
   EcpError,
   normalizeWorkflowManifest,
   encodeFailure,

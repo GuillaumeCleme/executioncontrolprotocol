@@ -41,7 +41,7 @@ export const demoExtension = defineExtension("@ecp", "demo")
           `version: "${LATEST_ECP_VERSION}"`,
           "workflow:",
           "  id: demo-generated",
-          "steps[1]{id,capabilityId,label,as}:",
+          "steps[1]{id,uses,label,as}:",
           "  echo,@ecp/test.echo,Demo Echo,echo",
         ].join("\n"),
         }
