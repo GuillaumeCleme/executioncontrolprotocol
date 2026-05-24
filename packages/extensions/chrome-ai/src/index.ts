@@ -6,6 +6,12 @@ import {
   type Registry,
 } from "@ecp/core"
 import { z } from "zod"
+import {
+  assertModelReady,
+  getModelInstallState,
+  readAvailability,
+  startModelDownload,
+} from "./model-install.js"
 
 const GenerateTextInput = z.object({
   prompt: z.string(),
@@ -27,25 +33,50 @@ function chromeAi(): ChromeAiGlobal["LanguageModel"] | undefined {
   return (globalThis as ChromeAiGlobal).LanguageModel
 }
 
+const InstallStateSchema = z.object({
+  phase: z.enum(["idle", "checking", "downloading", "loading", "ready", "error"]),
+  status: z
+    .enum(["unsupported", "unavailable", "downloadable", "downloading", "available"])
+    .optional(),
+  loaded: z.number().optional(),
+  total: z.number().optional(),
+  error: z.string().optional(),
+})
+
 /** Chrome built-in AI provider. @category Extensions */
 export const chromeAiExtension = defineExtension("@ecp", "chrome-ai")
   .withCapabilities([
     capabilityFor("@ecp/chrome-ai", "checkAvailability")
       .withInput(z.object({}))
-      .withOutput(z.object({ available: z.boolean(), status: z.string().optional() }))
+      .withOutput(
+        z.object({
+          available: z.boolean(),
+          supported: z.boolean(),
+          status: z.string().optional(),
+        })
+      )
       .withHandler(async () => {
-        const model = chromeAi()
-        if (!model?.availability) {
-          return { available: false, status: "unsupported" }
+        const result = await readAvailability()
+        return {
+          available: result.available,
+          supported: result.supported,
+          status: result.status,
         }
-        const status = await model.availability()
-        return { available: status === "available", status }
       }),
+    capabilityFor("@ecp/chrome-ai", "startModelDownload")
+      .withInput(z.object({}))
+      .withOutput(z.object({ started: z.boolean() }))
+      .withHandler(async () => startModelDownload()),
+    capabilityFor("@ecp/chrome-ai", "getModelInstallState")
+      .withInput(z.object({}))
+      .withOutput(InstallStateSchema)
+      .withHandler(async () => getModelInstallState()),
     capabilityFor("@ecp/chrome-ai", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))
       .withHandler(async (raw) => {
         const input = raw as z.infer<typeof GenerateTextInput>
+        await assertModelReady()
         const model = chromeAi()
         if (!model?.create) {
           throw new Error("Chrome LanguageModel API is not available")
@@ -60,6 +91,15 @@ export const chromeAiExtension = defineExtension("@ecp", "chrome-ai")
   .build()
 
 catalogExtension(chromeAiExtension)
+
+export type { ChromeAvailabilityStatus, ChromeModelInstallPhase, ChromeModelInstallState } from "./model-install.js"
+export {
+  assertModelReady,
+  getModelInstallState,
+  readAvailability,
+  resetModelInstallState,
+  startModelDownload,
+} from "./model-install.js"
 
 /** Register Chrome AI extension. @category Extensions */
 export async function registerChromeAiExtension(registry: Registry = globalRegistry): Promise<void> {

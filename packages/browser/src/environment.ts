@@ -13,6 +13,7 @@ import { BROWSER_RUNTIME_ID, registerBrowserRuntime } from "./runtime/builtin-br
 import { registerBrowserRegistryExtension } from "./extensions/browser-registry.js"
 import { registerBrowserSessionConfigExtension } from "./extensions/browser-session-config.js"
 import { registerBrowserLocalConfigExtension } from "./extensions/browser-local-config.js"
+import { registerBrowserGuideExtension } from "./extensions/browser-guide.js"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import { registerFormatMermaidExtension } from "@ecp/format-mermaid"
 import { registerDemoExtension } from "@ecp/demo"
@@ -32,6 +33,7 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerBrowserRegistryExtension(registry)
   await registerBrowserSessionConfigExtension(registry)
   await registerBrowserLocalConfigExtension(registry)
+  await registerBrowserGuideExtension(registry)
   await registerFormatToonExtension(registry)
   await registerFormatMermaidExtension(registry)
   await registerDemoExtension(registry)
@@ -71,6 +73,7 @@ export function createBrowserDemoEnvironment(
       }),
       extension("@ecp/browser-session-config").with({ persist: false }),
       extension("@ecp/browser-local-config").with({}),
+      extension("@ecp/browser").with({}),
     ])
     .withPolicies([
       policy("@ecp/registry-control").with({
@@ -79,6 +82,7 @@ export function createBrowserDemoEnvironment(
           "@ecp/chrome-ai",
           "@ecp/openai",
           "@ecp/claude",
+          "@ecp/browser",
           "@customer/*",
           "@ecp/test",
         ],

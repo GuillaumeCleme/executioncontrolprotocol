@@ -1,6 +1,12 @@
 /** Provider mode for the browser demo app UI. */
 export type ProviderMode = "chrome-ai" | "openai" | "claude" | "demo"
 
+/** Chat assistant behavior. */
+export type AssistantMode = "guided" | "authoring"
+
+/** Capability id for guided onboarding chat. */
+export const GUIDE_CHAT_CAPABILITY = "@ecp/browser.guideChat"
+
 const PROVIDER_CAPABILITY: Record<ProviderMode, string> = {
   "chrome-ai": "@ecp/chrome-ai.generateText",
   openai: "@ecp/openai.generateText",
@@ -28,4 +34,16 @@ export function readStoredProviderMode(): ProviderMode | null {
 export function storeProviderMode(mode: ProviderMode): void {
   if (typeof localStorage === "undefined") return
   localStorage.setItem(PROVIDER_MODE_STORAGE_KEY, mode)
+}
+
+/** Chrome install UI surface. */
+export type ChromeInstallUi = "idle" | "dialog" | "toast" | "done"
+
+/** Install state from @ecp/chrome-ai.getModelInstallState. */
+export interface ChromeInstallSnapshot {
+  phase: string
+  status?: string
+  loaded?: number
+  total?: number
+  error?: string
 }

@@ -4,13 +4,25 @@ import type { ProviderMode } from "../lib/provider-mode.js"
 
 /** Props for {@link FirstRunModal}. */
 export interface FirstRunModalProps {
-  chromeAvailable: boolean
+  /** Chrome LanguageModel API is present (may still need download). */
+  chromeSupported: boolean
+  /** Chrome model is already available. */
+  chromeReady: boolean
+  onExplore: () => void
   onComplete: (mode: ProviderMode) => void
+  /** User chose Chrome but model must download first. */
+  onChromeInstall: () => void
 }
 
 /** First-run provider selection modal. */
-export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProps) {
-  const [mode, setMode] = useState<ProviderMode>(chromeAvailable ? "chrome-ai" : "demo")
+export function FirstRunModal({
+  chromeSupported,
+  chromeReady,
+  onExplore,
+  onComplete,
+  onChromeInstall,
+}: FirstRunModalProps) {
+  const [mode, setMode] = useState<ProviderMode>(chromeSupported ? "chrome-ai" : "demo")
   const [openaiKey, setOpenaiKey] = useState("")
   const [anthropicKey, setAnthropicKey] = useState("")
 
@@ -20,6 +32,10 @@ export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProp
     }
     if (mode === "claude" && anthropicKey.trim()) {
       setBrowserSessionValue("ANTHROPIC_API_KEY", anthropicKey.trim())
+    }
+    if (mode === "chrome-ai" && chromeSupported && !chromeReady) {
+      onChromeInstall()
+      return
     }
     onComplete(mode)
   }
@@ -31,21 +47,37 @@ export function FirstRunModal({ chromeAvailable, onComplete }: FirstRunModalProp
       aria-modal="true"
       aria-labelledby="first-run-title"
     >
-      <div className="flex w-[min(420px,92vw)] flex-col gap-4 rounded-xl border border-outline-variant bg-surface-container p-6">
-        <h2 id="first-run-title" className="font-display text-headline text-on-surface">
+      <div className="relative flex w-[min(420px,92vw)] flex-col gap-4 rounded-xl border border-outline-variant bg-surface-container p-6">
+        <button
+          type="button"
+          onClick={onExplore}
+          className="absolute right-3 top-3 rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+          aria-label="Explore without choosing a provider"
+        >
+          <span className="material-symbols-outlined text-xl">close</span>
+        </button>
+        <h2 id="first-run-title" className="pr-8 font-display text-headline text-on-surface">
           Choose a model provider
         </h2>
-        <p className="text-body text-on-surface-variant">API keys stay in memory for this session only.</p>
+        <p className="text-body text-on-surface-variant">
+          API keys stay in memory for this session only. You can close this dialog and explore with the guided
+          assistant while Chrome AI downloads.
+        </p>
         <div className="space-y-2">
           <label className="flex cursor-pointer items-center gap-2 text-body">
             <input
               type="radio"
               name="provider"
               checked={mode === "chrome-ai"}
-              disabled={!chromeAvailable}
+              disabled={!chromeSupported}
               onChange={() => setMode("chrome-ai")}
             />
-            Chrome built-in AI {!chromeAvailable ? "(unavailable)" : ""}
+            Chrome built-in AI
+            {!chromeSupported
+              ? " (unavailable)"
+              : !chromeReady
+                ? " (download required)"
+                : ""}
           </label>
           <label className="flex cursor-pointer items-center gap-2 text-body">
             <input type="radio" name="provider" checked={mode === "openai"} onChange={() => setMode("openai")} />
