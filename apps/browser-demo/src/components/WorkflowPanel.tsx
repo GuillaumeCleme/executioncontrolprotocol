@@ -1,4 +1,4 @@
-import type { EnvironmentDescriptor, ValidationResult } from "@ecp/types"
+import type { ValidationResult } from "@ecp/types"
 import type { WorkflowTab } from "../types/workspace.js"
 import { MermaidDiagramViewer } from "./MermaidDiagramViewer.js"
 
@@ -8,14 +8,13 @@ export interface WorkflowPanelProps {
   onTabChange: (tab: WorkflowTab) => void
   mermaid: string
   validation: ValidationResult | null
-  descriptor: EnvironmentDescriptor | null
   runOutput: string
   runBusy: boolean
   onRun: () => void
   onClose: () => void
 }
 
-const TABS: WorkflowTab[] = ["graph", "validation", "capabilities", "run"]
+const TABS: WorkflowTab[] = ["graph", "validation", "run"]
 
 /** Workflow visualization and runtime panel. */
 export function WorkflowPanel({
@@ -23,7 +22,6 @@ export function WorkflowPanel({
   onTabChange,
   mermaid,
   validation,
-  descriptor,
   runOutput,
   runBusy,
   onRun,
@@ -52,9 +50,6 @@ export function WorkflowPanel({
       <div className="panel-body">
         {tab === "graph" ? <MermaidDiagramViewer source={mermaid} /> : null}
         {tab === "validation" ? <ValidationView validation={validation} /> : null}
-        {tab === "capabilities" ? (
-          <pre className="panel-pre">{descriptor ? JSON.stringify(descriptor, null, 2) : "{}"}</pre>
-        ) : null}
         {tab === "run" ? (
           <div className="run-panel">
             <button type="button" disabled={runBusy} onClick={onRun}>

@@ -9,7 +9,7 @@ This app is **separate** from [`@ecp/browser`](../../packages/browser/README.md)
 | Layer | Path | Responsibility |
 | ----- | ---- | ---------------- |
 | Runtime host | `packages/browser` | `Ecp` in browser, registry, session config, `createEcp`, optional reference env |
-| Demo app | `apps/browser-demo` | UI, provider picker, layout state, demo localStorage keys |
+| Demo app | `apps/browser-demo` | UI: **Code** / **Workflow** / **Environment** panels; provider picker in first-run modal |
 | Core | `packages/core` | Fluent API, encode/decode/patch; `@ecp/core/browser` for browser compile |
 | Extensions | `packages/extensions/*` | TOON, Mermaid, demo provider, OpenAI, Claude, Chrome AI |
 

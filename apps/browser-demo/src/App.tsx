@@ -1,35 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  BrowserAuthoringService,
-  createBrowserDemoEnvironment,
-  createEcp,
-  installBrowserWorkflowShim,
-  registerBrowserDefaults,
-  type BrowserOperationalEcp,
-} from "@ecp/browser"
-import { registerTestExtension } from "@ecp/core"
+import { BrowserAuthoringService, installBrowserWorkflowShim, type BrowserOperationalEcp } from "@ecp/browser"
+import type { Ecp } from "@ecp/core"
 import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@ecp/types"
 import { compileWorkflowSource } from "@ecp/core/browser"
 import { ChatPanel } from "./components/ChatPanel.js"
 import { CodePanel } from "./components/CodePanel.js"
+import { EnvironmentPanel } from "./components/EnvironmentPanel.js"
 import { FirstRunModal } from "./components/FirstRunModal.js"
 import { WorkflowPanel } from "./components/WorkflowPanel.js"
 import { useChatHistory } from "./hooks/useChatHistory.js"
 import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout.js"
+import { createDemoAppEnvironment } from "./lib/demo-environment.js"
 import {
   providerCapabilityId,
   readStoredProviderMode,
   storeProviderMode,
   type ProviderMode,
 } from "./lib/provider-mode.js"
-import type { CodeTab, WorkflowTab } from "./types/workspace.js"
+import type { CodeTab, EnvironmentTab, WorkflowTab } from "./types/workspace.js"
 
 const EMPTY_MERMAID = "flowchart TD\n  empty[No workflow]"
 
 export function App() {
   const layout = useWorkspaceLayout()
   const chat = useChatHistory()
-  const [ecp, setEcp] = useState<BrowserOperationalEcp | null>(null)
+  const [ecp, setEcp] = useState<Ecp | null>(null)
   const [providerMode, setProviderMode] = useState<ProviderMode>("demo")
   const [showModal, setShowModal] = useState(false)
   const [chromeAvailable, setChromeAvailable] = useState(false)
@@ -38,6 +33,7 @@ export function App() {
   const [descriptor, setDescriptor] = useState<EnvironmentDescriptor | null>(null)
   const [codeTab, setCodeTab] = useState<CodeTab>("fluent")
   const [workflowTab, setWorkflowTab] = useState<WorkflowTab>("graph")
+  const [environmentTab, setEnvironmentTab] = useState<EnvironmentTab>("capabilities")
   const [fluent, setFluent] = useState("// Fluent API will appear here")
   const [json, setJson] = useState("{}")
   const [toon, setToon] = useState("")
@@ -47,17 +43,23 @@ export function App() {
   const [compileError, setCompileError] = useState<string | null>(null)
   const [runOutput, setRunOutput] = useState("")
   const [runBusy, setRunBusy] = useState(false)
+  const [describeBusy, setDescribeBusy] = useState(false)
   const compileTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const refreshDescriptor = useCallback(async (operational: Ecp) => {
+    setDescribeBusy(true)
+    try {
+      setDescriptor(await operational.describe())
+    } finally {
+      setDescribeBusy(false)
+    }
+  }, [])
 
   useEffect(() => {
     installBrowserWorkflowShim()
     void (async () => {
-      await registerBrowserDefaults()
-      const env = createBrowserDemoEnvironment("browser-demo-app")
-      await registerTestExtension(env.getRegistry())
-      const operational = await createEcp(env, { exposeGlobal: true })
+      const { ecp: operational, descriptor: desc } = await createDemoAppEnvironment()
       setEcp(operational)
-      const desc = await operational.describe()
       setDescriptor(desc)
 
       const avail = await operational
@@ -85,7 +87,7 @@ export function App() {
   const applyPanels = useCallback(
     async (nextManifest: WorkflowManifest, patchToon = "") => {
       if (!ecp) return
-      const service = new BrowserAuthoringService(ecp)
+      const service = new BrowserAuthoringService(ecp as BrowserOperationalEcp)
       const panels = await service.encodePanels(nextManifest, patchToon)
       setManifest(nextManifest)
       setFluent(panels.fluent)
@@ -113,7 +115,7 @@ export function App() {
     chat.setStatus("Generating...")
     setPrompt("")
     try {
-      const service = new BrowserAuthoringService(ecp)
+      const service = new BrowserAuthoringService(ecp as BrowserOperationalEcp)
       const cap = providerCapabilityId(providerMode)
       const result = manifest
         ? await service.patchWorkflow({ userRequest, manifest, providerCapabilityId: cap })
@@ -200,7 +202,7 @@ export function App() {
             />
           ) : (
             <button type="button" className="workspace-reveal workspace-reveal--code" onClick={layout.openCode}>
-              Show code
+              Code
             </button>
           )}
           {layout.workflowOpen ? (
@@ -209,7 +211,6 @@ export function App() {
               onTabChange={setWorkflowTab}
               mermaid={mermaid}
               validation={validation}
-              descriptor={descriptor}
               runOutput={runOutput}
               runBusy={runBusy}
               onRun={onRun}
@@ -221,7 +222,28 @@ export function App() {
               className="workspace-reveal workspace-reveal--workflow"
               onClick={layout.openWorkflow}
             >
-              Show workflow
+              Workflow
+            </button>
+          )}
+          {layout.environmentOpen ? (
+            <EnvironmentPanel
+              tab={environmentTab}
+              onTabChange={setEnvironmentTab}
+              descriptor={descriptor}
+              providerMode={providerMode}
+              refreshBusy={describeBusy}
+              onRefresh={() => {
+                if (ecp) void refreshDescriptor(ecp)
+              }}
+              onClose={layout.closeEnvironment}
+            />
+          ) : (
+            <button
+              type="button"
+              className="workspace-reveal workspace-reveal--environment"
+              onClick={layout.openEnvironment}
+            >
+              Environment
             </button>
           )}
         </main>
@@ -244,10 +266,13 @@ export function App() {
       {!workspaceVisible && manifest ? (
         <div className="launch-actions">
           <button type="button" onClick={layout.openWorkflow}>
-            Open workflow
+            Workflow
           </button>
           <button type="button" onClick={layout.openCode}>
-            Open code
+            Code
+          </button>
+          <button type="button" onClick={layout.openEnvironment}>
+            Environment
           </button>
         </div>
       ) : null}
