@@ -105,6 +105,7 @@ export {
   ECP_HARNESS_ERROR_CODES,
   ECP_CORE_FORMATTER_IDS,
   harnessCapabilityId,
+  harnessEvaluateOutputSchema,
 } from "./harness.js"
 export type {
   EcpHarnessErrorCode,
@@ -112,6 +113,12 @@ export type {
   HarnessCapabilityId,
   HarnessTrace,
   HarnessInvokeResult,
+  HarnessEvaluateOutput,
 } from "./harness.js"
+export type {
+  HarnessOperationStage,
+  HarnessOperationFeedback,
+  HarnessRepairAttempt,
+} from "./harness-feedback.js"
 export { ECP_INTENT_SCHEMA, ECP_INTENT_VALUES, ecpIntentSchema } from "./intent.js"
 export type { EcpIntentValue, EcpIntent } from "./intent.js"

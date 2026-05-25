@@ -2,29 +2,27 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
-import { extension } from "../../src/bindings/extension.js"
-import { harness } from "../../src/bindings/harness.js"
-import { environment } from "../../src/environment/environment.js"
-import { runtime } from "../../src/bindings/runtime.js"
+import { environment, extension, harness, runtime, registerCoreFormats, registerTestExtension } from "@ecp/core"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
-import { registerTestExtension } from "../../src/testing/test-extension.js"
 import { registerDemoExtension } from "@ecp/demo"
 import { registerFormatToonExtension } from "@ecp/format-toon"
-import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
-import { registerStandardHarnesses } from "../../src/harness/register-standard-harnesses.js"
-import { harnessCapabilityId, type HarnessInvokeResult, type WorkflowManifest } from "@ecp/types"
+import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import {
+  EVALS_WORKFLOW_AUTHORING_CAPABILITY,
+  registerEvalHarnesses,
+} from "@ecp/evals"
 
-const fixtureDir = path.dirname(fileURLToPath(import.meta.url))
+const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
 
-async function createAuthoringEnv() {
+async function createEvalAuthoringDemoEnv() {
   await registerCoreFormats()
-  registerStandardHarnesses()
+  registerEvalHarnesses()
   await registerNodeRuntime()
   await registerTestExtension()
   await registerDemoExtension()
   await registerFormatToonExtension()
 
-  return environment("harness-authoring")
+  return environment("evals-harness-authoring-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([
       extension("@ecp/format-toon").with({}),
@@ -32,7 +30,7 @@ async function createAuthoringEnv() {
       extension("@ecp/demo").with({}),
     ])
     .withHarnesses([
-      harness("@ecp/workflow-authoring")
+      harness("@ecp/evals-workflow-authoring")
         .uses("@ecp/demo.generate")
         .with({
           output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
@@ -40,12 +38,12 @@ async function createAuthoringEnv() {
     ])
 }
 
-describe("workflow-authoring harness", () => {
+describe("evals-workflow-authoring harness (demo provider)", () => {
   it("creates a workflow via demo provider", async () => {
-    const env = await createAuthoringEnv()
+    const env = await createEvalAuthoringDemoEnv()
     const ecp = await env.init()
     const result = await ecp
-      .invoke(harnessCapabilityId("@ecp/workflow-authoring"))
+      .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
       .with({ request: "Create an echo workflow" })
       .process()
 
@@ -56,23 +54,23 @@ describe("workflow-authoring harness", () => {
   })
 
   it("patches a workflow via demo provider", async () => {
-    const env = await createAuthoringEnv()
+    const env = await createEvalAuthoringDemoEnv()
     const ecp = await env.init()
     const manifest = JSON.parse(
-      readFileSync(path.join(fixtureDir, "fixtures/echo-workflow.json"), "utf8")
+      readFileSync(path.join(fixtureDir, "echo-workflow.json"), "utf8")
     ) as WorkflowManifest
 
     const result = await ecp
-      .invoke(harnessCapabilityId("@ecp/workflow-authoring"))
+      .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
       .with({ request: "Patch the echo step input value.", manifest })
       .process()
 
     expect(result.success).toBe(true)
-    const harnessResult = result.result as HarnessInvokeResult<WorkflowManifest>
-    expect(harnessResult.artifact.schema).toBe("@ecp.workflow")
-    const echoStep = harnessResult.artifact.steps?.find((s) => s.id === "echo")
+    const harnessOutput = result.result as HarnessInvokeResult<WorkflowManifest>
+    expect(harnessOutput.artifact.schema).toBe("@ecp.workflow")
+    const echoStep = harnessOutput.artifact.steps?.find((s) => s.id === "echo")
     expect(echoStep?.input).toEqual({ value: "patched" })
-    expect(harnessResult.trace.decodeSucceeded).toBe(true)
+    expect(harnessOutput.trace.decodeSucceeded).toBe(true)
     await ecp.terminate()
   })
 })

@@ -6,8 +6,8 @@ Harnesses orchestrate model calls, format decode, and validation. Use them for r
 
 | Harness | Capability | Purpose |
 | ------- | ---------- | ------- |
-| `@ecp/workflow-authoring` | `@ecp/workflow-authoring.evaluate` | Create/patch workflows via TOON |
-| `@ecp/intent-classification` | `@ecp/intent-classification.evaluate` | Route chat (`faq`, `workflow-create`, `workflow-patch`, `general`) |
+| `@ecp/evals-workflow-authoring` | `@ecp/evals-workflow-authoring.evaluate` | Create/patch workflows via JSON (Ollama evals; descriptor still TOON) |
+| `@ecp/evals-intent-classification` | `@ecp/evals-intent-classification.evaluate` | Route chat (`faq`, `workflow-create`, `workflow-patch`, `general`) |
 
 ## `@ecp/evals` package
 
@@ -44,14 +44,23 @@ Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, fai
 
 | Scenario | Harness | Encoding |
 | -------- | ------- | -------- |
-| Create workflow | `@ecp/workflow-authoring.evaluate` | `@ecp/format-toon` |
-| Patch workflow | `@ecp/workflow-authoring.evaluate` | `@ecp/format-toon` + `@ecp.patch` |
-| Intent create | `@ecp/intent-classification.evaluate` | `@ecp/format-json` |
-| Intent patch | `@ecp/intent-classification.evaluate` | `@ecp/format-json` |
+| Create workflow | `@ecp/evals-workflow-authoring.evaluate` | `@ecp/format-json` |
+| Patch workflow | `@ecp/evals-workflow-authoring.evaluate` | `@ecp/format-json` + `@ecp.patch` |
+| Intent create | `@ecp/evals-intent-classification.evaluate` | `@ecp/format-json` |
+| Intent patch | `@ecp/evals-intent-classification.evaluate` | `@ecp/format-json` |
 
 Workflow environment: [`packages/evals/src/environments/harness-ollama-workflow.ts`](../packages/evals/src/environments/harness-ollama-workflow.ts).
 
 [`examples/harness-ollama/environment.ts`](../examples/harness-ollama/environment.ts) re-exports `createHarnessOllamaEnvironment()` (combined workflow + intent).
+
+Intent eval environments bind `@ecp/format-toon` and `@ecp/test` (same as workflow) and include the environment descriptor in the harness prompt. See [packages/evals/README.md](../packages/evals/README.md#traceability-when-a-model-fails).
+
+## Traceability
+
+When an eval fails, use harness `trace` and eval helpers:
+
+- **Invoke failed:** `assertHarnessInvokeSuccess` prints diagnostics; decode failures include `rawModelOutput` in the message.
+- **Wrong intent/artifact:** `expectHarnessIntent()` or `expect(..., harnessTraceHint(output))` — see [`assert-harness-result.ts`](../packages/evals/test/harness/assert-harness-result.ts).
 
 ## Creating new eval cases
 
@@ -78,7 +87,7 @@ describe.skipIf(!readiness.ready)("my eval", () => {
   it("...", async () => {
     const ecp = await (await createHarnessOllamaWorkflowEnvironment()).init()
     const result = await ecp
-      .invoke(harnessCapabilityId("@ecp/workflow-authoring"))
+      .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
       .with({ request: "...", model: OLLAMA_GEMMA_1B_EVAL.model })
       .process()
     assertHarnessInvokeSuccess(result)
@@ -98,7 +107,7 @@ describe.skipIf(!readiness.ready)("my eval", () => {
 
 ```ts
 const result = await ecp
-  .invoke("@ecp/workflow-authoring.evaluate")
+  .invoke("@ecp/evals-workflow-authoring.evaluate")
   .with({
     request: "Create an echo workflow",
     model: "gemma3:1b",

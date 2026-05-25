@@ -38,6 +38,22 @@ describe("applyPatch", () => {
     expect(stepAt.input?.prompt).toBe("Create a concise executive brief.")
   })
 
+  it("replaces scalar step fields without corrupting the step", () => {
+    const manifest = workflow("Echo")
+      .id("echo-test")
+      .run([step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .toManifest()
+
+    const patched = applyPatch(manifest, {
+      "steps[echo].label": "Patched Echo",
+    })
+
+    expect(patched.success).toBe(true)
+    const echoStep = patched.result!.steps.find((s) => s.id === "echo")
+    expect(echoStep?.label).toBe("Patched Echo")
+    expect(echoStep?.uses).toBe("@ecp/test.echo")
+  })
+
   it("deep merges by default", () => {
     const manifest = weeklyBriefManifest()
     const patched = applyPatch(manifest, {

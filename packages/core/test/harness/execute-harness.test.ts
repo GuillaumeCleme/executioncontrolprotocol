@@ -13,7 +13,10 @@ import { runtime } from "../../src/bindings/runtime.js"
 import { defineHarness } from "../../src/harness/define-harness.js"
 import { catalogHarness } from "../../src/harness/harness-catalog.js"
 import { executeHarnessInvoke } from "../../src/harness/execute-harness.js"
-import { registerStandardHarnesses } from "../../src/harness/register-standard-harnesses.js"
+import {
+  registerTestMinimalHarness,
+  TEST_MINIMAL_HARNESS_ID,
+} from "../../src/harness/definitions/test-minimal-harness.js"
 import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerTestExtension } from "../../src/testing/test-extension.js"
@@ -26,7 +29,7 @@ const BAD_OUTPUT_HARNESS_ID = "@ecp/harness-bad-output-test" as const
 describe("executeHarnessInvoke", () => {
   beforeAll(async () => {
     await registerCoreFormats()
-    registerStandardHarnesses()
+    registerTestMinimalHarness()
     catalogHarness(
       defineHarness("@ecp", "harness-throw-test")
         .withInput(z.object({ request: z.string() }))
@@ -77,11 +80,7 @@ describe("executeHarnessInvoke", () => {
       ])
     if (withHarness) {
       builder = builder.withHarnesses([
-        harness("@ecp/workflow-authoring")
-          .uses("@ecp/demo.generate")
-          .with({
-            output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
-          }),
+        harness(TEST_MINIMAL_HARNESS_ID).uses("@ecp/demo.generate").with({}),
         harness(THROWING_HARNESS_ID).uses("@ecp/demo.generate").with({}),
         harness(BAD_OUTPUT_HARNESS_ID).uses("@ecp/demo.generate").with({}),
       ])
@@ -94,8 +93,8 @@ describe("executeHarnessInvoke", () => {
     const { env, ecp } = await demoHarnessEnv()
     const result = await executeHarnessInvoke(
       env,
-      "@ecp/demo.generate" as "@ecp/workflow-authoring.evaluate",
-      { request: "x" }
+      "@ecp/demo.generate" as "@ecp/test-minimal-harness.evaluate",
+      { value: "x" }
     )
     expect(result.success).toBe(false)
     expect(result.diagnostics[0]?.code).toBe(ECP_INVOKE_ERROR_CODES.CAPABILITY_NOT_FOUND)
@@ -104,8 +103,8 @@ describe("executeHarnessInvoke", () => {
 
   it("reports unbound harness", async () => {
     const { env, ecp } = await demoHarnessEnv(false)
-    const result = await executeHarnessInvoke(env, harnessCapabilityId("@ecp/workflow-authoring"), {
-      request: "Create workflow",
+    const result = await executeHarnessInvoke(env, harnessCapabilityId(TEST_MINIMAL_HARNESS_ID), {
+      value: "x",
     })
     expect(result.success).toBe(false)
     expect(result.diagnostics[0]?.code).toBe(ECP_HARNESS_ERROR_CODES.HARNESS_NOT_BOUND)
@@ -114,7 +113,9 @@ describe("executeHarnessInvoke", () => {
 
   it("reports invalid harness input", async () => {
     const { env, ecp } = await demoHarnessEnv()
-    const result = await executeHarnessInvoke(env, harnessCapabilityId("@ecp/workflow-authoring"), {})
+    const result = await executeHarnessInvoke(env, harnessCapabilityId(TEST_MINIMAL_HARNESS_ID), {
+      value: 123,
+    })
     expect(result.success).toBe(false)
     expect(result.diagnostics[0]?.code).toBe(ECP_INVOKE_ERROR_CODES.INVOKE_INPUT_INVALID)
     await ecp.terminate()
@@ -146,7 +147,7 @@ describe("executeHarnessInvoke", () => {
     const result = await executeHarnessInvoke(
       env,
       harnessCapabilityId("@ecp/not-registered"),
-      { request: "x" }
+      { value: "x" }
     )
     expect(result.success).toBe(false)
     expect(result.diagnostics[0]?.code).toBe(ECP_HARNESS_ERROR_CODES.UNKNOWN_HARNESS)

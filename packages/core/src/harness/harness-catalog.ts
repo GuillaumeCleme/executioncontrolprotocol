@@ -67,3 +67,8 @@ export function harnessEvaluateCapabilityId(harnessId: NamespacedId | string): H
 export function isHarnessCapabilityId(capabilityId: string): boolean {
   return harnessIdFromCapabilityId(capabilityId) !== undefined
 }
+
+/** Clear harness catalog (unit tests). @internal */
+export function resetHarnessCatalogForTests(): void {
+  catalog.clear()
+}

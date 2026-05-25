@@ -54,6 +54,20 @@ describe("ecp.encode/decode", () => {
     await ecp.terminate()
   })
 
+  it("returns decode diagnostics for invalid JSON instead of throwing", async () => {
+    const ecp = await initEncodingTestEcp()
+    const decoded = await ecp
+      .decode('```json\n{"broken":')
+      .uses("@ecp/format-json")
+      .to("@ecp.intent")
+      .process()
+    expect(decoded.success).toBe(false)
+    expect(decoded.diagnostics.some((d) => d.message.includes("JSON parse failed"))).toBe(
+      true
+    )
+    await ecp.terminate()
+  })
+
   it("fails when encoder extension is not registered", async () => {
     const ecp = await initEncodingTestEcp()
     await expect(

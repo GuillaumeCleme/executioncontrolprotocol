@@ -56,18 +56,28 @@ export const formatJsonExtension = defineExtension("@ecp", "format-json")
       .withHandler((input) => {
         const decoded = input as EcpDecodeInput
         const target = decoded.targetSchema
-        const validation = target
-          ? validateDecodedDocument(
-              typeof decoded.input === "string" ? JSON.parse(decoded.input) : decoded.input,
-              target
-            )
-          : emptyValidationResult(true)
-        return decodeJson(decoded.input, {
+        const parsed = decodeJson(decoded.input, {
           targetSchema: target,
           targetVersion: decoded.targetVersion,
-          validation,
           ...decoded.options,
         })
+        if (!parsed.success || parsed.result === undefined) {
+          return parsed
+        }
+        const validation = target
+          ? validateDecodedDocument(parsed.result, target)
+          : emptyValidationResult(true)
+        const success = validation.valid
+        return {
+          ...parsed,
+          validation,
+          success,
+          diagnostics: [
+            ...parsed.diagnostics,
+            ...validation.errors,
+            ...validation.warnings,
+          ],
+        }
       }),
   ])
   .build()

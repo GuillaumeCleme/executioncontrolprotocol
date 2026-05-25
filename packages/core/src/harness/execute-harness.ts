@@ -164,7 +164,8 @@ export async function executeHarnessInvoke(
     binding.config,
     env,
     ecp,
-    capCtx
+    capCtx,
+    def.configSchema
   )
 
   let output: unknown

@@ -21,6 +21,7 @@ import { registerDemoExtension } from "@ecp/demo"
 import { registerChromeAiExtension } from "@ecp/chrome-ai"
 import { registerOpenaiExtension } from "@ecp/extension-openai"
 import { registerClaudeExtension } from "@ecp/claude"
+import { registerBrowserHarnesses } from "./harnesses/register.js"
 import "@ecp/format-toon"
 import "@ecp/format-mermaid"
 import "@ecp/demo"
@@ -42,6 +43,7 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerOpenaiExtension(registry)
   await registerClaudeExtension(registry)
   await registerStandardPolicies(registry)
+  registerBrowserHarnesses()
 }
 
 /**
@@ -77,16 +79,16 @@ export function createBrowserDemoEnvironment(
       extension("@ecp/browser").with({}),
     ])
     .withHarnesses([
-      harness("@ecp/workflow-authoring", "Workflow Authoring")
+      harness("@ecp/browser-workflow-authoring", "Workflow Authoring")
         .uses("@ecp/demo.generate")
         .with({
           output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
           context: { includeEnvironmentDescriptor: true, descriptorFormat: "@ecp/format-toon" },
         }),
-      harness("@ecp/intent-classification", "Intent classification")
+      harness("@ecp/browser-intent-classification", "Intent classification")
         .uses("@ecp/demo.generate")
         .with({
-          output: { schema: "@ecp.intent", format: "@ecp/format-json", validate: true },
+          output: { schema: "@ecp/intent", format: "@ecp/format-json", validate: true },
           context: { includeEnvironmentDescriptor: false },
         }),
     ])

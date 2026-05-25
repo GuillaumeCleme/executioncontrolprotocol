@@ -3,7 +3,8 @@ import { ECP_HARNESS_ERROR_CODES, ECP_MODEL_CAPABILITY_NAME } from "@ecp/types"
 import { Registry } from "../../src/registry/registry.js"
 import { validateHarnessBindings } from "../../src/validate/harness.js"
 import type { ResolvedBindings } from "../../src/environment/bindings.js"
-import { registerStandardHarnesses } from "../../src/harness/register-standard-harnesses.js"
+import { registerTestMinimalHarness } from "../../src/harness/definitions/test-minimal-harness.js"
+import { TEST_MINIMAL_HARNESS_ID } from "../../src/harness/definitions/test-minimal-harness.js"
 import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
 import { registerDemoExtension } from "@ecp/demo"
 import { registerFormatToonExtension } from "@ecp/format-toon"
@@ -26,7 +27,7 @@ describe("validateHarnessBindings", () => {
   const registry = new Registry()
 
   beforeAll(async () => {
-    registerStandardHarnesses()
+    registerTestMinimalHarness()
     await registerCoreFormats(registry)
     await registerDemoExtension(registry)
     await registerFormatToonExtension(registry)
@@ -36,17 +37,12 @@ describe("validateHarnessBindings", () => {
     const bindings = harnessBindings(
       [
         {
-          id: "@ecp/workflow-authoring",
+          id: TEST_MINIMAL_HARNESS_ID,
           uses: "@ecp/demo.generate",
           config: {
             output: { format: "@ecp/format-toon" },
             context: { descriptorFormat: "@ecp/format-json" },
           },
-        },
-        {
-          id: "@ecp/intent-classification",
-          uses: "@ecp/demo.generate",
-          config: { output: { format: "@ecp/format-json" } },
         },
       ],
       [
@@ -71,7 +67,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports missing provider uses", () => {
     const bindings = harnessBindings([
-      { id: "@ecp/workflow-authoring", uses: "" as "@ecp/demo.generate", config: {} },
+      { id: TEST_MINIMAL_HARNESS_ID, uses: "" as "@ecp/demo.generate", config: {} },
     ])
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -80,7 +76,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports provider contract mismatch when uses is not generate", () => {
     const bindings = harnessBindings(
-      [{ id: "@ecp/workflow-authoring", uses: "@ecp/demo.generateText", config: {} }],
+      [{ id: TEST_MINIMAL_HARNESS_ID, uses: "@ecp/demo.generateText", config: {} }],
       [{ id: "@ecp/demo", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
@@ -93,7 +89,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports unbound provider extension", () => {
     const bindings = harnessBindings([
-      { id: "@ecp/workflow-authoring", uses: "@ecp/demo.generate", config: {} },
+      { id: TEST_MINIMAL_HARNESS_ID, uses: "@ecp/demo.generate", config: {} },
     ])
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -104,7 +100,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports unregistered provider capability", () => {
     const bindings = harnessBindings(
-      [{ id: "@ecp/workflow-authoring", uses: "@ecp/missing.generate", config: {} }],
+      [{ id: TEST_MINIMAL_HARNESS_ID, uses: "@ecp/missing.generate", config: {} }],
       [{ id: "@ecp/missing", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
@@ -116,7 +112,7 @@ describe("validateHarnessBindings", () => {
     const bindings = harnessBindings(
       [
         {
-          id: "@ecp/workflow-authoring",
+          id: TEST_MINIMAL_HARNESS_ID,
           uses: "@ecp/demo.generate",
           config: { output: { format: "@ecp/format-unknown" } },
         },
@@ -134,7 +130,7 @@ describe("validateHarnessBindings", () => {
     const bindings = harnessBindings(
       [
         {
-          id: "@ecp/workflow-authoring",
+          id: TEST_MINIMAL_HARNESS_ID,
           uses: "@ecp/demo.generate",
           config: { output: { format: "@ecp/format-toon" } },
         },
@@ -150,7 +146,7 @@ describe("validateHarnessBindings", () => {
     const bindings = harnessBindings(
       [
         {
-          id: "@ecp/workflow-authoring",
+          id: TEST_MINIMAL_HARNESS_ID,
           uses: "@ecp/demo.generate",
           config: {
             output: { format: "@ecp/format-json" },

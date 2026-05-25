@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, beforeEach } from "vitest"
 import { z } from "zod"
 import { ECP_MODEL_GENERATE_INTERFACE } from "@ecp/types"
 import {
@@ -6,13 +6,19 @@ import {
   isHarnessDefinition,
   resolveHarnessRef,
 } from "../../src/harness/define-harness.js"
-import { catalogHarness } from "../../src/harness/harness-catalog.js"
+import { catalogHarness, resetHarnessCatalogForTests } from "../../src/harness/harness-catalog.js"
 import {
-  registerStandardHarnesses,
-  resetStandardHarnessesRegistrationForTests,
-} from "../../src/harness/register-standard-harnesses.js"
+  registerTestMinimalHarness,
+  resetTestMinimalHarnessRegistrationForTests,
+  TEST_MINIMAL_HARNESS_ID,
+} from "../../src/harness/definitions/test-minimal-harness.js"
 
 describe("defineHarness", () => {
+  beforeEach(() => {
+    resetHarnessCatalogForTests()
+    resetTestMinimalHarnessRegistrationForTests()
+  })
+
   it("requires a handler before build()", () => {
     expect(() =>
       defineHarness("@ecp", "incomplete")
@@ -34,10 +40,33 @@ describe("defineHarness", () => {
     expect(isHarnessDefinition({ id: "@ecp/x" })).toBe(false)
   })
 
+  it("types handler input from withInput schema", async () => {
+    const def = defineHarness("@ecp", "typed-input")
+      .withConfig(z.object({ prefix: z.string().default("p") }))
+      .withInput(z.object({ value: z.string() }))
+      .usesProviderInterface(ECP_MODEL_GENERATE_INTERFACE)
+      .withHandler(async (input, ctx) => ({
+        value: input.value,
+        prefix: ctx.config.prefix,
+      }))
+      .build()
+
+    const result = await def.handler({ value: "hello" }, {
+      harnessId: def.id,
+      uses: "@ecp/demo.generate" as never,
+      config: { prefix: "ok" },
+      capabilityContext: {} as never,
+      environment: {} as never,
+      ecp: {} as never,
+      call: async () => undefined,
+    })
+
+    expect(result).toEqual({ value: "hello", prefix: "ok" })
+  })
+
   it("resolves harness refs from catalog", () => {
-    resetStandardHarnessesRegistrationForTests()
-    registerStandardHarnesses()
-    expect(resolveHarnessRef("@ecp/workflow-authoring")?.id).toBe("@ecp/workflow-authoring")
+    registerTestMinimalHarness()
+    expect(resolveHarnessRef(TEST_MINIMAL_HARNESS_ID)?.id).toBe(TEST_MINIMAL_HARNESS_ID)
     expect(resolveHarnessRef("@ecp/missing")).toBeUndefined()
   })
 
@@ -50,10 +79,9 @@ describe("defineHarness", () => {
     expect(resolveHarnessRef(inline)?.id).toBe("@ecp/inline")
   })
 
-  it("allows resetting standard harness registration for tests", () => {
-    resetStandardHarnessesRegistrationForTests()
-    registerStandardHarnesses()
-    registerStandardHarnesses()
-    expect(resolveHarnessRef("@ecp/workflow-authoring")).toBeDefined()
+  it("allows idempotent test minimal harness registration", () => {
+    registerTestMinimalHarness()
+    registerTestMinimalHarness()
+    expect(resolveHarnessRef(TEST_MINIMAL_HARNESS_ID)).toBeDefined()
   })
 })

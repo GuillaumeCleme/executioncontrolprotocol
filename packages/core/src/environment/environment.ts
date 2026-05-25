@@ -33,7 +33,6 @@ import { searchCapabilities } from "./search.js"
 import { validateEnvironmentWithWorkflow } from "../validate/environment.js"
 import { validateHarnessBindings } from "../validate/harness.js"
 import { registerCoreFormats } from "../formats/register-core-formats.js"
-import { registerStandardHarnesses } from "../harness/register-standard-harnesses.js"
 import type { HookDefinition } from "../definitions/types.js"
 import type { EncodingEnvironmentHost } from "./encoding-host.js"
 import { EcpImpl, type Ecp } from "./ecp.js"
@@ -205,7 +204,6 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
     if (this.discoveryPrepared) return
 
     await registerCoreFormats(this.registry)
-    registerStandardHarnesses()
     await this.ensureBoundExtensionsRegistered()
 
     await this.emitEnvironmentEvent("environment:created")

@@ -45,6 +45,20 @@ export function normalizePatchInput(
     }
   }
 
+  if (
+    input !== null &&
+    typeof input === "object" &&
+    "patches" in input &&
+    isPatchEntryArray((input as { patches: unknown }).patches)
+  ) {
+    return {
+      schema: "@ecp.patch",
+      version: LATEST_ECP_VERSION,
+      targetSchema,
+      patches: (input as { patches: EcpPatchEntry[] }).patches,
+    }
+  }
+
   const patches: EcpPatchEntry[] = Object.entries(input as Record<string, unknown>).map(
     ([path, value]) => ({
       path,

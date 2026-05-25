@@ -34,11 +34,79 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
-| Workflow operations | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/workflow-authoring` | `@ecp/format-toon` |
-| Intent routing | `createHarnessOllamaIntentEnvironment()` | `@ecp/intent-classification` | `@ecp/format-json` |
-| Combined (both) | `createHarnessOllamaEnvironment()` | both | TOON + JSON |
+| Workflow operations | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/evals-workflow-authoring` | `@ecp/format-json` (descriptor still TOON) |
+| Intent routing | `createHarnessOllamaIntentEnvironment()` | `@ecp/evals-intent-classification` | `@ecp/format-json` |
+| Combined (both) | `createHarnessOllamaEnvironment()` | both | JSON output + TOON descriptor |
+
+### Extension alignment
+
+Workflow and intent eval environments bind the **same operational extensions** so prompts and environment descriptors stay consistent:
+
+| Extension | Why |
+| --------- | --- |
+| `@ecp/ollama` | Model provider (`gemma3:1b`) |
+| `@ecp/format-toon` | Environment descriptor encoding for harness context |
+| `@ecp/test` | `@ecp/test.echo` appears in the descriptor and workflow eval prompts |
+
+`@ecp/format-json` (intent output) is a **core** formatter—registered via `registerCoreFormats()`, not a separate binding.
+
+Harness config lives in [`src/harness-eval-config.ts`](src/harness-eval-config.ts). Intent evals set `includeEnvironmentDescriptor: true` so the model sees available capabilities before classifying.
 
 Tests live under [`test/harness/*.eval.test.ts`](test/harness/).
+
+## Traceability when a model fails
+
+Harness results include a `trace` object when invoke succeeds. Eval tests enable full trace via `EVAL_HARNESS_TRACE` (`includePrompt`, `includeRawOutput`, `includeValidation`).
+
+| Failure stage | What you see |
+| ------------- | ------------ |
+| **Invoke failed** (`success: false`) | `assertHarnessInvokeSuccess` prints `formatInvokeFailure(result)` — diagnostics codes/messages. Decode errors from the harness include `rawModelOutput:` in the diagnostic text. |
+| **Wrong artifact** (invoke succeeded) | Use `expect(..., harnessTraceHint(harnessOutput))` or `expectHarnessIntent(result, intent)` — Vitest shows prompt, raw model text, validation errors, provider, and model. |
+| **Manual inspection** | `formatHarnessTrace(harnessOutput)` in [`test/harness/assert-harness-result.ts`](test/harness/assert-harness-result.ts) |
+
+Example on assertion mismatch:
+
+```ts
+import { expectHarnessIntent, harnessTraceHint } from "./assert-harness-result.js"
+
+const output = expectHarnessIntent(result, ECP_INTENT_VALUES.WORKFLOW_CREATE)
+// or
+expect(got.intent, harnessTraceHint(harnessOutput)).toBe(ECP_INTENT_VALUES.WORKFLOW_PATCH)
+```
+
+Typical failure stages for intent evals:
+
+1. **Model** — malformed JSON in `trace.rawOutput` (fences, truncated JSON, wrong keys). Repair retries strip fences and pass decode errors back to the model.
+2. **Decode** — `@ecp/format-json` rejects output; error message includes field paths (not bare `Required`) and `rawModelOutput`.
+3. **Validation** — decoded JSON missing `@ecp.intent` schema or invalid `intent` enum (`trace.validation`).
+
+### Repair loop (model learns from failures)
+
+Core collectors (`collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback`) produce `HarnessOperationFeedback` with paths and codes. Eval harnesses format that into repair prompts via `formatFeedbackForModel` in `packages/evals/src/harnesses/presentation.ts`.
+
+Harness config supports `repair` (enabled in eval via `EVAL_HARNESS_REPAIR`):
+
+| Setting | Eval default | Effect |
+| ------- | ------------ | ------ |
+| `enabled` | `true` | Retry after decode, patch, or validation failures |
+| `maxAttempts` | `2` | Up to 3 total model calls (initial + 2 repairs) |
+| `includeValidationErrors` | `true` | Next prompt includes `path: message [CODE]` details |
+
+On retry, the model sees lines like:
+
+```text
+Previous attempt failed. Fix these issues and return corrected output only:
+schema: Required [INVALID_TYPE]; patches: Required [INVALID_TYPE]
+Patch document must include: schema @ecp.patch, version, targetSchema @ecp.workflow, patches array...
+```
+
+Inspect the repair prompt in `trace.prompt` on the final successful or failed attempt.
+
+Run a single eval with verbose Vitest output:
+
+```sh
+npx vitest run --project eval packages/evals/test/harness/intent-classification.eval.test.ts --reporter=verbose
+```
 
 ## Creating a new eval case
 
@@ -70,20 +138,17 @@ import {
 } from "@ecp/evals"
 import { assertHarnessInvokeSuccess, harnessResult } from "./assert-harness-result.js"
 
-const EVAL_TIMEOUT_MS = 120_000
 const readiness = await ollamaEvalReady()
 
 describe.skipIf(!readiness.ready)(
   `my scenario (${readiness.profileId} ${readiness.model})`,
   () => {
-    it(
-      "does something assertable",
-      async () => {
+    it("does something assertable", async () => {
         const env = await createHarnessOllamaWorkflowEnvironment()
         const ecp = await env.init()
 
         const result = await ecp
-          .invoke(harnessCapabilityId("@ecp/workflow-authoring"))
+          .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
           .with({
             request: "Natural language request for the model.",
             model: OLLAMA_GEMMA_1B_EVAL.model,
@@ -94,14 +159,14 @@ describe.skipIf(!readiness.ready)(
         const out = harnessResult(result)
         expect(out.artifact.schema).toBe("@ecp.workflow")
         await ecp.terminate()
-      },
-      EVAL_TIMEOUT_MS
-    )
+    })
   }
 )
 ```
 
-Reuse [`assert-harness-result.ts`](test/harness/assert-harness-result.ts) for consistent failure messages (`diagnostics`, validation errors).
+Eval tests use a **120s** default timeout on the Vitest `eval` project (`testTimeout` in [`vitest.config.ts`](../../vitest.config.ts)).
+
+Reuse [`assert-harness-result.ts`](test/harness/assert-harness-result.ts) for `assertHarnessInvokeSuccess`, `harnessTraceHint`, and `expectHarnessIntent`.
 
 ### 4. Assert narrowly
 

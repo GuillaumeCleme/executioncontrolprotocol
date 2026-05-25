@@ -145,6 +145,7 @@ export default defineConfig({
         test: {
           name: "eval",
           include: ["packages/evals/test/**/*.test.ts"],
+          testTimeout: 120_000,
         },
       },
       {

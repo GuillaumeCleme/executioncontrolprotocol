@@ -1,4 +1,6 @@
+import { z } from "zod"
 import type { CapabilityId, NamespacedId } from "./schema.js"
+import type { HarnessRepairAttempt } from "./harness-feedback.js"
 import type { UsageSummary } from "./invoke.js"
 import type { ValidationResult } from "./validation.js"
 
@@ -57,7 +59,26 @@ export interface HarnessTrace {
   prompt?: string
   /** Raw model output when traced. */
   rawOutput?: string
+  /** Per-attempt structured feedback when repair tracing is enabled. */
+  repairAttempts?: HarnessRepairAttempt[]
 }
+
+/** Zod schema for standard harness evaluate handler return value. @category Harness */
+export const harnessEvaluateOutputSchema = z.object({
+  /** Parsed artifact after decode (and optional patch). */
+  artifact: z.unknown(),
+  /** Raw model text before decode. */
+  raw: z.string(),
+  /** Validation result when enabled. */
+  validation: z.unknown().optional(),
+  /** Execution trace. */
+  trace: z.custom<HarnessTrace>(
+    (value) => typeof value === "object" && value !== null && "harness" in value
+  ),
+})
+
+/** Inferred harness evaluate output from {@link harnessEvaluateOutputSchema}. @category Harness */
+export type HarnessEvaluateOutput = z.infer<typeof harnessEvaluateOutputSchema>
 
 /** Standard harness evaluate result envelope. @category Harness */
 export interface HarnessInvokeResult<TArtifact = unknown> {

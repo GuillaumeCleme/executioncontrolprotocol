@@ -1,4 +1,56 @@
-import type { HarnessInvokeResult, InvokeResult, WorkflowManifest } from "@ecp/types"
+import { expect } from "vitest"
+import type { EcpIntentValue, HarnessInvokeResult, InvokeResult } from "@ecp/types"
+
+const RAW_OUTPUT_PREVIEW_CHARS = 4000
+
+/**
+ * Format harness trace fields for eval failure messages.
+ * @category Evals
+ */
+export function formatHarnessTrace(harnessOutput: HarnessInvokeResult): string {
+  const { trace, validation, raw } = harnessOutput
+  const sections: string[] = [
+    `harness: ${trace.harness}`,
+    `provider: ${trace.provider}`,
+    `model: ${trace.model ?? "(default)"}`,
+    `outputFormat: ${trace.outputFormat ?? "?"}`,
+    `decodeSucceeded: ${String(trace.decodeSucceeded ?? "?")}`,
+    `validationSucceeded: ${String(trace.validationSucceeded ?? "?")}`,
+  ]
+
+  if (validation && !validation.valid) {
+    sections.push(`validationErrors: ${JSON.stringify(validation.errors, null, 2)}`)
+  }
+
+  if (trace.prompt) {
+    sections.push(`prompt:\n${trace.prompt}`)
+  }
+
+  const rawText = trace.rawOutput ?? raw
+  if (rawText) {
+    sections.push(`rawModelOutput:\n${rawText.slice(0, RAW_OUTPUT_PREVIEW_CHARS)}`)
+  }
+
+  return sections.join("\n\n")
+}
+
+/**
+ * Format invoke failure diagnostics (includes raw model text when harness throws on decode).
+ * @category Evals
+ */
+export function formatInvokeFailure(result: InvokeResult): string {
+  const lines = result.diagnostics.map(
+    (d) => `[${d.code ?? "error"}] ${d.message}${d.path ? ` (${d.path})` : ""}`
+  )
+  if (result.validation?.errors?.length) {
+    lines.push(`validation: ${JSON.stringify(result.validation.errors, null, 2)}`)
+  }
+  const harnessOutput = result.success ? undefined : (result.result as HarnessInvokeResult | undefined)
+  if (harnessOutput?.trace) {
+    lines.push("", "--- harness trace ---", formatHarnessTrace(harnessOutput))
+  }
+  return lines.join("\n")
+}
 
 /**
  * Fail with diagnostics when a harness invoke did not succeed.
@@ -9,11 +61,7 @@ export function assertHarnessInvokeSuccess(result: InvokeResult): asserts result
   result: HarnessInvokeResult
 } {
   if (result.success) return
-  const messages = result.diagnostics.map((d) => d.message).join("; ")
-  const validation = result.validation
-    ? ` validation=${JSON.stringify(result.validation.errors)}`
-    : ""
-  throw new Error(`Harness invoke failed: ${messages}${validation}`)
+  throw new Error(`Harness invoke failed:\n${formatInvokeFailure(result)}`)
 }
 
 /**
@@ -26,23 +74,22 @@ export function harnessResult<T>(result: InvokeResult): HarnessInvokeResult<T> {
 }
 
 /**
- * Load echo workflow fixture for patch evals.
+ * Vitest-friendly hint appended to `expect(..., hint)` when an artifact assertion fails.
  * @category Evals
  */
-export function loadEchoWorkflowFixture(): WorkflowManifest {
-  return {
-    schema: "@ecp.workflow",
-    version: "1.0",
-    workflow: { id: "echo-test", label: "Echo test" },
-    steps: [
-      {
-        type: "step",
-        id: "echo",
-        label: "Echo",
-        uses: "@ecp/test.echo",
-        input: { value: "hello from fluent API" },
-        as: "echo",
-      },
-    ],
-  }
+export function harnessTraceHint(harnessOutput: HarnessInvokeResult): string {
+  return `\n--- harness trace ---\n${formatHarnessTrace(harnessOutput)}`
+}
+
+/**
+ * Assert classified intent with full trace on mismatch.
+ * @category Evals
+ */
+export function expectHarnessIntent(
+  result: InvokeResult,
+  expected: EcpIntentValue
+): HarnessInvokeResult<{ schema: "@ecp.intent"; intent: EcpIntentValue }> {
+  const harnessOutput = harnessResult<{ schema: "@ecp.intent"; intent: EcpIntentValue }>(result)
+  expect(harnessOutput.artifact.intent, harnessTraceHint(harnessOutput)).toBe(expected)
+  return harnessOutput
 }

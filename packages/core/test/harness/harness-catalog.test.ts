@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, beforeEach } from "vitest"
 import {
   harnessEvaluateCapabilityId,
   harnessIdFromCapabilityId,
@@ -6,30 +6,38 @@ import {
   listCatalogedHarnessIds,
   normalizeHarnessId,
 } from "../../src/harness/harness-catalog.js"
-import { registerStandardHarnesses } from "../../src/harness/register-standard-harnesses.js"
+import {
+  registerTestMinimalHarness,
+  resetTestMinimalHarnessRegistrationForTests,
+  TEST_MINIMAL_HARNESS_ID,
+} from "../../src/harness/definitions/test-minimal-harness.js"
+import { resetHarnessCatalogForTests } from "../../src/harness/harness-catalog.js"
 
-describe("harness-catalog", () => {
+describe("harness catalog", () => {
+  beforeEach(() => {
+    resetHarnessCatalogForTests()
+    resetTestMinimalHarnessRegistrationForTests()
+  })
+
   it("normalizes harness ids", () => {
-    expect(normalizeHarnessId("@ecp/workflow-authoring")).toBe("@ecp/workflow-authoring")
-    expect(normalizeHarnessId("workflow-authoring")).toBe("@ecp/workflow-authoring")
+    expect(normalizeHarnessId(TEST_MINIMAL_HARNESS_ID)).toBe(TEST_MINIMAL_HARNESS_ID)
+    expect(normalizeHarnessId("test-minimal-harness")).toBe(TEST_MINIMAL_HARNESS_ID)
   })
 
-  it("parses and builds evaluate capability ids", () => {
-    expect(harnessEvaluateCapabilityId("@ecp/workflow-authoring")).toBe(
-      "@ecp/workflow-authoring.evaluate"
+  it("builds evaluate capability ids", () => {
+    expect(harnessEvaluateCapabilityId(TEST_MINIMAL_HARNESS_ID)).toBe(
+      "@ecp/test-minimal-harness.evaluate"
     )
-    expect(harnessIdFromCapabilityId("@ecp/workflow-authoring.evaluate")).toBe(
-      "@ecp/workflow-authoring"
+    expect(harnessIdFromCapabilityId("@ecp/test-minimal-harness.evaluate")).toBe(
+      TEST_MINIMAL_HARNESS_ID
     )
-    expect(isHarnessCapabilityId("@ecp/workflow-authoring.evaluate")).toBe(true)
+    expect(isHarnessCapabilityId("@ecp/test-minimal-harness.evaluate")).toBe(true)
     expect(isHarnessCapabilityId("@ecp/demo.generate")).toBe(false)
-    expect(harnessIdFromCapabilityId("@ecp/demo.generate")).toBeUndefined()
   })
 
-  it("lists standard harness ids after registration", () => {
-    registerStandardHarnesses()
+  it("lists cataloged harness ids after registration", () => {
+    registerTestMinimalHarness()
     const ids = listCatalogedHarnessIds()
-    expect(ids).toContain("@ecp/workflow-authoring")
-    expect(ids).toContain("@ecp/intent-classification")
+    expect(ids).toContain(TEST_MINIMAL_HARNESS_ID)
   })
 })

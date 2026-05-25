@@ -1,15 +1,26 @@
 import {
   environment,
-  extension,
   harness,
   runtime,
   registerCoreFormats,
-  registerStandardHarnesses,
   registerTestExtension,
 } from "@ecp/core"
+import { registerEvalHarnesses } from "../harnesses/register.js"
+import {
+  EVALS_INTENT_CLASSIFICATION_ID,
+  EVALS_WORKFLOW_AUTHORING_ID,
+} from "../harnesses/harness-ids.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerOllamaExtension } from "@ecp/extension-ollama"
 import { registerFormatToonExtension } from "@ecp/format-toon"
+import {
+  INTENT_EVAL_HARNESS_CONFIG,
+  WORKFLOW_EVAL_HARNESS_CONFIG,
+} from "../harness-eval-config.js"
+import {
+  evalOperationsExtensionBindings,
+  ollamaEvalExtensionBinding,
+} from "./shared-eval-extensions.js"
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
 
 /**
@@ -18,10 +29,10 @@ import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
  * @category Evals
  */
 export async function createHarnessOllamaEnvironment() {
-  const { baseURL, model, providerId } = OLLAMA_GEMMA_1B_EVAL
+  const { providerId } = OLLAMA_GEMMA_1B_EVAL
 
   await registerCoreFormats()
-  registerStandardHarnesses()
+  registerEvalHarnesses()
   await registerNodeRuntime()
   await registerOllamaExtension()
   await registerFormatToonExtension()
@@ -29,23 +40,14 @@ export async function createHarnessOllamaEnvironment() {
 
   return environment("harness-ollama-eval", "Harness Ollama Eval")
     .withRuntime(runtime(NODE_RUNTIME_ID))
-    .withExtensions([
-      extension(providerId).with({ baseURL, defaultModel: model }),
-      extension("@ecp/format-toon").with({}),
-      extension("@ecp/test").with({}),
-    ])
+    .withExtensions([ollamaEvalExtensionBinding(), ...evalOperationsExtensionBindings()])
     .withHarnesses([
-      harness("@ecp/workflow-authoring")
+      harness(EVALS_WORKFLOW_AUTHORING_ID)
         .uses(`${providerId}.generate`)
-        .with({
-          output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
-          context: { includeEnvironmentDescriptor: true, descriptorFormat: "@ecp/format-toon" },
-        }),
-      harness("@ecp/intent-classification")
+        .with({ ...WORKFLOW_EVAL_HARNESS_CONFIG }),
+      harness(EVALS_INTENT_CLASSIFICATION_ID)
         .uses(`${providerId}.generate`)
-        .with({
-          output: { schema: "@ecp.intent", format: "@ecp/format-json", validate: true },
-        }),
+        .with({ ...INTENT_EVAL_HARNESS_CONFIG }),
     ])
 }
 

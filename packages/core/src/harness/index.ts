@@ -7,10 +7,30 @@ export {
   harnessIdFromCapabilityId,
   isHarnessCapabilityId,
 } from "./harness-catalog.js"
-export type { HarnessDefinition, HarnessHandler } from "./types.js"
+export type {
+  ErasedHarnessHandler,
+  HarnessConfigOf,
+  HarnessDefinition,
+  HarnessHandler,
+  HarnessInputOf,
+  HarnessOutputOf,
+} from "./types.js"
 export type { HarnessCapabilityContext } from "./context.js"
-export { registerStandardHarnesses } from "./register-standard-harnesses.js"
-export { workflowAuthoringHarness } from "./definitions/workflow-authoring.js"
-export { intentClassificationHarness } from "./definitions/intent-classification.js"
 export { callModelGenerate } from "./call-model.js"
-export { isCoreFormatterId, CORE_FORMATTER_IDS } from "./format-resolve.js"
+export {
+  isCoreFormatterId,
+  CORE_FORMATTER_IDS,
+  inferResponseFormatFromFormatter,
+} from "./format-resolve.js"
+export {
+  runModelRepairLoop,
+  type ModelRepairGenerateContext,
+  type ModelRepairEvaluateResult,
+  type RunModelRepairLoopOptions,
+  type ModelRepairLoopResult,
+} from "./run-model-repair-loop.js"
+export {
+  registerTestMinimalHarness,
+  testMinimalHarness,
+  TEST_MINIMAL_HARNESS_ID,
+} from "./definitions/test-minimal-harness.js"

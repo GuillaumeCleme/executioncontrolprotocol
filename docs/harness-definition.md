@@ -1,14 +1,83 @@
 # Harness definitions (design + implementation)
 
-Implemented in `@ecp/core`:
+Implemented in `@ecp/core` (framework only):
 
-- Harness evaluate capability: `@ecp/workflow-authoring.evaluate`, `@ecp/intent-classification.evaluate`
+- Harness framework: `defineHarness`, `catalogHarness`, `executeHarnessInvoke`, `runModelRepairLoop`
+- Operation feedback: `collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback` (`HarnessOperationFeedback` in `@ecp/types`)
 - Provider capability: `@ecp/<provider>.generate` (`@ecp/model.generate` contract)
 - Core formatters: `@ecp/format-json`, `@ecp/format-fluent` (cataloged from core, not workspace extension packages)
 - Environment: `harness(id).uses(provider.generate).with(config)` via `withHarnesses([...])`
 - Invoke: `ecp.invoke(harnessId.evaluate).uses(override?).with(input)`
 
+Product harnesses (prompts, eval-specific normalization) live outside core:
+
+| Harness id | Package | Role |
+| ---------- | ------- | ---- |
+| `@ecp/evals-workflow-authoring` | `@ecp/evals` | Ollama workflow create/patch evals |
+| `@ecp/evals-intent-classification` | `@ecp/evals` | Ollama intent routing evals |
+| `@ecp/browser-workflow-authoring` | `@ecp/browser` | Browser demo (TOON + demo provider) |
+| `@ecp/browser-intent-classification` | `@ecp/browser` | Browser demo intent routing |
+
 See [harness-eval.md](harness-eval.md) for local Ollama evaluation.
+
+## Harness operation feedback (core contract)
+
+Core runtime operations return structured envelopes (`DecodeResult`, `PatchResult`, `ValidationResult`). Harnesses must not rely on bare Zod messages like `Required` without paths.
+
+Use collectors in `@ecp/core` to build `HarnessOperationFeedback`:
+
+| Collector | Source | `stage` |
+| --------- | ------ | ------- |
+| `collectDecodeFeedback` | `ecp.decode().process()` | `decode` |
+| `collectPatchFeedback` | `ecp.patch().process()` | `patch-apply` |
+| `collectValidationFeedback` | `ecp.validate()` | `validate` |
+
+Each feedback record includes `issues: ValidationIssue[]` (path, code, message, optional `suggestions`), optional `targetSchema`, and for patch apply, `applied` entries.
+
+**Harness responsibility:** turn `HarnessOperationFeedback[]` into model instructions (system prompt, repair lines, examples). Core does not format repair prompts.
+
+**Optional loop:** `runModelRepairLoop({ maxAttempts, generate, evaluate })` orchestrates retries; harness supplies `generate` and `evaluate` callbacks. Trace may include `repairAttempts` when enabled in harness config.
+
+---
+
+## Typed handlers (Zod-inferred generics)
+
+`defineHarness` propagates TypeScript types from Zod schemas into `withHandler`:
+
+| Builder method | Inferred type |
+| -------------- | ------------- |
+| `withConfig(schema)` | `ctx.config` is `z.infer<typeof schema>` |
+| `withInput(schema)` | handler `input` is `z.infer<typeof schema>` |
+| `withOutput(schema)` | handler return type is `z.infer<typeof schema>` |
+
+```ts
+import { defineHarness } from "@ecp/core"
+import type { HarnessConfigOf, HarnessInputOf } from "@ecp/core"
+import { z } from "zod"
+
+const harnessConfigSchema = z.object({ system: z.string() })
+const harnessInputSchema = z.object({ message: z.string(), model: z.string().optional() })
+
+export type MyHarnessInput = HarnessInputOf<typeof harnessInputSchema>
+export type MyHarnessConfig = HarnessConfigOf<typeof harnessConfigSchema>
+
+import { harnessEvaluateOutputSchema } from "@ecp/types"
+
+export const myHarness = defineHarness("@acme", "assistant")
+  .withConfig(harnessConfigSchema)
+  .withInput(harnessInputSchema)
+  .withOutput(harnessEvaluateOutputSchema)
+  .usesProviderInterface(ECP_MODEL_GENERATE_INTERFACE)
+  .withHandler(async (input, ctx) => {
+    // input.message and ctx.config.system are typed; no manual .parse() required
+    ...
+  })
+  .build()
+```
+
+**Runtime validation:** `executeHarnessInvoke` still `safeParse`s invoke input against `inputSchema` before calling the handler. `createHarnessCapabilityContext` parses environment binding config with `configSchema` when the harness defines one.
+
+**Catalog boundary:** `HarnessDefinition` in the catalog stores an erased handler (`unknown` input/output). `ecp.invoke(...).with(payload)` remains `unknown` at the call site unless you export `HarnessInputOf<typeof harnessInputSchema>` for tests or add a typed invoke helper.
 
 ---
 

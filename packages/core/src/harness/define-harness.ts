@@ -2,20 +2,24 @@ import type { HarnessId, NamespacedId } from "@ecp/types"
 import { ECP_MODEL_GENERATE_INTERFACE } from "@ecp/types"
 import type { z } from "zod"
 import { getCatalogedHarness } from "./harness-catalog.js"
-import type { HarnessDefinition, HarnessHandler } from "./types.js"
+import type { ErasedHarnessHandler, HarnessDefinition, HarnessHandler } from "./types.js"
 
 function toHarnessId(namespace: string, name: string): HarnessId {
   const ns = namespace.startsWith("@") ? namespace : `@${namespace}`
   return `${ns}/${name}` as HarnessId
 }
 
-/** Fluent harness definition builder. @category Harness */
-export class HarnessDefinitionBuilder {
-  private configSchema?: z.ZodType<unknown>
-  private inputSchema?: z.ZodType<unknown>
-  private outputSchema?: z.ZodType<unknown>
+/** Fluent harness definition builder with Zod-inferred handler types. @category Harness */
+export class HarnessDefinitionBuilder<
+  TConfig extends Record<string, unknown> = Record<string, unknown>,
+  TInput = unknown,
+  TOutput = unknown,
+> {
+  private configSchema?: z.ZodType
+  private inputSchema?: z.ZodType
+  private outputSchema?: z.ZodType
   private providerInterface: typeof ECP_MODEL_GENERATE_INTERFACE = ECP_MODEL_GENERATE_INTERFACE
-  private handler?: HarnessHandler
+  private handler?: HarnessHandler<TInput, TOutput, TConfig>
 
   constructor(
     private readonly namespace: string,
@@ -23,21 +27,34 @@ export class HarnessDefinitionBuilder {
   ) {}
 
   /** Environment binding config schema. */
-  withConfig(schema: z.ZodType<unknown>): this {
-    this.configSchema = schema
-    return this
+  withConfig<S extends z.ZodType>(
+    schema: S
+  ): HarnessDefinitionBuilder<z.infer<S> & Record<string, unknown>, TInput, TOutput> {
+    const next = this as HarnessDefinitionBuilder<
+      z.infer<S> & Record<string, unknown>,
+      TInput,
+      TOutput
+    >
+    next.configSchema = schema
+    return next
   }
 
   /** Invoke input schema. */
-  withInput(schema: z.ZodType<unknown>): this {
-    this.inputSchema = schema
-    return this
+  withInput<S extends z.ZodType>(
+    schema: S
+  ): HarnessDefinitionBuilder<TConfig, z.infer<S>, TOutput> {
+    const next = this as HarnessDefinitionBuilder<TConfig, z.infer<S>, TOutput>
+    next.inputSchema = schema
+    return next
   }
 
   /** Invoke output schema. */
-  withOutput(schema: z.ZodType<unknown>): this {
-    this.outputSchema = schema
-    return this
+  withOutput<S extends z.ZodType>(
+    schema: S
+  ): HarnessDefinitionBuilder<TConfig, TInput, z.infer<S>> {
+    const next = this as HarnessDefinitionBuilder<TConfig, TInput, z.infer<S>>
+    next.outputSchema = schema
+    return next
   }
 
   /** Required provider interface tag. */
@@ -46,8 +63,8 @@ export class HarnessDefinitionBuilder {
     return this
   }
 
-  /** Harness evaluate handler. */
-  withHandler(handler: HarnessHandler): this {
+  /** Harness evaluate handler (input and config types inferred from Zod schemas). */
+  withHandler(handler: HarnessHandler<TInput, TOutput, TConfig>): this {
     this.handler = handler
     return this
   }
@@ -58,6 +75,7 @@ export class HarnessDefinitionBuilder {
       throw new Error(`Harness ${toHarnessId(this.namespace, this.name)} requires .withHandler()`)
     }
     const id = toHarnessId(this.namespace, this.name)
+    const erasedHandler = this.handler as ErasedHarnessHandler
     return {
       id,
       namespace: this.namespace,
@@ -66,7 +84,7 @@ export class HarnessDefinitionBuilder {
       inputSchema: this.inputSchema,
       outputSchema: this.outputSchema,
       providerInterface: this.providerInterface,
-      handler: this.handler,
+      handler: erasedHandler,
     }
   }
 }

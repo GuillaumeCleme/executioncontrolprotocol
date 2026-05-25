@@ -22,6 +22,8 @@ export { harness } from "./bindings/harness.js"
 export { policy } from "./bindings/policy.js"
 export { registerCoreFormats } from "./formats/register-core-formats.js"
 export * from "./harness/index.js"
+export * from "./feedback/index.js"
+export { stripMarkdownCodeFences } from "./encoding/strip-markdown-fences.js"
 export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 

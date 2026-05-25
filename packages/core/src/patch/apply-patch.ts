@@ -21,6 +21,30 @@ function emptyDiagnostics(): ValidationIssue[] {
   return []
 }
 
+function resolvePatchValue(
+  currentValue: unknown,
+  patchValue: unknown,
+  mode: "merge" | "replace"
+): unknown {
+  if (mode === "replace") return patchValue
+  if (
+    patchValue === null ||
+    typeof patchValue !== "object" ||
+    Array.isArray(patchValue)
+  ) {
+    return patchValue
+  }
+  if (
+    currentValue === null ||
+    currentValue === undefined ||
+    typeof currentValue !== "object" ||
+    Array.isArray(currentValue)
+  ) {
+    return patchValue
+  }
+  return merge(cloneDeep(currentValue), patchValue as object)
+}
+
 /**
  * Apply a patch to a workflow manifest (canonical JSON only).
  * @category Patch
@@ -96,10 +120,7 @@ export function applyPatch<T extends WorkflowManifest>(
 
     const mode = entry.mode ?? "merge"
     const currentValue = get(nextDocument, resolved.lodashPath)
-    const nextValue =
-      mode === "replace"
-        ? entry.value
-        : merge(cloneDeep(currentValue ?? {}), entry.value as object)
+    const nextValue = resolvePatchValue(currentValue, entry.value, mode)
 
     try {
       set(nextDocument, resolved.lodashPath, nextValue)
