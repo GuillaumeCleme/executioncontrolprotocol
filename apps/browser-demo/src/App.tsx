@@ -6,10 +6,15 @@ import {
   installBrowserWorkflowShim,
   type BrowserOperationalEcp,
 } from "@ecp/browser"
-import type { EcpIntent, HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import type {
+  EcpIntent,
+  EnvironmentDescriptor,
+  HarnessInvokeResult,
+  ValidationResult,
+  WorkflowManifest,
+} from "@ecp/types"
 import { ECP_INTENT_VALUES } from "@ecp/types"
 import type { Ecp } from "@ecp/core"
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@ecp/types"
 import { compileWorkflowSource } from "@ecp/core/browser"
 import { ChatPanel } from "./components/ChatPanel.js"
 import { ChromeInstallDialog } from "./components/ChromeInstallDialog.js"

@@ -14,6 +14,7 @@
     "packages/mcp",
     "packages/cli",
     "packages/policies",
+    "packages/evals",
     "packages/extensions/*",
     "packages/runtimes/*",
     "apps/*"
@@ -30,7 +31,9 @@
     "test:unit": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "test:e2e": "vitest run --project e2e",
-    "eval:harness": "vitest run --project unit packages/core/test/harness",
+    "test:eval": "vitest run --project eval",
+    "eval:harness": "npm run test:eval",
+    "eval": "npm run eval:harness",
     "test:browser:install": "playwright install chromium --with-deps",
     "test:browser": "vitest run --project browser",
     "test:browser:watch": "vitest --project browser",

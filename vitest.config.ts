@@ -75,6 +75,11 @@ export default defineConfig({
       "@ecp/demo": path.resolve(repoRoot, "packages/extensions/demo/src/index.ts"),
       "@ecp/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
       "@ecp/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
+      "@ecp/extension-ollama": path.resolve(
+        repoRoot,
+        "packages/extensions/ollama/src/index.ts"
+      ),
+      "@ecp/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
     },
   },
   test: {
@@ -83,6 +88,10 @@ export default defineConfig({
       provider: "v8",
       include: ["packages/*/src/**/*.ts", "packages/extensions/*/src/**/*.ts"],
       exclude: ["**/*.test.ts", "**/index.ts"],
+      thresholds: {
+        "packages/core/src/harness/**": { lines: 90, statements: 90 },
+        "packages/core/src/validate/harness.ts": { lines: 90, statements: 90 },
+      },
     },
     projects: [
       {
@@ -129,6 +138,13 @@ export default defineConfig({
         test: {
           name: "integration",
           include: ["packages/mcp/test/integration/**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "eval",
+          include: ["packages/evals/test/**/*.test.ts"],
         },
       },
       {

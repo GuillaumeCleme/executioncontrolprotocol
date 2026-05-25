@@ -12,6 +12,7 @@
 | `packages/mcp/` | MCP adapter (`@ecp/mcp`) |
 | `packages/cli/` | `ecp` CLI (`@ecp/cli`) |
 | `packages/policies/` | Budget, approval, state-control (`@ecp/policies`) |
+| `packages/evals/` | Harness/provider eval tests (`@ecp/evals`, private); pinned `gemma3:1b` @ `localhost:11434` — see [packages/evals/README.md](packages/evals/README.md) |
 | `packages/extensions/*/` | First-party extensions |
 | `archive/legacy-v0.5/` | Archived v0.5 Oclif CLI and snippets |
 | `ecp-overhaul.md` | Implementation spec (source of truth) |
@@ -51,7 +52,11 @@ npm run build
 npm run generate:schema   # writes packages/types/dist/schemas/*.json
 npm run check    # build + generate:schema + lint + typecheck:browser-demo + test:unit + test:integration + test:e2e
 npm run test:unit
+npm run test:eval      # harness evals (Ollama gemma3:1b; skips when unavailable)
+npm run eval:harness   # alias for test:eval
 ```
+
+Harness eval profile is baked in `packages/evals/src/profiles/ollama-gemma.ts` (not `OLLAMA_MODEL` env).
 
 ### CLI
 

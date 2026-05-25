@@ -20,6 +20,7 @@
     { "path": "packages/extensions/claude" },
     { "path": "packages/extensions/index" },
     { "path": "packages/runtimes/temporal" },
-    { "path": "packages/cli" }
+    { "path": "packages/cli" },
+    { "path": "packages/evals" }
   ]
 }

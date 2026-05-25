@@ -17,15 +17,33 @@ const GenerateTextOutput = z.object({
   text: z.string(),
 })
 
+function demoIntentResponse(prompt: string): string {
+  const lower = prompt.toLowerCase()
+  let intent = "general"
+  if (/create.*workflow|new workflow|sends.*email|build a workflow/.test(lower)) {
+    intent = "workflow-create"
+  } else if (/update|patch|change.*step|modify.*workflow/.test(lower)) {
+    intent = "workflow-patch"
+  } else if (/what is|how does|faq|explain/.test(lower)) {
+    intent = "faq"
+  }
+  return JSON.stringify({ schema: "@ecp.intent", intent })
+}
+
 function demoGenerateHandler(input: { prompt?: string }) {
   const prompt = input.prompt ?? ""
+  if (prompt.includes("User message:")) {
+    return { text: demoIntentResponse(prompt) }
+  }
   if (prompt.includes("@ecp.patch") || prompt.includes("schema @ecp.patch")) {
     return {
       text: [
-        'schema: "@ecp.patch"',
+        "schema: @ecp.patch",
         `version: "${LATEST_ECP_VERSION}"`,
-        "entries[1]{path,value}:",
-        '  steps[echo].input,"{value:\\"patched\\"}"',
+        "targetSchema: @ecp.workflow",
+        "patches[1]:",
+        '  - path: "steps[echo].input"',
+        "    value.value: patched",
       ].join("\n"),
     }
   }

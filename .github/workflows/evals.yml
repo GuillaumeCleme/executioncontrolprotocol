@@ -93,6 +93,9 @@ jobs:
             \
             --debug
 
+      - name: Run harness evals
+        run: npm run eval:harness
+
       - name: Stop Ollama
         if: always()
         run: docker rm -f ollama || true
