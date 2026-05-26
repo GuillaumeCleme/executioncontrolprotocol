@@ -72,6 +72,7 @@ export default defineConfig({
       "@ecp/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
       "@ecp/format-toon": path.resolve(repoRoot, "packages/extensions/format-toon/src/index.ts"),
       "@ecp/format-mermaid": path.resolve(repoRoot, "packages/extensions/format-mermaid/src/index.ts"),
+      "@ecp/format-eql": path.resolve(repoRoot, "packages/extensions/format-eql/src/index.ts"),
       "@ecp/demo": path.resolve(repoRoot, "packages/extensions/demo/src/index.ts"),
       "@ecp/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
       "@ecp/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
@@ -136,6 +137,7 @@ export default defineConfig({
       thresholds: {
         "packages/core/src/harness/**": { lines: 90, statements: 90 },
         "packages/core/src/validate/harness.ts": { lines: 90, statements: 90 },
+        "packages/extensions/format-eql/src/**": { lines: 90, statements: 90 },
       },
     },
     projects: [

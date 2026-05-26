@@ -14,6 +14,7 @@ export const ECP_FORMATS = {
   JSON: "json",
   TOON: "toon",
   FLUENT: "fluent",
+  EQL: "eql",
 } as const
 
 /** Encoding error codes. @category Encoding */
@@ -87,20 +88,31 @@ export type EncodeResultDocument = EncodeResult<unknown>
 /** Concrete decode result for schema generation. @category Encoding */
 export type DecodeResultDocument = DecodeResult<unknown>
 
-/** Input to `{extensionId}.encode` capabilities. @category Encoding */
-export interface EcpEncodeInput {
-  source: unknown
+/** Minimum encode capability contract. Extensions intersect `TOptions`. @category Encoding */
+export interface EncodeCapabilityInput<
+  TValue = unknown,
+  TOptions extends Record<string, unknown> = EcpFormatOptions,
+> {
+  source: TValue
   sourceSchema?: EcpSchema
   sourceVersion?: EcpVersion
   format?: string
-  options?: EcpFormatOptions
+  options?: TOptions
 }
 
-/** Input to `{extensionId}.decode` capabilities. @category Encoding */
-export interface EcpDecodeInput {
+/** Minimum decode capability contract. @category Encoding */
+export interface DecodeCapabilityInput<
+  TOptions extends Record<string, unknown> = EcpDecodeOptions,
+> {
   input: unknown
   format?: string
   targetSchema?: EcpSchema
   targetVersion?: EcpVersion
-  options?: EcpDecodeOptions
+  options?: TOptions
 }
+
+/** Input to `{extensionId}.encode` capabilities. @category Encoding */
+export type EcpEncodeInput = EncodeCapabilityInput
+
+/** Input to `{extensionId}.decode` capabilities. @category Encoding */
+export type EcpDecodeInput = DecodeCapabilityInput

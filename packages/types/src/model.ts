@@ -1,4 +1,5 @@
 import { z } from "zod"
+import type { GenerateCapabilityInput, GenerateCapabilityOutput } from "./capabilities.js"
 
 /** Interface tag for harness-compatible model providers. @category Harness */
 export const ECP_MODEL_GENERATE_INTERFACE = "@ecp/model.generate" as const
@@ -32,7 +33,8 @@ export const modelGenerateInputSchema = z.object({
 })
 
 /** Normalized model generate input type. @category Harness */
-export type ModelGenerateInput = z.infer<typeof modelGenerateInputSchema>
+export type ModelGenerateInput = GenerateCapabilityInput &
+  z.infer<typeof modelGenerateInputSchema>
 
 /** Normalized model generate output. @category Harness */
 export const modelGenerateOutputSchema = z.object({
@@ -41,4 +43,5 @@ export const modelGenerateOutputSchema = z.object({
 })
 
 /** Normalized model generate output type. @category Harness */
-export type ModelGenerateOutput = z.infer<typeof modelGenerateOutputSchema>
+export type ModelGenerateOutput = GenerateCapabilityOutput &
+  z.infer<typeof modelGenerateOutputSchema>

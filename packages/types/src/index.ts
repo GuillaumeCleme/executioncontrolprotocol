@@ -67,6 +67,8 @@ export type {
   EcpEncodingErrorCode,
   EcpFormatOptions,
   EcpDecodeOptions,
+  EncodeCapabilityInput,
+  DecodeCapabilityInput,
   EncodeResult,
   EncodeResultDocument,
   DecodeResult,
@@ -74,6 +76,12 @@ export type {
   EcpEncodeInput,
   EcpDecodeInput,
 } from "./encoding.js"
+export type {
+  GenerateCapabilityInput,
+  GenerateCapabilityOutput,
+  EvaluateCapabilityInput,
+  EvaluateCapabilityOutput,
+} from "./capabilities.js"
 export { ECP_PATCH_ERROR_CODES } from "./patch-errors.js"
 export type { EcpPatchErrorCode } from "./patch-errors.js"
 export type {

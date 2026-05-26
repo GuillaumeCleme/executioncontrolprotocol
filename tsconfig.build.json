@@ -16,6 +16,7 @@
     { "path": "packages/extensions/storage" },
     { "path": "packages/extensions/telemetry" },
     { "path": "packages/extensions/format-toon" },
+    { "path": "packages/extensions/format-eql" },
     { "path": "packages/extensions/format-mermaid" },
     { "path": "packages/extensions/demo" },
     { "path": "packages/extensions/chrome-ai" },

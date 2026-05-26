@@ -1,6 +1,8 @@
+# ECP EQL format
+
 Agreed on all three changes. Here’s the revised implementation plan delta.
 
-# Updated decisions
+## Updated decisions
 
 ## 1. Patch language should use `WITH x = value`, not `SET WITH.x`
 
@@ -18,7 +20,7 @@ UPDATE STEP generate_brief
   AS brief MODE replace
 ```
 
-This is cleaner because `WITH` maps directly to `.with(...)`, `AS` maps to `.as(...)`, and `MODE` maps to `commitMode`. The existing workflow model already has `step(...).with(input).as(key?)`, and workflow state commits are represented through `.as()` / `commitAs`. 
+This is cleaner because `WITH` maps directly to `.with(...)`, `AS` maps to `.as(...)`, and `MODE` maps to `commitMode`. The existing workflow model already has `step(...).with(input).as(key?)`, and workflow state commits are represented through `.as()` / `commitAs`.
 
 ## 2. Remove `compact` from v1
 
@@ -200,7 +202,7 @@ export interface OpenAIGenerateInput
 
 That gives ECP a stable minimum contract while preserving extension flexibility.
 
-This fits the existing capability pattern where capabilities define input/output schemas and handlers through the definition builder. 
+This fits the existing capability pattern where capabilities define input/output schemas and handlers through the definition builder.
 
 ---
 
@@ -403,7 +405,7 @@ Acceptance:
 * Existing/future model providers can extend `GenerateCapabilityInput`.
 * Existing/future eval providers can extend `EvaluateCapabilityInput`.
 
-The current type package already centralizes core protocol types like schema names, workflow manifests, refs, state values, validation, lifecycle, and store types, so this is the right place to add the common built-in capability contracts. 
+The current type package already centralizes core protocol types like schema names, workflow manifests, refs, state values, validation, lifecycle, and store types, so this is the right place to add the common built-in capability contracts.
 
 ## Phase 2: `format-eql` package scaffold
 
@@ -511,7 +513,7 @@ MAX
 END
 ```
 
-Flow control should mirror the existing workflow node types: `parallel`, `branch`, and `loop`. 
+Flow control should mirror the existing workflow node types: `parallel`, `branch`, and `loop`.
 
 ## Phase 7: Harness/eval usage docs and tests
 
@@ -529,7 +531,7 @@ const decoded = await ecp.decode(generated.text)
   .with({ header: false });
 ```
 
-This keeps generation separate from decoding and lines up with the binding grammar where harnesses delegate to model capabilities, while encode/decode delegate to formatter capabilities. 
+This keeps generation separate from decoding and lines up with the binding grammar where harnesses delegate to model capabilities, while encode/decode delegate to formatter capabilities.
 
 ---
 
@@ -582,6 +584,130 @@ PATCH WORKFLOW weekly_brief
 MOVE STEP send_brief AFTER generate_brief
 ```
 
+## Supported patch operations
+
+```text
+PATCH WORKFLOW weekly_brief
+
+UPDATE STEP generate_brief
+  SET LABEL = "Generate Executive Brief"
+  SET WITH.prompt = "Create a tighter executive brief."
+  SET WITH.context = REF signals.results
+  SET AS = brief
+  SET MODE = replace
+
+ADD STEP send_email AFTER generate_brief USES @ecp/email.send
+  LABEL "Send Email"
+  WITH subject = "Weekly brief"
+  WITH body = REF brief.content
+
+DELETE STEP old_notify
+
+MOVE STEP send_email AFTER generate_brief
+```
+
+## Environment descriptor EQL
+
+This is optional but valuable for model prompting.
+
+Input:
+
+`EnvironmentDescriptor`
+
+EQL:
+
+```eql
+ECP @ecp.environment.describe 1.0
+
+CAPABILITY @ecp/memory.search
+  LABEL "Search Memory"
+  WITH query:string!
+  WITH since:string
+  OUT results:array
+
+CAPABILITY @ecp/openai.generate
+  LABEL "Generate Text"
+  WITH prompt:string!
+  WITH context:any
+  OUT content:string
+
+POLICY @ecp/budget
+  LABEL "Budget Guardrails"
+```
+
+## Prompt template for an EQL-based harness
+
+```text
+Return only a SQL-like language using the definition below. No markdown, no JSON, no formatting, no additional text.
+
+Use these verbs:
+WORKFLOW, STEP, USES, LABEL, WITH, REF, STATE, AS, MODE, WHEN, LOOP, UNTIL, MAX, END.
+
+Rules:
+- Use STEP <id> USES <capability>.
+- Use WITH <name> = <value> for inputs.
+- Use REF <path> to read committed workflow state.
+- Use STATE <path> only when a capability needs a mutable state handle.
+- Use AS <key> to commit step output.
+- Use MODE only with: create, replace, merge, append, version.
+- Do not invent capabilities.
+- Do not include schema headers.
+
+Available capabilities:
+<descriptor encoded as compact EQL>
+
+User request:
+<request>
+```
+
+# Full Example
+
+```eql
+WORKFLOW brand_image_refinement "Brand image refinement"
+
+STEP load_brand_standards USES @ecp/memory.search
+  LABEL "Load Brand Standards"
+  WITH query = "brand standards, visual identity, approved campaign examples"
+  AS brandStandards
+
+STEP initialize_inputs USES @ecp/creative.initializeInputs
+  LABEL "Initialize Creative Inputs"
+  WITH target = STATE creativeInputs
+  WITH value = {
+    generationPrompt: "Create a premium campaign hero image.",
+    generationControls: {
+      aspectRatio: "16:9",
+      style: "premium lifestyle photography"
+    }
+  }
+
+LOOP create_validate_fix UNTIL brandReview.approved == true MAX 3
+  STEP create_image USES @ecp/firefly.generateImage
+    LABEL "Create Image"
+    WITH prompt = REF creativeInputs.generationPrompt
+    WITH controls = REF creativeInputs.generationControls
+    WITH brandContext = REF brandStandards.results
+    AS image MODE replace
+
+  STEP validate_image USES @ecp/openai.evaluate
+    LABEL "Validate Image"
+    WITH artifact = REF image
+    WITH criteria = REF brandStandards.results
+    WITH goal = "Evaluate whether the image follows brand standards."
+    AS brandReview MODE replace
+
+  STEP fix_inputs USES @ecp/creative.fixInputs
+    LABEL "Fix Creative Inputs"
+    WHEN brandReview.approved == false
+    WITH target = STATE creativeInputs
+    WITH currentInputs = REF creativeInputs
+    WITH review = REF brandReview
+    WITH image = REF image
+    WITH brandStandards = REF brandStandards.results
+    AS fix MODE replace
+END
+```
+
 ---
 
 # Updated acceptance criteria
@@ -605,3 +731,7 @@ MOVE STEP send_brief AFTER generate_brief
 The updated design principle:
 
 > **EQL is Fluent-shaped text. It should use the same verbs users already see in the Fluent API and the same fields the runtime already understands.**
+
+## Implementation status
+
+`@ecp/format-eql` is implemented under `packages/extensions/format-eql/` (encode/decode, unit tests, README). v1 covers linear workflows, patch documents, `@ecp.environment` manifests, and `@ecp.environment.describe` descriptors; flow control (`PARALLEL`, `BRANCH`, `LOOP`) and `@ecp.environment.search` are deferred. Harness and eval wiring use a separate plan—call `registerFormatEqlExtension()` in the host environment before `ecp.encode` / `ecp.decode`.
