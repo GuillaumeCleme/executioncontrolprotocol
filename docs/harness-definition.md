@@ -20,6 +20,20 @@ Product harnesses (prompts, eval-specific normalization) live outside core:
 
 See [harness-eval.md](harness-eval.md) for local Ollama evaluation.
 
+## Prompt and schema fixtures (shared harness prompts)
+
+Product harness handlers load **harness prompts** from `@ecp/core` — not from eval case JSON.
+
+| Tier | Location | Contents |
+| ---- | -------- | -------- |
+| Schema examples | `packages/core/fixtures/schema-examples/` | Valid JSON literals per output schema (`@ecp.intent`, `@ecp.workflow`, …) |
+| Harness prompts | `packages/core/fixtures/harness-prompts/*.prompt.json` | Role, task, intent definitions, few-shots, repair hints |
+| Eval cases | `packages/evals/fixtures/cases/*.cases.json` | Inputs and assertions only (no system prompt text) |
+
+API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@ecp/core`.
+
+**Handler internals:** compact descriptor/workflow/run summaries for small models live in product packages (e.g. `packages/evals/src/harnesses/_internal/`) — not in the core harness framework or shared config schema.
+
 ## Harness operation feedback (core contract)
 
 Core runtime operations return structured envelopes (`DecodeResult`, `PatchResult`, `ValidationResult`). Harnesses must not rely on bare Zod messages like `Required` without paths.

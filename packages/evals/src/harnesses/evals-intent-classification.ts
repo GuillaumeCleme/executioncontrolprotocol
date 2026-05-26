@@ -1,10 +1,13 @@
 import {
+  buildRepairHint,
+  buildSystemPrompt,
   callModelGenerate,
   catalogHarness,
   collectDecodeFeedback,
   collectModelOutputFeedback,
   collectValidationFeedback,
   defineHarness,
+  HARNESS_PROMPT_FIXTURE_IDS,
   runModelRepairLoop,
   stripMarkdownCodeFences,
 } from "@ecp/core"
@@ -19,18 +22,23 @@ import {
   type ValidationResult,
 } from "@ecp/types"
 import { z } from "zod"
+import {
+  formatEnvironmentSummaryLines,
+  summarizeEnvironmentDescriptor,
+} from "./_internal/summarize-environment.js"
+import { encodeForPrompt } from "./_internal/encode-prompt-text.js"
 import { EVALS_INTENT_CLASSIFICATION_ID } from "./harness-ids.js"
 import { formatFeedbackForModel, isRepairFeedbackEcho } from "./presentation.js"
 
 const harnessConfigSchema = z.object({
-  system: z
+  promptFixture: z
     .string()
-    .default(
-      'Classify the user message. Reply with JSON only: {"schema":"@ecp.intent","intent":"faq"|"workflow-create"|"workflow-patch"|"general"}. No markdown.'
-    ),
+    .default(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION),
+  system: z.string().optional(),
   context: z
     .object({
       includeEnvironmentDescriptor: z.boolean().default(false),
+      includeEncodedDescriptor: z.boolean().default(true),
       descriptorFormat: z.string().default("@ecp/format-toon"),
     })
     .default({}),
@@ -76,28 +84,37 @@ export const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-int
     const config = ctx.config
     const format = config.output.format
     const descriptorFormat = config.context.descriptorFormat ?? format
+    const promptFixtureId = config.promptFixture
+    const system = config.system ?? buildSystemPrompt(promptFixtureId)
 
     let descriptorText = ""
+    let environmentSummaryLines = ""
     if (config.context.includeEnvironmentDescriptor) {
       const descriptor = await ctx.ecp.describe()
-      const encoded = await ctx.ecp
-        .encode(descriptor)
-        .uses(descriptorFormat)
-        .with({ headers: false, compact: true })
-        .process()
-      descriptorText = String(encoded.result ?? "")
+      const summary = summarizeEnvironmentDescriptor(descriptor)
+      environmentSummaryLines = formatEnvironmentSummaryLines(summary).join("\n")
+      if (config.context.includeEncodedDescriptor) {
+        descriptorText = await encodeForPrompt(ctx.ecp, summary, descriptorFormat)
+      }
     }
 
     const buildPrompt = (repairText?: string) => {
       const lines = [`User message: ${input.message}`]
-      if (descriptorText) {
-        lines.unshift("Environment capabilities (compact TOON):", descriptorText, "")
+      if (environmentSummaryLines) {
+        const envHeader = [
+          "Environment capabilities:",
+          environmentSummaryLines,
+          ...(descriptorText
+            ? ["", "Environment capabilities (encoded):", descriptorText, ""]
+            : [""]),
+        ]
+        lines.unshift(...envHeader)
       }
       if (repairText) {
         lines.push(
           "Previous attempt failed. Fix these issues and return corrected JSON only:",
           repairText,
-          'Required shape: {"schema":"@ecp.intent","intent":"faq"|"workflow-create"|"workflow-patch"|"general"}'
+          buildRepairHint(promptFixtureId)
         )
       }
       return lines.join("\n")
@@ -117,7 +134,7 @@ export const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-int
         lastPrompt = buildPrompt(repairText)
         const generated = await callModelGenerate(
           ctx.uses,
-          { prompt: lastPrompt, system: config.system, model: input.model, responseFormat: "json" },
+          { prompt: lastPrompt, system, model: input.model, responseFormat: "json" },
           ctx.capabilityContext,
           format
         )

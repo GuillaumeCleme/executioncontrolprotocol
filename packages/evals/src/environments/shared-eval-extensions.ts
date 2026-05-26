@@ -1,4 +1,5 @@
 import { extension } from "@ecp/core"
+import { MATRIX_EVAL_EXTENSION_IDS } from "../harness-eval-config.js"
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
 
 /**
@@ -16,4 +17,12 @@ export function ollamaEvalExtensionBinding() {
  */
 export function evalOperationsExtensionBindings() {
   return [extension("@ecp/format-toon").with({}), extension("@ecp/test").with({})]
+}
+
+/**
+ * Matrix eval extension bindings (formatters, test, demo stubs) in descriptor order.
+ * @category Evals
+ */
+export function matrixExtensionBindings() {
+  return MATRIX_EVAL_EXTENSION_IDS.map((id) => extension(id).with({}))
 }

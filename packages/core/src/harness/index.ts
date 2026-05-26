@@ -34,3 +34,16 @@ export {
   testMinimalHarness,
   TEST_MINIMAL_HARNESS_ID,
 } from "./definitions/test-minimal-harness.js"
+export {
+  harnessPromptFixtureSchema,
+  HARNESS_PROMPT_FIXTURE_IDS,
+  loadHarnessPromptFixture,
+  loadSchemaExample,
+  formatSchemaExampleJson,
+  buildSystemPrompt,
+  buildWorkflowCreateSystemPrompt,
+  buildWorkflowPatchSystemPrompt,
+  buildRepairHint,
+  type HarnessPromptFixture,
+  type HarnessPromptFixtureId,
+} from "./prompts/index.js"

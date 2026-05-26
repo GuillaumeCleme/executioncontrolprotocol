@@ -2,12 +2,15 @@
 
 Harnesses orchestrate model calls, format decode, and validation. Use them for repeatable provider comparisons (demo, Ollama, Chrome AI, cloud APIs).
 
+For a **full matrix catalog** (every case, assertion, judge goal, and fixture), see [harness-eval-matrix-report.md](./harness-eval-matrix-report.md).
+
 ## Standard harnesses
 
 | Harness | Capability | Purpose |
 | ------- | ---------- | ------- |
 | `@ecp/evals-workflow-authoring` | `@ecp/evals-workflow-authoring.evaluate` | Create/patch workflows via JSON (Ollama evals; descriptor still TOON) |
 | `@ecp/evals-intent-classification` | `@ecp/evals-intent-classification.evaluate` | Route chat (`faq`, `workflow-create`, `workflow-patch`, `general`) |
+| `@ecp/evals-workflow-assistant` | `@ecp/evals-workflow-assistant.evaluate` | Run-aware Q&A (`@ecp.harness.reply`) with optional `runContext` |
 
 ## `@ecp/evals` package
 
@@ -30,7 +33,13 @@ Source: [`packages/evals/src/profiles/ollama-gemma.ts`](../packages/evals/src/pr
 
 ```sh
 ollama pull gemma3:1b
-npm run eval:harness
+npm run eval:matrix
+```
+
+Smoke (legacy harness tests + fixture count, no full matrix):
+
+```sh
+npm run test:eval:smoke
 ```
 
 Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, failures are real assertion failures.
@@ -39,8 +48,9 @@ Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, fai
 
 | Eval set | Factory | Tests |
 | -------- | ------- | ----- |
-| **Workflow operations** | `createHarnessOllamaWorkflowEnvironment()` | [`workflow-authoring.eval.test.ts`](../packages/evals/test/harness/workflow-authoring.eval.test.ts) |
-| **Intent routing** | `createHarnessOllamaIntentEnvironment()` | [`intent-classification.eval.test.ts`](../packages/evals/test/harness/intent-classification.eval.test.ts) |
+| **Matrix (52+ Ollama cases)** | `createHarnessOllamaMatrixEnvironment()` | [`matrix-*.eval.test.ts`](../packages/evals/test/harness/) + JSON fixtures |
+| **Workflow operations (smoke)** | `createHarnessOllamaWorkflowEnvironment()` | [`workflow-authoring.eval.test.ts`](../packages/evals/test/harness/workflow-authoring.eval.test.ts) |
+| **Intent routing (smoke)** | `createHarnessOllamaIntentEnvironment()` | [`intent-classification.eval.test.ts`](../packages/evals/test/harness/intent-classification.eval.test.ts) |
 
 | Scenario | Harness | Encoding |
 | -------- | ------- | -------- |
@@ -53,21 +63,35 @@ Workflow environment: [`packages/evals/src/environments/harness-ollama-workflow.
 
 [`examples/harness-ollama/environment.ts`](../examples/harness-ollama/environment.ts) re-exports `createHarnessOllamaEnvironment()` (combined workflow + intent).
 
-Intent eval environments bind `@ecp/format-toon` and `@ecp/test` (same as workflow) and include the environment descriptor in the harness prompt. See [packages/evals/README.md](../packages/evals/README.md#traceability-when-a-model-fails).
+Intent eval environments bind `@ecp/format-toon` and `@ecp/test` (same as workflow) and include a **summarized** environment capability block in the user prompt (see `_internal/summarize-environment` in `@ecp/evals`). System prompts come from [`packages/core/fixtures/harness-prompts/`](../packages/core/fixtures/harness-prompts/) via `buildSystemPrompt()` — not from eval case JSON.
+
+## Flow eval failures (step 0)
+
+Multi-step `flow` cases in [`flow.cases.json`](../packages/evals/fixtures/cases/flow.cases.json) run harness invokes sequentially. Failures at **step 0** are almost always **intent-classification harness invoke** failures (decode/validation/repair), not `ecp.run()` execution and not failure to load `fixtures/runs/*.json` (run fixtures are used on later assistant steps only).
 
 ## Traceability
 
 When an eval fails, use harness `trace` and eval helpers:
 
-- **Invoke failed:** `assertHarnessInvokeSuccess` prints diagnostics; decode failures include `rawModelOutput` in the message.
+- **Invoke failed:** `invokeSuccess` assertions append `error`, `rawOutput`, and validation issues when present (`packages/evals/src/fixtures/assertions.ts`).
+- **Judge:** `@ecp/ollama.evaluate` failures fail the test (fail-closed; no pass on thrown errors).
 - **Wrong intent/artifact:** `expectHarnessIntent()` or `expect(..., harnessTraceHint(output))` — see [`assert-harness-result.ts`](../packages/evals/test/harness/assert-harness-result.ts).
 
-## Creating new eval cases
+## Fixture-driven matrix
 
-1. **Pick an eval set** — workflow vs intent (or add a new profile under `packages/evals/src/profiles/`).
-2. **Add a fixture** under `packages/evals/fixtures/` when patching or comparing baselines.
-3. **Add** `packages/evals/test/harness/<name>.eval.test.ts` using `describe.skipIf(!readiness.ready)` and `ollamaEvalReady()`.
-4. **Use the matching environment factory** and pass `model: OLLAMA_GEMMA_1B_EVAL.model` on harness invoke input when you want the profile model on each call.
+Add rows to [`packages/evals/fixtures/cases/*.cases.json`](../packages/evals/fixtures/cases/) (JSON arrays). Matrix tests call `loadEvalCases({ suite })` and `runEvalCase()`—no per-case Vitest files.
+
+- **Deterministic** assertions: `invokeSuccess`, `artifactSchema`, `intent`, `stepUses`, `validationValid`, etc.
+- **Judge** assertions: `judge.enabled` uses `@ecp/ollama.evaluate` with `goal` / `rubric`.
+
+See [packages/evals/README.md](../packages/evals/README.md#fixture-driven-matrix-json).
+
+## Creating new eval cases (smoke / manual)
+
+1. **Pick an eval set** — matrix JSON row vs legacy smoke test file.
+2. **Add a fixture** under `packages/evals/fixtures/workflows/` or `fixtures/runs/` when needed.
+3. For matrix cases, edit the appropriate `*.cases.json` file; for smoke, add `packages/evals/test/harness/<name>.eval.test.ts`.
+4. **Use the matching environment factory** — `createHarnessOllamaMatrixEnvironment()` for matrix rows.
 5. **Assert narrowly** — schema, validation, decode trace, and concrete artifact fields.
 6. **Keep fast tests in core** — `packages/core/test/harness/` with `@ecp/demo.generate` runs in every `npm run check`.
 

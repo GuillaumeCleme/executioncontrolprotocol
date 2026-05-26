@@ -59,6 +59,13 @@ function demoGenerateHandler(input: { prompt?: string }) {
   }
 }
 
+const DemoStubInput = z.object({ payload: z.unknown().optional() })
+const DemoStubOutput = z.object({ ok: z.boolean(), result: z.unknown().optional() })
+
+function demoStubHandler(input: { payload?: unknown }) {
+  return { ok: true, result: input.payload ?? "demo-stub" }
+}
+
 /** Demo model provider for offline browser demo. @category Extensions */
 export const demoExtension = defineExtension("@ecp", "demo")
   .withCapabilities([
@@ -70,6 +77,22 @@ export const demoExtension = defineExtension("@ecp", "demo")
       .withInput(GenerateTextInput)
       .withOutput(GenerateTextOutput)
       .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string })),
+    capabilityFor("@ecp/demo", "summarize")
+      .withInput(DemoStubInput)
+      .withOutput(DemoStubOutput)
+      .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
+    capabilityFor("@ecp/demo", "translate")
+      .withInput(DemoStubInput)
+      .withOutput(DemoStubOutput)
+      .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
+    capabilityFor("@ecp/demo", "notify")
+      .withInput(DemoStubInput)
+      .withOutput(DemoStubOutput)
+      .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
+    capabilityFor("@ecp/demo", "validate")
+      .withInput(DemoStubInput)
+      .withOutput(DemoStubOutput)
+      .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
   ])
   .build()
 

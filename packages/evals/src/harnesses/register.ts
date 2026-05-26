@@ -1,4 +1,5 @@
 import { registerEvalsIntentClassificationHarness } from "./evals-intent-classification.js"
+import { registerEvalsWorkflowAssistantHarness } from "./evals-workflow-assistant.js"
 import { registerEvalsWorkflowAuthoringHarness } from "./evals-workflow-authoring.js"
 
 let registered = false
@@ -11,6 +12,7 @@ export function registerEvalHarnesses(): void {
   if (registered) return
   registerEvalsWorkflowAuthoringHarness()
   registerEvalsIntentClassificationHarness()
+  registerEvalsWorkflowAssistantHarness()
   registered = true
 }
 

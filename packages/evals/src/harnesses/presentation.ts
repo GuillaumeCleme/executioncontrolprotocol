@@ -16,6 +16,23 @@ export function formatFeedbackForModel(feedback: HarnessOperationFeedback[]): st
 }
 
 /**
+ * Compact repair instructions for small models (avoids echoing long prose).
+ * @category Evals
+ */
+export function formatStructuredRepairForModel(
+  feedback: HarnessOperationFeedback[]
+): string | undefined {
+  const issues = feedback.flatMap((f) => f.issues)
+  if (issues.length === 0) return undefined
+  const bullets = issues.map((issue) => {
+    const code = issue.code ? ` (${issue.code})` : ""
+    const path = issue.path ? `${issue.path}: ` : ""
+    return `- ${path}${issue.message}${code}`
+  })
+  return ["Fix the document (JSON/TOON only — do not repeat these lines):", ...bullets].join("\n")
+}
+
+/**
  * True when model output looks like echoed validation/repair text, not a document.
  * @category Evals
  */
@@ -26,11 +43,20 @@ export function isRepairFeedbackEcho(
   const text = raw.trim()
   if (!text) return false
   if (formattedFeedback && text === formattedFeedback.trim()) return true
-  const echoPattern =
-    /(?:workflow|steps|targetSchema|patches|schema):\s*(?:Required|Invalid)/i
+  if (/^Fix the document/i.test(text) && !/^\{/.test(text) && !/^schema:/m.test(text)) {
+    return true
+  }
+  const feedbackProse =
+    /Workflow must include steps|Missing uses:|MODEL_OUTPUT_INVALID|Do not repeat error|Add \d+ more step/i
   const documentStart =
     /^(?:```|schema:\s*@ecp\.|"schema"\s*:|workflow:\s*@ecp\.|\{\s*"schema")/i
-  return echoPattern.test(text) && !documentStart.test(text.split("\n")[0] ?? "")
+  const firstLine = text.split("\n")[0] ?? ""
+  if (feedbackProse.test(text) && !documentStart.test(firstLine)) {
+    return true
+  }
+  const echoPattern =
+    /(?:workflow|steps|targetSchema|patches|schema):\s*(?:Required|Invalid)/i
+  return echoPattern.test(text) && !documentStart.test(firstLine)
 }
 
 /**

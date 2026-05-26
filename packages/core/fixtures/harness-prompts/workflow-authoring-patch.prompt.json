@@ -1,0 +1,182 @@
+{
+  "id": "workflow-authoring-patch",
+  "role": "You are an ECP JSON patch author. You produce @ecp.patch documents that update an existing workflow manifest shown in the summary.",
+  "task": "Return only a compact @ecp.patch JSON object. Read the current workflow summary: step ids and uses must exist before you patch them. Copy label text exactly from the user request (same capitalization). To change a label, patch steps[stepId].label with mode replace. To add a step, replace the steps array with the full new list including the added step. To remove a step, replace steps with the array that omits that step id.",
+  "outputSchema": "@ecp.patch",
+  "fewShots": [
+    {
+      "message": "Change the echo step label to Patched Echo",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps[echo].label",
+            "value": "Patched Echo",
+            "mode": "replace"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Rename echo label to Translated Output",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps[echo].label",
+            "value": "Translated Output",
+            "mode": "replace"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Remove the notify step from the workflow",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps",
+            "mode": "replace",
+            "value": [
+              {
+                "type": "step",
+                "id": "validate",
+                "label": "Validate",
+                "uses": "@ecp/demo.validate",
+                "input": { "payload": { "ok": true } },
+                "as": "validated"
+              },
+              {
+                "type": "step",
+                "id": "echo",
+                "label": "Echo",
+                "uses": "@ecp/test.echo",
+                "input": { "value": "after-validate" },
+                "as": "echo"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "message": "Insert a validate step before echo using @ecp/demo.validate",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps",
+            "mode": "replace",
+            "value": [
+              {
+                "type": "step",
+                "id": "validate",
+                "label": "Validate",
+                "uses": "@ecp/demo.validate",
+                "input": { "payload": { "ok": true } },
+                "as": "validated"
+              },
+              {
+                "type": "step",
+                "id": "echo",
+                "label": "Echo",
+                "uses": "@ecp/test.echo",
+                "input": { "value": "hello" },
+                "as": "echo"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "message": "Change summarize step label to Short Summary",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps[summarize].label",
+            "value": "Short Summary",
+            "mode": "replace"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Add summarize step after echo using @ecp/demo.summarize",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps",
+            "mode": "replace",
+            "value": [
+              {
+                "type": "step",
+                "id": "echo",
+                "label": "Echo",
+                "uses": "@ecp/test.echo",
+                "input": { "value": "hello" },
+                "as": "echo"
+              },
+              {
+                "type": "step",
+                "id": "summarize",
+                "label": "Summarize",
+                "uses": "@ecp/demo.summarize",
+                "input": { "text": { "$ref": "state.echo.output" } },
+                "as": "summary"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "message": "Add translate step and remove summarize from the workflow",
+      "output": {
+        "schema": "@ecp.patch",
+        "version": "1.0.0",
+        "targetSchema": "@ecp.workflow",
+        "patches": [
+          {
+            "path": "steps",
+            "mode": "replace",
+            "value": [
+              {
+                "type": "step",
+                "id": "echo",
+                "label": "Echo",
+                "uses": "@ecp/test.echo",
+                "input": { "value": "seed" },
+                "as": "echo"
+              },
+              {
+                "type": "step",
+                "id": "translate",
+                "label": "Translate",
+                "uses": "@ecp/demo.translate",
+                "input": { "text": { "$ref": "state.echo.output" } },
+                "as": "translate"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "repairHint":  "Return corrected @ecp.patch JSON only. Required keys: schema @ecp.patch, version, targetSchema @ecp.workflow, patches array where each element has path, mode, and value. Never add step objects outside the patches array. Paths must reference existing step ids from the workflow summary. Match requested label capitalization exactly."
+}

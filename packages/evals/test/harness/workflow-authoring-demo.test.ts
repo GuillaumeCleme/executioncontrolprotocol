@@ -11,6 +11,7 @@ import {
   EVALS_WORKFLOW_AUTHORING_CAPABILITY,
   registerEvalHarnesses,
 } from "@ecp/evals"
+import { assertHarnessInvokeSuccess } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
 
@@ -47,7 +48,7 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
       .with({ request: "Create an echo workflow" })
       .process()
 
-    expect(result.success).toBe(true)
+    assertHarnessInvokeSuccess(result)
     const artifact = (result.result as HarnessInvokeResult<WorkflowManifest>).artifact
     expect(artifact.workflow?.id).toBe("demo-generated")
     await ecp.terminate()
@@ -65,7 +66,7 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
       .with({ request: "Patch the echo step input value.", manifest })
       .process()
 
-    expect(result.success).toBe(true)
+    assertHarnessInvokeSuccess(result)
     const harnessOutput = result.result as HarnessInvokeResult<WorkflowManifest>
     expect(harnessOutput.artifact.schema).toBe("@ecp.workflow")
     const echoStep = harnessOutput.artifact.steps?.find((s) => s.id === "echo")

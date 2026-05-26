@@ -157,3 +157,9 @@ npm run test:browser           # Vitest browser project (Chromium); separate fro
 CI runs the `browser` job in `.github/workflows/ci-pipeline.yml` (not part of `npm run check`).
 
 Build order: `tsc -b tsconfig.build.json` (types → core → … → cli).
+
+### Harness eval integrity
+
+- Do not delete, skip, or weaken **valid** failing matrix/smoke eval tests to green CI.
+- Do not fail-open quality gates (`@ecp/ollama.evaluate` judge, schema validation) on errors.
+- Triage harness prompts vs model vs fixture before changing assertions. Harness prompts: `packages/core/fixtures/harness-prompts/`; eval inputs: `packages/evals/fixtures/cases/`.

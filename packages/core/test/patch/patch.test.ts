@@ -38,6 +38,42 @@ describe("applyPatch", () => {
     expect(stepAt.input?.prompt).toBe("Create a concise executive brief.")
   })
 
+  it("replaces the steps array when path is steps", () => {
+    const manifest = workflow("Echo")
+      .id("echo-test")
+      .run([step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .toManifest()
+
+    const patched = applyPatch(manifest, [
+      {
+        path: "steps",
+        mode: "replace",
+        value: [
+          {
+            type: "step",
+            id: "echo",
+            label: "Echo",
+            uses: "@ecp/test.echo",
+            input: { value: "hi" },
+            as: "echo",
+          },
+          {
+            type: "step",
+            id: "summarize",
+            label: "Summarize",
+            uses: "@ecp/demo.summarize",
+            input: { text: { $ref: "state.echo.output" } },
+            as: "summary",
+          },
+        ],
+      },
+    ])
+
+    expect(patched.success).toBe(true)
+    expect(patched.result!.steps).toHaveLength(2)
+    expect(patched.result!.steps[1]?.id).toBe("summarize")
+  })
+
   it("replaces scalar step fields without corrupting the step", () => {
     const manifest = workflow("Echo")
       .id("echo-test")

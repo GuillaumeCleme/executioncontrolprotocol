@@ -1,0 +1,280 @@
+{
+  "cases": [
+    {
+      "id": "asst-01",
+      "suite": "assistant",
+      "title": "Failed echo",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Why did step echo fail?",
+        "runContextFixture": "runs/failed-echo-step.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "echo"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Failed echo",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-02",
+      "suite": "assistant",
+      "title": "Failed status",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What is the run status?",
+        "runContextFixture": "runs/failed-echo-step.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "fail"
+          }
+        ],
+        "judge": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "asst-03",
+      "suite": "assistant",
+      "title": "Running",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Is my workflow still running?",
+        "runContextFixture": "runs/running-pending.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "start"
+          }
+        ],
+        "judge": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "asst-04",
+      "suite": "assistant",
+      "title": "Extensions",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What plugins and extensions can you use?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "ecp"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Extensions",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-05",
+      "suite": "assistant",
+      "title": "Steps",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What steps are in the workflow?",
+        "runContextFixture": "runs/failed-echo-step.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          }
+        ],
+        "judge": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "asst-06",
+      "suite": "assistant",
+      "title": "Fix suggest",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "How can I fix the echo error?",
+        "runContextFixture": "runs/failed-echo-step.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "citationStepId",
+            "value": "echo"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Fix suggest",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-07",
+      "suite": "assistant",
+      "title": "Output",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What did the echo step produce?",
+        "runContextFixture": "runs/completed-with-refs.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          }
+        ],
+        "judge": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "asst-08",
+      "suite": "assistant",
+      "title": "Tone judge",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Explain the failure politely.",
+        "runContextFixture": "runs/failed-echo-step.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Professional helpful tone",
+          "rubric": "Accurate and actionable",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-09",
+      "suite": "assistant",
+      "title": "Confirm patch",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Should we patch step echo input?",
+        "runContextFixture": "runs/failed-echo-step.json"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Confirm patch",
+          "rubric": "Answer discusses patching or updating the echo step input and references the failed run or step echo.",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-10",
+      "suite": "assistant",
+      "title": "Capabilities list",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "List supported step capabilities."
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "test.echo"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Capabilities list",
+          "requireApproved": true
+        }
+      }
+    }
+  ]
+}

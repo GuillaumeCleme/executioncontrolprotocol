@@ -34,8 +34,26 @@ export function normalizeWorkflowDocumentCandidate(document: unknown): unknown {
     normalized.workflow = workflowMeta
   }
   if (steps !== undefined) {
-    normalized.steps = steps
+    normalized.steps = Array.isArray(steps)
+      ? steps.map((step) => normalizeWorkflowStepCandidate(step))
+      : steps
   }
 
   return normalized
+}
+
+function normalizeWorkflowStepCandidate(step: unknown): unknown {
+  if (step === null || typeof step !== "object" || Array.isArray(step)) {
+    return step
+  }
+  const record = step as Record<string, unknown>
+  let next: Record<string, unknown> = record
+  if (record.input === undefined && record.inputs !== undefined) {
+    const { inputs, ...rest } = record
+    next = { ...rest, input: inputs }
+  }
+  if (next.uses !== undefined && next.type === undefined) {
+    return { type: "step", ...next }
+  }
+  return next
 }

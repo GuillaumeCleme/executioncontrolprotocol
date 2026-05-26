@@ -19,7 +19,13 @@ Defined in [`src/profiles/ollama-gemma.ts`](src/profiles/ollama-gemma.ts) as `OL
 
 ```sh
 ollama pull gemma3:1b
-npm run eval:harness
+npm run eval:matrix
+```
+
+Smoke subset (legacy + fixture count, no matrix Ollama cases):
+
+```sh
+npm run test:eval:smoke
 ```
 
 From the repo root. Tests **skip** when Ollama is down or the model is not pulled; when Ollama is up, failures are real regressions.
@@ -34,21 +40,25 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
-| Workflow operations | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/evals-workflow-authoring` | `@ecp/format-json` (descriptor still TOON) |
-| Intent routing | `createHarnessOllamaIntentEnvironment()` | `@ecp/evals-intent-classification` | `@ecp/format-json` |
+| **Matrix (52+ cases)** | `createHarnessOllamaMatrixEnvironment()` | workflow, intent, assistant | JSON output + TOON descriptor |
+| Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/evals-workflow-authoring` | `@ecp/format-json` (descriptor still TOON) |
+| Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/evals-intent-classification` | `@ecp/format-json` |
 | Combined (both) | `createHarnessOllamaEnvironment()` | both | JSON output + TOON descriptor |
+| Demo (not counted) | demo provider env | same harness ids | deterministic stubs only |
 
-### Extension alignment
+### Extension alignment (matrix)
 
-Workflow and intent eval environments bind the **same operational extensions** so prompts and environment descriptors stay consistent:
+Matrix evals bind **formatters, test, and demo stubs** only (no memory/storage/telemetry):
 
 | Extension | Why |
 | --------- | --- |
-| `@ecp/ollama` | Model provider (`gemma3:1b`) |
-| `@ecp/format-toon` | Environment descriptor encoding for harness context |
-| `@ecp/test` | `@ecp/test.echo` appears in the descriptor and workflow eval prompts |
+| `@ecp/ollama` | Model provider (`gemma3:1b`) and `@ecp/ollama.evaluate` judge |
+| `@ecp/format-toon` | Environment descriptor encoding |
+| `@ecp/format-json` | Harness output + run context encoding (core formatter, explicit binding) |
+| `@ecp/test` | `@ecp/test.echo` in workflow prompts |
+| `@ecp/demo` | Stub ops: `summarize`, `translate`, `notify`, `validate` (not the LLM provider) |
 
-`@ecp/format-json` (intent output) is a **core** formatter—registered via `registerCoreFormats()`, not a separate binding.
+Legacy smoke environments use `@ecp/format-toon` + `@ecp/test` only.
 
 Harness config lives in [`src/harness-eval-config.ts`](src/harness-eval-config.ts). Intent evals set `includeEnvironmentDescriptor: true` so the model sees available capabilities before classifying.
 
@@ -108,13 +118,42 @@ Run a single eval with verbose Vitest output:
 npx vitest run --project eval packages/evals/test/harness/intent-classification.eval.test.ts --reporter=verbose
 ```
 
-## Creating a new eval case
+## Fixture-driven matrix (JSON)
 
-### 1. Choose an eval set
+Cases live in [`fixtures/cases/*.cases.json`](fixtures/cases/) as `{ "cases": [ ... ] }` arrays. Vitest matrix tests load them with `loadEvalCases()` and `runEvalCase()`—no new `it()` per row.
 
-- **Workflow create/patch** → use `createHarnessOllamaWorkflowEnvironment()` and workflow fixtures under [`fixtures/`](fixtures/).
-- **Intent classification** → use `createHarnessOllamaIntentEnvironment()`.
-- **New provider or model** → add a profile in `src/profiles/` and a matching `src/environments/` factory (do not rely on env vars).
+| File | Suite | Count |
+| ---- | ----- | ----- |
+| `workflow-create.cases.json` | `workflow-create` | 12 |
+| `workflow-patch.cases.json` | `workflow-patch` | 12 |
+| `intent.cases.json` | `intent` | 12 |
+| `assistant.cases.json` | `assistant` | 10 |
+| `flow.cases.json` | `flow` | 6 |
+
+**Full case-by-case report:** [docs/harness-eval-matrix-report.md](../../docs/harness-eval-matrix-report.md).
+
+Supporting JSON: [`fixtures/workflows/`](fixtures/workflows/), [`fixtures/runs/`](fixtures/runs/).
+
+Assertions per row:
+
+- **Deterministic** — schema, validation, intent, step `uses`, patch outcomes, descriptor extension order.
+- **Judge** (optional) — `@ecp/ollama.evaluate` with `goal` / `rubric`; set `requireApproved: true` when the model must pass review. Judge errors fail closed (never treated as pass).
+
+Harness **system prompts** and intent few-shots live in [`packages/core/fixtures/harness-prompts/`](../core/fixtures/harness-prompts/) (loaded via `buildSystemPrompt` from `@ecp/core`). Eval case JSON holds inputs and assertions only.
+
+**Flow cases:** step 0 failures are intent harness invoke failures, not run/fixture load failures (see [harness-eval.md](../../docs/harness-eval.md)).
+
+Regenerate baseline case files from the generator script:
+
+```sh
+node packages/evals/scripts/generate-eval-cases.mjs
+```
+
+## Creating a new eval case (manual)
+
+### 1. Add a JSON row
+
+Edit the suite file under `fixtures/cases/` (see table above). Use `model: "default"` for the pinned Gemma profile.
 
 ### 2. Add a fixture (optional)
 

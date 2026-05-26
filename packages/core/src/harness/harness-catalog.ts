@@ -62,10 +62,13 @@ export function harnessEvaluateCapabilityId(harnessId: NamespacedId | string): H
 
 /**
  * Whether a capability id is a harness evaluate endpoint.
+ * Extension capabilities such as `@ecp/ollama.evaluate` also end with `.evaluate` but are not harnesses.
  * @category Harness
  */
 export function isHarnessCapabilityId(capabilityId: string): boolean {
-  return harnessIdFromCapabilityId(capabilityId) !== undefined
+  const harnessId = harnessIdFromCapabilityId(capabilityId)
+  if (!harnessId) return false
+  return getCatalogedHarness(harnessId) !== undefined
 }
 
 /** Clear harness catalog (unit tests). @internal */

@@ -1,0 +1,147 @@
+{
+  "id": "workflow-authoring-create",
+  "role": "You are an ECP JSON workflow author for small local models. You build valid @ecp.workflow documents from the user request and the environment capability summary.",
+  "task": "Create a workflow manifest as compact JSON only. Every step must use a real capability id from the summary (uses field). Use input (singular) on each step, never inputs. When the request names multiple capabilities (echo, summarize, notify, translate, validate), include one step per capability in order. Chain steps with input $ref to prior step outputs (e.g. {\"$ref\":\"state.echo.output\"}). Include workflow.id, workflow.label, and steps with id, uses, label, input, and as.",
+  "outputSchema": "@ecp.workflow",
+  "fewShots": [
+    {
+      "message": "Create echo then summarize passing echo output",
+      "output": {
+        "schema": "@ecp.workflow",
+        "version": "1.0.0",
+        "workflow": { "id": "echo-summarize", "label": "Echo then summarize" },
+        "steps": [
+          {
+            "type": "step",
+            "id": "echo",
+            "label": "Echo",
+            "uses": "@ecp/test.echo",
+            "input": { "value": "hello" },
+            "as": "echo"
+          },
+          {
+            "type": "step",
+            "id": "summarize",
+            "label": "Summarize",
+            "uses": "@ecp/demo.summarize",
+            "input": { "text": { "$ref": "state.echo.output" } },
+            "as": "summary"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Build workflow: first @ecp/demo.validate then @ecp/test.echo",
+      "output": {
+        "schema": "@ecp.workflow",
+        "version": "1.0.0",
+        "workflow": { "id": "validate-echo", "label": "Validate then echo" },
+        "steps": [
+          {
+            "type": "step",
+            "id": "validate",
+            "label": "Validate",
+            "uses": "@ecp/demo.validate",
+            "input": { "payload": { "ok": true } },
+            "as": "validated"
+          },
+          {
+            "type": "step",
+            "id": "echo",
+            "label": "Echo",
+            "uses": "@ecp/test.echo",
+            "input": { "value": "hello" },
+            "as": "echo"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Two-step workflow using @ecp/test.echo and @ecp/demo.translate",
+      "output": {
+        "schema": "@ecp.workflow",
+        "version": "1.0.0",
+        "workflow": { "id": "echo-translate", "label": "Echo and translate" },
+        "steps": [
+          {
+            "type": "step",
+            "id": "echo",
+            "label": "Echo",
+            "uses": "@ecp/test.echo",
+            "input": { "value": "hello" },
+            "as": "echo"
+          },
+          {
+            "type": "step",
+            "id": "translate",
+            "label": "Translate",
+            "uses": "@ecp/demo.translate",
+            "input": { "text": { "$ref": "state.echo.output" } },
+            "as": "translated"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Create workflow with @ecp/test.echo and final @ecp/demo.notify",
+      "output": {
+        "schema": "@ecp.workflow",
+        "version": "1.0.0",
+        "workflow": { "id": "echo-notify", "label": "Echo and notify" },
+        "steps": [
+          {
+            "type": "step",
+            "id": "echo",
+            "label": "Echo",
+            "uses": "@ecp/test.echo",
+            "input": { "value": "hello" },
+            "as": "echo"
+          },
+          {
+            "type": "step",
+            "id": "notify",
+            "label": "Notify",
+            "uses": "@ecp/demo.notify",
+            "input": { "payload": { "$ref": "state.echo.output" } },
+            "as": "notified"
+          }
+        ]
+      }
+    },
+    {
+      "message": "Create 3-step workflow validate echo summarize",
+      "output": {
+        "schema": "@ecp.workflow",
+        "version": "1.0.0",
+        "workflow": { "id": "validate-echo-summarize", "label": "Validate echo summarize" },
+        "steps": [
+          {
+            "type": "step",
+            "id": "validate",
+            "label": "Validate",
+            "uses": "@ecp/demo.validate",
+            "input": { "payload": { "ok": true } },
+            "as": "validated"
+          },
+          {
+            "type": "step",
+            "id": "echo",
+            "label": "Echo",
+            "uses": "@ecp/test.echo",
+            "input": { "value": "hello" },
+            "as": "echo"
+          },
+          {
+            "type": "step",
+            "id": "summarize",
+            "label": "Summarize",
+            "uses": "@ecp/demo.summarize",
+            "input": { "text": { "$ref": "state.echo.output" } },
+            "as": "summary"
+          }
+        ]
+      }
+    }
+  ],
+  "repairHint": "Return corrected @ecp.workflow JSON only. Do not echo validation errors. Every step uses must match a capability id from the environment summary. Use input not inputs. Add missing steps when the request lists multiple capabilities."
+}

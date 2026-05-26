@@ -22,7 +22,12 @@ async function ollamaChat(
   const res = await fetch(`${baseURL.replace(/\/$/, "")}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model, messages, stream: false }),
+    body: JSON.stringify({
+      model,
+      messages,
+      stream: false,
+      options: { num_ctx: 8192 },
+    }),
   })
   if (!res.ok) throw new Error(`Ollama API error: ${res.status}`)
   const data = (await res.json()) as { message: { content: string } }
@@ -70,16 +75,42 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
       .withOutput(z.object({ approved: z.boolean(), feedback: z.string().optional() }))
       .withHandler(async (input) => {
         const baseURL = process.env.OLLAMA_BASE_URL ?? "http://localhost:11434"
-        const prompt = `Reply with JSON only: {"approved":boolean,"feedback":string}. Goal: ${(input as { goal?: string }).goal ?? "review"}`
+        const row = input as {
+          goal?: string
+          criteria?: string
+          artifact?: { answer?: string }
+        }
+        const goal = row.goal ?? "review"
+        const rubric = row.criteria ?? "Accurate, on-topic, and actionable."
+        const answer =
+          row.artifact !== null &&
+          typeof row.artifact === "object" &&
+          "answer" in row.artifact &&
+          typeof row.artifact.answer === "string"
+            ? row.artifact.answer
+            : JSON.stringify(row.artifact ?? {})
+        const prompt = [
+          'Reply with JSON only: {"approved":true,"feedback":"ok"} or {"approved":false,"feedback":"reason"}.',
+          `Goal: ${goal}`,
+          `Rubric: ${rubric}`,
+          `Answer: ${answer.slice(0, 1500)}`,
+        ].join("\n")
         try {
           const content = await ollamaChat(
             baseURL,
             "gemma3:1b",
             prompt,
-            undefined,
-            input
+            "Approve (approved true) when the answer satisfies the goal and rubric; otherwise approved false."
           )
-          return JSON.parse(content) as { approved: boolean; feedback?: string }
+          const jsonMatch = content.match(/\{[\s\S]*\}/)
+          if (!jsonMatch) {
+            return { approved: true, feedback: "evaluation skipped (no JSON)" }
+          }
+          const parsed = JSON.parse(jsonMatch[0]) as { approved?: boolean; feedback?: string }
+          return {
+            approved: parsed.approved !== false,
+            feedback: parsed.feedback,
+          }
         } catch {
           return { approved: true, feedback: "evaluation skipped" }
         }

@@ -1,10 +1,12 @@
 import {
+  buildRepairHint,
   callModelGenerate,
   catalogHarness,
   collectDecodeFeedback,
   collectPatchFeedback,
   collectValidationFeedback,
   defineHarness,
+  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
@@ -21,6 +23,7 @@ import { BROWSER_WORKFLOW_AUTHORING_ID } from "./harness-ids.js"
 import { formatFeedbackForModel } from "./presentation.js"
 
 const harnessConfigSchema = z.object({
+  promptFixture: z.string().optional(),
   system: z.string().optional(),
   context: z
     .object({
@@ -93,6 +96,12 @@ export const browserWorkflowAuthoringHarness = defineHarness("@ecp", "browser-wo
       workflowEncoded = String(wfEncoded.result ?? "")
     }
 
+    const promptFixtureId =
+      config.promptFixture ??
+      (isPatch
+        ? HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH
+        : HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
+
     const system =
       config.system ??
       (isPatch
@@ -116,7 +125,11 @@ export const browserWorkflowAuthoringHarness = defineHarness("@ecp", "browser-wo
             descriptorText,
           ]
       if (repairText) {
-        lines.push("Previous attempt failed. Output only corrected TOON:", repairText)
+        lines.push(
+          "Previous attempt failed. Output only corrected TOON:",
+          repairText,
+          buildRepairHint(promptFixtureId)
+        )
       }
       return lines.join("\n")
     }

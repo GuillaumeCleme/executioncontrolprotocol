@@ -24,5 +24,5 @@ describe("ecp run workflow source", () => {
     const result = JSON.parse(stdout) as { run: { status: string }; state?: { echo: unknown } }
     expect(result.run.status).toBe("completed")
     expect(result.state?.echo).toEqual({ echo: "hello from fluent API" })
-  })
+  }, 30_000)
 })

@@ -1,0 +1,318 @@
+{
+  "cases": [
+    {
+      "id": "flow-01",
+      "suite": "flow",
+      "title": "Troubleshoot then patch",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "The workflow failed on echo, help me fix it."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "workflow-patch"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-authoring",
+          "input": {
+            "request": "Set echo input value to recovered.",
+            "manifestRef": "workflows/echo-workflow.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "validationValid"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "Confirm the fix applies to step echo?",
+            "runContextFixture": "runs/failed-echo-step.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Confirms echo step",
+              "requireApproved": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-02",
+      "suite": "flow",
+      "title": "Create routing",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "I need a new workflow with echo and summarize."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "workflow-create"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-authoring",
+          "input": {
+            "request": "Create echo then @ecp/demo.summarize workflow."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "artifactSchema",
+                "value": "@ecp.workflow"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-03",
+      "suite": "flow",
+      "title": "FAQ then general",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "How does patching work?"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "faq"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "Thanks!"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "general"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-04",
+      "suite": "flow",
+      "title": "Patch chain refs",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "workflow-authoring",
+          "input": {
+            "request": "Ensure summarize uses $ref to echo output.",
+            "manifestRef": "workflows/two-step-chain.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "inputRefPresent",
+                "stepId": "summarize"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "Did the chain run complete?",
+            "runContextFixture": "runs/completed-with-refs.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Mentions completed run",
+              "requireApproved": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-05",
+      "suite": "flow",
+      "title": "Salutation to create",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "Hi!"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "general"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "Actually create an echo workflow."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "workflow-create"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-authoring",
+          "input": {
+            "request": "Create minimal @ecp/test.echo workflow."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "stepUses",
+                "capabilityId": "@ecp/test.echo"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-06",
+      "suite": "flow",
+      "title": "Error explain and patch",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "What error occurred?",
+            "runContextFixture": "runs/failed-echo-step.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "answerContains",
+                "text": "error"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Describes echo failure",
+              "requireApproved": true
+            }
+          }
+        },
+        {
+          "harness": "workflow-authoring",
+          "input": {
+            "request": "Fix echo input to hello.",
+            "manifestRef": "workflows/echo-workflow.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "validationValid"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "Where should the fix be applied?",
+            "runContextFixture": "runs/failed-echo-step.json"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "citationStepId",
+                "value": "echo"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Points to echo step",
+              "requireApproved": true
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

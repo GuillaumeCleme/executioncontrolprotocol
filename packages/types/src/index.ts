@@ -122,3 +122,17 @@ export type {
 } from "./harness-feedback.js"
 export { ECP_INTENT_SCHEMA, ECP_INTENT_VALUES, ecpIntentSchema } from "./intent.js"
 export type { EcpIntentValue, EcpIntent } from "./intent.js"
+export {
+  harnessRunContextSchema,
+  runResultSchema,
+  stepRunRecordSchema,
+  toHarnessRunContext,
+} from "./harness-run-context.js"
+export type { HarnessRunContext } from "./harness-run-context.js"
+export {
+  ECP_HARNESS_REPLY_SCHEMA,
+  ECP_HARNESS_REPLY_CITATION_KINDS,
+  harnessReplySchema,
+  harnessReplyCitationSchema,
+} from "./harness-reply.js"
+export type { HarnessReply } from "./harness-reply.js"

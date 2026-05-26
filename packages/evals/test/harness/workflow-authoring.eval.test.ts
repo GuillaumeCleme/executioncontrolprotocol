@@ -44,7 +44,7 @@ describe.skipIf(!readiness.ready)(
 
     it("patches an existing workflow via @ecp.patch in JSON", async () => {
       const manifest = JSON.parse(
-        readFileSync(path.join(fixtureDir, "echo-workflow.json"), "utf8")
+        readFileSync(path.join(fixtureDir, "workflows/echo-workflow.json"), "utf8")
       ) as WorkflowManifest
 
       const env = await createHarnessOllamaWorkflowEnvironment()

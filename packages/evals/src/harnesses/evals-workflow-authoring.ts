@@ -1,4 +1,7 @@
 import {
+  buildRepairHint,
+  buildWorkflowCreateSystemPrompt,
+  buildWorkflowPatchSystemPrompt,
   callModelGenerate,
   catalogHarness,
   collectDecodeFeedback,
@@ -6,6 +9,8 @@ import {
   collectPatchFeedback,
   collectValidationFeedback,
   defineHarness,
+  formatSchemaExampleJson,
+  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
@@ -20,9 +25,26 @@ import {
   type WorkflowManifest,
 } from "@ecp/types"
 import { z } from "zod"
+import {
+  formatEnvironmentSummaryLines,
+  summarizeEnvironmentDescriptor,
+} from "./_internal/summarize-environment.js"
+import { encodeForPrompt } from "./_internal/encode-prompt-text.js"
+import { formatWorkflowSummaryLines } from "./_internal/summarize-workflow.js"
+import {
+  buildPatchOperationHintLines,
+  buildRequestCapabilityHintLines,
+  collectCreateCapabilityFeedback,
+  collectPatchGoalFeedback,
+} from "./_internal/request-capability-hints.js"
+import type { CompactEnvironmentSummary } from "./_internal/summarize-environment.js"
 import { EVALS_WORKFLOW_AUTHORING_ID } from "./harness-ids.js"
 import { normalizeWorkflowDocumentCandidate } from "./normalize-workflow-output.js"
-import { formatFeedbackForModel, isRepairFeedbackEcho } from "./presentation.js"
+import { repairPatchJsonSyntax, repairWorkflowJsonSyntax } from "./repair-workflow-json.js"
+import {
+  formatStructuredRepairForModel,
+  isRepairFeedbackEcho,
+} from "./presentation.js"
 
 const outputConfigSchema = z.object({
   schema: z.string().default("@ecp.workflow"),
@@ -31,10 +53,13 @@ const outputConfigSchema = z.object({
 })
 
 const harnessConfigSchema = z.object({
+  promptFixture: z.string().optional(),
   system: z.string().optional(),
   context: z
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
+      /** When false, only plain-text capability lines are sent (smaller prompts for 1B models). */
+      includeEncodedDescriptor: z.boolean().default(true),
       descriptorFormat: z.string().default("@ecp/format-toon"),
     })
     .default({}),
@@ -80,60 +105,88 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
     const outputIsJson =
       format === ECP_CORE_FORMATTER_IDS.JSON || format.endsWith("/format-json")
 
-    let descriptorText = ""
-    if (config.context.includeEnvironmentDescriptor) {
-      const descriptor = await ctx.ecp.describe()
-      const encoded = await ctx.ecp
-        .encode(descriptor)
-        .uses(descriptorFormat)
-        .with({ headers: false, compact: true })
-        .process()
-      descriptorText = String(encoded.result ?? "")
-    }
-
-    let workflowEncoded = ""
-    if (isPatch && input.manifest) {
-      const wfEncoded = await ctx.ecp
-        .encode(input.manifest)
-        .uses(format)
-        .with({ headers: false, compact: true })
-        .process()
-      workflowEncoded = String(wfEncoded.result ?? "")
-    }
+    const promptFixtureId =
+      config.promptFixture ??
+      (isPatch
+        ? HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH
+        : HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
 
     const system =
       config.system ??
-      (isPatch
-        ? 'Return only JSON for @ecp.patch. No markdown fences. Example: {"schema":"@ecp.patch","version":"1.0.0","targetSchema":"@ecp.workflow","patches":[{"path":"steps[echo].label","value":"New label","mode":"replace"}]}'
-        : 'Return only JSON for @ecp.workflow. No markdown fences. Include workflow.id, workflow.label, and steps with id, uses, label, input, as.')
+      (isPatch ? buildWorkflowPatchSystemPrompt() : buildWorkflowCreateSystemPrompt())
+
+    let descriptorText = ""
+    let environmentSummaryLines = ""
+    let environmentSummary: CompactEnvironmentSummary | undefined
+    if (config.context.includeEnvironmentDescriptor) {
+      const descriptor = await ctx.ecp.describe()
+      environmentSummary = summarizeEnvironmentDescriptor(descriptor)
+      environmentSummaryLines = formatEnvironmentSummaryLines(environmentSummary).join("\n")
+      if (config.context.includeEncodedDescriptor) {
+        descriptorText = await encodeForPrompt(ctx.ecp, environmentSummary, descriptorFormat)
+      }
+    }
+
+    const baselineManifest = isPatch
+      ? (input.manifest as WorkflowManifest | undefined)
+      : undefined
+
+    let workflowSummaryText = ""
+    if (isPatch && baselineManifest) {
+      workflowSummaryText = formatWorkflowSummaryLines(baselineManifest).join("\n")
+    }
 
     const buildPrompt = (repairText?: string) => {
+      const requestHints =
+        environmentSummary !== undefined
+          ? buildRequestCapabilityHintLines(input.request, environmentSummary)
+          : []
+      const patchHints =
+        isPatch && baselineManifest
+          ? buildPatchOperationHintLines(input.request, baselineManifest)
+          : []
+      const envBlock = environmentSummaryLines
+        ? [
+            "Environment capabilities:",
+            environmentSummaryLines,
+            ...(descriptorText
+              ? ["", "Environment capabilities (encoded):", descriptorText, ""]
+              : [""]),
+          ]
+        : []
+      const createOutputLine = outputIsJson
+        ? "Return only a compact JSON @ecp.workflow document for this request."
+        : `Return only a compact @ecp.workflow document encoded as ${format} for this request.`
+      const patchOutputLine = outputIsJson
+        ? "Return only compact JSON for schema @ecp.patch."
+        : `Return only a compact @ecp.patch document encoded as ${format}.`
       const lines = isPatch
         ? [
-            "Return only compact JSON for schema @ecp.patch.",
+            patchOutputLine,
             `User request: ${input.request}`,
-            "Environment descriptor (TOON):",
-            descriptorText,
-            "Current workflow (JSON):",
-            workflowEncoded,
+            ...patchHints,
+            ...requestHints,
+            ...envBlock,
+            "Current workflow (summary):",
+            workflowSummaryText,
           ]
         : [
-            "Return only a compact JSON @ecp.workflow document for this request.",
+            createOutputLine,
             `User request: ${input.request}`,
-            "Environment descriptor (TOON):",
-            descriptorText,
-            'Example: {"schema":"@ecp.workflow","version":"1.0.0","workflow":{"id":"minimal-echo","label":"Minimal Echo"},"steps":[{"type":"step","id":"echo","label":"Echo","uses":"@ecp/test.echo","input":{"value":"hello"},"as":"echo"}]}',
+            ...requestHints,
+            ...envBlock,
+            // Suppress single-step schema example when specific multi-step requirements
+            // are already in the prompt — it anchors the 1B model to single-step outputs.
+            ...(outputIsJson && requestHints.length === 0
+              ? [`Example output shape: ${formatSchemaExampleJson("@ecp.workflow")}`]
+              : []),
           ]
       if (repairText) {
         lines.push(
           "Previous attempt failed. Do not repeat error text. Output only the corrected document:",
-          repairText
+          repairText,
+          buildRepairHint(promptFixtureId)
         )
-        if (isPatch) {
-          lines.push(
-            'Required JSON keys: schema "@ecp.patch", version, targetSchema "@ecp.workflow", patches[{path,value}].'
-          )
-        }
       }
       return lines.join("\n")
     }
@@ -147,7 +200,7 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
       generate: async ({ attempt, priorFeedback }) => {
         const repairText =
           attempt > 0 && config.repair.includeValidationErrors
-            ? formatFeedbackForModel(priorFeedback)
+            ? formatStructuredRepairForModel(priorFeedback)
             : undefined
         lastPrompt = buildPrompt(repairText)
         const generated = await callModelGenerate(
@@ -158,13 +211,28 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
         )
         return { raw: stripMarkdownCodeFences(generated.text) }
       },
-      evaluate: async (raw, { attempt, priorFeedback }) => {
+      evaluate: async (raw, { priorFeedback }) => {
         const feedback: HarnessOperationFeedback[] = []
 
         if (
-          attempt > 0 &&
+          !isPatch &&
+          outputIsJson &&
+          (raw.match(/"schema"\s*:\s*"@ecp\.workflow"/g)?.length ?? 0) > 1
+        ) {
+          return {
+            success: false,
+            feedback: [
+              collectModelOutputFeedback(
+                "Return exactly one @ecp.workflow JSON object. Do not output multiple documents or examples."
+              ),
+            ],
+          }
+        }
+
+        const structuredPrior = formatStructuredRepairForModel(priorFeedback)
+        if (
           config.repair.includeValidationErrors &&
-          isRepairFeedbackEcho(raw, formatFeedbackForModel(priorFeedback))
+          isRepairFeedbackEcho(raw, structuredPrior)
         ) {
           return {
             success: false,
@@ -176,15 +244,20 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
           }
         }
 
+        let decodeRaw = raw
+        if (outputIsJson) {
+          decodeRaw = isPatch ? repairPatchJsonSyntax(raw) : repairWorkflowJsonSyntax(raw)
+        }
+
         const decoded = await ctx.ecp
-          .decode(raw)
+          .decode(decodeRaw)
           .uses(format)
           .to(isPatch ? "@ecp.patch" : "@ecp.workflow")
           .with({ headers: false, compact: true })
           .process()
 
         let document = decoded.result
-        if (!isPatch && outputIsJson && document !== undefined) {
+        if (!isPatch && document !== undefined) {
           document = normalizeWorkflowDocumentCandidate(document)
         }
 
@@ -220,6 +293,29 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
           feedback.push(collectValidationFeedback(validation))
           if (!validation.valid) {
             return { success: false, feedback }
+          }
+        }
+
+        const wfArtifact = artifact as WorkflowManifest
+        if (!isPatch && environmentSummary) {
+          const capFeedback = collectCreateCapabilityFeedback(
+            input.request,
+            environmentSummary,
+            wfArtifact
+          )
+          if (capFeedback) {
+            return { success: false, feedback: [...feedback, ...capFeedback] }
+          }
+        }
+        if (isPatch && environmentSummary) {
+          const patchFeedback = collectPatchGoalFeedback(
+            input.request,
+            wfArtifact,
+            environmentSummary,
+            baselineManifest
+          )
+          if (patchFeedback) {
+            return { success: false, feedback: [...feedback, ...patchFeedback] }
           }
         }
 

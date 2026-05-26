@@ -18,13 +18,13 @@
   },
   "dependencies": {
     "@ecp/core": "1.0.0",
+    "@ecp/demo": "1.0.0",
     "@ecp/extension-ollama": "1.0.0",
     "@ecp/format-toon": "1.0.0",
     "@ecp/node": "1.0.0",
     "@ecp/types": "1.0.0"
   },
   "devDependencies": {
-    "@ecp/demo": "1.0.0",
     "typescript": "^5.7.0"
   }
 }

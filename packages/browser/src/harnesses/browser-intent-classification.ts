@@ -1,9 +1,12 @@
 import {
+  buildRepairHint,
+  buildSystemPrompt,
   callModelGenerate,
   catalogHarness,
   collectDecodeFeedback,
   collectValidationFeedback,
   defineHarness,
+  HARNESS_PROMPT_FIXTURE_IDS,
   runModelRepairLoop,
   stripMarkdownCodeFences,
 } from "@ecp/core"
@@ -21,11 +24,10 @@ import { BROWSER_INTENT_CLASSIFICATION_ID } from "./harness-ids.js"
 import { formatFeedbackForModel } from "./presentation.js"
 
 const harnessConfigSchema = z.object({
-  system: z
+  promptFixture: z
     .string()
-    .default(
-      'Classify the user message. Reply with JSON only: {"schema":"@ecp.intent","intent":"faq"|"workflow-create"|"workflow-patch"|"general"}. No markdown.'
-    ),
+    .default(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION),
+  system: z.string().optional(),
   context: z
     .object({
       includeEnvironmentDescriptor: z.boolean().default(false),
@@ -75,11 +77,17 @@ export const browserIntentClassificationHarness = defineHarness(
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
+    const promptFixtureId = config.promptFixture
+    const system = config.system ?? buildSystemPrompt(promptFixtureId)
 
     const buildPrompt = (repairText?: string) => {
       const lines = [`User message: ${input.message}`]
       if (repairText) {
-        lines.push("Previous attempt failed. Fix these issues:", repairText)
+        lines.push(
+          "Previous attempt failed. Fix these issues:",
+          repairText,
+          buildRepairHint(promptFixtureId)
+        )
       }
       return lines.join("\n")
     }
@@ -98,7 +106,7 @@ export const browserIntentClassificationHarness = defineHarness(
         lastPrompt = buildPrompt(repairText)
         const generated = await callModelGenerate(
           ctx.uses,
-          { prompt: lastPrompt, system: config.system, model: input.model, responseFormat: "json" },
+          { prompt: lastPrompt, system, model: input.model, responseFormat: "json" },
           ctx.capabilityContext,
           format
         )
