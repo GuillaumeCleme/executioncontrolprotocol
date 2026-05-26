@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest"
 import { ECP_INTENT_VALUES } from "@ecp/types"
 import {
-  EVALS_INTENT_CLASSIFICATION_CAPABILITY,
+  EVALS_HARNESS_CAPABILITY,
   INTENT_EVAL_EXTENSIONS,
   OLLAMA_GEMMA_1B_EVAL,
   createHarnessOllamaIntentEnvironment,
   ollamaEvalReady,
 } from "@ecp/evals"
+import { EVAL_HARNESS_TASKS } from "@ecp/harnesses-evals"
 import { expectHarnessIntent, harnessTraceHint } from "./assert-harness-result.js"
 
 const readiness = await ollamaEvalReady()
@@ -28,8 +29,9 @@ describe.skipIf(!readiness.ready)(
       const ecp = await env.init()
 
       const result = await ecp
-        .invoke(EVALS_INTENT_CLASSIFICATION_CAPABILITY)
+        .invoke(EVALS_HARNESS_CAPABILITY)
         .with({
+          task: EVAL_HARNESS_TASKS.INTENT_CLASSIFICATION,
           message: "Create a new workflow that sends a summary email.",
           model: OLLAMA_GEMMA_1B_EVAL.model,
         })
@@ -51,8 +53,9 @@ describe.skipIf(!readiness.ready)(
       const ecp = await env.init()
 
       const result = await ecp
-        .invoke(EVALS_INTENT_CLASSIFICATION_CAPABILITY)
+        .invoke(EVALS_HARNESS_CAPABILITY)
         .with({
+          task: EVAL_HARNESS_TASKS.INTENT_CLASSIFICATION,
           message: "Update the echo step to use value world.",
           model: OLLAMA_GEMMA_1B_EVAL.model,
         })

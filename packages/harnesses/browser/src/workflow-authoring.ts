@@ -3,12 +3,12 @@ import {
   buildWorkflowCreateSystemPrompt,
   buildWorkflowPatchSystemPrompt,
   callModelGenerate,
-  catalogHarness,
   collectDecodeFeedback,
   collectModelOutputFeedback,
   collectPatchFeedback,
   collectValidationFeedback,
   defineHarness,
+  type HarnessCapabilityContext,
   formatSchemaExampleJson,
   HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
@@ -20,6 +20,7 @@ import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   type EcpPatchInput,
+  type HarnessEvaluateOutput,
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type WorkflowManifest,
@@ -38,7 +39,7 @@ import {
   collectPatchGoalFeedback,
 } from "./_internal/request-capability-hints.js"
 import type { CompactEnvironmentSummary } from "./_internal/summarize-environment.js"
-import { EVALS_WORKFLOW_AUTHORING_ID } from "./harness-ids.js"
+import { BROWSER_HARNESS_ID } from "./harness-ids.js"
 import { normalizeWorkflowDocumentCandidate } from "./normalize-workflow-output.js"
 import { repairPatchJsonSyntax, repairWorkflowJsonSyntax } from "./repair-workflow-json.js"
 import {
@@ -91,7 +92,7 @@ const harnessInputSchema = z.object({
  * Eval workflow authoring harness (@ecp/evals-workflow-authoring).
  * @category Evals
  */
-export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-authoring")
+const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-authoring-internal")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -326,7 +327,7 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
     const validation = await ctx.ecp.validate(loopResult.artifact as WorkflowManifest)
 
     const trace: HarnessInvokeResult["trace"] = {
-      harness: EVALS_WORKFLOW_AUTHORING_ID,
+      harness: BROWSER_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
       outputSchema,
@@ -347,7 +348,13 @@ export const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workfl
   })
   .build()
 
-/** Register eval workflow authoring harness. @category Evals */
-export function registerEvalsWorkflowAuthoringHarness(): void {
-  catalogHarness(evalsWorkflowAuthoringHarness)
+/** Workflow authoring task handler (invoked by unified `@ecp/harness-evals`). @category Evals */
+export async function invokeWorkflowAuthoring(
+  input: { request: string; manifest?: unknown; model?: string },
+  ctx: HarnessCapabilityContext<Record<string, unknown>>
+): Promise<HarnessEvaluateOutput> {
+  return evalsWorkflowAuthoringHarness.handler(input, ctx) as Promise<HarnessEvaluateOutput>
 }
+
+/** @deprecated Use {@link invokeWorkflowAuthoring} */
+export const invokeEvalWorkflowAuthoring = invokeWorkflowAuthoring

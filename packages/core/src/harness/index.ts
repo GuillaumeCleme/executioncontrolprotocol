@@ -30,11 +30,6 @@ export {
   type ModelRepairLoopResult,
 } from "./run-model-repair-loop.js"
 export {
-  registerTestMinimalHarness,
-  testMinimalHarness,
-  TEST_MINIMAL_HARNESS_ID,
-} from "./definitions/test-minimal-harness.js"
-export {
   harnessPromptFixtureSchema,
   HARNESS_PROMPT_FIXTURE_IDS,
   loadHarnessPromptFixture,

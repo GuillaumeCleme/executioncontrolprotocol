@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import { registerTestExtension, workflow, step } from "@ecp/core"
 import {
   BrowserAuthoringService,
+  HARNESS_TASKS,
   WORKFLOW_AUTHORING_CAPABILITY,
   createBrowserDemoEnvironment,
   createEcp,
@@ -23,7 +24,7 @@ describe("BrowserAuthoringService", () => {
     const invoked = await ecp
       .invoke(WORKFLOW_AUTHORING_CAPABILITY)
       .uses("@ecp/demo.generate")
-      .with({ request: "echo demo workflow" })
+      .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "echo demo workflow" })
       .process()
     expect(invoked.success).toBe(true)
     const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
@@ -60,7 +61,7 @@ describe("BrowserAuthoringService", () => {
     const invoked = await ecp
       .invoke(WORKFLOW_AUTHORING_CAPABILITY)
       .uses("@ecp/demo.generate")
-      .with({ request: "demo" })
+      .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "demo" })
       .process()
     const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
     const panels = await service.encodePanels(

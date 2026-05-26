@@ -41,9 +41,12 @@ export {
 } from "./authoring/browser-authoring-service.js"
 export { encodeAuthoringPanels } from "./authoring/browser-authoring-panels.js"
 export {
-  WORKFLOW_AUTHORING_CAPABILITY,
-  INTENT_CLASSIFICATION_CAPABILITY,
-} from "./authoring/harness-ids.js"
+  BROWSER_HARNESS_CAPABILITY,
+  BROWSER_HARNESS_ID,
+  HARNESS_TASKS,
+  BROWSER_HARNESS_CAPABILITY as WORKFLOW_AUTHORING_CAPABILITY,
+  BROWSER_HARNESS_CAPABILITY as INTENT_CLASSIFICATION_CAPABILITY,
+} from "@ecp/harnesses-browser"
 export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
 export type { Ecp } from "@ecp/core"
 

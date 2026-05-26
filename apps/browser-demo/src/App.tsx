@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   BrowserAuthoringService,
-  INTENT_CLASSIFICATION_CAPABILITY,
-  WORKFLOW_AUTHORING_CAPABILITY,
+  HARNESS_TASKS,
+  BROWSER_HARNESS_CAPABILITY,
   installBrowserWorkflowShim,
   type BrowserOperationalEcp,
 } from "@ecp/browser"
@@ -234,9 +234,9 @@ export function App() {
     if (!ecp) return null
     try {
       const invoked = await ecp
-        .invoke(INTENT_CLASSIFICATION_CAPABILITY)
+        .invoke(BROWSER_HARNESS_CAPABILITY)
         .uses(cap)
-        .with({ message })
+        .with({ task: HARNESS_TASKS.INTENT_CLASSIFICATION, message })
         .process()
       if (!invoked.success || !invoked.result) return null
       const harnessResult = invoked.result as HarnessInvokeResult<EcpIntent>

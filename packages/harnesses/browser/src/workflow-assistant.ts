@@ -6,9 +6,8 @@ import {
 
   callModelGenerate,
 
-  catalogHarness,
-
   collectDecodeFeedback,
+  type HarnessCapabilityContext,
 
   collectModelOutputFeedback,
 
@@ -38,6 +37,8 @@ import {
 
   LATEST_ECP_VERSION,
 
+  type HarnessEvaluateOutput,
+
   type HarnessInvokeResult,
 
   type HarnessOperationFeedback,
@@ -61,7 +62,7 @@ import { formatRunContextSummaryLines } from "./_internal/summarize-run-context.
 
 import { formatWorkflowSummaryLines } from "./_internal/summarize-workflow.js"
 
-import { EVALS_WORKFLOW_ASSISTANT_ID } from "./harness-ids.js"
+import { BROWSER_HARNESS_ID } from "./harness-ids.js"
 
 import { formatFeedbackForModel, isRepairFeedbackEcho } from "./presentation.js"
 
@@ -399,7 +400,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
     const trace: HarnessInvokeResult["trace"] = {
 
-      harness: EVALS_WORKFLOW_ASSISTANT_ID,
+      harness: BROWSER_HARNESS_ID,
 
       provider: ctx.uses,
 
@@ -461,11 +462,14 @@ function decodedValidationStub(valid = true): ValidationResult {
 
 
 
-/** Register eval workflow assistant harness. @category Evals */
-
-export function registerEvalsWorkflowAssistantHarness(): void {
-
-  catalogHarness(evalsWorkflowAssistantHarness)
-
+/** Assistant task handler (invoked by unified `@ecp/harness-evals`). @category Evals */
+export async function invokeWorkflowAssistant(
+  input: { message: string; runContext?: unknown; model?: string },
+  ctx: HarnessCapabilityContext<Record<string, unknown>>
+): Promise<HarnessEvaluateOutput> {
+  return evalsWorkflowAssistantHarness.handler(input, ctx) as Promise<HarnessEvaluateOutput>
 }
+
+/** @deprecated Use {@link invokeWorkflowAssistant} */
+export const invokeEvalWorkflowAssistant = invokeWorkflowAssistant
 

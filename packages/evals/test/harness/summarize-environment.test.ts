@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   formatEnvironmentSummaryLines,
   summarizeEnvironmentDescriptor,
-} from "../../src/harnesses/_internal/summarize-environment.js"
+} from "@ecp/harnesses-evals/summarize-environment"
 import type { EnvironmentDescriptor } from "@ecp/types"
 
 const minimalDescriptor: EnvironmentDescriptor = {

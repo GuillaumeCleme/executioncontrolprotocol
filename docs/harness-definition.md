@@ -13,10 +13,7 @@ Product harnesses (prompts, eval-specific normalization) live outside core:
 
 | Harness id | Package | Role |
 | ---------- | ------- | ---- |
-| `@ecp/evals-workflow-authoring` | `@ecp/evals` | Ollama workflow create/patch evals |
-| `@ecp/evals-intent-classification` | `@ecp/evals` | Ollama intent routing evals |
-| `@ecp/browser-workflow-authoring` | `@ecp/browser` | Browser demo (TOON + demo provider) |
-| `@ecp/browser-intent-classification` | `@ecp/browser` | Browser demo intent routing |
+| `@ecp/harness-browser` | `@ecp/harnesses-browser` | Browser demo + Ollama/matrix evals (routes by input `task`) |
 
 See [harness-eval.md](harness-eval.md) for local Ollama evaluation.
 
@@ -32,7 +29,7 @@ Product harness handlers load **harness prompts** from `@ecp/core` — not from 
 
 API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@ecp/core`.
 
-**Handler internals:** compact descriptor/workflow/run summaries for small models live in product packages (e.g. `packages/evals/src/harnesses/_internal/`) — not in the core harness framework or shared config schema.
+**Handler internals:** compact descriptor/workflow/run summaries for small models live in harness product packages (e.g. `packages/harnesses/evals/src/_internal/`) — not in the core harness framework or shared config schema.
 
 ## Harness operation feedback (core contract)
 

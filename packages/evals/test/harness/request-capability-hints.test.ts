@@ -4,8 +4,8 @@ import {
   collectCreateCapabilityFeedback,
   collectPatchGoalFeedback,
   inferRequiredCapabilityIds,
-} from "../../src/harnesses/_internal/request-capability-hints.js"
-import type { CompactEnvironmentSummary } from "../../src/harnesses/_internal/summarize-environment.js"
+} from "@ecp/harnesses-evals/request-capability-hints"
+import type { CompactEnvironmentSummary } from "@ecp/harnesses-evals/summarize-environment"
 import type { WorkflowManifest } from "@ecp/types"
 
 const summary: CompactEnvironmentSummary = {

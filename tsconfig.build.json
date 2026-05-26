@@ -5,6 +5,8 @@
     { "path": "packages/core" },
     { "path": "packages/node" },
     { "path": "packages/browser" },
+    { "path": "packages/harnesses/browser" },
+    { "path": "packages/harnesses/evals" },
     { "path": "packages/policies" },
     { "path": "packages/mcp" },
     { "path": "packages/extensions/memory" },

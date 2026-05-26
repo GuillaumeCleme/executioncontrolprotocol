@@ -2,7 +2,7 @@ import {
   buildRepairHint,
   buildSystemPrompt,
   callModelGenerate,
-  catalogHarness,
+  type HarnessCapabilityContext,
   collectDecodeFeedback,
   collectModelOutputFeedback,
   collectValidationFeedback,
@@ -17,6 +17,7 @@ import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   LATEST_ECP_VERSION,
+  type HarnessEvaluateOutput,
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type ValidationResult,
@@ -27,7 +28,7 @@ import {
   summarizeEnvironmentDescriptor,
 } from "./_internal/summarize-environment.js"
 import { encodeForPrompt } from "./_internal/encode-prompt-text.js"
-import { EVALS_INTENT_CLASSIFICATION_ID } from "./harness-ids.js"
+import { BROWSER_HARNESS_ID } from "./harness-ids.js"
 import { formatFeedbackForModel, isRepairFeedbackEcho } from "./presentation.js"
 
 const harnessConfigSchema = z.object({
@@ -75,7 +76,7 @@ const harnessInputSchema = z.object({
  * Eval intent classification harness (@ecp/evals-intent-classification).
  * @category Evals
  */
-export const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-classification")
+const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-classification-internal")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -176,7 +177,7 @@ export const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-int
     })
 
     const trace: HarnessInvokeResult["trace"] = {
-      harness: EVALS_INTENT_CLASSIFICATION_ID,
+      harness: BROWSER_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
       outputSchema: config.output.schema,
@@ -207,7 +208,13 @@ function decodedValidationStub(valid = true): ValidationResult {
   }
 }
 
-/** Register eval intent classification harness. @category Evals */
-export function registerEvalsIntentClassificationHarness(): void {
-  catalogHarness(evalsIntentClassificationHarness)
+/** Intent task handler (invoked by unified `@ecp/harness-evals`). @category Evals */
+export async function invokeIntentClassification(
+  input: { message: string; model?: string },
+  ctx: HarnessCapabilityContext<Record<string, unknown>>
+): Promise<HarnessEvaluateOutput> {
+  return evalsIntentClassificationHarness.handler(input, ctx) as Promise<HarnessEvaluateOutput>
 }
+
+/** @deprecated Use {@link invokeIntentClassification} */
+export const invokeEvalIntentClassification = invokeIntentClassification

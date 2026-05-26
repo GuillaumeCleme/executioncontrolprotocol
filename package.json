@@ -15,6 +15,7 @@
     "packages/cli",
     "packages/policies",
     "packages/evals",
+    "packages/harnesses/*",
     "packages/extensions/*",
     "packages/runtimes/*",
     "apps/*"

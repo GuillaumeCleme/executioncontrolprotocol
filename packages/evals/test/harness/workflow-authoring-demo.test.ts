@@ -7,10 +7,12 @@ import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerDemoExtension } from "@ecp/demo"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import { EVALS_HARNESS_CAPABILITY } from "@ecp/evals"
 import {
-  EVALS_WORKFLOW_AUTHORING_CAPABILITY,
+  EVAL_HARNESS_TASKS,
+  EVALS_HARNESS_ID,
   registerEvalHarnesses,
-} from "@ecp/evals"
+} from "@ecp/harnesses-evals"
 import { assertHarnessInvokeSuccess } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
@@ -31,7 +33,7 @@ async function createEvalAuthoringDemoEnv() {
       extension("@ecp/demo").with({}),
     ])
     .withHarnesses([
-      harness("@ecp/evals-workflow-authoring")
+      harness(EVALS_HARNESS_ID)
         .uses("@ecp/demo.generate")
         .with({
           output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
@@ -44,8 +46,8 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
     const env = await createEvalAuthoringDemoEnv()
     const ecp = await env.init()
     const result = await ecp
-      .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
-      .with({ request: "Create an echo workflow" })
+      .invoke(EVALS_HARNESS_CAPABILITY)
+      .with({ task: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING, request: "Create an echo workflow" })
       .process()
 
     assertHarnessInvokeSuccess(result)
@@ -62,8 +64,12 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
     ) as WorkflowManifest
 
     const result = await ecp
-      .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
-      .with({ request: "Patch the echo step input value.", manifest })
+      .invoke(EVALS_HARNESS_CAPABILITY)
+      .with({
+        task: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING,
+        request: "Patch the echo step input value.",
+        manifest,
+      })
       .process()
 
     assertHarnessInvokeSuccess(result)

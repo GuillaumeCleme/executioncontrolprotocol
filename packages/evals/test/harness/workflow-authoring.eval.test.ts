@@ -4,11 +4,12 @@ import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
 import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
 import {
-  EVALS_WORKFLOW_AUTHORING_CAPABILITY,
+  EVALS_HARNESS_CAPABILITY,
   OLLAMA_GEMMA_1B_EVAL,
   createHarnessOllamaWorkflowEnvironment,
   ollamaEvalReady,
 } from "@ecp/evals"
+import { EVAL_HARNESS_TASKS } from "@ecp/harnesses-evals"
 import { assertHarnessInvokeSuccess, harnessResult, harnessTraceHint } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
@@ -23,8 +24,9 @@ describe.skipIf(!readiness.ready)(
       const ecp = await env.init()
 
       const result = await ecp
-        .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
+        .invoke(EVALS_HARNESS_CAPABILITY)
         .with({
+          task: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING,
           request:
             "Create a minimal echo workflow with one step using @ecp/test.echo and input value hello.",
           model: OLLAMA_GEMMA_1B_EVAL.model,
@@ -51,8 +53,9 @@ describe.skipIf(!readiness.ready)(
       const ecp = await env.init()
 
       const result = await ecp
-        .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
+        .invoke(EVALS_HARNESS_CAPABILITY)
         .with({
+          task: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING,
           request: "Change the echo step label to Patched Echo.",
           manifest,
           model: OLLAMA_GEMMA_1B_EVAL.model,

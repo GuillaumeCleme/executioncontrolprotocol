@@ -17,7 +17,7 @@ const caseRow = {
 const harnessOutput = {
   artifact: { schema: "@ecp.harness.reply", answer: "ok" },
   raw: "{}",
-  trace: { harness: "@ecp/evals-workflow-assistant" },
+  trace: { harness: "@ecp/harness-browser" },
 } as HarnessInvokeResult
 
 describe("assertJudge", () => {

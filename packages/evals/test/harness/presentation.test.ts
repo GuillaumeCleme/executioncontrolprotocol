@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isRepairFeedbackEcho } from "../../src/harnesses/presentation.js"
+import { isRepairFeedbackEcho } from "@ecp/harnesses-evals/presentation"
 
 describe("isRepairFeedbackEcho", () => {
   it("detects echoed capability repair prose", () => {

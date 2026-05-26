@@ -21,6 +21,7 @@
     "@ecp/chrome-ai": "1.0.0",
     "@ecp/claude": "1.0.0",
     "@ecp/core": "1.0.0",
+    "@ecp/harnesses-browser": "1.0.0",
     "@ecp/demo": "1.0.0",
     "@ecp/format-mermaid": "1.0.0",
     "@ecp/format-toon": "1.0.0",

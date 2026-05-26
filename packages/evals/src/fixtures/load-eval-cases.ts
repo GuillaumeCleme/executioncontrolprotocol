@@ -106,23 +106,32 @@ export function loadHarnessRunFixture(relativePath: string): HarnessRunContext {
 }
 
 /**
+ * Resolve manifest/run fixture refs in harness invoke input.
+ * @category Evals
+ */
+export function resolveEvalInvokeInput(input: Record<string, unknown>): Record<string, unknown> {
+  const resolved = { ...input }
+  const manifestRef = resolved.manifestRef
+  if (typeof manifestRef === "string") {
+    resolved.manifest = loadWorkflowFixture(manifestRef)
+    delete resolved.manifestRef
+  }
+  const runContextFixture = resolved.runContextFixture
+  if (typeof runContextFixture === "string") {
+    resolved.runContext = loadHarnessRunFixture(runContextFixture)
+    delete resolved.runContextFixture
+  }
+  return resolved
+}
+
+/**
  * Resolve invoke input for a single eval case (manifest/run fixture refs).
  * @category Evals
  */
 export function resolveSingleEvalCaseInput(caseRow: SingleEvalCase): Record<string, unknown> {
-  const input = { ...caseRow.input }
+  const input = resolveEvalInvokeInput(caseRow.input)
   if (caseRow.baselineWorkflow) {
     input.manifest = loadWorkflowFixture(caseRow.baselineWorkflow)
-  }
-  const manifestRef = input.manifestRef
-  if (typeof manifestRef === "string") {
-    input.manifest = loadWorkflowFixture(manifestRef)
-    delete input.manifestRef
-  }
-  const runContextFixture = input.runContextFixture
-  if (typeof runContextFixture === "string") {
-    input.runContext = loadHarnessRunFixture(runContextFixture)
-    delete input.runContextFixture
   }
   return input
 }

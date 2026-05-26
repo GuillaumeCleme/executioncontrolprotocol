@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { normalizeWorkflowDocumentCandidate } from "../../src/harnesses/normalize-workflow-output.js"
+import { normalizeWorkflowDocumentCandidate } from "@ecp/harnesses-evals/normalize-workflow-output"
 
 describe("normalizeWorkflowDocumentCandidate", () => {
   it("hoists steps nested under workflow and fills schema/version", () => {
