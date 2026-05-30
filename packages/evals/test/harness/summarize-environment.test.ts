@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   formatEnvironmentSummaryLines,
   summarizeEnvironmentDescriptor,
-} from "@ecp/harnesses-evals/summarize-environment"
+} from "../../../harnesses/browser/src/_internal/summarize-environment.js"
 import type { EnvironmentDescriptor } from "@ecp/types"
 
 const minimalDescriptor: EnvironmentDescriptor = {
@@ -45,5 +45,15 @@ describe("summarizeEnvironmentDescriptor", () => {
     const text = formatEnvironmentSummaryLines(summary).join("\n")
     expect(text).toContain("@ecp/test.echo")
     expect(text).toContain("@ecp/demo.summarize")
+  })
+
+  it("formatEnvironmentSummaryLines eql-patch marks caps already in workflow", () => {
+    const summary = summarizeEnvironmentDescriptor(minimalDescriptor)
+    const text = formatEnvironmentSummaryLines(summary, {
+      format: "eql-patch",
+      existingCapabilityUses: new Set(["@ecp/test.echo"]),
+    }).join("\n")
+    expect(text).toContain("ADD STEP <newStepId> USES @ecp/demo.summarize")
+    expect(text).toContain("@ecp/test.echo (already used by an existing step")
   })
 })

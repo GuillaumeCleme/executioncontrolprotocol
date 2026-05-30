@@ -3,7 +3,8 @@ import { z } from "zod"
 /** Few-shot row in a harness prompt fixture. @category Harness */
 export const harnessPromptFewShotSchema = z.object({
   message: z.string(),
-  output: z.record(z.string(), z.unknown()),
+  /** EQL body (string) or legacy JSON object. */
+  output: z.union([z.record(z.string(), z.unknown()), z.string()]),
 })
 
 /** Intent definition row in a harness prompt fixture. @category Harness */
@@ -18,6 +19,8 @@ export const harnessPromptFixtureSchema = z.object({
   role: z.string(),
   task: z.string(),
   outputSchema: z.string(),
+  /** Prompt surface for model output examples (default eql). */
+  promptFormat: z.enum(["eql", "json"]).optional().default("eql"),
   allowedValues: z.record(z.string(), z.array(z.string())).optional(),
   definitions: z.array(harnessPromptDefinitionSchema).optional(),
   fewShots: z.array(harnessPromptFewShotSchema).optional(),

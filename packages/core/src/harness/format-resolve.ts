@@ -39,9 +39,10 @@ export function isFormatterRegistered(formatId: string): boolean {
  */
 export function inferResponseFormatFromFormatter(
   formatId: string
-): "text" | "json" | "toon" | undefined {
+): "text" | "json" | "toon" | "eql" | undefined {
   const id = normalizeFormatId(formatId)
   if (id === ECP_CORE_FORMATTER_IDS.JSON) return "json"
   if (id === "@ecp/format-toon") return "toon"
+  if (id === "@ecp/format-eql") return "eql"
   return "text"
 }

@@ -9,6 +9,7 @@ import {
   collectValidationFeedback,
   defineHarness,
   type HarnessCapabilityContext,
+  formatSchemaExampleEql,
   formatSchemaExampleJson,
   HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
@@ -20,6 +21,7 @@ import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   type EcpPatchInput,
+  type EcpPatchDocument,
   type HarnessEvaluateOutput,
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
@@ -31,21 +33,49 @@ import {
   summarizeEnvironmentDescriptor,
 } from "./_internal/summarize-environment.js"
 import { encodeForPrompt } from "./_internal/encode-prompt-text.js"
+import { normalizePatchEqlRawOutput, substitutePatchRepairTemplate } from "./_internal/normalize-patch-eql-output.js"
 import { formatWorkflowSummaryLines } from "./_internal/summarize-workflow.js"
 import {
   buildPatchOperationHintLines,
   buildRequestCapabilityHintLines,
-  collectCreateCapabilityFeedback,
   collectPatchGoalFeedback,
+  collectCreateCapabilityFeedback,
+  collectCreateStepCountFeedback,
+  inferPatchTargetStepId,
+  inferRequestedLabel,
 } from "./_internal/request-capability-hints.js"
 import type { CompactEnvironmentSummary } from "./_internal/summarize-environment.js"
 import { BROWSER_HARNESS_ID } from "./harness-ids.js"
 import { normalizeWorkflowDocumentCandidate } from "./normalize-workflow-output.js"
-import { repairPatchJsonSyntax, repairWorkflowJsonSyntax } from "./repair-workflow-json.js"
 import {
   formatStructuredRepairForModel,
   isRepairFeedbackEcho,
 } from "./presentation.js"
+
+function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<string> {
+  const uses = new Set<string>()
+  if (!manifest) return uses
+  for (const node of manifest.steps ?? []) {
+    if ("uses" in node && typeof node.uses === "string") {
+      uses.add(node.uses)
+    }
+  }
+  return uses
+}
+
+function alignPatchWorkflowId(
+  patch: EcpPatchDocument,
+  baseline: WorkflowManifest
+): EcpPatchDocument {
+  const expectedId = baseline.workflow?.id
+  if (!expectedId) return patch
+  return {
+    ...patch,
+    patches: patch.patches.map((entry) =>
+      entry.path === "workflow.id" ? { ...entry, value: expectedId } : entry
+    ),
+  }
+}
 
 const outputConfigSchema = z.object({
   schema: z.string().default("@ecp.workflow"),
@@ -105,6 +135,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
     const descriptorFormat = config.context.descriptorFormat ?? format
     const outputIsJson =
       format === ECP_CORE_FORMATTER_IDS.JSON || format.endsWith("/format-json")
+    const outputIsEql = format === "@ecp/format-eql" || format.endsWith("/format-eql")
 
     const promptFixtureId =
       config.promptFixture ??
@@ -119,57 +150,79 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
     let descriptorText = ""
     let environmentSummaryLines = ""
     let environmentSummary: CompactEnvironmentSummary | undefined
-    if (config.context.includeEnvironmentDescriptor) {
-      const descriptor = await ctx.ecp.describe()
-      environmentSummary = summarizeEnvironmentDescriptor(descriptor)
-      environmentSummaryLines = formatEnvironmentSummaryLines(environmentSummary).join("\n")
-      if (config.context.includeEncodedDescriptor) {
-        descriptorText = await encodeForPrompt(ctx.ecp, environmentSummary, descriptorFormat)
-      }
-    }
-
     const baselineManifest = isPatch
       ? (input.manifest as WorkflowManifest | undefined)
       : undefined
 
     let workflowSummaryText = ""
     if (isPatch && baselineManifest) {
-      workflowSummaryText = formatWorkflowSummaryLines(baselineManifest).join("\n")
+      workflowSummaryText = formatWorkflowSummaryLines(baselineManifest, {
+        eql: outputIsEql,
+        patchContext: true,
+      }).join("\n")
+    }
+
+    if (config.context.includeEnvironmentDescriptor) {
+      const descriptor = await ctx.ecp.describe()
+      environmentSummary = summarizeEnvironmentDescriptor(descriptor)
+      environmentSummaryLines = formatEnvironmentSummaryLines(environmentSummary, {
+        format: outputIsEql ? (isPatch ? "eql-patch" : "eql-create") : "plain",
+        existingCapabilityUses: isPatch
+          ? existingCapabilityUses(baselineManifest)
+          : undefined,
+      }).join("\n")
+      if (config.context.includeEncodedDescriptor) {
+        descriptorText = await encodeForPrompt(ctx.ecp, environmentSummary, descriptorFormat)
+      }
     }
 
     const buildPrompt = (repairText?: string) => {
       const requestHints =
         environmentSummary !== undefined
-          ? buildRequestCapabilityHintLines(input.request, environmentSummary)
+          ? buildRequestCapabilityHintLines(input.request, environmentSummary, {
+              mode: isPatch ? "patch" : "create",
+            })
           : []
       const patchHints =
         isPatch && baselineManifest
-          ? buildPatchOperationHintLines(input.request, baselineManifest)
+          ? buildPatchOperationHintLines(
+              input.request,
+              baselineManifest,
+              environmentSummary?.capabilities.map((c) => c.id)
+            )
           : []
       const envBlock = environmentSummaryLines
         ? [
-            "Environment capabilities:",
+            outputIsEql
+              ? "Environment capabilities (EQL reference):"
+              : "Environment capabilities:",
             environmentSummaryLines,
             ...(descriptorText
               ? ["", "Environment capabilities (encoded):", descriptorText, ""]
               : [""]),
           ]
         : []
-      const createOutputLine = outputIsJson
-        ? "Return only a compact JSON @ecp.workflow document for this request."
-        : `Return only a compact @ecp.workflow document encoded as ${format} for this request.`
-      const patchOutputLine = outputIsJson
-        ? "Return only compact JSON for schema @ecp.patch."
-        : `Return only a compact @ecp.patch document encoded as ${format}.`
+      const createOutputLine = outputIsEql
+        ? /\bminimal\b/i.test(input.request) || /\bone step\b/i.test(input.request)
+          ? "Return only compact headerless EQL for @ecp.workflow with exactly ONE STEP line."
+          : "Return only compact headerless EQL for @ecp.workflow."
+        : outputIsJson
+          ? "Return only a compact JSON @ecp.workflow document for this request."
+          : `Return only a compact @ecp.workflow document encoded as ${format} for this request.`
+      const patchOutputLine = outputIsEql
+        ? "Apply the user request to the current workflow. Return EQL patch operations only. First line MUST be PATCH WORKFLOW <id from user prompt>, then UPDATE WORKFLOW / UPDATE STEP / ADD STEP / DELETE STEP / MOVE STEP as needed. Do not re-list unchanged steps."
+        : outputIsJson
+          ? "Return only compact JSON for schema @ecp.patch."
+          : `Return only a compact @ecp.patch document encoded as ${format}.`
       const lines = isPatch
         ? [
             patchOutputLine,
             `User request: ${input.request}`,
             ...patchHints,
+            "Current workflow (EQL reference):",
+            workflowSummaryText,
             ...requestHints,
             ...envBlock,
-            "Current workflow (summary):",
-            workflowSummaryText,
           ]
         : [
             createOutputLine,
@@ -178,8 +231,14 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
             ...envBlock,
             // Suppress single-step schema example when specific multi-step requirements
             // are already in the prompt — it anchors the 1B model to single-step outputs.
-            ...(outputIsJson && requestHints.length === 0
-              ? [`Example output shape: ${formatSchemaExampleJson("@ecp.workflow")}`]
+            ...((outputIsEql || outputIsJson) && requestHints.length === 0
+              ? [
+                  `Example output shape:\n${
+                    outputIsEql
+                      ? formatSchemaExampleEql("@ecp.workflow")
+                      : formatSchemaExampleJson("@ecp.workflow")
+                  }`,
+                ]
               : []),
           ]
       if (repairText) {
@@ -213,11 +272,27 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
         return { raw: stripMarkdownCodeFences(generated.text) }
       },
       evaluate: async (raw, { priorFeedback }) => {
+        const baseline = baselineManifest as WorkflowManifest | undefined
+        const stepIds =
+          baseline?.steps
+            ?.filter((s) => "uses" in s && typeof s.uses === "string")
+            .map((s) => s.id) ?? []
+        const workflowId = baseline?.workflow?.id
+        const normalizedRaw =
+          isPatch && outputIsEql
+            ? substitutePatchRepairTemplate(
+                normalizePatchEqlRawOutput(raw, workflowId),
+                workflowId,
+                inferPatchTargetStepId(input.request, stepIds),
+                inferRequestedLabel(input.request)
+              )
+            : raw
         const feedback: HarnessOperationFeedback[] = []
 
         if (
           !isPatch &&
           outputIsJson &&
+          !outputIsEql &&
           (raw.match(/"schema"\s*:\s*"@ecp\.workflow"/g)?.length ?? 0) > 1
         ) {
           return {
@@ -233,7 +308,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
         const structuredPrior = formatStructuredRepairForModel(priorFeedback)
         if (
           config.repair.includeValidationErrors &&
-          isRepairFeedbackEcho(raw, structuredPrior)
+          isRepairFeedbackEcho(normalizedRaw, structuredPrior)
         ) {
           return {
             success: false,
@@ -245,27 +320,26 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
           }
         }
 
-        let decodeRaw = raw
-        if (outputIsJson) {
-          decodeRaw = isPatch ? repairPatchJsonSyntax(raw) : repairWorkflowJsonSyntax(raw)
-        }
+        const decodeOptions = outputIsEql
+          ? { headers: false as const }
+          : { headers: false as const, compact: true }
 
         const decoded = await ctx.ecp
-          .decode(decodeRaw)
+          .decode(normalizedRaw)
           .uses(format)
           .to(isPatch ? "@ecp.patch" : "@ecp.workflow")
-          .with({ headers: false, compact: true })
+          .with(decodeOptions)
           .process()
 
         let document = decoded.result
-        if (!isPatch && document !== undefined) {
+        if (!isPatch && document !== undefined && outputIsJson && !outputIsEql) {
           document = normalizeWorkflowDocumentCandidate(document)
         }
 
         feedback.push(collectDecodeFeedback(decoded))
 
         if (!decoded.success || document === undefined) {
-          if (!isPatch && outputIsJson && document !== undefined) {
+          if (!isPatch && outputIsJson && !outputIsEql && document !== undefined) {
             const validation = await ctx.ecp.validate(document as WorkflowManifest)
             feedback.push(collectValidationFeedback(validation))
             if (validation.valid) {
@@ -278,12 +352,47 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
         let artifact: unknown = document
 
         if (isPatch && input.manifest) {
+          if (document && typeof document === "object" && "patches" in document) {
+            document = alignPatchWorkflowId(
+              document as EcpPatchDocument,
+              input.manifest as WorkflowManifest
+            )
+          }
           const patched = await ctx.ecp
             .patch(input.manifest as WorkflowManifest)
             .with(artifact as EcpPatchInput)
             .process()
           feedback.push(collectPatchFeedback(patched))
           if (!patched.success || !patched.result) {
+            const duplicateStep = patched.diagnostics?.some((d) =>
+              /Duplicate step id/i.test(d.message ?? "")
+            )
+            const unknownStep = patched.diagnostics?.some((d) =>
+              /Step not found:/i.test(d.message ?? "")
+            )
+            if (duplicateStep) {
+              const moveMatch = input.request.match(
+                /\bmove\s+(?:the\s+)?(\w+)\s+(?:step\s+)?(?:to\s+run\s+)?(after|before)\s+(\w+)/i
+              )
+              feedback.push(
+                collectModelOutputFeedback(
+                  moveMatch
+                    ? `Use MOVE STEP ${moveMatch[1]} ${moveMatch[2]!.toUpperCase()} ${moveMatch[3]}. Do not ADD STEP ${moveMatch[3]} — that step already exists.`
+                    : "A step id in ADD STEP already exists in the workflow. Use UPDATE STEP to change it, not ADD STEP with the same id."
+                )
+              )
+            } else if (unknownStep && baseline) {
+              const allowed =
+                baseline.steps
+                  ?.filter((s) => "uses" in s && typeof s.uses === "string")
+                  .map((s) => s.id)
+                  .join(", ") ?? "none"
+              feedback.push(
+                collectModelOutputFeedback(
+                  `Patch references a step id not in this workflow. Existing step ids: ${allowed}. Use only those ids (or a new id for ADD STEP).`
+                )
+              )
+            }
             return { success: false, feedback }
           }
           artifact = patched.result
@@ -307,6 +416,10 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
           if (capFeedback) {
             return { success: false, feedback: [...feedback, ...capFeedback] }
           }
+          const stepCountFeedback = collectCreateStepCountFeedback(input.request, wfArtifact)
+          if (stepCountFeedback) {
+            return { success: false, feedback: [...feedback, ...stepCountFeedback] }
+          }
         }
         if (isPatch && environmentSummary) {
           const patchFeedback = collectPatchGoalFeedback(
@@ -326,7 +439,13 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
 
     const validation = await ctx.ecp.validate(loopResult.artifact as WorkflowManifest)
 
-    const trace: HarnessInvokeResult["trace"] = {
+    const includeSystemPrompt =
+      process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.trim() !== "" &&
+      process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.toLowerCase() !== "0" &&
+      process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.toLowerCase() !== "false" &&
+      process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.toLowerCase() !== "off"
+
+    const trace: HarnessInvokeResult["trace"] & Record<string, unknown> = {
       harness: BROWSER_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
@@ -337,6 +456,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
       ...(config.trace.includePrompt ? { prompt: lastPrompt } : {}),
       ...(config.trace.includeRawOutput ? { rawOutput: loopResult.raw } : {}),
       ...(config.trace.includeRepairAttempts ? { repairAttempts: loopResult.attempts } : {}),
+      ...(includeSystemPrompt ? { systemPrompt: system } : {}),
     }
 
     return {

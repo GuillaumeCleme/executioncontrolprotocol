@@ -38,7 +38,7 @@ describe.skipIf(!readiness.ready)(
       expect(harnessOutput.artifact.schema, harnessTraceHint(harnessOutput)).toBe("@ecp.workflow")
       expect(harnessOutput.artifact.steps?.length ?? 0).toBeGreaterThanOrEqual(1)
       expect(harnessOutput.trace.decodeSucceeded).toBe(true)
-      expect(harnessOutput.trace.outputFormat).toBe("@ecp/format-json")
+      expect(harnessOutput.trace.outputFormat).toBe("@ecp/format-eql")
       expect(harnessOutput.validation?.valid ?? true).toBe(true)
 
       await ecp.terminate()

@@ -13,12 +13,20 @@ import {
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
 import type { DeterministicAssertion, EvalCase, JudgeAssertion } from "./eval-case-schema.js"
 import { isFlowEvalCase } from "./eval-case-schema.js"
+import {
+  isEvalDebugEnabled,
+  logEvalAssertionMismatch,
+} from "./eval-debug.js"
+import { formatInvokeFailure } from "./harness-trace-format.js"
 
 function caseLabel(caseRow: EvalCase, stepIndex?: number): string {
   return stepIndex === undefined ? `[${caseRow.id}]` : `[${caseRow.id} step ${stepIndex}]`
 }
 
 function formatInvokeFailureDetails(result: InvokeResult): string {
+  if (isEvalDebugEnabled()) {
+    return ` (${formatInvokeFailure(result)})`
+  }
   const parts: string[] = []
   if (result.diagnostics?.length) {
     parts.push(
@@ -63,7 +71,22 @@ export async function assertDeterministic(
 ): Promise<HarnessInvokeResult> {
   const label = caseLabel(caseRow, options.stepIndex)
 
+  const debugDescribeOpts = {
+    stepIndex: options.stepIndex,
+    descriptorExtensionIds: options.descriptorExtensionIds,
+    descriptorCapabilityIds: options.descriptorCapabilityIds,
+    describeExtensions: async () =>
+      (await options.ecp.describe()).extensions?.map((e) => e.id) ?? [],
+    describeCapabilities: async () =>
+      (await options.ecp.describe()).capabilities?.map((c) => c.id) ?? [],
+  }
+
   for (const assertion of assertions) {
+    const harnessOutputForDebug = result.success
+      ? (result.result as HarnessInvokeResult)
+      : (result.result as HarnessInvokeResult | undefined)
+
+    try {
     if (assertion.kind === "invokeSuccess") {
       expect(
         result.success,
@@ -122,6 +145,11 @@ export async function assertDeterministic(
         expect(step?.label, `${label} step label`).toBe(assertion.value)
         break
       }
+      case "workflowLabel": {
+        const wf = harnessOutput.artifact as WorkflowManifest
+        expect(wf.workflow?.label, `${label} workflow label`).toBe(assertion.value)
+        break
+      }
       case "stepRemoved": {
         const wf = harnessOutput.artifact as WorkflowManifest
         const step = wf.steps?.find((s) => s.type === "step" && s.id === assertion.stepId)
@@ -140,12 +168,21 @@ export async function assertDeterministic(
         expect(hasRef, `${label} input $ref`).toBe(true)
         break
       }
+      case "stepOrder": {
+        const wf = harnessOutput.artifact as WorkflowManifest
+        const order =
+          wf.steps
+            ?.filter((s) => s.type === "step" || s.type === undefined)
+            .map((s) => s.id) ?? []
+        expect(order, `${label} step order`).toEqual(assertion.stepIds)
+        break
+      }
       case "citationStepId": {
         const artifact = harnessOutput.artifact as HarnessReply
         const cited = artifact.citations?.some(
           (c) => c.kind === "step" && c.id === assertion.value
         )
-        expect(cited ?? artifact.answer.includes(assertion.value), `${label} citation`).toBe(true)
+        expect(cited || artifact.answer.includes(assertion.value), `${label} citation`).toBe(true)
         break
       }
       case "answerContains": {
@@ -177,6 +214,13 @@ export async function assertDeterministic(
       }
       default:
         break
+    }
+    } catch (e) {
+      await logEvalAssertionMismatch(caseRow, assertion, harnessOutputForDebug, {
+        ...debugDescribeOpts,
+        errorMessage: e instanceof Error ? e.message : String(e),
+      })
+      throw e
     }
   }
 

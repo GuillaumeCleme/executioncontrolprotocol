@@ -36,14 +36,15 @@ export const WORKFLOW_EVAL_HARNESS_CONFIG = getEvalMatrixHarnessConfig(
 )
 
 /** Extension ids bound in workflow eval environments. @category Evals */
-export const WORKFLOW_EVAL_EXTENSIONS = ["@ecp/format-toon", "@ecp/test"] as const
+export const WORKFLOW_EVAL_EXTENSIONS = ["@ecp/format-toon", "@ecp/format-eql", "@ecp/test"] as const
 
 /** Extension ids bound in intent eval environments (same ops surface as workflow). @category Evals */
-export const INTENT_EVAL_EXTENSIONS = ["@ecp/format-toon", "@ecp/test"] as const
+export const INTENT_EVAL_EXTENSIONS = ["@ecp/format-toon", "@ecp/format-eql", "@ecp/test"] as const
 
 /** Extension ids bound in Ollama matrix eval environments (binding order). @category Evals */
 export const MATRIX_EVAL_EXTENSION_IDS = [
   "@ecp/format-toon",
+  "@ecp/format-eql",
   "@ecp/format-json",
   "@ecp/test",
   "@ecp/demo",

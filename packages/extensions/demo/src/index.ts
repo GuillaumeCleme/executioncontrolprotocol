@@ -5,7 +5,7 @@ import {
   globalRegistry,
   type Registry,
 } from "@ecp/core"
-import { LATEST_ECP_VERSION, modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
 
 const GenerateTextInput = z.object({
@@ -27,7 +27,7 @@ function demoIntentResponse(prompt: string): string {
   } else if (/what is|how does|faq|explain/.test(lower)) {
     intent = "faq"
   }
-  return JSON.stringify({ schema: "@ecp.intent", intent })
+  return `INTENT ${intent}`
 }
 
 function demoGenerateHandler(input: { prompt?: string }) {
@@ -35,26 +35,22 @@ function demoGenerateHandler(input: { prompt?: string }) {
   if (prompt.includes("User message:")) {
     return { text: demoIntentResponse(prompt) }
   }
-  if (prompt.includes("@ecp.patch") || prompt.includes("schema @ecp.patch")) {
+  if (prompt.includes("@ecp.patch") || /PATCH\s+WORKFLOW/i.test(prompt)) {
     return {
       text: [
-        "schema: @ecp.patch",
-        `version: "${LATEST_ECP_VERSION}"`,
-        "targetSchema: @ecp.workflow",
-        "patches[1]:",
-        '  - path: "steps[echo].input"',
-        "    value.value: patched",
+        "PATCH WORKFLOW echo-test",
+        "UPDATE STEP echo",
+        '  WITH value = "patched"',
       ].join("\n"),
     }
   }
   return {
     text: [
-      'schema: "@ecp.workflow"',
-      `version: "${LATEST_ECP_VERSION}"`,
-      "workflow:",
-      "  id: demo-generated",
-      "steps[1]{id,uses,label,as}:",
-      "  echo,@ecp/test.echo,Demo Echo,echo",
+      'WORKFLOW demo-generated "Demo generated"',
+      "STEP echo USES @ecp/test.echo",
+      '  LABEL "Demo Echo"',
+      '  WITH value = "hello"',
+      "  AS echo",
     ].join("\n"),
   }
 }

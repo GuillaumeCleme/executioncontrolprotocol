@@ -7,7 +7,13 @@ export {
   type HarnessPromptFixtureId,
 } from "./harness-prompt-fixture-schema.js"
 export { loadHarnessPromptFixture } from "./load-harness-prompt.js"
-export { loadSchemaExample, formatSchemaExampleJson } from "./load-schema-example.js"
+export {
+  loadSchemaExample,
+  loadSchemaExampleEql,
+  formatSchemaExampleJson,
+  formatSchemaExampleEql,
+  loadRepairNeutralExampleEql,
+} from "./load-schema-example.js"
 export {
   buildSystemPrompt,
   buildWorkflowCreateSystemPrompt,

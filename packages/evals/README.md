@@ -40,10 +40,10 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
-| **Matrix (52+ cases)** | `createHarnessOllamaMatrixEnvironment()` | workflow, intent, assistant | JSON output + TOON descriptor |
-| Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/evals-workflow-authoring` | `@ecp/format-json` (descriptor still TOON) |
-| Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/evals-intent-classification` | `@ecp/format-json` |
-| Combined (both) | `createHarnessOllamaEnvironment()` | both | JSON output + TOON descriptor |
+| **Matrix (52+ cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser` workflow task | `@ecp/format-eql` |
+| Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser` intent task | `@ecp/format-eql` |
+| Combined (both) | `createHarnessOllamaEnvironment()` | both tasks | EQL output |
 | Demo (not counted) | demo provider env | same harness ids | deterministic stubs only |
 
 ### Extension alignment (matrix)
@@ -53,8 +53,9 @@ Matrix evals bind **formatters, test, and demo stubs** only (no memory/storage/t
 | Extension | Why |
 | --------- | --- |
 | `@ecp/ollama` | Model provider (`gemma3:1b`) and `@ecp/ollama.evaluate` judge |
-| `@ecp/format-toon` | Environment descriptor encoding |
-| `@ecp/format-json` | Harness output + run context encoding (core formatter, explicit binding) |
+| `@ecp/format-toon` | Legacy descriptor encoding (optional; matrix uses plain-text + EQL grammar in prompts) |
+| `@ecp/format-eql` | Harness model output (workflow, patch, intent, reply) — headerless |
+| `@ecp/format-json` | Run context encoding (core formatter, explicit binding) |
 | `@ecp/test` | `@ecp/test.echo` in workflow prompts |
 | `@ecp/demo` | Stub ops: `summarize`, `translate`, `notify`, `validate` (not the LLM provider) |
 
@@ -68,11 +69,42 @@ Tests live under [`test/harness/*.eval.test.ts`](test/harness/).
 
 Harness results include a `trace` object when invoke succeeds. Eval tests enable full trace via `EVAL_HARNESS_TRACE` (`includePrompt`, `includeRawOutput`, `includeValidation`).
 
+### Eval debug logging (`ECP_EVAL_DEBUG`)
+
+Set **`ECP_EVAL_DEBUG`** when running eval tests to print structured troubleshooting output for each case (console warnings + optional NDJSON file).
+
+| Value | Behavior |
+| ----- | -------- |
+| `1` / `true` / `failures` | Log **failed** invokes and assertion mismatches only |
+| `all` / `verbose` | Log **every** case (context before invoke + full invoke report) |
+
+Optional: **`ECP_EVAL_DEBUG_FILE`** — append one JSON object per line (e.g. `.cursor/eval-debug.ndjson`).
+
+Example:
+
+```sh
+# Windows PowerShell
+$env:ECP_EVAL_DEBUG = "failures"
+$env:ECP_EVAL_DEBUG_FILE = ".cursor/eval-debug.ndjson"
+npm run build
+npx vitest run --project eval packages/evals/test/harness/matrix-workflow-patch.eval.test.ts -t "wf-patch-03"
+```
+
+Each failure block includes:
+
+- **input** — resolved case input (manifest summarized when present)
+- **expected assertions** — human-readable `describeAssertionExpectation` per assertion
+- **prompt** / **rawModelOutput** — from `trace` (requires `EVAL_HARNESS_TRACE`, already on for matrix)
+- **artifact** — decoded JSON (truncated)
+- **assertion mismatch** — expected vs `extractAssertionActual` snapshot
+
+All matrix / `runEvalCase` tests pick this up automatically; no per-test changes required.
+
 | Failure stage | What you see |
 | ------------- | ------------ |
 | **Invoke failed** (`success: false`) | `assertHarnessInvokeSuccess` prints `formatInvokeFailure(result)` — diagnostics codes/messages. Decode errors from the harness include `rawModelOutput:` in the diagnostic text. |
 | **Wrong artifact** (invoke succeeded) | Use `expect(..., harnessTraceHint(harnessOutput))` or `expectHarnessIntent(result, intent)` — Vitest shows prompt, raw model text, validation errors, provider, and model. |
-| **Manual inspection** | `formatHarnessTrace(harnessOutput)` in [`test/harness/assert-harness-result.ts`](test/harness/assert-harness-result.ts) |
+| **Manual inspection** | `formatHarnessTrace(harnessOutput)` in [`src/fixtures/harness-trace-format.ts`](src/fixtures/harness-trace-format.ts) (re-exported from [`test/harness/assert-harness-result.ts`](test/harness/assert-harness-result.ts)) |
 
 Example on assertion mismatch:
 
@@ -86,9 +118,9 @@ expect(got.intent, harnessTraceHint(harnessOutput)).toBe(ECP_INTENT_VALUES.WORKF
 
 Typical failure stages for intent evals:
 
-1. **Model** — malformed JSON in `trace.rawOutput` (fences, truncated JSON, wrong keys). Repair retries strip fences and pass decode errors back to the model.
-2. **Decode** — `@ecp/format-json` rejects output; error message includes field paths (not bare `Required`) and `rawModelOutput`.
-3. **Validation** — decoded JSON missing `@ecp.intent` schema or invalid `intent` enum (`trace.validation`).
+1. **Model** — malformed EQL in `trace.rawOutput` (fences, prose, invented capabilities). Repair retries strip fences and pass decode errors back to the model.
+2. **Decode** — `@ecp/format-eql` rejects output; error message includes field paths and `rawModelOutput`.
+3. **Validation** — decoded document missing required schema fields or invalid enums (`trace.validation`).
 
 ### Repair loop (model learns from failures)
 

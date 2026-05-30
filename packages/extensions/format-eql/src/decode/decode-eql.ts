@@ -10,12 +10,15 @@ import { EQL_ERROR_CODES, eqlIssue } from "./diagnostics.js"
 import { detectHeader, parseEql } from "./parser.js"
 import { describeFromEql } from "./normalize-describe.js"
 import { environmentFromEql } from "./normalize-environment.js"
+import { intentFromEql } from "./normalize-intent.js"
 import { patchFromEql } from "./normalize-patch.js"
+import { replyFromEql } from "./normalize-reply.js"
 import { workflowFromEql } from "./normalize-workflow.js"
 import {
   environmentDescribeSchema,
   environmentManifestSchema,
 } from "../validate-environment.js"
+import { ecpIntentSchema, harnessReplySchema } from "../validate-harness.js"
 
 /**
  * Decode EQL text to an ECP document.
@@ -66,6 +69,8 @@ export function decodeFromEql(
     "@ecp.patch",
     "@ecp.environment",
     "@ecp.environment.describe",
+    "@ecp.intent",
+    "@ecp.harness.reply",
   ] as const
   if (!supportedDecodeSchemas.includes(targetSchema as (typeof supportedDecodeSchemas)[number])) {
     return decodeFailure({
@@ -161,6 +166,76 @@ export function decodeFromEql(
         success: true,
         targetSchema,
         result: descriptor,
+        diagnostics: [],
+      }
+    }
+
+    if (parsed.document.kind === "intent") {
+      if (targetSchema !== "@ecp.intent") {
+        return decodeFailure({
+          targetSchema,
+          diagnostics: [
+            eqlIssue(
+              EQL_ERROR_CODES.UNSUPPORTED_SCHEMA,
+              "EQL intent document does not match targetSchema"
+            ),
+          ],
+        })
+      }
+      const intent = intentFromEql(parsed.document)
+      const zod = ecpIntentSchema.safeParse(intent)
+      if (!zod.success) {
+        return decodeFailure({
+          targetSchema,
+          diagnostics: zod.error.issues.map((i) => ({
+            severity: "error" as const,
+            message: i.message,
+            path: i.path.join("."),
+            code: ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED,
+          })),
+        })
+      }
+      return {
+        schema: "@ecp.decode.result",
+        version: LATEST_ECP_VERSION,
+        success: true,
+        targetSchema,
+        result: intent,
+        diagnostics: [],
+      }
+    }
+
+    if (parsed.document.kind === "reply") {
+      if (targetSchema !== "@ecp.harness.reply") {
+        return decodeFailure({
+          targetSchema,
+          diagnostics: [
+            eqlIssue(
+              EQL_ERROR_CODES.UNSUPPORTED_SCHEMA,
+              "EQL reply document does not match targetSchema"
+            ),
+          ],
+        })
+      }
+      const reply = replyFromEql(parsed.document)
+      const zod = harnessReplySchema.safeParse(reply)
+      if (!zod.success) {
+        return decodeFailure({
+          targetSchema,
+          diagnostics: zod.error.issues.map((i) => ({
+            severity: "error" as const,
+            message: i.message,
+            path: i.path.join("."),
+            code: ECP_ENCODING_ERROR_CODES.FORMAT_DECODE_FAILED,
+          })),
+        })
+      }
+      return {
+        schema: "@ecp.decode.result",
+        version: LATEST_ECP_VERSION,
+        success: true,
+        targetSchema,
+        result: reply,
         diagnostics: [],
       }
     }

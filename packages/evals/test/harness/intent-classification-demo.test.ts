@@ -2,6 +2,7 @@ import { describe, it } from "vitest"
 import { environment, extension, harness, runtime, registerCoreFormats } from "@ecp/core"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerDemoExtension } from "@ecp/demo"
+import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { ECP_INTENT_VALUES } from "@ecp/types"
 import { EVALS_HARNESS_CAPABILITY } from "@ecp/evals"
 import {
@@ -16,15 +17,19 @@ async function createEvalIntentDemoEnv() {
   registerEvalHarnesses()
   await registerNodeRuntime()
   await registerDemoExtension()
+  await registerFormatEqlExtension()
 
   return environment("evals-harness-intent-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
-    .withExtensions([extension("@ecp/demo").with({})])
+    .withExtensions([
+      extension("@ecp/format-eql").with({}),
+      extension("@ecp/demo").with({}),
+    ])
     .withHarnesses([
       harness(EVALS_HARNESS_ID)
         .uses("@ecp/demo.generate")
         .with({
-          output: { schema: "@ecp.intent", format: "@ecp/format-json", validate: true },
+          output: { schema: "@ecp.intent", format: "@ecp/format-eql", validate: true },
         }),
     ])
 }

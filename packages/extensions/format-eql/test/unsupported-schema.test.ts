@@ -9,7 +9,7 @@ describe("EQL unsupported schema handling", () => {
   it("encode fails for unknown sourceSchema", () => {
     expect(() =>
       encodeToEql(
-        { source: { schema: "@ecp.intent" }, sourceSchema: "@ecp.intent" },
+        { source: { schema: "@ecp.unknown" }, sourceSchema: "@ecp.unknown" },
         testCtx
       )
     ).toThrow(expect.objectContaining({
@@ -25,7 +25,7 @@ describe("EQL unsupported schema handling", () => {
     )
   })
 
-  it("decode fails for unsupported targetSchema", () => {
+  it("decode fails when document kind mismatches targetSchema", () => {
     const encoded = encodeWorkflow(loadWorkflowFixture("echo-workflow"), {
       headers: false,
     })
@@ -41,11 +41,11 @@ describe("EQL unsupported schema handling", () => {
     expect(decoded.diagnostics[0]?.code).toBe(EQL_ERROR_CODES.UNSUPPORTED_SCHEMA)
   })
 
-  it("decode rejects targetSchema that is not workflow or patch", () => {
+  it("decode rejects unsupported targetSchema", () => {
     const decoded = decodeFromEql(
       {
-        input: "WORKFLOW x\nSTEP s USES @ecp/test.echo",
-        targetSchema: "@ecp.intent",
+        input: "INTENT workflow-create",
+        targetSchema: "@ecp.unknown",
         options: { headers: false },
       },
       testCtx

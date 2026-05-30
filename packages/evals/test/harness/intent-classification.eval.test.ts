@@ -39,7 +39,7 @@ describe.skipIf(!readiness.ready)(
 
       const harnessOutput = expectHarnessIntent(result, ECP_INTENT_VALUES.WORKFLOW_CREATE)
       expect(harnessOutput.trace.outputFormat, harnessTraceHint(harnessOutput)).toBe(
-        "@ecp/format-json"
+        "@ecp/format-eql"
       )
       expect(harnessOutput.trace.prompt, harnessTraceHint(harnessOutput)).toContain(
         "Environment capabilities"

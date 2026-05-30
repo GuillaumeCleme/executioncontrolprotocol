@@ -46,6 +46,8 @@ export async function callModelGenerate(
     prompt = `${prompt}\n\nReply with JSON only. No markdown fences.`
   } else if (responseFormat === "toon" && !prompt.toLowerCase().includes("toon")) {
     prompt = `${prompt}\n\nReply with compact TOON only. No markdown fences.`
+  } else if (responseFormat === "eql" && !prompt.toUpperCase().includes("EQL")) {
+    prompt = `${prompt}\n\nReply with EQL only. No markdown fences. No ECP header line.`
   }
 
   const payload = modelGenerateInputSchema.parse({

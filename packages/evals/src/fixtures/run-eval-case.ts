@@ -31,6 +31,13 @@ import {
 import { resolveEvalInvokeInput, resolveSingleEvalCaseInput } from "./load-eval-cases.js"
 
 import {
+  evalDebugContextFromCase,
+  isEvalDebugEnabled,
+  logEvalCaseContext,
+  logEvalCaseInvoke,
+} from "./eval-debug.js"
+
+import {
 
   EVAL_HARNESS_TASKS,
 
@@ -122,6 +129,17 @@ export async function runSingleEvalCase(
 
 
 
+  const deterministic = withInvokeSuccessAssertion(caseRow.assertions.deterministic)
+
+  const debugCtx = evalDebugContextFromCase(
+    caseRow,
+    withHarnessTask(caseRow.harness, input) as Record<string, unknown>
+  )
+
+  if (isEvalDebugEnabled()) {
+    logEvalCaseContext({ ...debugCtx, assertions: deterministic })
+  }
+
   const result = await ecp
 
     .invoke(EVALS_HARNESS_CAPABILITY as HarnessCapabilityId)
@@ -130,11 +148,13 @@ export async function runSingleEvalCase(
 
     .process()
 
+  if (isEvalDebugEnabled()) {
+    logEvalCaseInvoke({ ...debugCtx, assertions: deterministic }, result)
+  }
+
   const judge = caseRow.assertions.judge
 
 
-
-  const deterministic = withInvokeSuccessAssertion(caseRow.assertions.deterministic)
 
   if (!isJudgeOnly(judge)) {
 
@@ -194,6 +214,18 @@ export async function runFlowEvalCase(
 
     input.model = model
 
+    const deterministic = withInvokeSuccessAssertion(step.assertions.deterministic)
+
+    const debugCtx = evalDebugContextFromCase(
+      caseRow,
+      withHarnessTask(step.harness, input) as Record<string, unknown>,
+      i
+    )
+
+    if (isEvalDebugEnabled()) {
+      logEvalCaseContext({ ...debugCtx, assertions: deterministic })
+    }
+
     const result = await ecp
 
       .invoke(EVALS_HARNESS_CAPABILITY as HarnessCapabilityId)
@@ -202,9 +234,11 @@ export async function runFlowEvalCase(
 
       .process()
 
-    const judge = step.assertions.judge
+    if (isEvalDebugEnabled()) {
+      logEvalCaseInvoke({ ...debugCtx, assertions: deterministic }, result)
+    }
 
-    const deterministic = withInvokeSuccessAssertion(step.assertions.deterministic)
+    const judge = step.assertions.judge
 
     if (!isJudgeOnly(judge)) {
 

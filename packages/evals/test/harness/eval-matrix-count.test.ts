@@ -9,6 +9,7 @@ describe("eval matrix fixtures", () => {
   it("matrix extension binding list has four extensions", () => {
     expect(MATRIX_EVAL_EXTENSION_IDS).toEqual([
       "@ecp/format-toon",
+      "@ecp/format-eql",
       "@ecp/format-json",
       "@ecp/test",
       "@ecp/demo",

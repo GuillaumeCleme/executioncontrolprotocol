@@ -1,0 +1,26 @@
+{
+  "schema": "@ecp.workflow",
+  "version": "1.0",
+  "workflow": {
+    "id": "echo-validate",
+    "label": "Echo validate reorder"
+  },
+  "steps": [
+    {
+      "type": "step",
+      "id": "echo",
+      "label": "Echo",
+      "uses": "@ecp/test.echo",
+      "input": { "value": "before-validate" },
+      "as": "echo"
+    },
+    {
+      "type": "step",
+      "id": "validate",
+      "label": "Validate",
+      "uses": "@ecp/demo.validate",
+      "input": { "payload": { "ok": true } },
+      "as": "validated"
+    }
+  ]
+}

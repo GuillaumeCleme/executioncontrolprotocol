@@ -1,0 +1,3 @@
+REPLY
+  ANSWER "Supported step capabilities: @ecp/test.echo, @ecp/demo.summarize."
+  CITATION extension @ecp/demo "@ecp/demo.summarize"

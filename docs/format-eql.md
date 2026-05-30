@@ -469,15 +469,18 @@ Support:
 
 ```txt
 PATCH WORKFLOW
-ADD STEP
+UPDATE WORKFLOW
 UPDATE STEP
+ADD STEP
 DELETE STEP
 MOVE STEP
 BEFORE
 AFTER
 ```
 
-Inside `ADD` / `UPDATE`, use normal step verbs:
+`PATCH WORKFLOW` opens the patch document and names the target workflow. `UPDATE WORKFLOW` and `UPDATE STEP` change metadata on the workflow or a step. `ADD STEP`, `DELETE STEP`, and `MOVE STEP` are structural step CRUD.
+
+Inside `UPDATE WORKFLOW`, `ADD`, and `UPDATE STEP`, use normal field verbs:
 
 ```txt
 USES

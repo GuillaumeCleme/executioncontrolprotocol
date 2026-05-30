@@ -2,20 +2,20 @@ import { describe, expect, it } from "vitest"
 import { environment, extension, registerTestExtension, runtime } from "@ecp/core"
 import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
 import { registerDemoExtension } from "../src/index.js"
-import { registerFormatToonExtension } from "@ecp/format-toon"
+import { registerFormatEqlExtension } from "@ecp/format-eql"
 
-describe("@ecp/demo generateText TOON", () => {
-  it("returns workflow TOON with uses (not capabilityId)", async () => {
+describe("@ecp/demo generateText EQL", () => {
+  it("returns workflow EQL with USES (not capabilityId)", async () => {
     await registerNodeRuntime()
     await registerDemoExtension()
     await registerTestExtension()
-    await registerFormatToonExtension()
+    await registerFormatEqlExtension()
 
     const env = environment("demo-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
         extension("@ecp/demo").with({}),
-        extension("@ecp/format-toon").with({}),
+        extension("@ecp/format-eql").with({}),
         extension("@ecp/test").with({}),
       ])
     const ecp = await env.init()
@@ -32,14 +32,14 @@ describe("@ecp/demo generateText TOON", () => {
       "text" in generated.result
         ? String((generated.result as { text: string }).text)
         : String(generated.result)
-    expect(text).toContain("uses")
+    expect(text).toContain("USES @ecp/test.echo")
     expect(text).not.toContain("capabilityId")
 
     const decoded = await ecp
       .decode(text)
-      .uses("@ecp/format-toon")
+      .uses("@ecp/format-eql")
       .to("@ecp.workflow")
-      .with({ headers: false, compact: true })
+      .with({ headers: false })
       .process()
     expect(decoded.success).toBe(true)
 

@@ -1,5 +1,7 @@
-import { globalRegistry, type Registry } from "@ecp/core"
+import { catalogExtension, globalRegistry, type Registry } from "@ecp/core"
 import { formatEqlExtension } from "./extension.js"
+
+catalogExtension(formatEqlExtension)
 
 export { formatEqlExtension } from "./extension.js"
 export { encodeToEql } from "./encode/encode-eql.js"

@@ -34,12 +34,14 @@ const deterministicAssertionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("stepUses"), capabilityId: z.string() }),
   z.object({ kind: z.literal("stepCount"), min: z.number().optional(), exact: z.number().optional() }),
   z.object({ kind: z.literal("stepLabel"), stepId: z.string(), value: z.string() }),
+  z.object({ kind: z.literal("workflowLabel"), value: z.string() }),
   z.object({ kind: z.literal("stepRemoved"), stepId: z.string() }),
   z.object({ kind: z.literal("descriptorListsExtensions"), ids: z.array(z.string()) }),
   z.object({ kind: z.literal("descriptorListsCapabilities"), ids: z.array(z.string()) }),
   z.object({ kind: z.literal("citationStepId"), value: z.string() }),
   z.object({ kind: z.literal("answerContains"), text: z.string() }),
   z.object({ kind: z.literal("inputRefPresent"), stepId: z.string() }),
+  z.object({ kind: z.literal("stepOrder"), stepIds: z.array(z.string()).min(1) }),
 ])
 
 const judgeAssertionSchema = z.object({

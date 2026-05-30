@@ -8,6 +8,7 @@ import {
   collectValidationFeedback,
   defineHarness,
   HARNESS_PROMPT_FIXTURE_IDS,
+  inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
 } from "@ecp/core"
@@ -84,6 +85,7 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
+    const outputIsEql = format === "@ecp/format-eql" || format.endsWith("/format-eql")
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
     const system = config.system ?? buildSystemPrompt(promptFixtureId)
@@ -93,7 +95,9 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
     if (config.context.includeEnvironmentDescriptor) {
       const descriptor = await ctx.ecp.describe()
       const summary = summarizeEnvironmentDescriptor(descriptor)
-      environmentSummaryLines = formatEnvironmentSummaryLines(summary).join("\n")
+      environmentSummaryLines = formatEnvironmentSummaryLines(summary, {
+        format: outputIsEql ? "eql-create" : "plain",
+      }).join("\n")
       if (config.context.includeEncodedDescriptor) {
         descriptorText = await encodeForPrompt(ctx.ecp, summary, descriptorFormat)
       }
@@ -101,6 +105,17 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
 
     const buildPrompt = (repairText?: string) => {
       const lines = [`User message: ${input.message}`]
+      if (
+        /^how\s+(?:does|do)\b/i.test(input.message.trim()) &&
+        /\bwork\b/i.test(input.message)
+      ) {
+        lines.push(
+          "Routing hint: how-does questions about ECP features → INTENT faq (not workflow-patch)."
+        )
+      }
+      if (/^what is ecp\b/i.test(input.message.trim())) {
+        lines.push("Routing hint: definitional questions about ECP → INTENT faq.")
+      }
       if (environmentSummaryLines) {
         const envHeader = [
           "Environment capabilities:",
@@ -113,7 +128,7 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
       }
       if (repairText) {
         lines.push(
-          "Previous attempt failed. Fix these issues and return corrected JSON only:",
+          "Previous attempt failed. Fix these issues and return corrected EQL only:",
           repairText,
           buildRepairHint(promptFixtureId)
         )
@@ -135,7 +150,12 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
         lastPrompt = buildPrompt(repairText)
         const generated = await callModelGenerate(
           ctx.uses,
-          { prompt: lastPrompt, system, model: input.model, responseFormat: "json" },
+          {
+            prompt: lastPrompt,
+            system,
+            model: input.model,
+            responseFormat: inferResponseFormatFromFormatter(format),
+          },
           ctx.capabilityContext,
           format
         )
@@ -153,13 +173,18 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
             success: false,
             feedback: [
               collectModelOutputFeedback(
-                "Output echoed validation errors instead of a document. Return only intent JSON."
+                "Output echoed validation errors instead of a document. Return only intent EQL."
               ),
             ],
           }
         }
 
-        const decoded = await ctx.ecp.decode(raw).uses(format).to(ECP_INTENT_SCHEMA).process()
+        const decoded = await ctx.ecp
+          .decode(raw)
+          .uses(format)
+          .to(ECP_INTENT_SCHEMA)
+          .with({ headers: false })
+          .process()
         validation = decoded.validation ?? decodedValidationStub(!decoded.success)
         feedback.push(collectDecodeFeedback(decoded))
 
@@ -169,6 +194,21 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
 
         if (config.output.validate && validation.valid === false) {
           feedback.push(collectValidationFeedback(validation))
+          return { success: false, feedback }
+        }
+
+        const intent = (decoded.result as { intent?: string }).intent
+        const msg = input.message.trim()
+        if (
+          intent === "workflow-patch" &&
+          ((/^how\s+(?:does|do)\b/i.test(msg) && /\bwork\b/i.test(msg)) ||
+            /^what is ecp\b/i.test(msg))
+        ) {
+          feedback.push(
+            collectModelOutputFeedback(
+              "Use INTENT faq for how-does or what-is questions about ECP (no workflow change requested)."
+            )
+          )
           return { success: false, feedback }
         }
 

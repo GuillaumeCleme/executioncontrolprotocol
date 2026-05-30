@@ -29,7 +29,7 @@ export const modelGenerateInputSchema = z.object({
   /** Optional provider context blob. */
   context: z.unknown().optional(),
   /** Output format hint for providers without native support. */
-  responseFormat: z.enum(["text", "json", "toon"]).optional(),
+  responseFormat: z.enum(["text", "json", "toon", "eql"]).optional(),
 })
 
 /** Normalized model generate input type. @category Harness */

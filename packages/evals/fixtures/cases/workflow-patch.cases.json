@@ -146,6 +146,10 @@
           },
           {
             "kind": "validationValid"
+          },
+          {
+            "kind": "workflowLabel",
+            "value": "Updated Chain"
           }
         ],
         "judge": {
@@ -339,12 +343,12 @@
     {
       "id": "wf-patch-12",
       "suite": "workflow-patch",
-      "title": "Notify payload",
+      "title": "Move echo",
       "harness": "workflow-authoring",
       "model": "default",
-      "baselineWorkflow": "workflows/multi-cap-workflow.json",
+      "baselineWorkflow": "workflows/echo-validate-reorder.json",
       "input": {
-        "request": "Update notify step to run after echo in multi-cap workflow."
+        "request": "Move the echo step to run after validate."
       },
       "assertions": {
         "deterministic": [
@@ -357,6 +361,10 @@
           },
           {
             "kind": "validationValid"
+          },
+          {
+            "kind": "stepOrder",
+            "stepIds": ["validate", "echo"]
           }
         ],
         "judge": {

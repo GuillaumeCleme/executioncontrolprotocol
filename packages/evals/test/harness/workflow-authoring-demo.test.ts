@@ -5,6 +5,7 @@ import path from "node:path"
 import { environment, extension, harness, runtime, registerCoreFormats, registerTestExtension } from "@ecp/core"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerDemoExtension } from "@ecp/demo"
+import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
 import { EVALS_HARNESS_CAPABILITY } from "@ecp/evals"
@@ -23,11 +24,13 @@ async function createEvalAuthoringDemoEnv() {
   await registerNodeRuntime()
   await registerTestExtension()
   await registerDemoExtension()
+  await registerFormatEqlExtension()
   await registerFormatToonExtension()
 
   return environment("evals-harness-authoring-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([
+      extension("@ecp/format-eql").with({}),
       extension("@ecp/format-toon").with({}),
       extension("@ecp/test").with({}),
       extension("@ecp/demo").with({}),
@@ -36,7 +39,7 @@ async function createEvalAuthoringDemoEnv() {
       harness(EVALS_HARNESS_ID)
         .uses("@ecp/demo.generate")
         .with({
-          output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
+          output: { schema: "@ecp.workflow", format: "@ecp/format-eql", validate: true },
         }),
     ])
 }

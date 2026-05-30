@@ -23,10 +23,15 @@ export interface EqlStep {
   when?: ExprValue
 }
 
+export interface EqlWorkflowUpdate {
+  label?: string
+}
+
 export interface EqlPatchDoc {
   kind: "patch"
   header?: EqlHeader
   workflowId: string
+  workflowUpdate?: EqlWorkflowUpdate
   updates: EqlStepUpdate[]
   adds: EqlStepAdd[]
   deletes: string[]
@@ -118,11 +123,32 @@ export interface EqlDescribePolicy {
   summary?: string
 }
 
+export interface EqlIntentDoc {
+  kind: "intent"
+  header?: EqlHeader
+  intent: string
+}
+
+export interface EqlReplyCitation {
+  kind: string
+  id?: string
+  detail?: string
+}
+
+export interface EqlReplyDoc {
+  kind: "reply"
+  header?: EqlHeader
+  answer: string
+  citations: EqlReplyCitation[]
+}
+
 export type EqlDocument =
   | EqlWorkflowDoc
   | EqlPatchDoc
   | EqlEnvironmentDoc
   | EqlDescribeDoc
+  | EqlIntentDoc
+  | EqlReplyDoc
 
 export interface ParsedLine {
   line: number

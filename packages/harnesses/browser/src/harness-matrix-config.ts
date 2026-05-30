@@ -17,7 +17,7 @@ export const EVAL_HARNESS_REPAIR = {
 const SHARED_CONTEXT = {
   includeEnvironmentDescriptor: true,
   includeEncodedDescriptor: false,
-  descriptorFormat: "@ecp/format-toon",
+  descriptorFormat: "@ecp/format-eql",
 } as const
 
 /** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@ecp/evals`). */
@@ -40,14 +40,14 @@ export type HarnessProfile = "matrix" | "browser-demo"
 
 const MATRIX_INTENT = {
   promptFixture: "intent-classification",
-  output: { schema: "@ecp.intent", format: "@ecp/format-json", validate: true },
+  output: { schema: "@ecp.intent", format: "@ecp/format-eql", validate: true },
   context: { ...SHARED_CONTEXT },
   repair: EVAL_HARNESS_REPAIR,
   trace: EVAL_HARNESS_TRACE,
 } as const
 
 const MATRIX_WORKFLOW = {
-  output: { schema: "@ecp.workflow", format: "@ecp/format-json", validate: true },
+  output: { schema: "@ecp.workflow", format: "@ecp/format-eql", validate: true },
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
@@ -59,7 +59,7 @@ const MATRIX_WORKFLOW = {
 
 const MATRIX_ASSISTANT = {
   promptFixture: "workflow-assistant",
-  output: { schema: "@ecp.harness.reply", format: "@ecp/format-json", validate: true },
+  output: { schema: "@ecp.harness.reply", format: "@ecp/format-eql", validate: true },
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
@@ -71,22 +71,22 @@ const MATRIX_ASSISTANT = {
 
 const DEMO_INTENT = {
   promptFixture: "intent-classification",
-  output: { schema: "@ecp.intent", format: "@ecp/format-json", validate: true },
+  output: { schema: "@ecp.intent", format: "@ecp/format-eql", validate: true },
   context: {
     includeEnvironmentDescriptor: false,
     includeEncodedDescriptor: false,
-    descriptorFormat: "@ecp/format-toon",
+    descriptorFormat: "@ecp/format-eql",
   },
   repair: { enabled: true, maxAttempts: 1, includeValidationErrors: true },
   trace: { includePrompt: false, includeRawOutput: true, includeValidation: true },
 } as const
 
 const DEMO_WORKFLOW = {
-  output: { schema: "@ecp.workflow", format: "@ecp/format-toon", validate: true },
+  output: { schema: "@ecp.workflow", format: "@ecp/format-eql", validate: true },
   context: {
     includeEnvironmentDescriptor: true,
     includeEncodedDescriptor: false,
-    descriptorFormat: "@ecp/format-toon",
+    descriptorFormat: "@ecp/format-eql",
   },
   repair: { enabled: true, maxAttempts: 1, includeValidationErrors: true },
   trace: { includePrompt: true, includeRawOutput: true, includeValidation: true },
@@ -135,7 +135,7 @@ export const HARNESS_MATRIX_BINDING = {
 /** @deprecated Use {@link HARNESS_MATRIX_BINDING} */
 export const EVAL_MATRIX_HARNESS_BINDING = HARNESS_MATRIX_BINDING
 
-/** Loose env binding for browser demo (TOON workflow, per-task output). */
+/** Loose env binding for browser demo (EQL workflow, per-task output). */
 export const HARNESS_BROWSER_DEMO_BINDING = {
   harnessProfile: "browser-demo" as HarnessProfile,
 } as const

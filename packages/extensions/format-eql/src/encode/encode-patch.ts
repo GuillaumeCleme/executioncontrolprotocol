@@ -11,6 +11,27 @@ interface StepUpdateFields {
   mode?: unknown
 }
 
+function encodeAddStepBlock(
+  step: StepNode,
+  depth: number,
+  writer: EqlWriter,
+  anchor: string
+): void {
+  writer.writeln(`ADD STEP ${step.id} USES ${step.uses}${anchor}`)
+  if (step.label) {
+    writer.writeln(`LABEL ${formatLiteral(step.label, writer.quote)}`, depth)
+  }
+  if (step.input) {
+    for (const [key, value] of Object.entries(step.input)) {
+      formatInputValue(key, value, depth, writer)
+    }
+  }
+  if (step.as) {
+    const modePart = step.mode ? ` MODE ${step.mode}` : ""
+    writer.writeln(`AS ${step.as}${modePart}`, depth)
+  }
+}
+
 function encodeStepBlock(step: StepNode, depth: number, writer: EqlWriter, prefix: string): void {
   writer.writeln(`${prefix} ${step.id} USES ${step.uses}`)
   if (step.label) {
@@ -85,6 +106,14 @@ export function encodePatchToEql(
   }
   writer.writeln(`PATCH WORKFLOW ${workflowId}`)
 
+  const workflowLabelEntry = patch.patches.find(
+    (p) => p.path === "workflow.label" && p.mode === "replace"
+  )
+  if (workflowLabelEntry?.value !== undefined) {
+    writer.writeln("UPDATE WORKFLOW")
+    writer.writeln(`LABEL ${formatLiteral(workflowLabelEntry.value, writer.quote)}`, 1)
+  }
+
   const stepsReplace = patch.patches.find(
     (p) => p.path === "steps" && p.mode === "replace" && Array.isArray(p.value)
   )
@@ -96,12 +125,29 @@ export function encodePatchToEql(
     }
   }
 
+  for (const entry of patch.patches) {
+    if (entry.reason !== "eql:add-step") continue
+    const payload = entry.value as {
+      step: StepNode
+      _eqlInsertAfter?: string
+      _eqlInsertBefore?: string
+    }
+    const anchor =
+      payload._eqlInsertAfter !== undefined
+        ? ` AFTER ${payload._eqlInsertAfter}`
+        : payload._eqlInsertBefore !== undefined
+          ? ` BEFORE ${payload._eqlInsertBefore}`
+          : ""
+    encodeAddStepBlock(payload.step, 1, writer, anchor)
+  }
+
   for (const [stepId, fields] of collectStepUpdates(patch)) {
     writeStepUpdate(stepId, fields, writer)
   }
 
   for (const entry of patch.patches) {
     if (entry.path === "workflow.id") continue
+    if (entry.path === "workflow.label") continue
     if (entry.path.match(/^steps\[[^\]]+\]\./)) continue
 
     if (entry.reason === "eql:delete") {
@@ -123,7 +169,7 @@ export function encodePatchToEql(
       }
       continue
     }
-    if (entry.path === "steps" && entry.reason === "eql:add-steps") {
+    if (entry.path === "steps" && (entry.reason === "eql:add-steps" || entry.reason === "eql:add-step")) {
       continue
     }
   }

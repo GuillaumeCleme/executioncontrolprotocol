@@ -13,6 +13,7 @@ import type {
 import { eqlSyntaxIssue } from "./diagnostics.js"
 import { parseLines, tokenizeLine } from "./lexer.js"
 import { parseDescribeDocument, parseEnvironmentDocument } from "./parser-environment.js"
+import { parseIntentDocument, parseReplyDocument } from "./parser-harness.js"
 import { parseLiteral, parseRefPath, parseStatePath, parseWhenExpr } from "./values.js"
 
 export interface ParseResult {
@@ -96,6 +97,26 @@ function parseStepBody(
   return { step, nextIndex: i }
 }
 
+function parseWorkflowUpdateBody(
+  lines: ParsedLine[],
+  startIndex: number,
+  baseIndent: number
+): { update: { label?: string }; nextIndex: number } {
+  const update: { label?: string } = {}
+  let i = startIndex
+  while (i < lines.length) {
+    const row = lines[i]!
+    if (row.indent <= baseIndent) break
+    const t = upper(row.tokens)
+    if (t[0] === "LABEL" && row.tokens[1]) {
+      const lit = parseLiteral(row.tokens.slice(1).join(" "), row.line)
+      if (lit.value !== undefined) update.label = String(lit.value)
+    }
+    i++
+  }
+  return { update, nextIndex: i }
+}
+
 function parseUpdateBody(
   lines: ParsedLine[],
   startIndex: number,
@@ -163,8 +184,33 @@ export function parseEql(text: string): ParseResult {
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 
+  if (header?.schema === "@ecp.intent") {
+    const row = lines[index]
+    if (!row) {
+      issues.push(eqlSyntaxIssue(1, "Expected INTENT statement"))
+      return { issues, header }
+    }
+    const doc = parseIntentDocument(row, header, issues)
+    return doc ? { document: doc, header, issues } : { issues, header }
+  }
+
+  if (header?.schema === "@ecp.harness.reply") {
+    const doc = parseReplyDocument(lines, index, header, issues)
+    return doc ? { document: doc, header, issues } : { issues, header }
+  }
+
   const first = lines[index]!
   const ft = upper(first.tokens)
+
+  if (ft[0] === "INTENT") {
+    const doc = parseIntentDocument(first, header, issues)
+    return doc ? { document: doc, header, issues } : { issues, header }
+  }
+
+  if (ft[0] === "REPLY") {
+    const doc = parseReplyDocument(lines, index, header, issues)
+    return doc ? { document: doc, header, issues } : { issues, header }
+  }
 
   if (ft[0] === "ENVIRONMENT") {
     const doc = parseEnvironmentDocument(lines, index, header, issues)
@@ -254,8 +300,31 @@ export function parseEql(text: string): ParseResult {
     while (i < lines.length) {
       const row = lines[i]!
       const t = upper(row.tokens)
+      if (t[0] === "UPDATE" && t[1] === "WORKFLOW") {
+        if (t[2] === "LABEL" && row.tokens[3]) {
+          const lit = parseLiteral(row.tokens.slice(3).join(" "), row.line)
+          if (lit.value !== undefined) {
+            doc.workflowUpdate = { label: String(lit.value) }
+          }
+          i++
+          continue
+        }
+        const body = parseWorkflowUpdateBody(lines, i + 1, row.indent)
+        if (body.update.label !== undefined) {
+          doc.workflowUpdate = { label: body.update.label }
+        }
+        i = body.nextIndex
+        continue
+      }
       if (t[0] === "UPDATE" && t[1] === "STEP" && row.tokens[2]) {
         const update: EqlStepUpdate = { stepId: row.tokens[2]!, with: {} }
+        if (t[3] === "LABEL" && row.tokens[4]) {
+          const lit = parseLiteral(row.tokens.slice(4).join(" "), row.line)
+          if (lit.value !== undefined) update.label = String(lit.value)
+          doc.updates.push(update)
+          i++
+          continue
+        }
         const body = parseUpdateBody(lines, i + 1, row.indent, issues)
         if (body.update.label) update.label = body.update.label
         if (body.update.uses) update.uses = body.update.uses
@@ -310,7 +379,7 @@ export function parseEql(text: string): ParseResult {
   }
 
   issues.push(
-    eqlSyntaxIssue(first.line, "Expected WORKFLOW, PATCH WORKFLOW, ENVIRONMENT, or CAPABILITY")
+    eqlSyntaxIssue(first.line, "Expected WORKFLOW, PATCH, INTENT, REPLY, ENVIRONMENT, or CAPABILITY")
   )
   return { issues, header }
 }

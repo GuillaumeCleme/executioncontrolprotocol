@@ -15,6 +15,7 @@ import { registerBrowserRegistryExtension } from "./extensions/browser-registry.
 import { registerBrowserSessionConfigExtension } from "./extensions/browser-session-config.js"
 import { registerBrowserLocalConfigExtension } from "./extensions/browser-local-config.js"
 import { registerBrowserGuideExtension } from "./extensions/browser-guide.js"
+import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import { registerFormatMermaidExtension } from "@ecp/format-mermaid"
 import { registerDemoExtension } from "@ecp/demo"
@@ -26,6 +27,7 @@ import {
   HARNESS_BROWSER_DEMO_BINDING,
   registerBrowserHarnesses,
 } from "@ecp/harnesses-browser"
+import "@ecp/format-eql"
 import "@ecp/format-toon"
 import "@ecp/format-mermaid"
 import "@ecp/demo"
@@ -40,6 +42,7 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerBrowserSessionConfigExtension(registry)
   await registerBrowserLocalConfigExtension(registry)
   await registerBrowserGuideExtension(registry)
+  await registerFormatEqlExtension(registry)
   await registerFormatToonExtension(registry)
   await registerFormatMermaidExtension(registry)
   await registerDemoExtension(registry)
@@ -62,6 +65,7 @@ export function createBrowserDemoEnvironment(
   return coreEnvironment(id, label, registry)
     .withRuntime(runtime(BROWSER_RUNTIME_ID, "Browser Runtime"))
     .withExtensions([
+      extension("@ecp/format-eql").with({}),
       extension("@ecp/format-toon").with({}),
       extension("@ecp/format-mermaid").with({}),
       extension("@ecp/demo").with({}),

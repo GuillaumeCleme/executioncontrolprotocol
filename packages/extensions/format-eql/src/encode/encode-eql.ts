@@ -2,10 +2,12 @@ import {
   ECP_ENCODING_ERROR_CODES,
   ECP_FORMATS,
   LATEST_ECP_VERSION,
+  type EcpIntent,
   type EcpPatchDocument,
   type EncodeResult,
   type EnvironmentDescriptor,
   type EnvironmentManifest,
+  type HarnessReply,
   type WorkflowManifest,
 } from "@ecp/types"
 import {
@@ -19,12 +21,15 @@ import type { EqlEncodeInput } from "../schemas.js"
 import { resolveEqlOptions } from "../schemas.js"
 import { encodeDescribeToEql } from "./encode-describe.js"
 import { encodeEnvironmentToEql } from "./encode-environment.js"
+import { encodeIntentToEql } from "./encode-intent.js"
 import { encodePatchToEql } from "./encode-patch.js"
+import { encodeReplyToEql } from "./encode-reply.js"
 import { encodeWorkflowToEql } from "./encode-workflow.js"
 import {
   environmentDescribeSchema,
   environmentManifestSchema,
 } from "../validate-environment.js"
+import { ecpIntentSchema, harnessReplySchema } from "../validate-harness.js"
 
 function getSchema(source: unknown): string | undefined {
   if (source !== null && typeof source === "object" && "schema" in source) {
@@ -117,6 +122,64 @@ export function encodeToEql(
       })
     }
     const content = encodeDescribeToEql(descriptor, input.options, includeHeader)
+    return {
+      schema: "@ecp.encode.result",
+      version: LATEST_ECP_VERSION,
+      success: true,
+      format: ECP_FORMATS.EQL,
+      mediaType: "text/ecp-eql",
+      sourceSchema,
+      sourceVersion: input.sourceVersion,
+      result: content,
+      diagnostics: [],
+    }
+  }
+
+  if (sourceSchema === "@ecp.intent") {
+    const intent = input.source as EcpIntent
+    const zod = ecpIntentSchema.safeParse(intent)
+    if (!zod.success) {
+      return encodeFailure({
+        format: ECP_FORMATS.EQL,
+        sourceSchema,
+        diagnostics: zod.error.issues.map((i) => ({
+          severity: "error" as const,
+          message: i.message,
+          path: i.path.join("."),
+          code: ECP_ENCODING_ERROR_CODES.FORMAT_ENCODE_FAILED,
+        })),
+      })
+    }
+    const content = encodeIntentToEql(intent, input.options, includeHeader)
+    return {
+      schema: "@ecp.encode.result",
+      version: LATEST_ECP_VERSION,
+      success: true,
+      format: ECP_FORMATS.EQL,
+      mediaType: "text/ecp-eql",
+      sourceSchema,
+      sourceVersion: input.sourceVersion,
+      result: content,
+      diagnostics: [],
+    }
+  }
+
+  if (sourceSchema === "@ecp.harness.reply") {
+    const reply = input.source as HarnessReply
+    const zod = harnessReplySchema.safeParse(reply)
+    if (!zod.success) {
+      return encodeFailure({
+        format: ECP_FORMATS.EQL,
+        sourceSchema,
+        diagnostics: zod.error.issues.map((i) => ({
+          severity: "error" as const,
+          message: i.message,
+          path: i.path.join("."),
+          code: ECP_ENCODING_ERROR_CODES.FORMAT_ENCODE_FAILED,
+        })),
+      })
+    }
+    const content = encodeReplyToEql(reply, input.options, includeHeader)
     return {
       schema: "@ecp.encode.result",
       version: LATEST_ECP_VERSION,

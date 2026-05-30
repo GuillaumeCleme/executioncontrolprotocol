@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isRepairFeedbackEcho } from "@ecp/harnesses-evals/presentation"
+import { isRepairFeedbackEcho } from "../../../harnesses/browser/src/presentation.js"
 
 describe("isRepairFeedbackEcho", () => {
   it("detects echoed capability repair prose", () => {
@@ -13,6 +13,14 @@ describe("isRepairFeedbackEcho", () => {
   it("allows compact JSON workflow output", () => {
     expect(
       isRepairFeedbackEcho('{"schema":"@ecp.workflow","version":"1.0.0","steps":[]}')
+    ).toBe(false)
+  })
+
+  it("allows headerless EQL workflow output", () => {
+    expect(
+      isRepairFeedbackEcho(
+        'WORKFLOW echo-test "Echo"\nSTEP echo USES @ecp/test.echo\n  WITH value = "hello"'
+      )
     ).toBe(false)
   })
 })

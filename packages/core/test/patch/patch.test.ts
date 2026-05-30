@@ -74,6 +74,60 @@ describe("applyPatch", () => {
     expect(patched.result!.steps[1]?.id).toBe("summarize")
   })
 
+  it("inserts a step via eql:add-step without removing existing steps", () => {
+    const manifest = workflow("Echo")
+      .id("echo-test")
+      .run([step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .toManifest()
+
+    const patched = applyPatch(manifest, [
+      {
+        path: "steps",
+        mode: "replace",
+        reason: "eql:add-step",
+        value: {
+          step: {
+            type: "step",
+            id: "summarize",
+            label: "Summarize",
+            uses: "@ecp/demo.summarize",
+            input: { text: { $ref: "state.echo.output" } },
+            as: "summary",
+          },
+          _eqlInsertAfter: "echo",
+        },
+      },
+    ])
+
+    expect(patched.success).toBe(true)
+    expect(patched.result!.steps).toHaveLength(2)
+    expect(patched.result!.steps[0]?.id).toBe("echo")
+    expect(patched.result!.steps[1]?.id).toBe("summarize")
+  })
+
+  it("removes a step via eql:delete", () => {
+    const manifest = workflow("Echo notify")
+      .id("echo-notify")
+      .run([
+        step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
+        step("@ecp/demo.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
+      ])
+      .toManifest()
+
+    const patched = applyPatch(manifest, [
+      {
+        path: "steps[notify]",
+        mode: "replace",
+        value: null,
+        reason: "eql:delete",
+      },
+    ])
+
+    expect(patched.success).toBe(true)
+    expect(patched.result!.steps).toHaveLength(1)
+    expect(patched.result!.steps[0]?.id).toBe("echo")
+  })
+
   it("replaces scalar step fields without corrupting the step", () => {
     const manifest = workflow("Echo")
       .id("echo-test")

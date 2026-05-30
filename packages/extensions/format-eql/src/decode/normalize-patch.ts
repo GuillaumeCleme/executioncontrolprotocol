@@ -24,6 +24,14 @@ function stepNodeFromAdd(add: EqlStepAdd): StepNode {
 export function patchFromEql(doc: EqlPatchDoc): EcpPatchDocument {
   const patches: EcpPatchEntry[] = []
 
+  if (doc.workflowUpdate?.label !== undefined) {
+    patches.push({
+      path: "workflow.label",
+      mode: "replace",
+      value: doc.workflowUpdate.label,
+    })
+  }
+
   for (const update of doc.updates) {
     if (update.label !== undefined) {
       patches.push({
@@ -78,12 +86,16 @@ export function patchFromEql(doc: EqlPatchDoc): EcpPatchDocument {
     })
   }
 
-  if (doc.adds.length > 0) {
+  for (const add of doc.adds) {
     patches.push({
       path: "steps",
       mode: "replace",
-      value: doc.adds.map(stepNodeFromAdd),
-      reason: "eql:add-steps",
+      value: {
+        step: stepNodeFromAdd(add),
+        _eqlInsertAfter: add.after,
+        _eqlInsertBefore: add.before,
+      },
+      reason: "eql:add-step",
     })
   }
 

@@ -120,11 +120,11 @@ export default defineConfig({
       ),
       "@ecp/harnesses-evals/request-capability-hints": path.resolve(
         repoRoot,
-        "packages/harnesses/evals/src/_internal/request-capability-hints.ts"
+        "packages/harnesses/evals/src/request-capability-hints.ts"
       ),
       "@ecp/harnesses-evals/summarize-environment": path.resolve(
         repoRoot,
-        "packages/harnesses/evals/src/_internal/summarize-environment.ts"
+        "packages/harnesses/evals/src/summarize-environment.ts"
       ),
     },
   },
@@ -189,6 +189,30 @@ export default defineConfig({
       },
       {
         extends: true,
+        resolve: {
+          alias: {
+            "@ecp/harnesses-browser/presentation": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/presentation.ts"
+            ),
+            "@ecp/harnesses-browser/normalize-workflow-output": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/normalize-workflow-output.ts"
+            ),
+            "@ecp/harnesses-browser/repair-workflow-json": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/repair-workflow-json.ts"
+            ),
+            "@ecp/harnesses-browser/request-capability-hints": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+            ),
+            "@ecp/harnesses-browser/summarize-environment": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/_internal/summarize-environment.ts"
+            ),
+          },
+        },
         test: {
           name: "eval",
           include: ["packages/evals/test/**/*.test.ts"],

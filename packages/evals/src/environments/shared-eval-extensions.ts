@@ -16,7 +16,11 @@ export function ollamaEvalExtensionBinding() {
  * @category Evals
  */
 export function evalOperationsExtensionBindings() {
-  return [extension("@ecp/format-toon").with({}), extension("@ecp/test").with({})]
+  return [
+    extension("@ecp/format-toon").with({}),
+    extension("@ecp/format-eql").with({}),
+    extension("@ecp/test").with({}),
+  ]
 }
 
 /**

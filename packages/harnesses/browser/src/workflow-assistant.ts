@@ -17,6 +17,8 @@ import {
 
   HARNESS_PROMPT_FIXTURE_IDS,
 
+  inferResponseFormatFromFormatter,
+
   runModelRepairLoop,
 
   stripMarkdownCodeFences,
@@ -180,6 +182,8 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
     const format = config.output.format
 
+    const outputIsEql = format === "@ecp/format-eql" || format.endsWith("/format-eql")
+
     const descriptorFormat = config.context.descriptorFormat ?? format
 
     const promptFixtureId = config.promptFixture
@@ -198,7 +202,9 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
       const summary = summarizeEnvironmentDescriptor(descriptor)
 
-      environmentSummaryLines = formatEnvironmentSummaryLines(summary).join("\n")
+      environmentSummaryLines = formatEnvironmentSummaryLines(summary, {
+        format: outputIsEql ? "eql-create" : "plain",
+      }).join("\n")
 
       if (config.context.includeEncodedDescriptor) {
         descriptorText = await encodeForPrompt(ctx.ecp, summary, descriptorFormat)
@@ -225,7 +231,8 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
     if (input.workflow) {
 
       workflowText = formatWorkflowSummaryLines(
-        input.workflow as unknown as WorkflowManifest
+        input.workflow as unknown as WorkflowManifest,
+        { eql: outputIsEql, patchContext: false }
       ).join("\n")
 
     }
@@ -264,7 +271,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
         lines.push(
 
-          "Previous attempt failed. Fix these issues and return corrected JSON only:",
+          "Previous attempt failed. Fix these issues and return corrected EQL only:",
 
           repairText,
 
@@ -308,7 +315,12 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
           ctx.uses,
 
-          { prompt: lastPrompt, system, model: input.model, responseFormat: "json" },
+          {
+            prompt: lastPrompt,
+            system,
+            model: input.model,
+            responseFormat: inferResponseFormatFromFormatter(format),
+          },
 
           ctx.capabilityContext,
 
@@ -344,7 +356,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
               collectModelOutputFeedback(
 
-                "Output echoed validation errors instead of a document. Return only harness reply JSON."
+                "Output echoed validation errors instead of a document. Return only harness reply EQL."
 
               ),
 
@@ -357,13 +369,10 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
 
 
         const decoded = await ctx.ecp
-
           .decode(raw)
-
           .uses(format)
-
           .to(ECP_HARNESS_REPLY_SCHEMA)
-
+          .with({ headers: false })
           .process()
 
         validation = decoded.validation ?? decodedValidationStub(!decoded.success)

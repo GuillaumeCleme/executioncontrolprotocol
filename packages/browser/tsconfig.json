@@ -10,6 +10,7 @@
     { "path": "../core" },
     { "path": "../harnesses/browser" },
     { "path": "../policies" },
+    { "path": "../extensions/format-eql" },
     { "path": "../extensions/format-toon" },
     { "path": "../extensions/format-mermaid" },
     { "path": "../extensions/demo" },

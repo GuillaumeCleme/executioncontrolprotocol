@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../fixtures/cases")
-const matrixExt = ["@ecp/format-toon", "@ecp/format-json", "@ecp/test", "@ecp/demo"]
+const matrixExt = ["@ecp/format-toon", "@ecp/format-eql", "@ecp/format-json", "@ecp/test", "@ecp/demo"]
 const baseDet = [
   { kind: "invokeSuccess" },
   { kind: "artifactSchema", value: "@ecp.workflow" },
@@ -43,14 +43,14 @@ const patches = [
   ["wf-patch-02", "Input value", "Set echo input value to world.", "workflows/echo-workflow.json", []],
   ["wf-patch-03", "Add summarize", "Add a summarize step after echo using @ecp/demo.summarize.", "workflows/echo-workflow.json", [{ kind: "stepCount", min: 2 }]],
   ["wf-patch-04", "Remove notify", "Remove the notify step from the workflow.", "workflows/multi-cap-workflow.json", [{ kind: "stepRemoved", stepId: "notify" }]],
-  ["wf-patch-05", "Workflow label", "Change workflow label to Updated Chain.", "workflows/two-step-chain.json", []],
+  ["wf-patch-05", "Workflow label", "Change workflow label to Updated Chain.", "workflows/two-step-chain.json", [{ kind: "workflowLabel", value: "Updated Chain" }]],
   ["wf-patch-06", "Step config", "Change summarize step label to Short Summary.", "workflows/two-step-chain.json", [{ kind: "stepLabel", stepId: "summarize", value: "Short Summary" }]],
   ["wf-patch-07", "Ref chain", "Ensure summarize input references echo output via $ref.", "workflows/two-step-chain.json", [{ kind: "inputRefPresent", stepId: "summarize" }]],
   ["wf-patch-08", "Add validate", "Insert a validate step before echo using @ecp/demo.validate.", "workflows/echo-workflow.json", [{ kind: "stepUses", capabilityId: "@ecp/demo.validate" }]],
   ["wf-patch-09", "Combined", "Add translate after echo and remove summarize if present.", "workflows/two-step-chain.json", []],
   ["wf-patch-10", "Patch judge", "Improve echo label to be user friendly.", "workflows/echo-workflow.json", [], { enabled: true, goal: "Patch is minimal and correct", requireApproved: true }],
   ["wf-patch-11", "Translate label", "Rename echo label to Translated Output.", "workflows/echo-workflow.json", []],
-  ["wf-patch-12", "Notify payload", "Update notify step to run after echo in multi-cap workflow.", "workflows/multi-cap-workflow.json", []],
+  ["wf-patch-12", "Move echo", "Move the echo step to run after validate.", "workflows/echo-validate-reorder.json", [{ kind: "stepOrder", stepIds: ["validate", "echo"] }]],
 ].map(([id, title, request, baseline, extra, judge]) => ({
   id,
   suite: "workflow-patch",
