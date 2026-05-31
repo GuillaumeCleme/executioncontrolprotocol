@@ -1,3 +1,8 @@
+import {
+  CHROME_LANGUAGE_MODEL_TEXT_OPTIONS,
+  type ChromeLanguageModelApi,
+} from "./prompt-session.js"
+
 /** Chrome LanguageModel availability status from the browser API. @category Extensions */
 export type ChromeAvailabilityStatus =
   | "unsupported"
@@ -27,30 +32,6 @@ export interface ChromeModelInstallState {
   total?: number
   /** Error message when phase is error. */
   error?: string
-}
-
-interface ChromeLanguageModelSession {
-  prompt(input: string): Promise<{ text: string }>
-}
-
-interface ChromeDownloadProgressEvent {
-  loaded: number
-  total?: number
-}
-
-interface ChromeModelMonitor {
-  addEventListener(
-    type: "downloadprogress",
-    listener: (event: ChromeDownloadProgressEvent) => void
-  ): void
-}
-
-interface ChromeLanguageModelApi {
-  availability(): Promise<string>
-  create(options?: {
-    systemPrompt?: string
-    monitor?: (monitor: ChromeModelMonitor) => void
-  }): Promise<ChromeLanguageModelSession>
 }
 
 interface ChromeAiGlobal {
@@ -86,7 +67,7 @@ export async function readAvailability(): Promise<{
   if (!model?.availability) {
     return { status: "unsupported", available: false, supported: false }
   }
-  const status = normalizeStatus(await model.availability())
+  const status = normalizeStatus(await model.availability(CHROME_LANGUAGE_MODEL_TEXT_OPTIONS))
   return {
     status,
     available: status === "available",
@@ -135,6 +116,7 @@ async function runModelDownload(): Promise<void> {
 
   try {
     await model.create({
+      ...CHROME_LANGUAGE_MODEL_TEXT_OPTIONS,
       monitor(m) {
         m.addEventListener("downloadprogress", (e) => {
           installState = {

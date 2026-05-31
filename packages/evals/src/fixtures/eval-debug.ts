@@ -32,6 +32,7 @@ function debugLogFile(): string | undefined {
 }
 
 function writeNdjson(entry: Record<string, unknown>): void {
+  if (typeof window !== "undefined") return
   const file = debugLogFile()
   if (!file) return
   try {

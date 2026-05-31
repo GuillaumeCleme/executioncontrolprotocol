@@ -31,12 +31,16 @@ export function useChatHistory(initialMode: AssistantMode = "authoring") {
   }, [])
 
   const appendAgent = useCallback((text: string) => {
-    setMessages((prev) => [...prev, { id: nextId(), role: "agent", text }])
+    setMessages((prev) => [...prev, { id: nextId(), role: "agent", text, variant: "normal" }])
+  }, [])
+
+  const appendAgentError = useCallback((text: string) => {
+    setMessages((prev) => [...prev, { id: nextId(), role: "agent", text, variant: "error" }])
   }, [])
 
   const setGuidedWelcome = useCallback(() => {
     setMessages([{ id: nextId(), role: "agent", text: GUIDED_WELCOME }])
   }, [])
 
-  return { messages, status, setStatus, appendUser, appendAgent, setGuidedWelcome }
+  return { messages, status, setStatus, appendUser, appendAgent, appendAgentError, setGuidedWelcome }
 }

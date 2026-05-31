@@ -57,7 +57,7 @@ export async function runModelRepairLoop<TArtifact = unknown>(
 
   for (let attempt = 0; attempt < options.maxAttempts; attempt++) {
     const { raw } = await options.generate({ attempt, priorFeedback })
-    lastRaw = raw
+    lastRaw = typeof raw === "string" ? raw : JSON.stringify(raw, null, 2)
     const evaluated = await options.evaluate(raw, { attempt, priorFeedback })
     attempts.push({
       attempt,

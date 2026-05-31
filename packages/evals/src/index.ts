@@ -4,7 +4,18 @@ export {
   createHarnessOllamaIntentEnvironment,
 } from "./environments/harness-ollama.js"
 export { createHarnessOllamaMatrixEnvironment } from "./environments/harness-ollama-matrix.js"
-export { OLLAMA_GEMMA_1B_EVAL, type OllamaGemmaEvalProfile } from "./profiles/ollama-gemma.js"
+export { createHarnessChromeMatrixEnvironment } from "./environments/harness-chrome-matrix.js"
+export { createHarnessMatrixEnvironment } from "./environments/create-harness-matrix-environment.js"
+export { createHarnessBrowserMatrixEnvironment } from "./environments/create-harness-browser-matrix-environment.js"
+export { createHarnessNodeMatrixEnvironment } from "./environments/create-harness-node-matrix-environment.js"
+export { OLLAMA_GEMMA_1B_EVAL, OLLAMA_GEMMA_1B_BASE_URL, type OllamaGemmaEvalProfile } from "./profiles/ollama-gemma.js"
+export { CHROME_NANO_EVAL } from "./profiles/chrome-nano.js"
+export type { EvalProviderProfile } from "./profiles/eval-provider.js"
+export {
+  getActiveEvalProvider,
+  setActiveEvalProvider,
+  resetActiveEvalProvider,
+} from "./profiles/eval-provider-context.js"
 export {
   EVAL_HARNESS_REPAIR,
   EVAL_HARNESS_TRACE,
@@ -25,6 +36,10 @@ export {
   type OllamaEvalReadiness,
 } from "./helpers/ollama.js"
 export {
+  chromeNanoEvalReady,
+  type ChromeNanoEvalReadiness,
+} from "./helpers/chrome-ai.js"
+export {
   EVAL_SUITE_VALUES,
   EVAL_HARNESS_NAMES,
   evalCaseSchema,
@@ -44,7 +59,7 @@ export {
   countOllamaEvalCases,
   type LoadEvalCasesOptions,
 } from "./fixtures/load-eval-cases.js"
-export { runEvalCase, runSingleEvalCase, runFlowEvalCase } from "./fixtures/run-eval-case.js"
+export { runEvalCase, runSingleEvalCase, runFlowEvalCase, type RunEvalCaseOptions } from "./fixtures/run-eval-case.js"
 export {
   evalDebugMode,
   isEvalDebugEnabled,

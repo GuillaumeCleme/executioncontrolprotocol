@@ -20,4 +20,3 @@ export {
   buildWorkflowPatchSystemPrompt,
 } from "./build-system-prompt.js"
 export { buildRepairHint } from "./build-repair-hint.js"
-export { CORE_PACKAGE_ROOT, HARNESS_PROMPTS_DIR, SCHEMA_EXAMPLES_DIR } from "./fixtures-root.js"

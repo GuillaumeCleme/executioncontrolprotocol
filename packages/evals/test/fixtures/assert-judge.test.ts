@@ -1,8 +1,13 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi, afterEach } from "vitest"
 import type { Ecp } from "@ecp/core"
 import type { HarnessInvokeResult } from "@ecp/types"
 import { assertJudge } from "../../src/fixtures/assertions.js"
 import type { EvalCase } from "../../src/fixtures/eval-case-schema.js"
+import { CHROME_NANO_EVAL } from "../../src/profiles/chrome-nano.js"
+import {
+  resetActiveEvalProvider,
+  setActiveEvalProvider,
+} from "../../src/profiles/eval-provider-context.js"
 
 const caseRow = {
   id: "judge-test",
@@ -21,6 +26,20 @@ const harnessOutput = {
 } as HarnessInvokeResult
 
 describe("assertJudge", () => {
+  afterEach(() => {
+    resetActiveEvalProvider()
+  })
+
+  it("skips judge when active provider is not Ollama", async () => {
+    setActiveEvalProvider(CHROME_NANO_EVAL)
+    const ecp = {
+      invoke: vi.fn(),
+    } as unknown as Ecp
+
+    await assertJudge(caseRow, harnessOutput, caseRow.assertions.judge, ecp)
+    expect(ecp.invoke).not.toHaveBeenCalled()
+  })
+
   it("fails when evaluate invoke throws", async () => {
     const ecp = {
       invoke: () => ({

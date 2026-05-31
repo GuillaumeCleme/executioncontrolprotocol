@@ -9,15 +9,18 @@ import type { CapabilityContext } from "../runtime/context.js"
 import { inferResponseFormatFromFormatter } from "./format-resolve.js"
 
 function extractText(output: unknown): string {
+  if (typeof output === "string") return output
   if (output !== null && typeof output === "object") {
-    if ("text" in output && typeof (output as { text: unknown }).text === "string") {
-      return (output as { text: string }).text
+    if ("text" in output) {
+      const text = (output as { text: unknown }).text
+      if (typeof text === "string") return text
     }
-    if ("content" in output && typeof (output as { content: unknown }).content === "string") {
-      return (output as { content: string }).content
+    if ("content" in output) {
+      const content = (output as { content: unknown }).content
+      if (typeof content === "string") return content
     }
   }
-  return String(output)
+  throw new Error("Model provider returned an unsupported generate output shape")
 }
 
 /**

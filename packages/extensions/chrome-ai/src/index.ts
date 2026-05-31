@@ -13,25 +13,34 @@ import {
   readAvailability,
   startModelDownload,
 } from "./model-install.js"
+import {
+  createChromeLanguageModelSession,
+  normalizePromptResponse,
+  type ChromeLanguageModelApi,
+} from "./prompt-session.js"
 
 const GenerateTextInput = z.object({
   prompt: z.string(),
   system: z.string().optional(),
 })
 
-interface ChromeLanguageModel {
-  prompt(input: string): Promise<{ text: string }>
-}
-
 interface ChromeAiGlobal {
-  LanguageModel?: {
-    availability(): Promise<string>
-    create(options?: { systemPrompt?: string }): Promise<ChromeLanguageModel>
-  }
+  LanguageModel?: ChromeLanguageModelApi
 }
 
-function chromeAi(): ChromeAiGlobal["LanguageModel"] | undefined {
+function chromeAi(): ChromeLanguageModelApi | undefined {
   return (globalThis as ChromeAiGlobal).LanguageModel
+}
+
+async function runChromePrompt(input: z.infer<typeof GenerateTextInput>): Promise<{ text: string }> {
+  await assertModelReady()
+  const model = chromeAi()
+  if (!model?.create) {
+    throw new Error("Chrome LanguageModel API is not available")
+  }
+  const session = await createChromeLanguageModelSession(model, input.system)
+  const response = await session.prompt(input.prompt)
+  return { text: normalizePromptResponse(response) }
 }
 
 const InstallStateSchema = z.object({
@@ -75,35 +84,11 @@ export const chromeAiExtension = defineExtension("@ecp", "chrome-ai")
     capabilityFor("@ecp/chrome-ai", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
-      .withHandler(async (raw) => {
-        const input = raw as z.infer<typeof GenerateTextInput>
-        await assertModelReady()
-        const model = chromeAi()
-        if (!model?.create) {
-          throw new Error("Chrome LanguageModel API is not available")
-        }
-        const session = await model.create({
-          systemPrompt: input.system,
-        })
-        const response = await session.prompt(input.prompt)
-        return { text: response.text }
-      }),
+      .withHandler(async (raw) => runChromePrompt(raw as z.infer<typeof GenerateTextInput>)),
     capabilityFor("@ecp/chrome-ai", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))
-      .withHandler(async (raw) => {
-        const input = raw as z.infer<typeof GenerateTextInput>
-        await assertModelReady()
-        const model = chromeAi()
-        if (!model?.create) {
-          throw new Error("Chrome LanguageModel API is not available")
-        }
-        const session = await model.create({
-          systemPrompt: input.system,
-        })
-        const response = await session.prompt(input.prompt)
-        return { text: response.text }
-      }),
+      .withHandler(async (raw) => runChromePrompt(raw as z.infer<typeof GenerateTextInput>)),
   ])
   .build()
 

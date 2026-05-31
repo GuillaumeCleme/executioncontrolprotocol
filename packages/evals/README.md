@@ -15,6 +15,37 @@ Eval configuration is **baked into source** (model id, base URL, harness binding
 
 Defined in [`src/profiles/ollama-gemma.ts`](src/profiles/ollama-gemma.ts) as `OLLAMA_GEMMA_1B_EVAL`.
 
+## Chrome Nano profile (browser matrix)
+
+| Field | Value |
+| ----- | ----- |
+| Profile id | `chrome-nano` |
+| Provider | `@ecp/chrome-ai` |
+| Generate capability | `@ecp/chrome-ai.generate` |
+| Runtime | `@ecp/browser` (Vitest browser project) |
+
+Defined in [`src/profiles/chrome-nano.ts`](src/profiles/chrome-nano.ts) as `CHROME_NANO_EVAL`.
+
+**Same harness, same fixtures, same assertions** as Ollama matrix — only the provider binding and runtime differ. See [`createHarnessMatrixEnvironment()`](src/environments/create-harness-matrix-environment.ts).
+
+```sh
+npm run eval:matrix:chrome
+```
+
+Requires Google Chrome with the on-device Gemini Nano model available (`LanguageModel` API). Tests **skip** when Nano is not ready (same contract as Ollama skip).
+
+LLM judge assertions (`@ecp/ollama.evaluate`) are skipped automatically when the active provider is not Ollama.
+
+## Harness vs provider
+
+| Layer | Package / id | Swappable? |
+| ----- | ------------ | ---------- |
+| Harness (prompts, repair, decode) | `@ecp/harness-browser` | **No** — reusable for all providers |
+| Provider | `@ecp/ollama.generate`, `@ecp/chrome-ai.generate`, … | **Yes** — environment `.uses()` only |
+| Eval cases | `fixtures/cases/*.json` | Shared across providers |
+
+To add a provider: implement `@ecp/model.generate`, add an `EvalProviderProfile`, call `createHarnessMatrixEnvironment(profile)`. Do not change harness task handlers.
+
 ## Run evals
 
 ```sh
@@ -41,6 +72,7 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
 | **Matrix (52+ cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | same harness | same encoding |
 | Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser` workflow task | `@ecp/format-eql` |
 | Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser` intent task | `@ecp/format-eql` |
 | Combined (both) | `createHarnessOllamaEnvironment()` | both tasks | EQL output |
@@ -63,7 +95,7 @@ Legacy smoke environments use `@ecp/format-toon` + `@ecp/test` only.
 
 Harness config lives in [`src/harness-eval-config.ts`](src/harness-eval-config.ts). Intent evals set `includeEnvironmentDescriptor: true` so the model sees available capabilities before classifying.
 
-Tests live under [`test/harness/*.eval.test.ts`](test/harness/).
+Tests live under [`test/harness/*.eval.test.ts`](test/harness/) (Node + Ollama) and [`test/browser/*.eval.test.ts`](test/browser/) (Chrome Nano).
 
 ## Traceability when a model fails
 

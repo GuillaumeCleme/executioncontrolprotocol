@@ -86,7 +86,7 @@ describe("@ecp/chrome-ai", () => {
     expect(result).toMatchObject({ phase: "ready" })
   })
 
-  it("generateText returns text from LanguageModel session", async () => {
+  it("generateText returns text from LanguageModel session (legacy object shape)", async () => {
     ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
       availability: vi.fn().mockResolvedValue("available"),
       create: vi.fn().mockResolvedValue({
@@ -99,6 +99,21 @@ describe("@ecp/chrome-ai", () => {
       { usage: { increment: vi.fn() } } as never
     )
     expect(result).toEqual({ text: "hello from chrome" })
+  })
+
+  it("generate returns text when prompt() resolves to a string", async () => {
+    ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
+      availability: vi.fn().mockResolvedValue("available"),
+      create: vi.fn().mockResolvedValue({
+        prompt: vi.fn().mockResolvedValue('WORKFLOW demo "Demo"\nSTEP echo USES @ecp/test.echo'),
+      }),
+    }
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@ecp/chrome-ai.generate")
+    const result = await cap!.handler!(
+      { prompt: "create echo workflow" },
+      { usage: { increment: vi.fn() } } as never
+    )
+    expect(result.text).toContain("WORKFLOW")
   })
 
   it("generateText throws when model not ready", async () => {

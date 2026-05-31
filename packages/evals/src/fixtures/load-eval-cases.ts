@@ -19,12 +19,7 @@ import { EVAL_CASES_DIR, resolveEvalFixturePath } from "./fixtures-root.js"
 const CASE_FILE_SUFFIX = ".cases.json"
 
 /** Options for loading eval cases. @category Evals */
-export interface LoadEvalCasesOptions {
-  /** Filter by suite id. */
-  suite?: EvalSuite
-  /** Skip cases with `skip: true`. */
-  excludeSkipped?: boolean
-}
+export type { LoadEvalCasesOptions } from "./load-eval-cases-options.js"
 
 function parseCasesFile(filePath: string): EvalCase[] {
   const raw = JSON.parse(readFileSync(filePath, "utf8")) as unknown

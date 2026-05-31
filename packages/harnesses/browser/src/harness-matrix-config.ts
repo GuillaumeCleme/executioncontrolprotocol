@@ -69,45 +69,13 @@ const MATRIX_ASSISTANT = {
   trace: EVAL_HARNESS_TRACE,
 } as const
 
-const DEMO_INTENT = {
-  promptFixture: "intent-classification",
-  output: { schema: "@ecp.intent", format: "@ecp/format-eql", validate: true },
-  context: {
-    includeEnvironmentDescriptor: false,
-    includeEncodedDescriptor: false,
-    descriptorFormat: "@ecp/format-eql",
-  },
-  repair: { enabled: true, maxAttempts: 1, includeValidationErrors: true },
-  trace: { includePrompt: false, includeRawOutput: true, includeValidation: true },
-} as const
-
-const DEMO_WORKFLOW = {
-  output: { schema: "@ecp.workflow", format: "@ecp/format-eql", validate: true },
-  context: {
-    includeEnvironmentDescriptor: true,
-    includeEncodedDescriptor: false,
-    descriptorFormat: "@ecp/format-eql",
-  },
-  repair: { enabled: true, maxAttempts: 1, includeValidationErrors: true },
-  trace: { includePrompt: true, includeRawOutput: true, includeValidation: true },
-} as const
-
 /** Full harness binding config for a task (matrix or browser-demo profile). */
 export function getHarnessMatrixConfig(
   task: HarnessTask,
   profile: HarnessProfile = "matrix"
 ): Record<string, unknown> {
   if (profile === "browser-demo") {
-    switch (task) {
-      case HARNESS_TASKS.INTENT_CLASSIFICATION:
-        return { ...DEMO_INTENT }
-      case HARNESS_TASKS.WORKFLOW_AUTHORING:
-        return { ...DEMO_WORKFLOW }
-      case HARNESS_TASKS.WORKFLOW_ASSISTANT:
-        return { ...MATRIX_ASSISTANT }
-      default:
-        return { ...DEMO_WORKFLOW }
-    }
+    return getHarnessMatrixConfig(task, "matrix")
   }
   switch (task) {
     case HARNESS_TASKS.INTENT_CLASSIFICATION:
@@ -135,7 +103,10 @@ export const HARNESS_MATRIX_BINDING = {
 /** @deprecated Use {@link HARNESS_MATRIX_BINDING} */
 export const EVAL_MATRIX_HARNESS_BINDING = HARNESS_MATRIX_BINDING
 
-/** Loose env binding for browser demo (EQL workflow, per-task output). */
+/** Loose env binding for browser demo (same matrix harness profile; provider swapped at invoke). */
 export const HARNESS_BROWSER_DEMO_BINDING = {
-  harnessProfile: "browser-demo" as HarnessProfile,
+  harnessProfile: "matrix" as HarnessProfile,
+  repair: EVAL_HARNESS_REPAIR,
+  trace: EVAL_HARNESS_TRACE,
+  context: SHARED_CONTEXT,
 } as const

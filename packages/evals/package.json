@@ -17,6 +17,8 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@ecp/browser": "1.0.0",
+    "@ecp/chrome-ai": "1.0.0",
     "@ecp/core": "1.0.0",
     "@ecp/harnesses-evals": "1.0.0",
     "@ecp/demo": "1.0.0",

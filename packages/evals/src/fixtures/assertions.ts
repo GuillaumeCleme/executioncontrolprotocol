@@ -11,6 +11,8 @@ import {
   type WorkflowManifest,
 } from "@ecp/types"
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
+import { getActiveEvalProvider } from "../profiles/eval-provider-context.js"
+import type { EvalProviderProfile } from "../profiles/eval-provider.js"
 import type { DeterministicAssertion, EvalCase, JudgeAssertion } from "./eval-case-schema.js"
 import { isFlowEvalCase } from "./eval-case-schema.js"
 import {
@@ -242,6 +244,10 @@ export async function assertJudge(
   stepIndex?: number
 ): Promise<void> {
   if (!judge.enabled) return
+  const provider = getActiveEvalProvider()
+  if (provider.id !== OLLAMA_GEMMA_1B_EVAL.id) {
+    return
+  }
   const label = caseLabel(caseRow, stepIndex)
   let approved = false
   let judgeDetail = ""
@@ -286,9 +292,13 @@ export function assertNotFlowCase(caseRow: EvalCase): asserts caseRow is Exclude
   }
 }
 
-/** Resolve model id for invoke. @category Evals */
-export function resolveEvalModel(caseRow: EvalCase): string {
-  return caseRow.model === "default" || caseRow.model === undefined
-    ? OLLAMA_GEMMA_1B_EVAL.model
-    : caseRow.model
+/** Resolve model id for invoke; omit when the active provider has no model tag. @category Evals */
+export function resolveEvalModel(
+  caseRow: EvalCase,
+  provider: EvalProviderProfile = getActiveEvalProvider()
+): string | undefined {
+  if (caseRow.model !== undefined && caseRow.model !== "default") {
+    return caseRow.model
+  }
+  return provider.model
 }

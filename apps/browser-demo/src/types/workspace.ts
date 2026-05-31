@@ -24,4 +24,6 @@ export interface ChatMessage {
   id: string
   role: "user" | "agent"
   text: string
+  /** When set, message is styled as an error. */
+  variant?: "normal" | "error"
 }

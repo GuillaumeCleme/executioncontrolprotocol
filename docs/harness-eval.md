@@ -27,11 +27,33 @@ Eval model and URL are defined in code, not `OLLAMA_MODEL` / `OLLAMA_BASE_URL`:
 
 Source: [`packages/evals/src/profiles/ollama-gemma.ts`](../packages/evals/src/profiles/ollama-gemma.ts).
 
+### Chrome Nano profile
+
+| Setting | Baked value |
+| ------- | ----------- |
+| Profile | `chrome-nano` (`CHROME_NANO_EVAL`) |
+| Provider | `@ecp/chrome-ai.generate` |
+| Runtime | `@ecp/browser` |
+
+Source: [`packages/evals/src/profiles/chrome-nano.ts`](../packages/evals/src/profiles/chrome-nano.ts).
+
+### Reusable harness, swappable providers
+
+`@ecp/harness-browser` owns prompts, repair loops, EQL decode, and validation. Providers only implement `@ecp/model.generate`. Matrix evals use `createHarnessMatrixEnvironment(profile)` — the same harness binding (`HARNESS_MATRIX_BINDING`) for Ollama and Chrome; only `.uses()` and runtime change.
+
+The browser demo uses the same matrix harness profile; the UI swaps providers via `.uses(@ecp/chrome-ai.generate)` (or OpenAI, demo stub, etc.) at invoke time.
+
 ### Run
 
 ```sh
 ollama pull gemma3:1b
 npm run eval:matrix
+```
+
+Chrome Nano (same fixture matrix, Vitest browser + installed Chrome):
+
+```sh
+npm run eval:matrix:chrome
 ```
 
 Smoke (legacy harness tests + fixture count, no full matrix):
@@ -47,6 +69,7 @@ Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, fai
 | Eval set | Factory | Tests |
 | -------- | ------- | ----- |
 | **Matrix (52+ Ollama cases)** | `createHarnessOllamaMatrixEnvironment()` | [`matrix-*.eval.test.ts`](../packages/evals/test/harness/) + JSON fixtures |
+| **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | [`test/browser/matrix-*.eval.test.ts`](../packages/evals/test/browser/) + same JSON fixtures |
 | **Workflow operations (smoke)** | `createHarnessOllamaWorkflowEnvironment()` | [`workflow-authoring.eval.test.ts`](../packages/evals/test/harness/workflow-authoring.eval.test.ts) |
 | **Intent routing (smoke)** | `createHarnessOllamaIntentEnvironment()` | [`intent-classification.eval.test.ts`](../packages/evals/test/harness/intent-classification.eval.test.ts) |
 
@@ -72,7 +95,7 @@ Multi-step `flow` cases in [`flow.cases.json`](../packages/evals/fixtures/cases/
 When an eval fails, use harness `trace` and eval helpers:
 
 - **Invoke failed:** `invokeSuccess` assertions append `error`, `rawOutput`, and validation issues when present (`packages/evals/src/fixtures/assertions.ts`).
-- **Judge:** `@ecp/ollama.evaluate` failures fail the test (fail-closed; no pass on thrown errors).
+- **Judge:** `@ecp/ollama.evaluate` runs only when the active eval provider is Ollama (`ollama-gemma-1b`); skipped for Chrome Nano matrix runs.
 - **Wrong intent/artifact:** `expectHarnessIntent()` or `expect(..., harnessTraceHint(output))` — see [`assert-harness-result.ts`](../packages/evals/test/harness/assert-harness-result.ts).
 
 ## Fixture-driven matrix

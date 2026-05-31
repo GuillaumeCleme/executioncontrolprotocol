@@ -67,13 +67,20 @@ describe("callModelGenerate", () => {
     expect(capturedPrompt.toLowerCase()).toContain("toon")
   })
 
-  it("coerces primitive handler output to string", async () => {
-    const ctx = mockContext(async () => 42)
+  it("accepts a bare string from the provider", async () => {
+    const ctx = mockContext(async () => "plain-string")
     const result = await callModelGenerate(
       "@ecp/demo.generate",
       { prompt: "hi", responseFormat: "text" },
       ctx
     )
-    expect(result.text).toBe("42")
+    expect(result.text).toBe("plain-string")
+  })
+
+  it("rejects unsupported provider output shapes", async () => {
+    const ctx = mockContext(async () => 42)
+    await expect(
+      callModelGenerate("@ecp/demo.generate", { prompt: "hi", responseFormat: "text" }, ctx)
+    ).rejects.toThrow(/unsupported generate output shape/)
   })
 })

@@ -109,8 +109,20 @@ export function ChatPanel({
                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-outline-variant bg-surface-container-highest">
                     <span className="material-symbols-outlined text-[14px] text-primary">auto_awesome</span>
                   </div>
-                  <div className="rounded-lg rounded-tl-none border border-outline-variant/30 bg-surface-container-high p-3">
-                    <p className="text-body text-on-surface">{m.text}</p>
+                  <div
+                    className={`rounded-lg rounded-tl-none border p-3 ${
+                      m.variant === "error"
+                        ? "border-error/40 bg-error-container/30"
+                        : "border-outline-variant/30 bg-surface-container-high"
+                    }`}
+                  >
+                    <p
+                      className={`whitespace-pre-wrap text-body ${
+                        m.variant === "error" ? "text-on-error-container" : "text-on-surface"
+                      }`}
+                    >
+                      {m.text}
+                    </p>
                   </div>
                 </div>
               )

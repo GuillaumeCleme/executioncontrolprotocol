@@ -30,6 +30,11 @@ import { useSplitPane } from "./hooks/useSplitPane.js"
 import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout.js"
 import { looksLikeWorkflowRequest } from "./lib/chat-routing.js"
 import { createDemoAppEnvironment } from "./lib/demo-environment.js"
+import {
+  harnessInvokeChatError,
+  logHarnessInvoke,
+  logHarnessSuccess,
+} from "./lib/harness-invoke-debug.js"
 import { environmentSourceFromDescriptor } from "./lib/environment-source.js"
 import {
   GUIDE_CHAT_CAPABILITY,
@@ -192,19 +197,23 @@ export function App() {
   const runAuthoring = async (userRequest: string, cap: string) => {
     if (!ecp) return
     const invoked = await ecp
-      .invoke(WORKFLOW_AUTHORING_CAPABILITY)
+      .invoke(BROWSER_HARNESS_CAPABILITY)
       .uses(cap)
       .with({
+        task: HARNESS_TASKS.WORKFLOW_AUTHORING,
         request: userRequest,
         ...(manifest ? { manifest } : {}),
       })
       .process()
 
+    logHarnessInvoke("workflow-authoring", invoked)
+
     if (!invoked.success || !invoked.result) {
-      throw new Error(invoked.diagnostics.map((d) => d.message).join("; ") || "Authoring failed")
+      throw new Error(harnessInvokeChatError(invoked))
     }
 
     const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
+    logHarnessSuccess("workflow-authoring", harnessResult)
     const nextManifest = harnessResult.artifact
     const service = new BrowserAuthoringService(ecp as BrowserOperationalEcp)
     const panels = await service.encodePanels(nextManifest, harnessResult.raw)
@@ -225,7 +234,10 @@ export function App() {
     else layout.openWorkspace()
 
     const val = harnessResult.validation as { valid?: boolean } | undefined
-    const msg = val?.valid !== false ? "Updated workflow." : "Workflow has validation issues."
+    const msg =
+      val?.valid === false
+        ? "Workflow updated but has validation issues. See console for raw model output."
+        : "Updated workflow."
     chat.setStatus(msg)
     chat.appendAgent(msg)
   }
@@ -238,10 +250,16 @@ export function App() {
         .uses(cap)
         .with({ task: HARNESS_TASKS.INTENT_CLASSIFICATION, message })
         .process()
-      if (!invoked.success || !invoked.result) return null
+      logHarnessInvoke("intent-classification", invoked)
+      if (!invoked.success || !invoked.result) {
+        console.warn("[ecp harness] intent-classification failed:", harnessInvokeChatError(invoked))
+        return null
+      }
       const harnessResult = invoked.result as HarnessInvokeResult<EcpIntent>
+      logHarnessSuccess("intent-classification", harnessResult)
       return harnessResult.artifact
-    } catch {
+    } catch (err) {
+      console.error("[ecp harness] intent-classification error:", err)
       return null
     }
   }
@@ -271,8 +289,15 @@ export function App() {
 
       if (!routeToAuthoring) {
         const guide = await ecp.invoke(GUIDE_CHAT_CAPABILITY).with({ message: userRequest }).process()
+        console.group("[ecp] guided chat")
+        console.log("success:", guide.success)
+        console.log("result:", guide.result)
+        console.log("diagnostics:", guide.diagnostics)
+        console.groupEnd()
         if (!guide.success || !guide.result) {
-          throw new Error(guide.diagnostics.map((d) => d.message).join("; ") || "Guide chat failed")
+          throw new Error(
+            guide.diagnostics.map((d) => d.message).join("; ") || "Guide chat failed"
+          )
         }
         const text = String((guide.result as { text: string }).text)
         chat.appendAgent(text)
@@ -287,8 +312,9 @@ export function App() {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
-      chat.setStatus(msg)
-      chat.appendAgent(msg)
+      console.error("[ecp] chat request failed:", err)
+      chat.setStatus("Error")
+      chat.appendAgentError(msg)
     }
   }
 

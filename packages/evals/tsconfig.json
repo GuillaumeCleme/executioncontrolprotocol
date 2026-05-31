@@ -8,9 +8,11 @@
   "references": [
     { "path": "../types" },
     { "path": "../core" },
+    { "path": "../browser" },
     { "path": "../harnesses/evals" },
     { "path": "../node" },
     { "path": "../extensions/ollama" },
+    { "path": "../extensions/chrome-ai" },
     { "path": "../extensions/format-toon" }
   ],
   "include": ["src/**/*.ts"]

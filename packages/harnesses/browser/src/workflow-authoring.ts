@@ -440,6 +440,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
     const validation = await ctx.ecp.validate(loopResult.artifact as WorkflowManifest)
 
     const includeSystemPrompt =
+      typeof process !== "undefined" &&
       process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.trim() !== "" &&
       process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.toLowerCase() !== "0" &&
       process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.toLowerCase() !== "false" &&

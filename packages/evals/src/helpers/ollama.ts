@@ -1,7 +1,4 @@
-import {
-  OLLAMA_GEMMA_1B_EVAL,
-  type OllamaGemmaEvalProfile,
-} from "../profiles/ollama-gemma.js"
+import { OLLAMA_GEMMA_1B_BASE_URL, OLLAMA_GEMMA_1B_EVAL, type OllamaGemmaEvalProfile } from "../profiles/ollama-gemma.js"
 
 /** @category Evals */
 export type OllamaEvalReadiness = {
@@ -22,7 +19,7 @@ export type OllamaEvalReadiness = {
  * @category Evals
  */
 export async function ollamaReachable(
-  baseURL: string = OLLAMA_GEMMA_1B_EVAL.baseURL
+  baseURL: string = OLLAMA_GEMMA_1B_BASE_URL
 ): Promise<boolean> {
   try {
     const res = await fetch(`${baseURL.replace(/\/$/, "")}/api/tags`, {
@@ -40,7 +37,7 @@ export async function ollamaReachable(
  */
 export async function ollamaHasModel(
   model: string,
-  baseURL: string = OLLAMA_GEMMA_1B_EVAL.baseURL
+  baseURL: string = OLLAMA_GEMMA_1B_BASE_URL
 ): Promise<boolean> {
   try {
     const res = await fetch(`${baseURL.replace(/\/$/, "")}/api/tags`, {
@@ -62,7 +59,8 @@ export async function ollamaHasModel(
 export async function ollamaEvalReady(
   profile: OllamaGemmaEvalProfile = OLLAMA_GEMMA_1B_EVAL
 ): Promise<OllamaEvalReadiness> {
-  const { id: profileId, baseURL, model } = profile
+  const { id: profileId, model, extensionBinding } = profile
+  const baseURL = (extensionBinding?.baseURL as string | undefined) ?? OLLAMA_GEMMA_1B_BASE_URL
   if (!(await ollamaReachable(baseURL))) {
     return {
       ready: false,
@@ -72,7 +70,7 @@ export async function ollamaEvalReady(
       baseURL,
     }
   }
-  if (!(await ollamaHasModel(model, baseURL))) {
+  if (!(await ollamaHasModel(model!, baseURL))) {
     return {
       ready: false,
       reason: `Model ${model} is not pulled (run: ollama pull ${model})`,
@@ -81,7 +79,7 @@ export async function ollamaEvalReady(
       baseURL,
     }
   }
-  return { ready: true, profileId, model, baseURL }
+  return { ready: true, profileId, model: model!, baseURL }
 }
 
 /** Default Gemma 1B workflow eval profile. @category Evals */

@@ -68,8 +68,10 @@ export function createBrowserDemoEnvironment(
       extension("@ecp/format-eql").with({}),
       extension("@ecp/format-toon").with({}),
       extension("@ecp/format-mermaid").with({}),
+      extension("@ecp/format-json").with({}),
       extension("@ecp/demo").with({}),
       extension("@ecp/chrome-ai").with({}),
+      extension("@ecp/test").with({}),
       extension("@ecp/openai").with({
         apiKey: env("OPENAI_API_KEY", { optional: true }),
       }),
