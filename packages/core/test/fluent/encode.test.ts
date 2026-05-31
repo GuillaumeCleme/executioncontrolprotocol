@@ -74,13 +74,13 @@ describe("encodeFluent", () => {
 })
 
 describe("env.encode built-in fluent", () => {
-  it("encodes without format extension registration", async () => {
+  it("encodes via @ecp/format-fluent", async () => {
     const manifest = workflow("Echo")
       .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const ecp = await initEncodingTestEcp()
-    const encoded = await ecp.encode(manifest).as("fluent").process()
+    const encoded = await ecp.encode(manifest).uses("@ecp/format-fluent").process()
     await ecp.terminate()
 
     expect(encoded.success).toBe(true)

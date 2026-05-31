@@ -30,6 +30,10 @@ export function resolveEcpPatchPath(
     return { ok: true, lodashPath: path }
   }
 
+  if (path === "steps") {
+    return { ok: true, lodashPath: "steps" }
+  }
+
   const stepMatch = path.match(/^steps\[([^\]]+)\](?:\.(.*))?$/)
   if (stepMatch) {
     const stepId = stepMatch[1]!

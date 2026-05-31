@@ -5,6 +5,8 @@
     { "path": "packages/core" },
     { "path": "packages/node" },
     { "path": "packages/browser" },
+    { "path": "packages/harnesses/browser" },
+    { "path": "packages/harnesses/evals" },
     { "path": "packages/policies" },
     { "path": "packages/mcp" },
     { "path": "packages/extensions/memory" },
@@ -14,12 +16,14 @@
     { "path": "packages/extensions/storage" },
     { "path": "packages/extensions/telemetry" },
     { "path": "packages/extensions/format-toon" },
+    { "path": "packages/extensions/format-eql" },
     { "path": "packages/extensions/format-mermaid" },
     { "path": "packages/extensions/demo" },
     { "path": "packages/extensions/chrome-ai" },
     { "path": "packages/extensions/claude" },
     { "path": "packages/extensions/index" },
     { "path": "packages/runtimes/temporal" },
-    { "path": "packages/cli" }
+    { "path": "packages/cli" },
+    { "path": "packages/evals" }
   ]
 }

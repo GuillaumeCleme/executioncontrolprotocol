@@ -42,7 +42,10 @@ async function listTsFiles(dir: string): Promise<string[]> {
 function isNodeHostFile(relPath: string): boolean {
   const normalized = relPath.replace(/\\/g, "/")
   if (NODE_HOST_REL.has(normalized)) return true
-  return normalized.startsWith("loaders/")
+  return (
+    normalized.startsWith("loaders/") ||
+    normalized.startsWith("harness/prompts/")
+  )
 }
 
 describe("@ecp/core package boundary", () => {

@@ -93,7 +93,7 @@ describe("patch compaction loop", () => {
 
     const fluent = await ecp
       .encode(decoded.result as WorkflowManifest)
-      .as("fluent")
+      .uses("@ecp/format-fluent")
       .process()
     expect(fluent.success).toBe(true)
 

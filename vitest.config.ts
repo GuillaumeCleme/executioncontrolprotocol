@@ -71,6 +71,61 @@ export default defineConfig({
       ),
       "@ecp/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
       "@ecp/format-toon": path.resolve(repoRoot, "packages/extensions/format-toon/src/index.ts"),
+      "@ecp/format-mermaid": path.resolve(repoRoot, "packages/extensions/format-mermaid/src/index.ts"),
+      "@ecp/format-eql": path.resolve(repoRoot, "packages/extensions/format-eql/src/index.ts"),
+      "@ecp/demo": path.resolve(repoRoot, "packages/extensions/demo/src/index.ts"),
+      "@ecp/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
+      "@ecp/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
+      "@ecp/extension-ollama": path.resolve(
+        repoRoot,
+        "packages/extensions/ollama/src/index.ts"
+      ),
+      "@ecp/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
+      "@ecp/harnesses-browser": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser/src/index.ts"
+      ),
+      "@ecp/harnesses-browser/repair-workflow-json": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser/src/repair-workflow-json.ts"
+      ),
+      "@ecp/harnesses-browser/presentation": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser/src/presentation.ts"
+      ),
+      "@ecp/harnesses-browser/normalize-workflow-output": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser/src/normalize-workflow-output.ts"
+      ),
+      "@ecp/harnesses-browser/request-capability-hints": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+      ),
+      "@ecp/harnesses-browser/summarize-environment": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser/src/_internal/summarize-environment.ts"
+      ),
+      "@ecp/harnesses-evals": path.resolve(repoRoot, "packages/harnesses/evals/src/index.ts"),
+      "@ecp/harnesses-evals/repair-workflow-json": path.resolve(
+        repoRoot,
+        "packages/harnesses/evals/src/repair-workflow-json.ts"
+      ),
+      "@ecp/harnesses-evals/presentation": path.resolve(
+        repoRoot,
+        "packages/harnesses/evals/src/presentation.ts"
+      ),
+      "@ecp/harnesses-evals/normalize-workflow-output": path.resolve(
+        repoRoot,
+        "packages/harnesses/evals/src/normalize-workflow-output.ts"
+      ),
+      "@ecp/harnesses-evals/request-capability-hints": path.resolve(
+        repoRoot,
+        "packages/harnesses/evals/src/request-capability-hints.ts"
+      ),
+      "@ecp/harnesses-evals/summarize-environment": path.resolve(
+        repoRoot,
+        "packages/harnesses/evals/src/summarize-environment.ts"
+      ),
     },
   },
   test: {
@@ -79,6 +134,11 @@ export default defineConfig({
       provider: "v8",
       include: ["packages/*/src/**/*.ts", "packages/extensions/*/src/**/*.ts"],
       exclude: ["**/*.test.ts", "**/index.ts"],
+      thresholds: {
+        "packages/core/src/harness/**": { lines: 90, statements: 90 },
+        "packages/core/src/validate/harness.ts": { lines: 90, statements: 90 },
+        "packages/extensions/format-eql/src/**": { lines: 90, statements: 90 },
+      },
     },
     projects: [
       {
@@ -94,6 +154,7 @@ export default defineConfig({
             "packages/extensions/**/*.test.ts",
             "packages/node/**/*.test.ts",
             "packages/browser/test/*.test.ts",
+            "apps/browser-demo/test/**/*.test.ts",
           ],
         },
       },
@@ -124,6 +185,155 @@ export default defineConfig({
         test: {
           name: "integration",
           include: ["packages/mcp/test/integration/**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        resolve: {
+          alias: {
+            "@ecp/harnesses-browser/presentation": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/presentation.ts"
+            ),
+            "@ecp/harnesses-browser/normalize-workflow-output": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/normalize-workflow-output.ts"
+            ),
+            "@ecp/harnesses-browser/repair-workflow-json": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/repair-workflow-json.ts"
+            ),
+            "@ecp/harnesses-browser/request-capability-hints": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+            ),
+            "@ecp/harnesses-browser/summarize-environment": path.resolve(
+              repoRoot,
+              "packages/harnesses/browser/src/_internal/summarize-environment.ts"
+            ),
+          },
+        },
+        test: {
+          name: "eval",
+          include: [
+            "packages/evals/test/harness/**/*.test.ts",
+            "packages/evals/test/fixtures/**/*.test.ts",
+          ],
+          testTimeout: 180_000,
+        },
+      },
+      {
+        extends: true,
+        resolve: {
+          alias: [
+            { find: "@ecp/core", replacement: path.resolve(repoRoot, "packages/core/src/index.ts") },
+            {
+              find: "@ecp/core/compile",
+              replacement: path.resolve(repoRoot, "packages/core/src/compile/index.browser.ts"),
+            },
+            {
+              find: "@ecp/core/loaders",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
+            },
+            {
+              find: "@ecp/node",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-runtime-stub.ts"),
+            },
+            {
+              find: "node:fs",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-fs-stub.ts"),
+            },
+            {
+              find: "node:fs/promises",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-fs-stub.ts"),
+            },
+            {
+              find: "node:path",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-path-stub.ts"),
+            },
+            {
+              find: "node:url",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-url-stub.ts"),
+            },
+            {
+              find: "node:os",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
+            },
+            {
+              find: "node:http",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
+            },
+            {
+              find: "node:child_process",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
+            },
+            {
+              find: "node:util",
+              replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
+            },
+            {
+              find: path
+                .join(repoRoot, "packages/core/src/harness/prompts/load-harness-prompt.ts")
+                .replace(/\\/g, "/"),
+              replacement: path
+                .join(repoRoot, "packages/core/src/harness/prompts/load-harness-prompt.browser.ts")
+                .replace(/\\/g, "/"),
+            },
+            {
+              find: path
+                .join(repoRoot, "packages/core/src/harness/prompts/load-schema-example.ts")
+                .replace(/\\/g, "/"),
+              replacement: path
+                .join(repoRoot, "packages/core/src/harness/prompts/load-schema-example.browser.ts")
+                .replace(/\\/g, "/"),
+            },
+            {
+              find: "@ecp/harnesses-browser/presentation",
+              replacement: path.resolve(
+                repoRoot,
+                "packages/harnesses/browser/src/presentation.ts"
+              ),
+            },
+            {
+              find: "@ecp/harnesses-browser/normalize-workflow-output",
+              replacement: path.resolve(
+                repoRoot,
+                "packages/harnesses/browser/src/normalize-workflow-output.ts"
+              ),
+            },
+            {
+              find: "@ecp/harnesses-browser/repair-workflow-json",
+              replacement: path.resolve(
+                repoRoot,
+                "packages/harnesses/browser/src/repair-workflow-json.ts"
+              ),
+            },
+            {
+              find: "@ecp/harnesses-browser/request-capability-hints",
+              replacement: path.resolve(
+                repoRoot,
+                "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+              ),
+            },
+            {
+              find: "@ecp/harnesses-browser/summarize-environment",
+              replacement: path.resolve(
+                repoRoot,
+                "packages/harnesses/browser/src/_internal/summarize-environment.ts"
+              ),
+            },
+          ],
+        },
+        test: {
+          name: "eval-browser",
+          include: ["packages/evals/test/browser/**/*.eval.test.ts"],
+          testTimeout: 180_000,
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(),
+            instances: [{ browser: "chromium", channel: "chrome" }],
+          },
         },
       },
       {

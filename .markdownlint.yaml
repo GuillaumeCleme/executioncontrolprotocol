@@ -1,5 +1,5 @@
-# Markdownlint configuration for the ECP spec repository.
-# Relaxed rules to match the existing documentation style.
+# Markdownlint rule overrides for the ECP spec repository.
+# File globs and ignores (including all node_modules trees) are in .markdownlint-cli2.yaml.
 
 # Allow long lines — spec documents naturally have longer lines
 MD013: false

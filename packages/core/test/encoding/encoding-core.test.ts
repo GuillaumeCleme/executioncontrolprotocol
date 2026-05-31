@@ -31,9 +31,9 @@ describe("ecp.encode/decode", () => {
     await ecp.terminate()
   })
 
-  it("encodes JSON by default when no extension is used", async () => {
+  it("encodes JSON via @ecp/format-json", async () => {
     const ecp = await initEncodingTestEcp()
-    const encoded = await ecp.encode(sampleManifest).process()
+    const encoded = await ecp.encode(sampleManifest).uses("@ecp/format-json").process()
     expect(encoded.schema).toBe("@ecp.encode.result")
     expect(encoded.success).toBe(true)
     expect(encoded.format).toBe("json")
@@ -41,12 +41,30 @@ describe("ecp.encode/decode", () => {
     await ecp.terminate()
   })
 
-  it("decodes JSON by default when no extension is used", async () => {
+  it("decodes JSON via @ecp/format-json", async () => {
     const ecp = await initEncodingTestEcp()
-    const decoded = await ecp.decode(JSON.stringify(sampleManifest)).process()
+    const decoded = await ecp
+      .decode(JSON.stringify(sampleManifest))
+      .uses("@ecp/format-json")
+      .to("@ecp.workflow")
+      .process()
     expect(decoded.schema).toBe("@ecp.decode.result")
     expect(decoded.success).toBe(true)
     expect(decoded.result).toEqual(sampleManifest)
+    await ecp.terminate()
+  })
+
+  it("returns decode diagnostics for invalid JSON instead of throwing", async () => {
+    const ecp = await initEncodingTestEcp()
+    const decoded = await ecp
+      .decode('```json\n{"broken":')
+      .uses("@ecp/format-json")
+      .to("@ecp.intent")
+      .process()
+    expect(decoded.success).toBe(false)
+    expect(decoded.diagnostics.some((d) => d.message.includes("JSON parse failed"))).toBe(
+      true
+    )
     await ecp.terminate()
   })
 

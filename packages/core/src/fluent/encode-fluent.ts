@@ -61,6 +61,10 @@ export function encodeFluent(
 
   const content = renderWorkflowToFluent(manifest, {
     compact: options.compact ?? false,
+    importFrom:
+      options.importFrom === "@ecp/browser" || options.target === "browser"
+        ? "@ecp/browser"
+        : "@ecp/core",
   })
 
   return {

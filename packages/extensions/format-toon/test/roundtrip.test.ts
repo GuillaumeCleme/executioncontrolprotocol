@@ -122,7 +122,35 @@ describe("TOON round trip (@toon-format/toon)", () => {
 
     expect(encoded.success).toBe(true)
     expect(String(encoded.result)).not.toMatch(/^\s*schema:/m)
+
+    const decoded = await ecp
+      .decode(encoded.result)
+      .uses("@ecp/format-toon")
+      .to("@ecp.workflow")
+      .with({ headers: false, compact: true })
+      .process()
+    expect(decoded.success).toBe(true)
+    expect(normalizeWorkflowManifest(decoded.result as WorkflowManifest)).toEqual(
+      normalizeWorkflowManifest(manifest)
+    )
     await ecp.terminate()
+  })
+
+  it("round trips @ecp.patch headerless TOON via codec", async () => {
+    await registerFormatToonExtension()
+    const manifest = workflow("Echo")
+      .run([step("@ecp/test.echo", "E").with({ value: "x" }).as("o")])
+      .toManifest()
+    const stepId = (manifest.steps[0] as StepNode).id
+    const patchDoc = {
+      schema: "@ecp.patch" as const,
+      version: LATEST_ECP_VERSION,
+      entries: [{ path: `steps[${stepId}].input`, value: { value: "y" } }],
+    }
+    const toon = encodeDocumentToToon(patchDoc, { headers: false, compact: true })
+    const restored = decodeDocumentFromToon(toon) as typeof patchDoc
+    expect(restored.schema).toBe("@ecp.patch")
+    expect(restored.entries.length).toBe(1)
   })
 
   it("encodes unknown schema without validation errors", async () => {

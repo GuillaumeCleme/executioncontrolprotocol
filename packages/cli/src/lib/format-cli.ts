@@ -1,19 +1,19 @@
-import { ECP_FORMATS } from "@ecp/types"
+import { ECP_CORE_FORMATTER_IDS, ECP_FORMATS } from "@ecp/types"
 
 /** CLI `--format` values. */
 export type CliFormat = "json" | "toon" | "fluent"
 
-const FORMAT_EXTENSION: Record<CliFormat, string | undefined> = {
-  json: undefined,
+const FORMAT_EXTENSION: Record<CliFormat, string> = {
+  json: ECP_CORE_FORMATTER_IDS.JSON,
   toon: "@ecp/format-toon",
-  fluent: undefined,
+  fluent: ECP_CORE_FORMATTER_IDS.FLUENT,
 }
 
 /**
- * Map CLI format flag to extension id for `ecp.encode().uses(...)`.
+ * Map CLI format flag to formatter extension id for `ecp.encode().uses(...)`.
  * @category CLI
  */
-export function formatToExtensionId(format: CliFormat): string | undefined {
+export function formatToExtensionId(format: CliFormat): string {
   return FORMAT_EXTENSION[format]
 }
 

@@ -37,7 +37,7 @@ function attachLocalConfigResolver(ctx: LifecycleContext): void {
     id: EXT_ID,
     resolve(name: string) {
       if (isDeniedKey(name, denied)) {
-        throw new Error(`browser-local-config refuses secret-like key: ${name}`)
+        return undefined
       }
       if (!allowed.includes(name)) return undefined
       if (typeof localStorage === "undefined") return undefined

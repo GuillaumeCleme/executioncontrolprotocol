@@ -18,7 +18,12 @@ export type {
 export { step } from "./bindings/step.js"
 export { runtime } from "./bindings/runtime.js"
 export { extension } from "./bindings/extension.js"
+export { harness } from "./bindings/harness.js"
 export { policy } from "./bindings/policy.js"
+export { registerCoreFormats } from "./formats/register-core-formats.js"
+export * from "./harness/index.js"
+export * from "./feedback/index.js"
+export { stripMarkdownCodeFences } from "./encoding/strip-markdown-fences.js"
 export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 
@@ -61,6 +66,17 @@ export {
   type RenderWorkflowToFluentOptions,
 } from "./fluent/index.js"
 export { validateWorkflow } from "./validate/workflow.js"
+export {
+  capabilityIdSchema,
+  commitModeSchema,
+  parseWorkflowManifest,
+  stepNodeSchema,
+  workflowManifestSchema,
+  workflowNodeSchema,
+  type ParsedStepNode,
+  type ParsedWorkflowManifest,
+  type ParsedWorkflowNode,
+} from "./validate/workflow-schema.js"
 export {
   EcpError,
   normalizeWorkflowManifest,

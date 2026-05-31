@@ -80,7 +80,7 @@
       "import": "./dist/node.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "fixtures", "README.md"],
   "scripts": {
     "build": "tsc -b"
   },

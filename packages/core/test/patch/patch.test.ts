@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step, applyPatch, buildStepIndex } from "../../src/index.js"
+import { workflow, step, applyPatch, buildStepIndex, parallel } from "../../src/index.js"
 import type { WorkflowManifest } from "@ecp/types"
 
 function weeklyBriefManifest(): WorkflowManifest {
@@ -36,6 +36,112 @@ describe("applyPatch", () => {
     const stepNode = path.match(/^steps\[(\d+)\]/)?.[1]
     const stepAt = patched.result!.steps[Number(stepNode)] as import("@ecp/types").StepNode
     expect(stepAt.input?.prompt).toBe("Create a concise executive brief.")
+  })
+
+  it("replaces the steps array when path is steps", () => {
+    const manifest = workflow("Echo")
+      .id("echo-test")
+      .run([step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .toManifest()
+
+    const patched = applyPatch(manifest, [
+      {
+        path: "steps",
+        mode: "replace",
+        value: [
+          {
+            type: "step",
+            id: "echo",
+            label: "Echo",
+            uses: "@ecp/test.echo",
+            input: { value: "hi" },
+            as: "echo",
+          },
+          {
+            type: "step",
+            id: "summarize",
+            label: "Summarize",
+            uses: "@ecp/demo.summarize",
+            input: { text: { $ref: "state.echo.output" } },
+            as: "summary",
+          },
+        ],
+      },
+    ])
+
+    expect(patched.success).toBe(true)
+    expect(patched.result!.steps).toHaveLength(2)
+    expect(patched.result!.steps[1]?.id).toBe("summarize")
+  })
+
+  it("inserts a step via eql:add-step without removing existing steps", () => {
+    const manifest = workflow("Echo")
+      .id("echo-test")
+      .run([step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .toManifest()
+
+    const patched = applyPatch(manifest, [
+      {
+        path: "steps",
+        mode: "replace",
+        reason: "eql:add-step",
+        value: {
+          step: {
+            type: "step",
+            id: "summarize",
+            label: "Summarize",
+            uses: "@ecp/demo.summarize",
+            input: { text: { $ref: "state.echo.output" } },
+            as: "summary",
+          },
+          _eqlInsertAfter: "echo",
+        },
+      },
+    ])
+
+    expect(patched.success).toBe(true)
+    expect(patched.result!.steps).toHaveLength(2)
+    expect(patched.result!.steps[0]?.id).toBe("echo")
+    expect(patched.result!.steps[1]?.id).toBe("summarize")
+  })
+
+  it("removes a step via eql:delete", () => {
+    const manifest = workflow("Echo notify")
+      .id("echo-notify")
+      .run([
+        step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
+        step("@ecp/demo.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
+      ])
+      .toManifest()
+
+    const patched = applyPatch(manifest, [
+      {
+        path: "steps[notify]",
+        mode: "replace",
+        value: null,
+        reason: "eql:delete",
+      },
+    ])
+
+    expect(patched.success).toBe(true)
+    expect(patched.result!.steps).toHaveLength(1)
+    expect(patched.result!.steps[0]?.id).toBe("echo")
+  })
+
+  it("replaces scalar step fields without corrupting the step", () => {
+    const manifest = workflow("Echo")
+      .id("echo-test")
+      .run([step("@ecp/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .toManifest()
+
+    const patched = applyPatch(manifest, {
+      "steps[echo].label": "Patched Echo",
+    })
+
+    expect(patched.success).toBe(true)
+    const echoStep = patched.result!.steps.find((s) => s.id === "echo")
+    expect(echoStep?.label).toBe("Patched Echo")
+    expect(echoStep?.uses).toBe("@ecp/test.echo")
   })
 
   it("deep merges by default", () => {
@@ -89,6 +195,34 @@ describe("applyPatch", () => {
 
     expect(patched.success).toBe(false)
     expect(patched.diagnostics.some((d) => d.code === "DUPLICATE_STEP_ID")).toBe(true)
+  })
+
+  it("returns PATCH_PATH_NOT_FOUND for unknown step id", () => {
+    const manifest = weeklyBriefManifest()
+    const patched = applyPatch(manifest, {
+      "steps[unknown-step].input": { prompt: "x" },
+    })
+    expect(patched.success).toBe(false)
+    expect(patched.diagnostics.some((d) => d.code === "PATCH_PATH_NOT_FOUND")).toBe(true)
+  })
+
+  it("resolves nested parallel step paths", () => {
+    const manifest = workflow("Nested")
+      .run([
+        parallel([
+          [step("@ecp/test.echo", "Inner").with({ value: "a" }).as("inner")],
+        ]),
+      ])
+      .toManifest()
+    const parallelNode = manifest.steps[0] as import("@ecp/types").ParallelNode
+    const innerStep = parallelNode.branches[0]![0] as import("@ecp/types").StepNode
+    const index = buildStepIndex(manifest)
+    const innerPath = index.pathsById.get(innerStep.id)
+    expect(innerPath).toMatch(/^steps\[0\]\.branches\[/)
+    const patched = applyPatch(manifest, {
+      [`steps[${innerStep.id}].input`]: { value: "patched" },
+    })
+    expect(patched.success).toBe(true)
   })
 })
 

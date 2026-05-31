@@ -1,0 +1,34 @@
+{
+  "schema": "@ecp.workflow",
+  "version": "1.0",
+  "workflow": {
+    "id": "multi-cap",
+    "label": "Multi capability"
+  },
+  "steps": [
+    {
+      "type": "step",
+      "id": "validate",
+      "label": "Validate",
+      "uses": "@ecp/demo.validate",
+      "input": { "payload": { "ok": true } },
+      "as": "validated"
+    },
+    {
+      "type": "step",
+      "id": "echo",
+      "label": "Echo",
+      "uses": "@ecp/test.echo",
+      "input": { "value": "after-validate" },
+      "as": "echo"
+    },
+    {
+      "type": "step",
+      "id": "notify",
+      "label": "Notify",
+      "uses": "@ecp/demo.notify",
+      "input": { "payload": { "$ref": "state.echo.output" } },
+      "as": "notified"
+    }
+  ]
+}

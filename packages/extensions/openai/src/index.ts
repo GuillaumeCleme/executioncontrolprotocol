@@ -1,25 +1,19 @@
-import { defineExtension, capabilityFor, globalRegistry, string } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, string, type Registry } from "@ecp/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
-
-const GenerateInput = z.object({
-  prompt: z.string(),
-  context: z.unknown().optional(),
-  model: z.string().optional(),
-})
-
-const GenerateOutput = z.object({
-  content: z.string(),
-})
+import { resolveOpenaiApiKey } from "./resolve-api-key.js"
 
 async function chatComplete(
   apiKey: string,
   model: string,
   prompt: string,
+  system?: string,
   context?: unknown
 ): Promise<string> {
   const body = {
     model,
     messages: [
+      ...(system ? [{ role: "system" as const, content: system }] : []),
       ...(context
         ? [{ role: "system" as const, content: JSON.stringify(context) }]
         : []),
@@ -49,46 +43,42 @@ export const openaiExtension = defineExtension("@ecp", "openai")
   })
   .withCapabilities([
     capabilityFor("@ecp/openai", "generate")
-      .withInput(GenerateInput)
-      .withOutput(GenerateOutput)
+      .withInput(modelGenerateInputSchema)
+      .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
+        const parsed = input as z.infer<typeof modelGenerateInputSchema>
         const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
-        const apiKey =
-          (cfg.apiKey as string) ?? process.env.OPENAI_API_KEY ?? ""
+        const apiKey = resolveOpenaiApiKey(cfg)
         if (!apiKey) throw new Error("OpenAI API key required")
-        const model =
-          (input as z.infer<typeof GenerateInput>).model ??
-          (cfg.defaultModel as string) ??
-          "gpt-4o-mini"
+        const model = parsed.model ?? (cfg.defaultModel as string) ?? "gpt-4o-mini"
         ctx.usage.increment({ modelCalls: 1 })
-        const content = await chatComplete(
+        const text = await chatComplete(
           apiKey,
           model,
-          (input as z.infer<typeof GenerateInput>).prompt,
-          (input as z.infer<typeof GenerateInput>).context
+          parsed.prompt,
+          parsed.system,
+          parsed.context
         )
-        return { content }
+        return { text }
       }),
     capabilityFor("@ecp/openai", "generateText")
-      .withInput(GenerateInput)
-      .withOutput(z.object({ text: z.string() }))
+      .withInput(modelGenerateInputSchema)
+      .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
+        const parsed = input as z.infer<typeof modelGenerateInputSchema>
         const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
-        const apiKey =
-          (cfg.apiKey as string) ?? process.env.OPENAI_API_KEY ?? ""
+        const apiKey = resolveOpenaiApiKey(cfg)
         if (!apiKey) throw new Error("OpenAI API key required")
-        const model =
-          (input as z.infer<typeof GenerateInput>).model ??
-          (cfg.defaultModel as string) ??
-          "gpt-4o-mini"
+        const model = parsed.model ?? (cfg.defaultModel as string) ?? "gpt-4o-mini"
         ctx.usage.increment({ modelCalls: 1 })
-        const content = await chatComplete(
+        const text = await chatComplete(
           apiKey,
           model,
-          (input as z.infer<typeof GenerateInput>).prompt,
-          (input as z.infer<typeof GenerateInput>).context
+          parsed.prompt,
+          parsed.system,
+          parsed.context
         )
-        return { text: content }
+        return { text }
       }),
     capabilityFor("@ecp/openai", "evaluate")
       .withInput(
@@ -99,11 +89,12 @@ export const openaiExtension = defineExtension("@ecp", "openai")
         })
       )
       .withOutput(z.object({ approved: z.boolean(), feedback: z.string().optional() }))
-      .withHandler(async (input) => {
+      .withHandler(async (input, ctx) => {
         const prompt = `Evaluate: ${(input as { goal?: string }).goal ?? "quality check"}. Reply JSON {approved:boolean,feedback:string}`
-        const apiKey = process.env.OPENAI_API_KEY ?? ""
+        const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
+        const apiKey = resolveOpenaiApiKey(cfg)
         if (!apiKey) return { approved: true, feedback: "skipped (no API key)" }
-        const content = await chatComplete(apiKey, "gpt-4o-mini", prompt, input)
+        const content = await chatComplete(apiKey, "gpt-4o-mini", prompt, undefined, input)
         try {
           return JSON.parse(content) as { approved: boolean; feedback?: string }
         } catch {
@@ -114,9 +105,9 @@ export const openaiExtension = defineExtension("@ecp", "openai")
   .build()
 
 /** Register @ecp/openai. */
-export async function registerOpenaiExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@ecp/openai")) {
-    await globalRegistry.registerExtension(openaiExtension)
+export async function registerOpenaiExtension(registry: Registry = globalRegistry): Promise<void> {
+  if (!registry.getExtension("@ecp/openai")) {
+    await registry.registerExtension(openaiExtension)
   }
 }
 

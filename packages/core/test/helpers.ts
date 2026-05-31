@@ -4,9 +4,10 @@ import { environment as coreEnvironment } from "../src/environment/environment.j
 import type { ExtensionBindingBuilder } from "../src/bindings/extension.js"
 import { extension } from "../src/bindings/extension.js"
 import { registerTestExtension } from "../src/testing/test-extension.js"
-
+import { registerCoreFormats } from "../src/formats/register-core-formats.js"
 /** Test environment with `@ecp/node` runtime and test extension registered. */
 export async function createTestEnvironment(id = "test", label?: string) {
+  await registerCoreFormats()
   await registerTestExtension()
   const env = await nodeEnvironment(id, label)
   return env.withExtensions([extension("@ecp/test").with({})])
@@ -23,6 +24,7 @@ export async function initEncodingTestEcp(
   extraExtensions: ExtensionBindingBuilder[] = [],
   id = "encoding-test"
 ): Promise<Ecp> {
+  await registerCoreFormats()
   await registerNodeRuntime()
   const env = coreEnvironment(id)
     .withRuntime(runtime(NODE_RUNTIME_ID))

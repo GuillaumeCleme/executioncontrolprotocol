@@ -2,30 +2,40 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
+import { ecpWorkspaceAliases } from "./vite-ecp-aliases.js"
+import { browserPromptLoaderPlugin } from "./vite-browser-prompts-plugin.js"
 
-const stub = join(dirname(fileURLToPath(import.meta.url)), "src/stubs/node-empty.ts")
+const appRoot = dirname(fileURLToPath(import.meta.url))
+const repoRoot = join(appRoot, "../..")
+const corePrompts = join(repoRoot, "packages/core/src/harness/prompts")
+const stubDir = join(appRoot, "src/stubs")
 
-const NODE_BUILTINS = [
-  "node:fs",
-  "node:fs/promises",
-  "node:os",
-  "node:path",
-  "node:url",
-  "node:http",
-  "node:child_process",
-  "node:util",
-]
+/** Vite alias target (forward slashes — required on Windows). */
+function aliasPath(...segments: string[]): string {
+  return join(...segments).replace(/\\/g, "/")
+}
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    browserPromptLoaderPlugin({ corePromptsDir: corePrompts, stubDir }),
+    react(),
+  ],
   server: { port: 5173 },
   resolve: {
     alias: {
       esbuild: "esbuild-wasm",
-      ...Object.fromEntries(NODE_BUILTINS.map((id) => [id, stub])),
+      ...ecpWorkspaceAliases,
+      "node:fs": aliasPath(stubDir, "node-fs-stub.ts"),
+      "node:fs/promises": aliasPath(stubDir, "node-fs-stub.ts"),
+      "node:path": aliasPath(stubDir, "node-path-stub.ts"),
+      "node:url": aliasPath(stubDir, "node-url-stub.ts"),
+      "node:os": aliasPath(stubDir, "node-empty.ts"),
+      "node:http": aliasPath(stubDir, "node-empty.ts"),
+      "node:child_process": aliasPath(stubDir, "node-empty.ts"),
+      "node:util": aliasPath(stubDir, "node-empty.ts"),
     },
   },
   optimizeDeps: {
-    exclude: ["@ecp/core", "@ecp/browser"],
+    exclude: ["@ecp/core", "@ecp/browser", "@ecp/format-mermaid", "@ecp/format-toon"],
   },
 })

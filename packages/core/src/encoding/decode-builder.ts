@@ -5,9 +5,8 @@ import type {
   EcpVersion,
   NamespacedId,
 } from "@ecp/types"
-import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION } from "@ecp/types"
+import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION, ecpIntentSchema } from "@ecp/types"
 import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
-import { decodeJson } from "./json-codec.js"
 import { EcpError } from "./errors.js"
 import { invokeDecodeCapability } from "./invoke-utility.js"
 import { resolveDecoder } from "./resolve.js"
@@ -45,6 +44,13 @@ function validateDecodedDocument(
   }
   if (targetSchema === "@ecp.patch") {
     const parsed = ecpPatchDocumentSchema.safeParse(document)
+    if (parsed.success) return emptyValidationResult(true)
+    const result = emptyValidationResult(false)
+    result.errors.push(...zodIssuesToValidationIssues(parsed.error.issues))
+    return result
+  }
+  if (targetSchema === "@ecp.intent") {
+    const parsed = ecpIntentSchema.safeParse(document)
     if (parsed.success) return emptyValidationResult(true)
     const result = emptyValidationResult(false)
     result.errors.push(...zodIssuesToValidationIssues(parsed.error.issues))
@@ -88,48 +94,40 @@ export function createDecodeBuilder(
     async process<T = unknown>(): Promise<DecodeResult<T>> {
       await env.ensureBoundExtensionsRegistered()
 
+      if (!state.extensionId) {
+        throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODER_NOT_FOUND, {
+          message:
+            "Decode requires .uses(formatterId), e.g. .uses(\"@ecp/format-json\") or .uses(\"@ecp/format-toon\").",
+        })
+      }
+
       const ctx = createUtilityCapabilityContext(
         env.getEnvId(),
         env.getEnvLabel(),
         env.getRegistry()
       )
 
-      let result: DecodeResult<T>
-
-      if (!state.extensionId) {
-        const target = state.targetSchema ?? "@ecp.workflow"
-        const validation = validateDecodedDocument(
-          typeof state.content === "string" ? JSON.parse(state.content) : state.content,
-          target
-        )
-        result = decodeJson<T>(state.content, {
-          targetSchema: target,
+      const cap = resolveDecoder(env.getRegistry(), state.extensionId)
+      const raw = await invokeDecodeCapability(
+        cap,
+        {
+          input: state.content,
+          format: state.format,
+          targetSchema: state.targetSchema,
           targetVersion: state.targetVersion,
+          options: state.options,
+        },
+        ctx
+      )
+      let result = raw as DecodeResult<T>
+      const target = state.targetSchema ?? result.targetSchema
+      if (result.success && result.result !== undefined && target) {
+        const validation = validateDecodedDocument(result.result, target)
+        result = {
+          ...result,
           validation,
-        }) as DecodeResult<T>
-      } else {
-        const cap = resolveDecoder(env.getRegistry(), state.extensionId)
-        const raw = await invokeDecodeCapability(
-          cap,
-          {
-            input: state.content,
-            format: state.format,
-            targetSchema: state.targetSchema,
-            targetVersion: state.targetVersion,
-            options: state.options,
-          },
-          ctx
-        )
-        result = raw as DecodeResult<T>
-        const target = state.targetSchema ?? result.targetSchema
-        if (result.success && result.result !== undefined && target) {
-          const validation = validateDecodedDocument(result.result, target)
-          result = {
-            ...result,
-            validation,
-            success: result.success && validation.valid,
-            diagnostics: [...result.diagnostics, ...validation.errors, ...validation.warnings],
-          }
+          success: result.success && validation.valid,
+          diagnostics: [...result.diagnostics, ...validation.errors, ...validation.warnings],
         }
       }
 

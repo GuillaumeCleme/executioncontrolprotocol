@@ -105,7 +105,8 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
     async ({ source, format, compact }) => {
       let op = ecp.encode(source as EcpEncodeInput["source"])
       if (format === "toon") op = op.uses("@ecp/format-toon")
-      else if (format === "fluent") op = op.as("fluent")
+      else if (format === "fluent") op = op.uses("@ecp/format-fluent")
+      else op = op.uses("@ecp/format-json")
       if (compact) op = op.compact()
       const encoded = await op.process()
       return {
@@ -125,6 +126,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
     async ({ content, format, strict, targetSchema }) => {
       let op = ecp.decode(content)
       if (format === "toon") op = op.uses("@ecp/format-toon")
+      else op = op.uses("@ecp/format-json")
       if (strict) op = op.strict()
       if (targetSchema) op = op.to(targetSchema as "@ecp.workflow")
       else if (!format || format === ECP_FORMATS.JSON) op = op.to("@ecp.workflow")

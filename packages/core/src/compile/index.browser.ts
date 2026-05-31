@@ -24,9 +24,17 @@ export async function compileWorkflowSource(
 ): Promise<CompileWorkflowResult> {
   const filename = options.filename ?? "workflow.ts"
   try {
-    const code = isTypeScriptFile(filename) || options.source.includes("@ecp/")
-      ? await bundleWorkflowSource(options.source, filename, ".")
-      : options.source
+    const code =
+      isTypeScriptFile(filename) ||
+      options.source.includes("@ecp/") ||
+      options.resolveImports === "browser-global"
+        ? await bundleWorkflowSource(
+            options.source,
+            filename,
+            ".",
+            options.resolveImports
+          )
+        : options.source
     const manifest = await evaluateWorkflowModule(code, filename.replace(/\.tsx?$/, ".js"))
     const validation = validateWorkflow(manifest)
     const ok = validation.valid

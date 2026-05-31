@@ -1,8 +1,7 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/spec" },
-    { "path": "packages/runtime" },
-    { "path": "packages/cli" }
+    { "path": "tsconfig.build.json" },
+    { "path": "apps/browser-demo" }
   ]
 }
