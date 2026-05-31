@@ -9,7 +9,7 @@ import {
   createHarnessOllamaWorkflowEnvironment,
   ollamaEvalReady,
 } from "@ecp/evals"
-import { EVAL_HARNESS_TASKS } from "@ecp/harnesses-evals"
+import { EVAL_HARNESS_TASKS } from "@ecp/evals"
 import { assertHarnessInvokeSuccess, harnessResult, harnessTraceHint } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")

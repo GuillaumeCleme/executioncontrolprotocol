@@ -8,12 +8,12 @@ import { registerDemoExtension } from "@ecp/demo"
 import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
-import { EVALS_HARNESS_CAPABILITY } from "@ecp/evals"
 import {
   EVAL_HARNESS_TASKS,
+  EVALS_HARNESS_CAPABILITY,
   EVALS_HARNESS_ID,
   registerEvalHarnesses,
-} from "@ecp/harnesses-evals"
+} from "@ecp/evals"
 import { assertHarnessInvokeSuccess } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")

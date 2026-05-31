@@ -19,5 +19,3 @@ Tasks: `workflow-authoring`, `intent-classification`, `workflow-assistant`.
 
 - **`matrix`** (default) — Ollama eval binding (`@ecp/format-json` workflow output, full repair loop).
 - **`browser-demo`** — set `harnessProfile: "browser-demo"` on the env harness binding (TOON workflow output for the demo UI).
-
-`@ecp/harnesses-evals` re-exports this package for backward compatibility (`EVALS_HARNESS_*` aliases).

@@ -156,7 +156,7 @@ Typical failure stages for intent evals:
 
 ### Repair loop (model learns from failures)
 
-Core collectors (`collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback`) produce `HarnessOperationFeedback` with paths and codes. Eval harnesses format that into repair prompts via `formatFeedbackForModel` in `@ecp/harness-evals` (`packages/harness-evals/src/presentation.ts`).
+Core collectors (`collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback`) produce `HarnessOperationFeedback` with paths and codes. Eval harnesses format that into repair prompts via `formatFeedbackForModel` from `@ecp/harnesses-browser/presentation`.
 
 Harness config supports `repair` (enabled in eval via `EVAL_HARNESS_REPAIR`):
 

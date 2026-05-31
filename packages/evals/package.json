@@ -20,7 +20,7 @@
     "@ecp/browser": "1.0.0",
     "@ecp/chrome-ai": "1.0.0",
     "@ecp/core": "1.0.0",
-    "@ecp/harnesses-evals": "1.0.0",
+    "@ecp/harnesses-browser": "1.0.0",
     "@ecp/demo": "1.0.0",
     "@ecp/extension-ollama": "1.0.0",
     "@ecp/format-eql": "1.0.0",

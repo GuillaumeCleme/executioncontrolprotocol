@@ -111,27 +111,6 @@ export default defineConfig({
         repoRoot,
         "packages/harnesses/browser/src/_internal/summarize-environment.ts"
       ),
-      "@ecp/harnesses-evals": path.resolve(repoRoot, "packages/harnesses/evals/src/index.ts"),
-      "@ecp/harnesses-evals/repair-workflow-json": path.resolve(
-        repoRoot,
-        "packages/harnesses/evals/src/repair-workflow-json.ts"
-      ),
-      "@ecp/harnesses-evals/presentation": path.resolve(
-        repoRoot,
-        "packages/harnesses/evals/src/presentation.ts"
-      ),
-      "@ecp/harnesses-evals/normalize-workflow-output": path.resolve(
-        repoRoot,
-        "packages/harnesses/evals/src/normalize-workflow-output.ts"
-      ),
-      "@ecp/harnesses-evals/request-capability-hints": path.resolve(
-        repoRoot,
-        "packages/harnesses/evals/src/request-capability-hints.ts"
-      ),
-      "@ecp/harnesses-evals/summarize-environment": path.resolve(
-        repoRoot,
-        "packages/harnesses/evals/src/summarize-environment.ts"
-      ),
     },
   },
   test: {

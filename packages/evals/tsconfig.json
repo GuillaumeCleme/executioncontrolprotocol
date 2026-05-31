@@ -9,7 +9,7 @@
     { "path": "../types" },
     { "path": "../core" },
     { "path": "../runtimes/browser" },
-    { "path": "../harnesses/evals" },
+    { "path": "../harnesses/browser" },
     { "path": "../runtimes/node" },
     { "path": "../extensions/ollama" },
     { "path": "../extensions/chrome-ai" },

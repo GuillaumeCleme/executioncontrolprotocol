@@ -7,7 +7,7 @@ import {
   createHarnessOllamaIntentEnvironment,
   ollamaEvalReady,
 } from "@ecp/evals"
-import { EVAL_HARNESS_TASKS } from "@ecp/harnesses-evals"
+import { EVAL_HARNESS_TASKS } from "@ecp/evals"
 import { expectHarnessIntent, harnessTraceHint } from "./assert-harness-result.js"
 
 const readiness = await ollamaEvalReady()

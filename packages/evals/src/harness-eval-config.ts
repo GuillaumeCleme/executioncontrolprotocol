@@ -1,6 +1,6 @@
 /**
  * Shared harness binding config for `@ecp/evals` (trace + context).
- * Matrix task configs live in `@ecp/harnesses-evals`.
+ * Matrix task configs live in `@ecp/harnesses-browser` (via harness-bindings).
  * @category Evals
  */
 import {
@@ -9,7 +9,7 @@ import {
   EVAL_HARNESS_TRACE,
   EVAL_MATRIX_HARNESS_BINDING,
   getEvalMatrixHarnessConfig,
-} from "@ecp/harnesses-evals"
+} from "./harness-bindings.js"
 
 export {
   EVAL_HARNESS_REPAIR,

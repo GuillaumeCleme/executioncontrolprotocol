@@ -29,7 +29,7 @@ import {
   EVAL_HARNESS_TASKS,
   EVALS_HARNESS_CAPABILITY,
   type EvalHarnessTask,
-} from "@ecp/harnesses-evals"
+} from "../harness-bindings.js"
 import { MATRIX_EVAL_EXTENSION_IDS } from "../harness-eval-config.js"
 
 /** Options for {@link runEvalCase} when fixture loading or provider differ by runtime. */

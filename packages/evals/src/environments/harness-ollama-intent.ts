@@ -5,7 +5,7 @@ import {
   registerCoreFormats,
   registerTestExtension,
 } from "@ecp/core"
-import { registerEvalHarnesses, EVALS_HARNESS_ID } from "@ecp/harnesses-evals"
+import { registerEvalHarnesses, EVALS_HARNESS_ID } from "../harness-bindings.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerOllamaExtension } from "@ecp/extension-ollama"
 import { registerFormatEqlExtension } from "@ecp/format-eql"

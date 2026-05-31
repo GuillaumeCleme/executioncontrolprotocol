@@ -6,7 +6,6 @@
     { "path": "packages/runtimes/node" },
     { "path": "packages/runtimes/browser" },
     { "path": "packages/harnesses/browser" },
-    { "path": "packages/harnesses/evals" },
     { "path": "packages/policies" },
     { "path": "packages/mcp" },
     { "path": "packages/extensions/memory" },

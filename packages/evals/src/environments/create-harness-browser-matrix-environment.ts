@@ -1,7 +1,7 @@
 import { harness } from "@ecp/core"
 import { createBrowserDemoEnvironment, registerBrowserDefaults } from "@ecp/browser"
 import { registerTestExtension } from "@ecp/core"
-import { EVALS_HARNESS_ID } from "@ecp/harnesses-evals"
+import { EVALS_HARNESS_ID } from "../harness-bindings.js"
 import { EVAL_MATRIX_HARNESS_BINDING } from "../harness-eval-config.js"
 import type { EvalProviderProfile } from "../profiles/eval-provider.js"
 

@@ -28,7 +28,14 @@ export {
   MATRIX_INTENT_HARNESS_CONFIG,
   MATRIX_ASSISTANT_HARNESS_CONFIG,
 } from "./harness-eval-config.js"
-export { EVALS_HARNESS_ID, EVALS_HARNESS_CAPABILITY } from "@ecp/harnesses-evals"
+export {
+  EVALS_HARNESS_ID,
+  EVALS_HARNESS_CAPABILITY,
+  EVAL_HARNESS_TASKS,
+  registerEvalHarnesses,
+  resetEvalHarnessesRegistrationForTests,
+  type EvalHarnessTask,
+} from "./harness-bindings.js"
 export {
   ollamaEvalReady,
   ollamaHasModel,

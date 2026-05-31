@@ -4,12 +4,12 @@ import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerDemoExtension } from "@ecp/demo"
 import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { ECP_INTENT_VALUES } from "@ecp/types"
-import { EVALS_HARNESS_CAPABILITY } from "@ecp/evals"
 import {
   EVAL_HARNESS_TASKS,
+  EVALS_HARNESS_CAPABILITY,
   EVALS_HARNESS_ID,
   registerEvalHarnesses,
-} from "@ecp/harnesses-evals"
+} from "@ecp/evals"
 import { expectHarnessIntent } from "./assert-harness-result.js"
 
 async function createEvalIntentDemoEnv() {

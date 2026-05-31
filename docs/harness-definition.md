@@ -29,7 +29,7 @@ Product harness handlers load **harness prompts** from `@ecp/core` — not from 
 
 API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@ecp/core`.
 
-**Handler internals:** compact descriptor/workflow/run summaries for small models live in harness product packages (e.g. `packages/harnesses/evals/src/_internal/`) — not in the core harness framework or shared config schema.
+**Handler internals:** compact descriptor/workflow/run summaries for small models live in harness product packages (e.g. `packages/harnesses/browser/src/_internal/`) — not in the core harness framework or shared config schema.
 
 ## Harness operation feedback (core contract)
 
