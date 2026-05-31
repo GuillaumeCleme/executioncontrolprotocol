@@ -6,8 +6,9 @@
 | ---- | ------- |
 | `packages/types/` | Protocol types (`@ecp/types`) — [README](packages/types/README.md) |
 | `packages/core/` | Fluent API, environment, in-memory engine (`@ecp/core`) — [README](packages/core/README.md) |
-| `packages/node/` | Node runtime host (`@ecp/node`) — [README](packages/node/README.md) |
-| `packages/browser/` | Browser runtime host (`@ecp/browser`) — [README](packages/browser/README.md) |
+| `packages/runtimes/node/` | Node runtime host (`@ecp/node`) — [README](packages/runtimes/node/README.md) |
+| `packages/runtimes/browser/` | Browser runtime host (`@ecp/browser`) — [README](packages/runtimes/browser/README.md) |
+| `packages/runtimes/temporal/` | Temporal runtime adapter stub (`@ecp/runtime-temporal`) |
 | `apps/browser-demo/` | Reference browser demo app (UI only) — [README](apps/browser-demo/README.md) |
 | `packages/mcp/` | MCP adapter (`@ecp/mcp`) |
 | `packages/cli/` | `ecp` CLI (`@ecp/cli`) |

@@ -8,12 +8,12 @@
   "references": [
     { "path": "../types" },
     { "path": "../core" },
-    { "path": "../browser" },
+    { "path": "../runtimes/browser" },
     { "path": "../harnesses/evals" },
-    { "path": "../node" },
+    { "path": "../runtimes/node" },
     { "path": "../extensions/ollama" },
     { "path": "../extensions/chrome-ai" },
     { "path": "../extensions/format-toon" }
   ],
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/import-meta-glob.d.ts"]
 }

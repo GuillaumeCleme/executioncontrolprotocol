@@ -2,8 +2,14 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { defineConfig } from "vitest/config"
 import { playwright } from "@vitest/browser-playwright"
+import { browserPromptLoaderPlugin } from "./apps/browser-demo/vite-browser-prompts-plugin.js"
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url))
+const corePromptsDir = path.join(repoRoot, "packages/core/src/harness/prompts")
+const promptLoaderStubDir = path.join(repoRoot, "apps/browser-demo/src/stubs")
+const browserPromptPlugins = [
+  browserPromptLoaderPlugin({ corePromptsDir, stubDir: promptLoaderStubDir }),
+]
 
 export default defineConfig({
   resolve: {
@@ -59,8 +65,8 @@ export default defineConfig({
       ),
       "@ecp/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
       "@ecp/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
-      "@ecp/node": path.resolve(repoRoot, "packages/node/src/index.ts"),
-      "@ecp/browser": path.resolve(repoRoot, "packages/browser/src/index.ts"),
+      "@ecp/node": path.resolve(repoRoot, "packages/runtimes/node/src/index.ts"),
+      "@ecp/browser": path.resolve(repoRoot, "packages/runtimes/browser/src/index.ts"),
       "@ecp/extension-memory": path.resolve(
         repoRoot,
         "packages/extensions/memory/src/index.ts"
@@ -152,26 +158,33 @@ export default defineConfig({
             "packages/cli/test/**/*.test.ts",
             "packages/mcp/**/*.test.ts",
             "packages/extensions/**/*.test.ts",
-            "packages/node/**/*.test.ts",
-            "packages/browser/test/*.test.ts",
+            "packages/runtimes/node/**/*.test.ts",
+            "packages/runtimes/browser/test/*.test.ts",
             "apps/browser-demo/test/**/*.test.ts",
           ],
         },
       },
       {
         extends: true,
+        plugins: browserPromptPlugins,
         resolve: {
-          alias: {
-            "@ecp/core": path.resolve(
-              repoRoot,
-              "packages/core/src/browser-runtime-entry.ts"
-            ),
-            "@ecp/core/browser": path.resolve(repoRoot, "packages/core/src/browser.ts"),
-          },
+          alias: [
+            {
+              find: "@ecp/core",
+              replacement: path.resolve(
+                repoRoot,
+                "packages/core/src/browser-runtime-entry.ts"
+              ),
+            },
+            {
+              find: "@ecp/core/browser",
+              replacement: path.resolve(repoRoot, "packages/core/src/browser.ts"),
+            },
+          ],
         },
         test: {
           name: "browser",
-          include: ["packages/browser/test/browser/**/*.test.ts"],
+          include: ["packages/runtimes/browser/test/browser/**/*.test.ts"],
           browser: {
             enabled: true,
             headless: true,
@@ -224,6 +237,7 @@ export default defineConfig({
       },
       {
         extends: true,
+        plugins: browserPromptPlugins,
         resolve: {
           alias: [
             { find: "@ecp/core", replacement: path.resolve(repoRoot, "packages/core/src/index.ts") },
@@ -270,22 +284,6 @@ export default defineConfig({
             {
               find: "node:util",
               replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
-            },
-            {
-              find: path
-                .join(repoRoot, "packages/core/src/harness/prompts/load-harness-prompt.ts")
-                .replace(/\\/g, "/"),
-              replacement: path
-                .join(repoRoot, "packages/core/src/harness/prompts/load-harness-prompt.browser.ts")
-                .replace(/\\/g, "/"),
-            },
-            {
-              find: path
-                .join(repoRoot, "packages/core/src/harness/prompts/load-schema-example.ts")
-                .replace(/\\/g, "/"),
-              replacement: path
-                .join(repoRoot, "packages/core/src/harness/prompts/load-schema-example.browser.ts")
-                .replace(/\\/g, "/"),
             },
             {
               find: "@ecp/harnesses-browser/presentation",

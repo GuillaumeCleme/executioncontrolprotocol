@@ -846,7 +846,7 @@ Implement the browser package features needed by the app, while keeping the brow
 Package:
 
 ```txt
-packages/browser
+packages/runtimes/browser
 ```
 
 ---

@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest"
 import { workflow, step, extension, env, registerTestExtension } from "@ecp/core"
 import { environment, setMemorySecret, registerNodeDefaults } from "../src/index.js"
 import { resolveEnvConfigAsync } from "@ecp/core"
-import { registerRuntimeConformanceTests } from "../../core/test/runtime-conformance.js"
-import { createTestEnvironment } from "../../core/test/helpers.js"
+import { registerRuntimeConformanceTests } from "../../../core/test/runtime-conformance.js"
+import { createTestEnvironment } from "../../../core/test/helpers.js"
 
 registerRuntimeConformanceTests("@ecp/node", () => createTestEnvironment("node-conformance"))
 

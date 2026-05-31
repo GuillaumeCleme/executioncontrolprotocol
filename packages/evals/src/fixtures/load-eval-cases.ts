@@ -14,6 +14,7 @@ import {
   type EvalSuite,
   type SingleEvalCase,
 } from "./eval-case-schema.js"
+import type { LoadEvalCasesOptions } from "./load-eval-cases-options.js"
 import { EVAL_CASES_DIR, resolveEvalFixturePath } from "./fixtures-root.js"
 
 const CASE_FILE_SUFFIX = ".cases.json"

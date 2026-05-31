@@ -371,8 +371,9 @@ This repo is the **ECP Fluent API monorepo** (`@ecp/*`). For commands, package b
 | ---- | ----------- |
 | [`packages/types/`](packages/types/) | Protocol types and generated JSON Schema (`@ecp/types`) |
 | [`packages/core/`](packages/core/) | Runtime-agnostic core: fluent API, environment, encode/decode/patch (`@ecp/core`; subpaths `@ecp/core/node`, `@ecp/core/browser`, …) |
-| [`packages/node/`](packages/node/) | Node runtime host: process env, secrets, compile (`@ecp/node`) |
-| [`packages/browser/`](packages/browser/) | Browser runtime host: registry, session config (`@ecp/browser`) — **not** the demo UI |
+| [`packages/runtimes/node/`](packages/runtimes/node/) | Node runtime host: process env, secrets, compile (`@ecp/node`) |
+| [`packages/runtimes/browser/`](packages/runtimes/browser/) | Browser runtime host: registry, session config (`@ecp/browser`) — **not** the demo UI |
+| [`packages/runtimes/temporal/`](packages/runtimes/temporal/) | Temporal runtime adapter stub (`@ecp/runtime-temporal`) |
 | [`apps/browser-demo/`](apps/browser-demo/) | Reference browser demo app (Vite + React): chat, panels, provider picker |
 | [`packages/cli/`](packages/cli/) | CLI (`ecp run`, `ecp compile`, `ecp encode`, …) |
 | [`packages/extensions/`](packages/extensions/) | First-party extensions (TOON, Mermaid, providers, …) |

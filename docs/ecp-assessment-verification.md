@@ -16,7 +16,7 @@ This document records gaps closed from [ecp-implementation-assessment.md](ecp-im
 | Example `02-weekly-brief` | Verified | `packages/core/test/weekly-brief.test.ts` |
 | E2E project (Ollama) | Non-failing placeholder | `packages/extensions/ollama/test/e2e/ollama-skip.test.ts` |
 
-| Browser / Node runtimes | Verified | `packages/browser/test/*`, `packages/node/test/*` |
+| Browser / Node runtimes | Verified | `packages/runtimes/browser/test/*`, `packages/runtimes/node/test/*` |
 | Environment lifecycle | Verified | `packages/core/test/environment-events.test.ts` |
 | Registry freeze | Verified | `packages/core/test/registry-freeze.test.ts` |
 | Config resolver chain | Verified | `packages/core/test/env-resolution.test.ts` |

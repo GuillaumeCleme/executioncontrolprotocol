@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { workflow, step, registerTestExtension } from "@ecp/core"
 import { createBrowserTestEnvironment } from "./helpers.js"
-import { registerRuntimeConformanceTests } from "../../core/test/runtime-conformance.js"
+import { registerRuntimeConformanceTests } from "../../../core/test/runtime-conformance.js"
 
 registerRuntimeConformanceTests("@ecp/browser", () => createBrowserTestEnvironment("browser-conformance"))
 

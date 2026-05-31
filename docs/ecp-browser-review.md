@@ -807,7 +807,7 @@ environment:shutdown
 ## 5.1 Package path
 
 ```txt
-packages/browser/src/extensions/browser-registry.ts
+packages/runtimes/browser/src/extensions/browser-registry.ts
 ```
 
 ## 5.2 Extension definition
@@ -1249,7 +1249,7 @@ Create simple dynamic extension loaded after environment creation.
 Example:
 
 ```txt
-packages/browser/test/fixtures/customer-extension.ts
+packages/runtimes/browser/test/fixtures/customer-extension.ts
 ```
 
 ---

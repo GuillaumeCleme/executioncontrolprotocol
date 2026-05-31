@@ -2,7 +2,7 @@
 
 This report describes what exists in the **ECP browser demo** today: which extensions are registered, how capabilities are invoked, what system and user prompts are passed to each model path, and how chat intent is filtered before authoring runs. Use it to reason about next steps—especially **intent classification** for workflow authoring vs general Q&A on Chrome Gemini Nano and other providers.
 
-**Scope:** `apps/browser-demo`, `packages/browser`, and extensions bound by `createBrowserDemoEnvironment()` / `createDemoAppEnvironment()`. Other packages in the monorepo (Ollama, Slack, storage, etc.) exist but are **not** wired into the browser demo environment unless noted.
+**Scope:** `apps/browser-demo`, `packages/runtimes/browser`, and extensions bound by `createBrowserDemoEnvironment()` / `createDemoAppEnvironment()`. Other packages in the monorepo (Ollama, Slack, storage, etc.) exist but are **not** wired into the browser demo environment unless noted.
 
 ---
 
@@ -61,11 +61,11 @@ All of the following are registered on the global extension catalog when the bro
 
 | Extension ID | Package | Role in demo |
 | ------------ | ------- | ------------ |
-| `@ecp/browser` (runtime) | `packages/browser` | Browser execution runtime |
-| `@ecp/browser-registry` | `packages/browser` | Registry freeze, `globalThis.ecp`, auto-bind |
-| `@ecp/browser-session-config` | `packages/browser` | In-memory session keys (API keys); cleared on `terminate()` |
-| `@ecp/browser-local-config` | `packages/browser` | Optional localStorage config (denylist for secrets) |
-| `@ecp/browser` | `packages/browser` | **`guideChat`** onboarding capability |
+| `@ecp/browser` (runtime) | `packages/runtimes/browser` | Browser execution runtime |
+| `@ecp/browser-registry` | `packages/runtimes/browser` | Registry freeze, `globalThis.ecp`, auto-bind |
+| `@ecp/browser-session-config` | `packages/runtimes/browser` | In-memory session keys (API keys); cleared on `terminate()` |
+| `@ecp/browser-local-config` | `packages/runtimes/browser` | Optional localStorage config (denylist for secrets) |
+| `@ecp/browser` | `packages/runtimes/browser` | **`guideChat`** onboarding capability |
 | `@ecp/format-toon` | `packages/extensions/format-toon` | Encode/decode TOON |
 | `@ecp/format-mermaid` | `packages/extensions/format-mermaid` | Manifest → Mermaid source |
 | `@ecp/demo` | `packages/extensions/demo` | Offline **`generateText`** stub |
@@ -74,7 +74,7 @@ All of the following are registered on the global extension catalog when the bro
 | `@ecp/claude` | `packages/extensions/claude` | Anthropic Messages API |
 | `@ecp/policies` (standard) | `packages/policies` | Including `@ecp/registry-control` |
 
-Source: [`packages/browser/src/environment.ts`](../packages/browser/src/environment.ts).
+Source: [`packages/runtimes/browser/src/environment.ts`](../packages/runtimes/browser/src/environment.ts).
 
 ### 2.2 Demo app environment manifest
 
@@ -161,7 +161,7 @@ Registered via `@ecp/core` testing extension; bound in demo app environment. Dem
 
 ## 4. System and user prompts (authoring path)
 
-All workflow creation and patching goes through [`BrowserAuthoringService`](../packages/browser/src/authoring/browser-authoring-service.ts). The service **always**:
+All workflow creation and patching goes through [`BrowserAuthoringService`](../packages/runtimes/browser/src/authoring/browser-authoring-service.ts). The service **always**:
 
 1. Calls `ecp.describe()` and encodes the descriptor to compact TOON.
 2. Invokes the selected `*.generateText` with a constructed **prompt** and **system** string.
@@ -314,7 +314,7 @@ Useful for UI tests without API keys or Chrome; **not** representative of real m
 
 ## 8. Panel encoding hub (reasoning about extensions)
 
-From `encodePanels` ([`browser-authoring-service.ts`](../packages/browser/src/authoring/browser-authoring-service.ts)):
+From `encodePanels` ([`browser-authoring-service.ts`](../packages/runtimes/browser/src/authoring/browser-authoring-service.ts)):
 
 ```text
 WorkflowManifest (canonical JSON hub)
