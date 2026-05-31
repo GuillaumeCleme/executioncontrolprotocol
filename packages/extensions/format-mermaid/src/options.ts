@@ -9,6 +9,10 @@ export interface MermaidEncodeOptions {
 
 /** Resolve Mermaid header line from encode options. @category Encoding */
 export function mermaidFlowchartHeader(options?: MermaidEncodeOptions): string {
-  const direction = options?.direction ?? "TD"
-  return `flowchart ${direction}`
+  return `flowchart ${resolveMermaidDirection(options)}`
+}
+
+/** Flow direction for chart and subgraph layout. @category Encoding */
+export function resolveMermaidDirection(options?: MermaidEncodeOptions): MermaidFlowchartDirection {
+  return options?.direction ?? "TD"
 }
