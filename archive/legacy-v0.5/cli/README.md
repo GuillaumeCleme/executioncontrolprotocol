@@ -1,5 +1,9 @@
 # `@executioncontrolprotocol/cli`
 
+> Legacy note: this README describes the archived v0.5 Context YAML + plugins era.
+> The current repository architecture is the `@ecp/*` monorepo described in
+> [`AGENTS.md`](../../../AGENTS.md) and [`ecp-overhaul.md`](../../../ecp-overhaul.md).
+
 **Execution Control Protocol (ECP)** specifies portable **Context** manifests for agent orchestration: structured inputs and outputs, tool boundaries, per-executor policies, and host-level enforcement via system config—so runs stay least-privilege and auditable.
 
 **Learn more:** [executioncontrolprotocol.io](https://executioncontrolprotocol.io)
