@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, string, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 /** @ecp/slack extension (mock send for v1). @category Extensions */
@@ -17,6 +17,8 @@ export const slackExtension = defineExtension("@ecp", "slack")
       })),
   ])
   .build()
+
+catalogExtension(slackExtension)
 
 export async function registerSlackExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/slack")) {

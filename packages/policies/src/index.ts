@@ -18,6 +18,41 @@ function policyHook(
   )
 }
 
+/** Budget dimensions enforced by the budget policy. */
+const BUDGET_LIMITS = [
+  { config: "maxModelCalls", usage: "modelCalls", code: "BUDGET_MODEL_CALLS", label: "model calls" },
+  { config: "maxCostUsd", usage: "costUsd", code: "BUDGET_COST_USD", label: "cost (USD)" },
+  { config: "maxTokens", usage: "tokens", code: "BUDGET_TOKENS", label: "tokens" },
+  { config: "maxRetries", usage: "retries", code: "BUDGET_RETRIES", label: "retries" },
+] as const
+
+/**
+ * Evaluate every configured budget dimension against the usage ledger.
+ * `inclusive` denies when usage has already reached the limit (`policy:pre`,
+ * before more work is done); otherwise denies only when the limit is exceeded
+ * (`policy:post`, after work has completed).
+ */
+function evaluateBudget(
+  config: Record<string, unknown>,
+  usage: PolicyContext["usage"],
+  inclusive: boolean
+): PolicyDecision {
+  for (const limit of BUDGET_LIMITS) {
+    const max = config[limit.config] as number | undefined
+    if (max === undefined) continue
+    const used = usage[limit.usage]
+    const overBudget = inclusive ? used >= max : used > max
+    if (overBudget) {
+      return {
+        type: "deny",
+        reason: `Budget exceeded for ${limit.label}: ${used} of ${max}`,
+        code: limit.code,
+      }
+    }
+  }
+  return { type: "allow" }
+}
+
 /** @ecp/budget policy definition. @category Policies */
 export const budgetPolicy = definePolicy("@ecp", "budget")
   .withConfig({
@@ -27,20 +62,10 @@ export const budgetPolicy = definePolicy("@ecp", "budget")
     maxTokens: number().optional(),
   })
   .withHooks([
-    policyHook("policy:pre", (ctx) => {
-      const max = ctx.config.maxModelCalls as number | undefined
-      if (max !== undefined && ctx.usage.modelCalls >= max) {
-        return { type: "deny", reason: "Max model calls exceeded", code: "BUDGET_MODEL_CALLS" }
-      }
-      return { type: "allow" }
-    }),
-    policyHook("policy:post", (ctx) => {
-      const max = ctx.config.maxModelCalls as number | undefined
-      if (max !== undefined && ctx.usage.modelCalls > max) {
-        return { type: "deny", reason: "Model call budget exceeded" }
-      }
-      return { type: "allow" }
-    }),
+    policyHook("policy:pre", (ctx) => evaluateBudget(ctx.config, ctx.usage, true)),
+    policyHook("policy:post", (ctx) => evaluateBudget(ctx.config, ctx.usage, false)),
+    // `policy:finally` cannot change the step outcome; it is reserved for
+    // usage reconciliation/reporting. No-op until a reporting sink is bound.
     policyHook("policy:finally", () => undefined),
   ])
   .build()
@@ -61,6 +86,13 @@ export const approvalPolicy = definePolicy("@ecp", "approval")
   ])
   .build()
 
+type MutationOp = "set" | "replace" | "merge" | "append"
+
+/** Whether `path` is covered by `prefix` (exact or dotted descendant). */
+function pathMatches(path: string, prefix: string): boolean {
+  return path === prefix || path.startsWith(`${prefix}.`)
+}
+
 /** @ecp/state-control policy. @category Policies */
 export const stateControlPolicy = definePolicy("@ecp", "state-control")
   .withConfig({
@@ -74,22 +106,63 @@ export const stateControlPolicy = definePolicy("@ecp", "state-control")
   })
   .withHooks([
     policyHook("policy:pre", (ctx) => {
+      const denied = ctx.config.deniedMutablePaths as string[] | undefined
       const allowed = ctx.config.allowedMutablePaths as string[] | undefined
-      if (allowed && ctx.mutableStateHandles) {
-        for (const h of ctx.mutableStateHandles) {
-          const path = typeof h === "string" ? h : h.path
-          if (!allowed.some((a) => path.startsWith(a))) {
-            return { type: "deny", reason: `Mutable path not allowed: ${path}` }
+      for (const h of ctx.mutableStateHandles ?? []) {
+        const path = typeof h === "string" ? h : h.path
+        // Denied paths win over allowed paths.
+        if (denied?.some((d) => pathMatches(path, d))) {
+          return {
+            type: "deny",
+            reason: `Mutable path is denied: ${path}`,
+            code: "STATE_PATH_DENIED",
+          }
+        }
+        if (allowed && !allowed.some((a) => pathMatches(path, a))) {
+          return {
+            type: "deny",
+            reason: `Mutable path not allowed: ${path}`,
+            code: "STATE_PATH_NOT_ALLOWED",
           }
         }
       }
       return { type: "allow" }
     }),
     policyHook("policy:post", (ctx) => {
+      const pending = ctx.pendingMutations ?? []
+
       const max = ctx.config.maxMutationsPerStep as number | undefined
-      if (max !== undefined && (ctx.pendingMutations?.length ?? 0) > max) {
-        return { type: "deny", reason: "Too many mutations in step" }
+      if (max !== undefined && pending.length > max) {
+        return {
+          type: "deny",
+          reason: `Too many mutations in step: ${pending.length} of ${max}`,
+          code: "STATE_MAX_MUTATIONS",
+        }
       }
+
+      const allowedOps = ctx.config.allowedMutationOps as MutationOp[] | undefined
+      if (allowedOps) {
+        const disallowed = pending.find((m) => !allowedOps.includes(m.op))
+        if (disallowed) {
+          return {
+            type: "deny",
+            reason: `Mutation op not allowed: ${disallowed.op}`,
+            code: "STATE_OP_NOT_ALLOWED",
+          }
+        }
+      }
+
+      if (ctx.config.requireReason === true) {
+        const missing = pending.find((m) => !m.reason || m.reason.trim() === "")
+        if (missing) {
+          return {
+            type: "deny",
+            reason: `Mutation to '${missing.path}' requires a reason`,
+            code: "STATE_REASON_REQUIRED",
+          }
+        }
+      }
+
       return { type: "allow" }
     }),
   ])

@@ -23,6 +23,8 @@ export interface UsageSummary {
   costUsd?: number
   /** Token count when reported by the provider. */
   tokens?: number
+  /** Technical retry attempts recorded during invocation. */
+  retries?: number
 }
 
 /** Direct capability invocation result. @category Invoke */

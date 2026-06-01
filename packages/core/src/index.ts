@@ -55,6 +55,10 @@ export type {
   CapabilityContext,
   LifecycleContext,
   EnvironmentLifecycleHost,
+  UsageLedger,
+  Logger,
+  RunContext,
+  StepExecutionContext,
 } from "./runtime/context.js"
 export { createUsageLedger } from "./runtime/context.js"
 export { registerTestExtension, testExtension } from "./testing/test-extension.js"

@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string, type Registry } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, string, catalogExtension, type Registry } from "@ecp/core"
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
 import { resolveOpenaiApiKey } from "./resolve-api-key.js"
@@ -103,6 +103,8 @@ export const openaiExtension = defineExtension("@ecp", "openai")
       }),
   ])
   .build()
+
+catalogExtension(openaiExtension)
 
 /** Register @ecp/openai. */
 export async function registerOpenaiExtension(registry: Registry = globalRegistry): Promise<void> {

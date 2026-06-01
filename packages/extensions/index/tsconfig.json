@@ -9,6 +9,9 @@
     { "path": "../slack" },
     { "path": "../storage" },
     { "path": "../telemetry" },
-    { "path": "../format-toon" }
+    { "path": "../format-toon" },
+    { "path": "../format-eql" },
+    { "path": "../format-mermaid" },
+    { "path": "../demo" }
   ]
 }

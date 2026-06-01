@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, hook, boolean, array, string } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, hook, boolean, array, string, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 const store = new Map<string, unknown[]>()
@@ -43,6 +43,8 @@ export const memoryExtension = defineExtension("@ecp", "memory")
     hook("run:finally", async () => undefined),
   ])
   .build()
+
+catalogExtension(memoryExtension)
 
 export async function registerMemoryExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/memory")) {

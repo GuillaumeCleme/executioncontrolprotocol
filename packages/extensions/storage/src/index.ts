@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, string, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 const blobs = new Map<string, unknown>()
@@ -30,6 +30,8 @@ export const storageExtension = defineExtension("@ecp", "storage")
       }),
   ])
   .build()
+
+catalogExtension(storageExtension)
 
 /** Register @ecp/storage. */
 export async function registerStorageExtension(): Promise<void> {

@@ -40,11 +40,19 @@ function invokeFailure(
 }
 
 function usageSummary(ledger: ReturnType<typeof createUsageLedger>): UsageSummary | undefined {
-  if (ledger.modelCalls === 0 && ledger.costUsd === 0 && ledger.tokens === 0) return undefined
+  if (
+    ledger.modelCalls === 0 &&
+    ledger.costUsd === 0 &&
+    ledger.tokens === 0 &&
+    ledger.retries === 0
+  ) {
+    return undefined
+  }
   return {
     modelCalls: ledger.modelCalls,
     costUsd: ledger.costUsd,
     tokens: ledger.tokens,
+    retries: ledger.retries,
   }
 }
 

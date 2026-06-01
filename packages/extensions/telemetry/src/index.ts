@@ -1,4 +1,4 @@
-import { defineExtension, hook, globalRegistry } from "@ecp/core"
+import { defineExtension, hook, globalRegistry, catalogExtension } from "@ecp/core"
 
 /** @ecp/telemetry extension. @category Extensions */
 export const telemetryExtension = defineExtension("@ecp", "telemetry")
@@ -11,6 +11,8 @@ export const telemetryExtension = defineExtension("@ecp", "telemetry")
     hook("run:finally", async () => undefined),
   ])
   .build()
+
+catalogExtension(telemetryExtension)
 
 export async function registerTelemetryExtension(): Promise<void> {
   if (!globalRegistry.getExtension("@ecp/telemetry")) {

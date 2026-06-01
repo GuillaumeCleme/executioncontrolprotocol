@@ -86,23 +86,38 @@ export interface Logger {
 
 /** Usage tracking. @category Runtime */
 export interface UsageLedger {
+  /** Number of model/provider calls made. */
   modelCalls: number
+  /** Accumulated cost in USD reported by providers. */
   costUsd: number
+  /** Accumulated token count reported by providers. */
   tokens: number
-  increment(partial: Partial<Pick<UsageLedger, "modelCalls" | "costUsd" | "tokens">>): void
+  /** Technical retry attempts reported by providers or the runtime. */
+  retries: number
+  /** Accumulate usage. Counters are mutated in place on this ledger. */
+  increment(
+    partial: Partial<Pick<UsageLedger, "modelCalls" | "costUsd" | "tokens" | "retries">>
+  ): void
 }
 
 /** Create a usage ledger. */
 export function createUsageLedger(): UsageLedger {
-  const ledger = { modelCalls: 0, costUsd: 0, tokens: 0 }
-  return {
-    ...ledger,
+  // `increment` closes over `ledger` (the returned object) so reads of
+  // `ledger.modelCalls` etc. reflect accumulated usage. A previous version
+  // spread the counters into a new object, leaving reads permanently at 0.
+  const ledger: UsageLedger = {
+    modelCalls: 0,
+    costUsd: 0,
+    tokens: 0,
+    retries: 0,
     increment(partial) {
       if (partial.modelCalls) ledger.modelCalls += partial.modelCalls
       if (partial.costUsd) ledger.costUsd += partial.costUsd
       if (partial.tokens) ledger.tokens += partial.tokens
+      if (partial.retries) ledger.retries += partial.retries
     },
   }
+  return ledger
 }
 
 /** Console logger implementation. */

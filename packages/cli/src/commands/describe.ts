@@ -1,7 +1,6 @@
 import { Flags } from "@oclif/core"
 import type { DescribeQuery } from "@ecp/types"
-import { readFile } from "node:fs/promises"
-import { runWithCommandError } from "../lib/command-helpers.js"
+import { readJsonFile, runWithCommandError } from "../lib/command-helpers.js"
 import { EnvModuleCommand } from "../lib/env-module-command.js"
 
 /** Describe environment capabilities, extensions, and policies. */
@@ -28,7 +27,7 @@ export default class Describe extends EnvModuleCommand {
     await runWithCommandError(this, async () => {
       const ecp = await this.loadEcp(flags)
       const query = flags.query
-        ? (JSON.parse(await readFile(flags.query, "utf8")) as DescribeQuery)
+        ? await readJsonFile<DescribeQuery>(flags.query, "--query")
         : undefined
       this.log(JSON.stringify(await ecp.describe(query), null, 2))
     })

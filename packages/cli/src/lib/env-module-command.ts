@@ -20,10 +20,33 @@ export abstract class EnvModuleCommand extends Command {
     ...envModuleFlags,
   }
 
+  /** ECP instances initialized during this command, terminated in `finally`. */
+  private initializedEcps: Ecp[] = []
+
   /** Load and initialize operational ECP from parsed flags. */
   protected async loadEcp(flags: { env: string }): Promise<Ecp> {
     const env = await loadEnvironmentModule(flags.env)
-    return env.init()
+    const ecp = await env.init()
+    this.initializedEcps.push(ecp)
+    return ecp
+  }
+
+  /**
+   * Terminate any initialized environments so `environment:terminate` hooks
+   * (telemetry flush, connection cleanup) run even on failure. Cleanup errors
+   * are swallowed so they never mask the command's own exit code.
+   */
+  async finally(error: Error | undefined): Promise<unknown> {
+    const ecps = this.initializedEcps
+    this.initializedEcps = []
+    for (const ecp of ecps) {
+      try {
+        await ecp.terminate()
+      } catch {
+        /* ignore cleanup errors */
+      }
+    }
+    return super.finally(error)
   }
 }
 

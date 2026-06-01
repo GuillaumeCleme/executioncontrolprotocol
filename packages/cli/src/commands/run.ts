@@ -1,7 +1,6 @@
 import { Flags } from "@oclif/core"
 import { loadWorkflowFile } from "@ecp/core/loaders"
-import { readFile } from "node:fs/promises"
-import { runWithCommandError } from "../lib/command-helpers.js"
+import { readJsonFile, runWithCommandError } from "../lib/command-helpers.js"
 import { WorkflowEnvCommand } from "../lib/env-module-command.js"
 
 /** Execute a workflow in an environment. */
@@ -34,9 +33,10 @@ export default class Run extends WorkflowEnvCommand {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Run)
+    let runStatus: string | undefined
     await runWithCommandError(this, async () => {
       const input = flags.input
-        ? (JSON.parse(await readFile(flags.input, "utf8")) as Record<string, unknown>)
+        ? await readJsonFile<Record<string, unknown>>(flags.input, "--input")
         : undefined
       const ecp = await this.loadEcp(flags)
       const workflow = await loadWorkflowFile(args["workflow-path"])
@@ -44,7 +44,16 @@ export default class Run extends WorkflowEnvCommand {
         input,
         dryRun: flags["dry-run"],
       })
+      runStatus = result.run.status
       this.log(JSON.stringify(result, null, 2))
     })
+    // A successful run is one that completed. Any other terminal status
+    // (failed, cancelled, paused) must surface a non-zero exit code so CI
+    // and shell callers can trust `ecp run`.
+    if (runStatus !== undefined && runStatus !== "completed") {
+      this.error(`Workflow run did not complete (status: ${runStatus})`, {
+        exit: 1,
+      })
+    }
   }
 }

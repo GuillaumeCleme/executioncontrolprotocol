@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string, number } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, string, number, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
@@ -117,6 +117,8 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
       }),
   ])
   .build()
+
+catalogExtension(ollamaExtension)
 
 /** Register @ecp/ollama. */
 export async function registerOllamaExtension(): Promise<void> {

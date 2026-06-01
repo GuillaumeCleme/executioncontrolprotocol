@@ -1,6 +1,7 @@
 {
   "name": "@ecp/runtime-temporal",
   "version": "1.0.0",
+  "description": "Pre-release Temporal runtime scaffold for ECP. Durable execution is not yet implemented; binding and running throws a descriptive error.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

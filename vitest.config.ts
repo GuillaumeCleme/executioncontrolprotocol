@@ -137,6 +137,7 @@ export default defineConfig({
             "packages/cli/test/**/*.test.ts",
             "packages/mcp/**/*.test.ts",
             "packages/extensions/**/*.test.ts",
+            "packages/harnesses/**/test/**/*.test.ts",
             "packages/runtimes/node/**/*.test.ts",
             "packages/runtimes/browser/test/*.test.ts",
             "apps/browser-demo/test/**/*.test.ts",

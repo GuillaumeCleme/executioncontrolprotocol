@@ -23,8 +23,10 @@ Runtimes and policies follow the same boundary unless they intentionally impleme
 ## Registration and discovery
 
 1. Build an `ExtensionDefinition` with `defineExtension("@vendor", "name").withCapabilities([...]).build()`.
-2. Call `catalogExtension(def)` at module load in `src/index.ts` so consumers can bind with `extension("@vendor/name")` after `import "@vendor/package"`.
-3. Optionally export `registerVendorExtension(registry?)` that registers on a `Registry` when hosts need eager registration.
+2. **Required:** call `catalogExtension(def)` at module load (top level of `src/index.ts`). This is the single, consistent pattern for **every** first-party and third-party extension. Without it, a string binding `extension("@vendor/name")` cannot resolve the definition and fails — even though `import "@vendor/package"` ran. Do not rely on a `register*` helper alone for catalog lookup.
+3. Also export `registerVendorExtension(registry?)` for hosts that need eager registration on a specific `Registry`. The helper must be idempotent (`if (!registry.getExtension(id)) ...`).
+
+> Consistency rule: catalog-on-load is mandatory; eager `register*` is the optional convenience layer on top. All extensions under `packages/extensions/` follow this, so contributors have one model to copy.
 
 Consumers (apps, examples, CLI env files) bind extensions in **environment modules**; extension packages must not assume Node `process.env`, browser `globalThis`, or a specific runtime.
 

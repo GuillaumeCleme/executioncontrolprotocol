@@ -205,6 +205,7 @@ export async function executeHarnessInvoke(
             modelCalls: policyCtx.usage.modelCalls,
             costUsd: policyCtx.usage.costUsd,
             tokens: policyCtx.usage.tokens,
+            retries: policyCtx.usage.retries,
           }
         : undefined,
   }
