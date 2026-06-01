@@ -8,7 +8,15 @@ export function isTypeScriptFile(filename: string): boolean {
 let esbuildInitialized = false
 
 async function ensureEsbuildWasm(): Promise<typeof import("esbuild-wasm")> {
-  const esbuild = await import("esbuild-wasm")
+  let esbuild: typeof import("esbuild-wasm")
+  try {
+    esbuild = await import("esbuild-wasm")
+  } catch {
+    throw new Error(
+      "esbuild-wasm is required to compile TypeScript workflow sources in the browser. " +
+        "Run: npm install esbuild-wasm"
+    )
+  }
   if (!esbuildInitialized) {
     await esbuild.initialize({
       wasmURL: "https://unpkg.com/esbuild-wasm@0.25.0/esbuild.wasm",

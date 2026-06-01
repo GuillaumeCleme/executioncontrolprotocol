@@ -1,48 +1,51 @@
-{
-  "name": "@ecp/harnesses-browser",
-  "version": "1.0.0",
-  "description": "Unified ECP harness (browser demo + eval matrix)",
-  "license": "Apache-2.0",
-  "type": "module",
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./repair-workflow-json": {
-      "types": "./dist/repair-workflow-json.d.ts",
-      "import": "./dist/repair-workflow-json.js"
-    },
-    "./presentation": {
-      "types": "./dist/presentation.d.ts",
-      "import": "./dist/presentation.js"
-    },
-    "./normalize-workflow-output": {
-      "types": "./dist/normalize-workflow-output.d.ts",
-      "import": "./dist/normalize-workflow-output.js"
-    },
-    "./request-capability-hints": {
-      "types": "./dist/_internal/request-capability-hints.d.ts",
-      "import": "./dist/_internal/request-capability-hints.js"
-    },
-    "./summarize-environment": {
-      "types": "./dist/_internal/summarize-environment.d.ts",
-      "import": "./dist/_internal/summarize-environment.js"
-    }
-  },
-  "files": ["dist", "README.md"],
-  "scripts": {
-    "build": "tsc -b"
-  },
-  "dependencies": {
-    "@ecp/core": "1.0.0",
-    "@ecp/types": "1.0.0",
-    "zod": "^3.24.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.7.0"
-  }
-}
+{
+  "name": "@ecp/harnesses-browser",
+  "version": "1.0.0",
+  "description": "Unified ECP harness (browser demo + eval matrix)",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./repair-workflow-json": {
+      "types": "./dist/repair-workflow-json.d.ts",
+      "import": "./dist/repair-workflow-json.js"
+    },
+    "./presentation": {
+      "types": "./dist/presentation.d.ts",
+      "import": "./dist/presentation.js"
+    },
+    "./normalize-workflow-output": {
+      "types": "./dist/normalize-workflow-output.d.ts",
+      "import": "./dist/normalize-workflow-output.js"
+    },
+    "./request-capability-hints": {
+      "types": "./dist/_internal/request-capability-hints.d.ts",
+      "import": "./dist/_internal/request-capability-hints.js"
+    },
+    "./summarize-environment": {
+      "types": "./dist/_internal/summarize-environment.d.ts",
+      "import": "./dist/_internal/summarize-environment.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "peerDependencies": {
+    "@ecp/core": "^1.0.0",
+    "@ecp/types": "^1.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@ecp/core": "1.0.0",
+    "@ecp/types": "1.0.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  }
+}

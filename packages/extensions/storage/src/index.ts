@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string, catalogExtension } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 const blobs = new Map<string, unknown>()
@@ -6,7 +6,7 @@ const blobs = new Map<string, unknown>()
 /** In-memory @ecp/storage stub. @category Extensions */
 export const storageExtension = defineExtension("@ecp", "storage")
   .withConfig({
-    prefix: string().optional(),
+    prefix: z.string().optional(),
   })
   .withCapabilities([
     capabilityFor("@ecp/storage", "write")

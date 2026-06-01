@@ -2,8 +2,6 @@ import {
   defineExtension,
   hook,
   globalRegistry,
-  boolean,
-  string,
   RegistryRegistrationDeniedError,
   type Environment,
   type EnvironmentLifecycleHost,
@@ -11,6 +9,7 @@ import {
   type LifecycleContext,
 } from "@ecp/core"
 import type { RegistryRegistrationRequest } from "@ecp/types"
+import { z } from "zod"
 
 const EXT_ID = "@ecp/browser-registry"
 
@@ -118,11 +117,11 @@ export function exposeBrowserRegistry(): BrowserEcpGlobal | undefined {
 /** Hook-only dynamic registry extension for browser. @category Extensions */
 export const browserRegistryExtension = defineExtension("@ecp", "browser-registry")
   .withConfig({
-    freezeOn: string().default("environment:beforeRun"),
-    allowRuntimeRegistration: boolean().default(true),
-    autoBindRegisteredExtensions: boolean().default(false),
-    exposeGlobal: boolean().default(false),
-    globalName: string().default("ecp"),
+    freezeOn: z.string().default("environment:beforeRun"),
+    allowRuntimeRegistration: z.boolean().default(true),
+    autoBindRegisteredExtensions: z.boolean().default(false),
+    exposeGlobal: z.boolean().default(false),
+    globalName: z.string().default("ecp"),
   })
   .withHooks([
     hook("environment:configuring", attachBrowserRegistry),

@@ -1,7 +1,7 @@
 import type { PolicyContext } from "@ecp/core"
 import type { PolicyDecision } from "@ecp/types"
 import { definePolicy, globalRegistry, hook, matchesAnyNamespace } from "@ecp/core"
-import { array, boolean, string } from "@ecp/core"
+import { z } from "zod"
 
 type PolicyHookFn = (
   ctx: PolicyContext & { config: Record<string, unknown> }
@@ -33,10 +33,10 @@ const POLICY_ID = "@ecp/registry-control"
 /** @ecp/registry-control — governs dynamic extension registration. @category Policies */
 export const registryControlPolicy = definePolicy("@ecp", "registry-control")
   .withConfig({
-    allowedExtensionNamespaces: array(string()).optional(),
-    deniedExtensionNamespaces: array(string()).default([]),
-    allowDynamicExtensionRegistration: boolean().default(true),
-    allowAutoBind: boolean().default(true),
+    allowedExtensionNamespaces: z.array(z.string()).optional(),
+    deniedExtensionNamespaces: z.array(z.string()).default([]),
+    allowDynamicExtensionRegistration: z.boolean().default(true),
+    allowAutoBind: z.boolean().default(true),
   })
   .withHooks([
     policyHook("policy:pre", (ctx) => {

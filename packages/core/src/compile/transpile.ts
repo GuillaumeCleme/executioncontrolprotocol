@@ -3,6 +3,16 @@ export function isTypeScriptFile(filename: string): boolean {
   return /\.tsx?$/i.test(filename)
 }
 
+async function loadEsbuild(): Promise<typeof import("esbuild")> {
+  try {
+    return await import("esbuild")
+  } catch {
+    throw new Error(
+      "esbuild is required to compile TypeScript workflow sources. Run: npm install esbuild"
+    )
+  }
+}
+
 /** Transpile TS to ESM using esbuild (Node host). */
 export async function transpileWorkflowSource(
   source: string,
@@ -10,7 +20,7 @@ export async function transpileWorkflowSource(
 ): Promise<string> {
   if (!isTypeScriptFile(filename)) return source
 
-  const esbuild = await import("esbuild")
+  const esbuild = await loadEsbuild()
   const result = await esbuild.transform(source, {
     loader: filename.endsWith(".tsx") ? "tsx" : "ts",
     format: "esm",
@@ -30,7 +40,7 @@ export async function bundleWorkflowSource(
 ): Promise<string> {
   const { dirname, join } = await import("node:path")
   const { fileURLToPath } = await import("node:url")
-  const esbuild = await import("esbuild")
+  const esbuild = await loadEsbuild()
   const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..")
   const loader = filename.endsWith(".tsx")
     ? "tsx"

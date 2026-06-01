@@ -2,11 +2,10 @@ import {
   defineExtension,
   hook,
   globalRegistry,
-  array,
-  string,
   type EnvironmentConfigResolver,
   type LifecycleContext,
 } from "@ecp/core"
+import { z } from "zod"
 
 const EXT_ID = "@ecp/browser-local-config"
 
@@ -56,9 +55,9 @@ function attachLocalConfigResolver(ctx: LifecycleContext): void {
 /** Browser localStorage config extension (non-secret keys only). @category Extensions */
 export const browserLocalConfigExtension = defineExtension("@ecp", "browser-local-config")
   .withConfig({
-    prefix: string().default("ecp:"),
-    allowedKeys: array(string()).default([]),
-    deniedKeys: array(string()).default(DEFAULT_DENIED),
+    prefix: z.string().default("ecp:"),
+    allowedKeys: z.array(z.string()).default([]),
+    deniedKeys: z.array(z.string()).default(DEFAULT_DENIED),
   })
   .withHooks([hook("environment:configuring", attachLocalConfigResolver)])
   .build()

@@ -1,11 +1,11 @@
-import { defineExtension, capabilityFor, globalRegistry, string, catalogExtension } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 /** @ecp/slack extension (mock send for v1). @category Extensions */
 export const slackExtension = defineExtension("@ecp", "slack")
   .withConfig({
-    botToken: string().optional(),
-    defaultChannel: string().optional(),
+    botToken: z.string().optional(),
+    defaultChannel: z.string().optional(),
   })
   .withCapabilities([
     capabilityFor("@ecp/slack", "send")

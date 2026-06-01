@@ -1,7 +1,6 @@
 import type { PolicyContext } from "@ecp/core"
 import type { PolicyDecision } from "@ecp/types"
 import { definePolicy, hook, globalRegistry } from "@ecp/core"
-import { boolean, number } from "@ecp/core"
 import { z } from "zod"
 import { registerRegistryControlPolicy } from "./registry-control.js"
 
@@ -56,10 +55,10 @@ function evaluateBudget(
 /** @ecp/budget policy definition. @category Policies */
 export const budgetPolicy = definePolicy("@ecp", "budget")
   .withConfig({
-    maxCostUsd: number().optional(),
-    maxModelCalls: number().optional(),
-    maxRetries: number().optional(),
-    maxTokens: number().optional(),
+    maxCostUsd: z.number().optional(),
+    maxModelCalls: z.number().optional(),
+    maxRetries: z.number().optional(),
+    maxTokens: z.number().optional(),
   })
   .withHooks([
     policyHook("policy:pre", (ctx) => evaluateBudget(ctx.config, ctx.usage, true)),
@@ -101,8 +100,8 @@ export const stateControlPolicy = definePolicy("@ecp", "state-control")
     allowedMutationOps: z
       .array(z.enum(["set", "replace", "merge", "append"]))
       .optional(),
-    requireReason: boolean().optional(),
-    maxMutationsPerStep: number().optional(),
+    requireReason: z.boolean().optional(),
+    maxMutationsPerStep: z.number().optional(),
   })
   .withHooks([
     policyHook("policy:pre", (ctx) => {

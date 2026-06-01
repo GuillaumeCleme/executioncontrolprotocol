@@ -2,10 +2,10 @@ import {
   defineExtension,
   hook,
   globalRegistry,
-  boolean,
   type EnvironmentConfigResolver,
   type LifecycleContext,
 } from "@ecp/core"
+import { z } from "zod"
 
 const EXT_ID = "@ecp/browser-session-config"
 
@@ -79,8 +79,8 @@ export function getBrowserSessionValue(name: string): unknown {
 /** Browser session-only config extension. @category Extensions */
 export const browserSessionConfigExtension = defineExtension("@ecp", "browser-session-config")
   .withConfig({
-    allowSecrets: boolean().default(true),
-    persist: boolean().default(false),
+    allowSecrets: z.boolean().default(true),
+    persist: z.boolean().default(false),
   })
   .withHooks([
     hook("environment:configuring", attachSessionResolver),

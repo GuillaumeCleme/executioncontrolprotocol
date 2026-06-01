@@ -1,5 +1,5 @@
 import { defineRuntime, globalRegistry } from "@ecp/core"
-import { boolean, string } from "@ecp/core"
+import { z } from "zod"
 import type {
   RunResult,
   RuntimeExecutionContext,
@@ -59,9 +59,9 @@ export class TemporalRuntimeExecutor implements RuntimeExecutor {
 export const temporalRuntimeDefinition = defineRuntime("@ecp", "temporal")
   .withConfig({
     /** Temporal task queue name. */
-    taskQueue: string().optional(),
+    taskQueue: z.string().optional(),
     /** Whether to use durable pauses (signals/updates) when implemented. */
-    durablePauses: boolean().optional(),
+    durablePauses: z.boolean().optional(),
   })
   .withExecutor(new TemporalRuntimeExecutor())
 

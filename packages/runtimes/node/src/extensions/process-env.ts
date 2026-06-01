@@ -4,7 +4,7 @@ import {
   globalRegistry,
   type EnvironmentConfigResolver,
 } from "@ecp/core"
-import { array, string } from "@ecp/core"
+import { z } from "zod"
 import type { LifecycleContext } from "@ecp/core"
 
 const EXT_ID = "@ecp/process-env"
@@ -38,9 +38,9 @@ function attachProcessEnvResolver(ctx: LifecycleContext): void {
 /** Process environment config extension. @category Extensions */
 export const processEnvExtension = defineExtension("@ecp", "process-env")
   .withConfig({
-    allowedKeys: array(string()).default(["*"]),
-    deniedKeys: array(string()).default([]),
-    prefix: string().optional(),
+    allowedKeys: z.array(z.string()).default(["*"]),
+    deniedKeys: z.array(z.string()).default([]),
+    prefix: z.string().optional(),
   })
   .withHooks([hook("environment:configuring", attachProcessEnvResolver)])
   .build()

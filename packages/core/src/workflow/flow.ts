@@ -37,11 +37,15 @@ export function branch(
     type: "branch",
     id: options?.id ?? "branch-1",
     ...(options?.label ? { label: options.label } : {}),
-    branches: steps.map((s) => ({
-      ...(s.label ? { label: s.label } : {}),
-      when: (s as StepBuilder & { when?: ExprValue }).when ?? { eq: ["", true] },
-      steps: [toNode(s)],
-    })),
+    branches: steps.map((s) => {
+      const node = toNode(s)
+      const stepNode = node.type === "step" || !node.type ? node : undefined
+      return {
+        ...(s.label ? { label: s.label } : {}),
+        when: stepNode?.when ?? { eq: ["", true] },
+        steps: [node],
+      }
+    }),
   }
 }
 

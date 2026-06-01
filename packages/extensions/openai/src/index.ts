@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string, catalogExtension, type Registry } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension, type Registry } from "@ecp/core"
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
 import { z } from "zod"
 import { resolveOpenaiApiKey } from "./resolve-api-key.js"
@@ -38,8 +38,8 @@ async function chatComplete(
 /** @ecp/openai extension. @category Extensions */
 export const openaiExtension = defineExtension("@ecp", "openai")
   .withConfig({
-    apiKey: string().optional(),
-    defaultModel: string().optional(),
+    apiKey: z.string().optional(),
+    defaultModel: z.string().optional(),
   })
   .withCapabilities([
     capabilityFor("@ecp/openai", "generate")

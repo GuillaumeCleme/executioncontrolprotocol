@@ -1,5 +1,4 @@
 import type { StepNode, WorkflowManifest, WorkflowNode } from "@ecp/types"
-import cloneDeep from "lodash/cloneDeep.js"
 import { slugify } from "../util/slug.js"
 
 function ensureUniqueId(base: string, used: Set<string>): string {
@@ -50,12 +49,17 @@ function assignIdsToNodes(nodes: WorkflowNode[], used: Set<string>): WorkflowNod
   })
 }
 
+/** Deep-clone a workflow manifest (JSON-safe portable document). */
+function cloneManifest(manifest: WorkflowManifest): WorkflowManifest {
+  return JSON.parse(JSON.stringify(manifest)) as WorkflowManifest
+}
+
 /**
  * Ensure every step in the workflow graph has a globally unique id.
  * @category Workflow
  */
 export function assignUniqueStepIds(manifest: WorkflowManifest): WorkflowManifest {
-  const next = cloneDeep(manifest)
+  const next = cloneManifest(manifest)
   const used = new Set<string>()
   next.steps = assignIdsToNodes(next.steps, used)
   return next

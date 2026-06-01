@@ -51,6 +51,10 @@
       "types": "./dist/runtime/context.d.ts",
       "import": "./dist/runtime/context.js"
     },
+    "./runtime/store": {
+      "types": "./dist/runtime/store.d.ts",
+      "import": "./dist/runtime/store.js"
+    },
     "./registry/errors": {
       "types": "./dist/registry/errors.d.ts",
       "import": "./dist/registry/errors.js"
@@ -85,16 +89,22 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@ecp/types": "1.0.0",
-    "esbuild": "^0.25.0",
-    "esbuild-wasm": "^0.25.0",
-    "lodash": "^4.17.21",
+    "@ecp/types": "1.0.0"
+  },
+  "peerDependencies": {
+    "@ecp/types": "^1.0.0",
     "zod": "^3.24.0"
+  },
+  "optionalDependencies": {
+    "esbuild": "^0.25.0",
+    "esbuild-wasm": "^0.25.0"
   },
   "devDependencies": {
     "@ecp/node": "1.0.0",
     "@ecp/policies": "1.0.0",
-    "@types/lodash": "^4.17.0",
-    "typescript": "^5.7.0"
+    "esbuild": "^0.25.0",
+    "esbuild-wasm": "^0.25.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
   }
 }

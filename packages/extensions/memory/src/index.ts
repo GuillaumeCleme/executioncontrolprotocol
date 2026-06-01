@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, hook, boolean, array, string, catalogExtension } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, hook, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 const store = new Map<string, unknown[]>()
@@ -6,9 +6,9 @@ const store = new Map<string, unknown[]>()
 /** In-memory stub for @ecp/memory. @category Extensions */
 export const memoryExtension = defineExtension("@ecp", "memory")
   .withConfig({
-    hydrateModels: boolean().default(true),
-    rememberOutputs: boolean().default(false),
-    collections: array(string()).default([]),
+    hydrateModels: z.boolean().default(true),
+    rememberOutputs: z.boolean().default(false),
+    collections: z.array(z.string()).default([]),
   })
   .withCapabilities([
     capabilityFor("@ecp/memory", "search")

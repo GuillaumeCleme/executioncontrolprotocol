@@ -1,26 +1,6 @@
 import type { CommitMode } from "@ecp/types"
 import type { PendingMutation } from "@ecp/types"
-
-function setAtPath(obj: Record<string, unknown>, path: string, value: unknown): void {
-  const parts = path.split(".")
-  let cur: Record<string, unknown> = obj
-  for (let i = 0; i < parts.length - 1; i++) {
-    const p = parts[i]!
-    if (!(p in cur) || typeof cur[p] !== "object" || cur[p] === null) cur[p] = {}
-    cur = cur[p] as Record<string, unknown>
-  }
-  cur[parts[parts.length - 1]!] = value
-}
-
-function getAtPath(obj: Record<string, unknown>, path: string): unknown {
-  const parts = path.split(".")
-  let cur: unknown = obj
-  for (const p of parts) {
-    if (cur === null || cur === undefined || typeof cur !== "object") return undefined
-    cur = (cur as Record<string, unknown>)[p]
-  }
-  return cur
-}
+import { getAtPath, setAtPath } from "../util/path.js"
 
 /** Apply staged mutations and step output commit. */
 export function commitTransaction(options: {

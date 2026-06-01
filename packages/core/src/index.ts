@@ -105,3 +105,9 @@ export {
   ecpPatchEntrySchema,
 } from "./patch/index.js"
 export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
+export type {
+  StoreContext,
+  MutationBuffer,
+  StoreReadOptions,
+  StoreWriteOptions,
+} from "./runtime/store.js"

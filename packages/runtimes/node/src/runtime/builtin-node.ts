@@ -1,5 +1,5 @@
 import { defineRuntime, globalRegistry } from "@ecp/core"
-import { number } from "@ecp/core"
+import { z } from "zod"
 import { NodeRuntimeExecutor } from "./node-executor.js"
 
 export { NodeRuntimeExecutor } from "./node-executor.js"
@@ -10,7 +10,7 @@ export const NODE_RUNTIME_ID = "@ecp/node" as const
 /** Built-in Node runtime definition. @category Runtime */
 export const nodeRuntimeDefinition = defineRuntime("@ecp", "node")
   .withConfig({
-    maxConcurrency: number().optional(),
+    maxConcurrency: z.number().optional(),
   })
   .withExecutor(new NodeRuntimeExecutor())
 

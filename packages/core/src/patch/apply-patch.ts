@@ -10,11 +10,8 @@ import {
   type WorkflowManifest,
   type WorkflowNode,
 } from "@ecp/types"
-import cloneDeep from "lodash/cloneDeep.js"
-import get from "lodash/get.js"
-import merge from "lodash/merge.js"
-import set from "lodash/set.js"
 import { validateWorkflow } from "../validate/workflow.js"
+import { deepMerge, getAtPath, setAtPath } from "../util/path.js"
 import { buildStepIndex } from "./step-index.js"
 import { normalizePatchInput, validatePatchDocument } from "./normalize-input.js"
 import { resolveEcpPatchPath } from "./resolve-path.js"
@@ -205,7 +202,7 @@ function resolvePatchValue(
   ) {
     return patchValue
   }
-  return merge(cloneDeep(currentValue), patchValue as object)
+  return deepMerge(currentValue as object, patchValue as object)
 }
 
 /**
@@ -254,7 +251,7 @@ export function applyPatch<T extends WorkflowManifest>(
     }
   }
 
-  const nextDocument = cloneDeep(document) as T
+  const nextDocument = structuredClone(document) as T
   const applied: AppliedPatchEntry[] = []
 
   for (const entry of patch.patches) {
@@ -310,11 +307,11 @@ export function applyPatch<T extends WorkflowManifest>(
     }
 
     const mode = entry.mode ?? "merge"
-    const currentValue = get(nextDocument, resolved.lodashPath)
+    const currentValue = getAtPath(nextDocument, resolved.lodashPath)
     const nextValue = resolvePatchValue(currentValue, entry.value, mode)
 
     try {
-      set(nextDocument, resolved.lodashPath, nextValue)
+      setAtPath(nextDocument, resolved.lodashPath, nextValue)
       applied.push({ path: entry.path, mode, success: true })
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)

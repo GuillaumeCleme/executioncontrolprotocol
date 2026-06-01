@@ -1,4 +1,4 @@
-import { defineExtension, capabilityFor, globalRegistry, string, number, catalogExtension } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@ecp/core"
 import { z } from "zod"
 
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
@@ -37,9 +37,9 @@ async function ollamaChat(
 /** @ecp/ollama extension. @category Extensions */
 export const ollamaExtension = defineExtension("@ecp", "ollama")
   .withConfig({
-    baseURL: string().optional(),
-    defaultModel: string().optional(),
-    timeoutMs: number().optional(),
+    baseURL: z.string().optional(),
+    defaultModel: z.string().optional(),
+    timeoutMs: z.number().optional(),
   })
   .withCapabilities([
     capabilityFor("@ecp/ollama", "generate")

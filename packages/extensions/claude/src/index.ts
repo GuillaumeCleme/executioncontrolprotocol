@@ -3,7 +3,6 @@ import {
   capabilityFor,
   defineExtension,
   globalRegistry,
-  string,
   type Registry,
 } from "@ecp/core"
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
@@ -45,8 +44,8 @@ async function claudeComplete(
 /** Claude model provider. @category Extensions */
 export const claudeExtension = defineExtension("@ecp", "claude")
   .withConfig({
-    apiKey: string().optional(),
-    defaultModel: string().optional(),
+    apiKey: z.string().optional(),
+    defaultModel: z.string().optional(),
   })
   .withCapabilities([
     capabilityFor("@ecp/claude", "generate")

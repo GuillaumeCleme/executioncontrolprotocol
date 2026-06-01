@@ -1,39 +1,22 @@
 import type { PendingMutation, StoreStateHandle } from "@ecp/types"
+import { getAtPath, setAtPath } from "../util/path.js"
 
 function randomUUID(): string {
   return globalThis.crypto.randomUUID()
 }
 
+/** Options for store reads. @category Runtime */
 export interface StoreReadOptions {
+  /** When true, include pending (uncommitted) mutations in the read. */
   includePending?: boolean
 }
 
+/** Options for store writes. @category Runtime */
 export interface StoreWriteOptions {
+  /** Human-readable reason for the mutation (policy/audit). */
   reason?: string
+  /** Non-standard metadata attached to the pending mutation. */
   metadata?: Record<string, unknown>
-}
-
-function getAtPath(obj: Record<string, unknown>, path: string): unknown {
-  const parts = path.split(".")
-  let cur: unknown = obj
-  for (const p of parts) {
-    if (cur === null || cur === undefined || typeof cur !== "object") return undefined
-    cur = (cur as Record<string, unknown>)[p]
-  }
-  return cur
-}
-
-function setAtPath(obj: Record<string, unknown>, path: string, value: unknown): void {
-  const parts = path.split(".")
-  let cur: Record<string, unknown> = obj
-  for (let i = 0; i < parts.length - 1; i++) {
-    const p = parts[i]!
-    if (!(p in cur) || typeof cur[p] !== "object" || cur[p] === null) {
-      cur[p] = {}
-    }
-    cur = cur[p] as Record<string, unknown>
-  }
-  cur[parts[parts.length - 1]!] = value
 }
 
 /** Transactional store for capability handlers. @category Runtime */
