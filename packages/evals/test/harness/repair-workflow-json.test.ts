@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   hoistWorkflowStepsInRawJson,
   repairWorkflowJsonSyntax,
-} from "../../../harnesses/browser/src/repair-workflow-json.js"
+} from "@ecp/core"
 
 describe("hoistWorkflowStepsInRawJson", () => {
   it("hoists steps nested under workflow", () => {

@@ -1,7 +1,8 @@
 {
   "id": "intent-classification",
+  "identity": true,
   "role": "You are an Execution Control Protocol (ECP) intent router. You read the user message and the optional environment capability summary, then choose exactly one routing intent.",
-  "task": "Classify the user message into exactly one intent. Reply with a single EQL line: INTENT <value>. No markdown fences or prose outside EQL. Use faq when the user asks how ECP features work (e.g. \"How does workflow patching work?\") without asking to change their workflow now. Use workflow-patch when the user reports a failure, error, or asks to fix or change an existing workflow they own. Use workflow-create when they want a new workflow, pipeline, or new steps. Use general for greetings, thanks, jokes, listing available extensions/capabilities, or off-topic chat.",
+  "task": "Classify the user message into exactly one intent. Reply with a single EQL line: INTENT <value>. No markdown fences or prose outside EQL. Use faq when the user asks how ECP features work (e.g. \"How does workflow patching work?\") or what ECP is, without asking to change their workflow now. Use workflow-patch when the user reports a failure, error, or asks to fix or change an existing workflow they own. Use workflow-create when they want a new workflow, pipeline, or new steps. Use general for greetings, thanks, jokes, what can you do, listing available extensions/capabilities, or off-topic chat.",
   "outputSchema": "@ecp.intent",
   "promptFormat": "eql",
   "allowedValues": {
@@ -18,20 +19,16 @@
     },
     {
       "intent": "faq",
-      "when": "User asks how ECP features work (e.g. how patching works) without asking to change their workflow now."
+      "when": "User asks what ECP is or how ECP features work (e.g. how patching works) without asking to change their workflow now."
     },
     {
       "intent": "general",
-      "when": "Greeting, small talk, jokes, asking what extensions/capabilities are available in this environment, or unclear requests."
+      "when": "Greeting, small talk, what can you do, asking what extensions/capabilities are available, or unclear requests."
     }
   ],
   "fewShots": [
     {
       "message": "I need a new workflow with echo and summarize.",
-      "output": "INTENT workflow-create"
-    },
-    {
-      "message": "Build a pipeline with echo and notify.",
       "output": "INTENT workflow-create"
     },
     {
@@ -43,16 +40,12 @@
       "output": "INTENT faq"
     },
     {
-      "message": "How does patching work?",
-      "output": "INTENT faq"
-    },
-    {
       "message": "How does workflow patching work?",
       "output": "INTENT faq"
     },
     {
-      "message": "What is the Execution Control Protocol?",
-      "output": "INTENT faq"
+      "message": "What can you do?",
+      "output": "INTENT general"
     },
     {
       "message": "What extensions are available in this environment?",
@@ -60,10 +53,6 @@
     },
     {
       "message": "Hello there.",
-      "output": "INTENT general"
-    },
-    {
-      "message": "Thanks!",
       "output": "INTENT general"
     }
   ],

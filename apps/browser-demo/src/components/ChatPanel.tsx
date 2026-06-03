@@ -17,6 +17,8 @@ export interface ChatPanelProps {
   onSubmit: () => void
   disabled?: boolean
   hero?: boolean
+  /** Compact list of registered capability ids. */
+  capabilitySummary?: string
 }
 
 /** Floating bottom chat panel (Logic Assistant). */
@@ -30,6 +32,7 @@ export function ChatPanel({
   onSubmit,
   disabled,
   hero = false,
+  capabilitySummary,
 }: ChatPanelProps) {
   const visibleMessages = chat === "collapsed" ? messages.slice(-1) : messages.slice(-8)
   const collapsed = chat === "collapsed"
@@ -57,6 +60,11 @@ export function ChatPanel({
               {hero ? "ECP Logic Assistant" : "Logic Assistant"}
             </h3>
             <p className="text-[11px] text-on-surface-variant">{status || "Solaris Architect"}</p>
+            {capabilitySummary ? (
+              <p className="mt-0.5 text-[10px] leading-snug text-on-surface-variant/80" title={capabilitySummary}>
+                Registered: {capabilitySummary}
+              </p>
+            ) : null}
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -20,3 +20,4 @@ export {
   buildWorkflowPatchSystemPrompt,
 } from "./build-system-prompt.js"
 export { buildRepairHint } from "./build-repair-hint.js"
+export { ECP_ASSISTANT_IDENTITY_PRIMER } from "./identity-primer.js"

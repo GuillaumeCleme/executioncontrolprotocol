@@ -29,7 +29,11 @@ Product harness handlers load **harness prompts** from `@ecp/core` — not from 
 
 API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@ecp/core`.
 
-**Handler internals:** compact descriptor/workflow/run summaries for small models live in harness product packages (e.g. `packages/harnesses/browser/src/_internal/`) — not in the core harness framework or shared config schema.
+**Handler internals:** compact descriptor/workflow/run summaries, repair presentation, and JSON normalization for small models are exported from `@ecp/core` (`summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `normalizeWorkflowDocumentCandidate`, etc.). Product-specific heuristics (e.g. capability hints) stay in harness packages such as `@ecp/harnesses-browser`.
+
+**Identity:** optional `identity: true` on harness prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER` via `buildSystemPrompt`. The unified `workflow-assistant` task answers ECP FAQ, identity, environment help, and run-aware Q&A.
+
+**Task input contracts:** shared Zod shapes in `@ecp/types` (`harnessIntentClassificationInputSchema`, `harnessWorkflowAuthoringInputSchema`, `harnessWorkflowAssistantInputSchema`).
 
 ## Harness operation feedback (core contract)
 

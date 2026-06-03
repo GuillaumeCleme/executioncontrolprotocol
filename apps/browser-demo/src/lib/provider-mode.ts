@@ -4,9 +4,6 @@ export type ProviderMode = "chrome-ai" | "openai" | "claude" | "demo"
 /** Chat assistant behavior. */
 export type AssistantMode = "guided" | "authoring"
 
-/** Capability id for guided onboarding chat. */
-export const GUIDE_CHAT_CAPABILITY = "@ecp/browser.guideChat"
-
 const PROVIDER_CAPABILITY: Record<ProviderMode, string> = {
   "chrome-ai": "@ecp/chrome-ai.generate",
   openai: "@ecp/openai.generate",

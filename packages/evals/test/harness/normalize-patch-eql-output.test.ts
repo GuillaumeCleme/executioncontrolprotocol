@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   normalizePatchEqlRawOutput,
   substitutePatchRepairTemplate,
-} from "../../../harnesses/browser/src/_internal/normalize-patch-eql-output.js"
+} from "@ecp/core"
 
 describe("normalizePatchEqlRawOutput", () => {
   it("prepends PATCH WORKFLOW when the header is missing", () => {

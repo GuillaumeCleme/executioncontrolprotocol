@@ -127,6 +127,29 @@
           }
         },
         {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "How does patching work?"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              },
+              {
+                "kind": "answerContains",
+                "text": "patch"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Explains patching",
+              "rubric": "Accurate ECP patching overview",
+              "requireApproved": true
+            }
+          }
+        },
+        {
           "harness": "intent-classification",
           "input": {
             "message": "Thanks!"
@@ -140,6 +163,25 @@
             ],
             "judge": {
               "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "Thanks!"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Polite acknowledgment",
+              "rubric": "Brief friendly reply",
+              "requireApproved": true
             }
           }
         }

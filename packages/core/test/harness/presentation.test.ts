@@ -5,7 +5,7 @@ import {
   formatStructuredRepairForModel,
   isRepairTemplateEcho,
   isRepairFeedbackEcho,
-} from "../src/presentation.js"
+} from "../../src/harness/authoring/presentation.js"
 
 const feedback: HarnessOperationFeedback[] = [
   {

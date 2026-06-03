@@ -1,16 +1,22 @@
 import type { EnvironmentDescriptor } from "@ecp/types"
 
-/** Compact capability row for model prompts (eval harness internal). */
+/** Compact capability row for model prompts. @category Harness */
 export interface CompactCapabilityRow {
+  /** Capability id. */
   id: string
+  /** Owning extension id. */
   extension: string
+  /** Input field names from schema. */
   inputs: string[]
+  /** Output field names from schema. */
   outputs: string[]
 }
 
-/** Compact environment summary for small models (eval harness internal). */
+/** Compact environment summary for small models. @category Harness */
 export interface CompactEnvironmentSummary {
+  /** Extension rows with capability ids. */
   extensions: Array<{ id: string; capabilities: string[] }>
+  /** Flat capability rows. */
   capabilities: CompactCapabilityRow[]
 }
 
@@ -23,7 +29,7 @@ function summarizeSchemaFields(schema: unknown): string[] {
 
 /**
  * Build a compact environment summary from a full describe() result.
- * @internal Eval harness only — not part of @ecp/core.
+ * @category Harness
  */
 export function summarizeEnvironmentDescriptor(
   descriptor: EnvironmentDescriptor
@@ -45,7 +51,7 @@ export function summarizeEnvironmentDescriptor(
   return { extensions, capabilities }
 }
 
-/** How to render capability rows in user prompts. @internal */
+/** How to render capability rows in user prompts. @category Harness */
 export type EnvironmentSummaryFormat = "plain" | "eql-create" | "eql-patch"
 
 function isWorkflowStepCapability(capId: string): boolean {
@@ -104,7 +110,7 @@ function capabilityEqlPatchSnippet(
 
 /**
  * Plain-text capability lines for small models (readable without parsing TOON).
- * @internal Eval harness only.
+ * @category Harness
  */
 export function formatEnvironmentSummaryLines(
   summary: CompactEnvironmentSummary,

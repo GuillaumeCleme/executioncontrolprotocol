@@ -1,17 +1,22 @@
 import type { HarnessRunContext } from "@ecp/types"
 
-/** Compact run context for assistant harness prompts (eval internal). */
+/** Compact run context for assistant harness prompts. @category Harness */
 export interface CompactRunContextSummary {
+  /** Run id. */
   runId: string
+  /** Run status. */
   status: string
+  /** Workflow id when present. */
   workflowId?: string
+  /** Workflow label when present. */
   workflowLabel?: string
+  /** Failed step rows. */
   failedSteps: Array<{ stepId: string; status: string }>
 }
 
 /**
  * Summarize harness run context for model prompts.
- * @internal Eval harness only — not part of @ecp/core.
+ * @category Harness
  */
 export function summarizeHarnessRunContext(context: HarnessRunContext): CompactRunContextSummary {
   const run = context.run
@@ -33,13 +38,11 @@ export function summarizeHarnessRunContext(context: HarnessRunContext): CompactR
 
 /**
  * Format run context summary as prompt lines.
- * @internal Eval harness only.
+ * @category Harness
  */
 export function formatRunContextSummaryLines(context: HarnessRunContext): string[] {
   const summary = summarizeHarnessRunContext(context)
-  const lines = [
-    `Run ${summary.runId} status: ${summary.status}`,
-  ]
+  const lines = [`Run ${summary.runId} status: ${summary.status}`]
   if (summary.workflowId) {
     lines.push(
       `Workflow: ${summary.workflowId}${summary.workflowLabel ? ` (${summary.workflowLabel})` : ""}`

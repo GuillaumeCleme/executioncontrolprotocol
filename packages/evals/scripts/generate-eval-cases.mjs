@@ -83,6 +83,7 @@ const intents = [
   ["intent-10", "Patch config", "Change the workflow step configuration for summarize.", "workflow-patch", false],
   ["intent-11", "FAQ how", "How does workflow patching work?", "faq", true],
   ["intent-12", "Build", "Build a pipeline with echo and notify.", "workflow-create", true],
+  ["intent-13", "Identity", "What can you do?", "general", true],
 ].map(([id, title, message, intent, judge]) => ({
   id,
   suite: "intent",
@@ -105,7 +106,7 @@ const intents = [
 const assistants = [
   ["asst-01", "Failed echo", "Why did step echo fail?", "runs/failed-echo-step.json", [{ kind: "answerContains", text: "echo" }], true],
   ["asst-02", "Failed status", "What is the run status?", "runs/failed-echo-step.json", [{ kind: "answerContains", text: "fail" }], false],
-  ["asst-03", "Running", "Is my workflow still running?", "runs/running-pending.json", [{ kind: "answerContains", text: "start" }], false],
+  ["asst-03", "Running", "Is my workflow still running?", "runs/running-pending.json", [{ kind: "answerContains", text: "run" }], false],
   ["asst-04", "Extensions", "What plugins and extensions can you use?", null, [{ kind: "answerContains", text: "ecp" }], true],
   ["asst-05", "Steps", "What steps are in the workflow?", "runs/failed-echo-step.json", [], false],
   ["asst-06", "Fix suggest", "How can I fix the echo error?", "runs/failed-echo-step.json", [{ kind: "citationStepId", value: "echo" }], true],
@@ -113,6 +114,10 @@ const assistants = [
   ["asst-08", "Tone judge", "Explain the failure politely.", "runs/failed-echo-step.json", [], { enabled: true, goal: "Professional helpful tone", rubric: "Accurate and actionable", requireApproved: true }],
   ["asst-09", "Confirm patch", "Should we patch step echo input?", "runs/failed-echo-step.json", [], true],
   ["asst-10", "Capabilities list", "List supported step capabilities.", null, [{ kind: "answerContains", text: "test.echo" }], true],
+  ["asst-11", "What is ECP", "What is ECP?", null, [{ kind: "answerContains", text: "ECP" }], { enabled: true, goal: "Defines ECP in one or two sentences", rubric: "Mentions workflows or governed environments", requireApproved: true }],
+  ["asst-12", "Identity", "What can you do?", null, [{ kind: "answerContains", text: "workflow" }], { enabled: true, goal: "States assistant capabilities", rubric: "Mentions building workflows and answering ECP or environment questions", requireApproved: true }],
+  ["asst-13", "Register refusal", "Register a new extension for me.", null, [{ kind: "answerContains", text: "cannot" }], { enabled: true, goal: "Graceful refusal", rubric: "Explains cannot register and offers alternatives", requireApproved: true }],
+  ["asst-14", "Environment help", "What capabilities are available?", null, [{ kind: "answerContains", text: "test.echo" }], { enabled: true, goal: "Lists capabilities", rubric: "Names capability ids from the environment", requireApproved: true }],
 ].map(([id, title, message, runFixture, extra, judge]) => ({
   id,
   suite: "assistant",
@@ -198,9 +203,25 @@ const flows = [
         assertions: { deterministic: [{ kind: "intent", value: "faq" }], judge: { enabled: false } },
       },
       {
+        harness: "workflow-assistant",
+        input: { message: "How does patching work?" },
+        assertions: {
+          deterministic: [{ kind: "replySchema" }, { kind: "answerContains", text: "patch" }],
+          judge: { enabled: true, goal: "Explains patching", rubric: "Accurate ECP patching overview", requireApproved: true },
+        },
+      },
+      {
         harness: "intent-classification",
         input: { message: "Thanks!" },
         assertions: { deterministic: [{ kind: "intent", value: "general" }], judge: { enabled: false } },
+      },
+      {
+        harness: "workflow-assistant",
+        input: { message: "Thanks!" },
+        assertions: {
+          deterministic: [{ kind: "replySchema" }],
+          judge: { enabled: true, goal: "Polite acknowledgment", rubric: "Brief friendly reply", requireApproved: true },
+        },
       },
     ],
   },

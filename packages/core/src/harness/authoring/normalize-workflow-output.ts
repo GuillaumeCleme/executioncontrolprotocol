@@ -1,8 +1,8 @@
 import { LATEST_ECP_VERSION } from "@ecp/types"
 
 /**
- * Normalize common model JSON mistakes before workflow validation (eval workflow harness).
- * @category Evals
+ * Normalize common model JSON mistakes before workflow validation.
+ * @category Harness
  */
 export function normalizeWorkflowDocumentCandidate(document: unknown): unknown {
   if (document === null || typeof document !== "object" || Array.isArray(document)) {

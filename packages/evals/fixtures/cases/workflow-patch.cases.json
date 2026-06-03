@@ -364,7 +364,10 @@
           },
           {
             "kind": "stepOrder",
-            "stepIds": ["validate", "echo"]
+            "stepIds": [
+              "validate",
+              "echo"
+            ]
           }
         ],
         "judge": {

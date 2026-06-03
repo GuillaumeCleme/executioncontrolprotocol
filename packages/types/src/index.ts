@@ -144,3 +144,15 @@ export {
   harnessReplyCitationSchema,
 } from "./harness-reply.js"
 export type { HarnessReply } from "./harness-reply.js"
+export {
+  HARNESS_TASK_IDS,
+  harnessIntentClassificationInputSchema,
+  harnessWorkflowAuthoringInputSchema,
+  harnessWorkflowAssistantInputSchema,
+} from "./harness-tasks.js"
+export type {
+  HarnessTaskId,
+  HarnessIntentClassificationInput,
+  HarnessWorkflowAuthoringInput,
+  HarnessWorkflowAssistantInput,
+} from "./harness-tasks.js"

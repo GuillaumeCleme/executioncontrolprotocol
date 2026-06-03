@@ -8,6 +8,12 @@ import {
 import type { CapabilityContext } from "../runtime/context.js"
 import { inferResponseFormatFromFormatter } from "./format-resolve.js"
 
+/** Default provider options for small-model harness calls (format adherence). */
+export const HARNESS_MODEL_GENERATE_OPTIONS = {
+  temperature: 0.1,
+  top_p: 0.9,
+} as const
+
 function extractText(output: unknown): string {
   if (typeof output === "string") return output
   if (output !== null && typeof output === "object") {
@@ -57,6 +63,10 @@ export async function callModelGenerate(
     ...input,
     prompt,
     responseFormat,
+    options: {
+      ...HARNESS_MODEL_GENERATE_OPTIONS,
+      ...(input.options ?? {}),
+    },
   })
 
   const raw = await ctx.capabilities.call(providerCapabilityId, payload)

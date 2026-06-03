@@ -3,9 +3,9 @@ import { countOllamaEvalCases, loadEvalCases, loadHarnessRunFixture } from "../.
 import { EVAL_SUITE_VALUES } from "../../src/fixtures/eval-case-schema.js"
 
 describe("loadEvalCases", () => {
-  it("loads 52 cases across suites", () => {
-    expect(loadEvalCases().length).toBe(52)
-    expect(countOllamaEvalCases()).toBe(52)
+  it("loads 57 cases across suites", () => {
+    expect(loadEvalCases().length).toBe(57)
+    expect(countOllamaEvalCases()).toBe(57)
   })
 
   it("loads workflow-create suite", () => {

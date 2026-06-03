@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { LATEST_ECP_VERSION } from "@ecp/types"
-import { normalizeWorkflowDocumentCandidate } from "../src/normalize-workflow-output.js"
+import { normalizeWorkflowDocumentCandidate } from "../../src/harness/authoring/normalize-workflow-output.js"
 
 describe("normalizeWorkflowDocumentCandidate", () => {
   it("fills in default schema and version", () => {

@@ -160,6 +160,12 @@ CI runs the `browser` job in `.github/workflows/ci-pipeline.yml` (not part of `n
 
 Build order: `tsc -b tsconfig.build.json` (types → core → … → cli).
 
+### Harness authoring surface
+
+Reusable harness helpers are exported from `@ecp/core`: `defineHarness`, `runModelRepairLoop`, `buildSystemPrompt`, `summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `buildAssistantSafeReply`, etc. Shared task input Zod schemas live in `@ecp/types` (`HARNESS_TASK_IDS`, `harnessWorkflowAssistantInputSchema`, …).
+
+`@ecp/harnesses-browser` is the product harness (browser demo + eval matrix). The **`workflow-assistant`** task is the unified assistant (ECP FAQ, identity, environment help, run Q&A). Optional `identity: true` on prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER`.
+
 ### Harness eval integrity
 
 - Do not delete, skip, or weaken **valid** failing matrix/smoke eval tests to green CI.

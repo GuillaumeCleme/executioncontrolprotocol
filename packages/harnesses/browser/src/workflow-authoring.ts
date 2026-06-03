@@ -15,6 +15,16 @@ import {
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
+  formatEnvironmentSummaryLines,
+  summarizeEnvironmentDescriptor,
+  encodeForPrompt,
+  normalizePatchEqlRawOutput,
+  substitutePatchRepairTemplate,
+  formatWorkflowSummaryLines,
+  normalizeWorkflowDocumentCandidate,
+  formatStructuredRepairForModel,
+  isRepairFeedbackEcho,
+  type CompactEnvironmentSummary,
 } from "@ecp/core"
 import {
   ECP_CORE_FORMATTER_IDS,
@@ -29,13 +39,6 @@ import {
 } from "@ecp/types"
 import { z } from "zod"
 import {
-  formatEnvironmentSummaryLines,
-  summarizeEnvironmentDescriptor,
-} from "./_internal/summarize-environment.js"
-import { encodeForPrompt } from "./_internal/encode-prompt-text.js"
-import { normalizePatchEqlRawOutput, substitutePatchRepairTemplate } from "./_internal/normalize-patch-eql-output.js"
-import { formatWorkflowSummaryLines } from "./_internal/summarize-workflow.js"
-import {
   buildPatchOperationHintLines,
   buildRequestCapabilityHintLines,
   collectPatchGoalFeedback,
@@ -44,13 +47,7 @@ import {
   inferPatchTargetStepId,
   inferRequestedLabel,
 } from "./_internal/request-capability-hints.js"
-import type { CompactEnvironmentSummary } from "./_internal/summarize-environment.js"
 import { BROWSER_HARNESS_ID } from "./harness-ids.js"
-import { normalizeWorkflowDocumentCandidate } from "./normalize-workflow-output.js"
-import {
-  formatStructuredRepairForModel,
-  isRepairFeedbackEcho,
-} from "./presentation.js"
 
 function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<string> {
   const uses = new Set<string>()

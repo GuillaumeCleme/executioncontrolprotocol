@@ -1,6 +1,6 @@
 const PATCH_OPERATION_LINE = /^(UPDATE|DELETE|ADD)\s+STEP\b/i
 
-/** Prepend PATCH WORKFLOW when the model omits the header but outputs patch operations. */
+/** Prepend PATCH WORKFLOW when the model omits the header but outputs patch operations. @category Harness */
 export function normalizePatchEqlRawOutput(
   raw: string,
   workflowId: string | undefined
@@ -34,7 +34,7 @@ export function normalizePatchEqlRawOutput(
 const REPAIR_TEMPLATE_MARKERS =
   /\bexample-wf\b|\bexample-step\b|\bcapability-id\b|\banchor-step\b|\bremove-step\b|\btarget-step\b|\bnew-step\b|"Example label"/
 
-/** Replace neutral repair-template tokens with values from the current patch context. */
+/** Replace neutral repair-template tokens with values from the current patch context. @category Harness */
 export function substitutePatchRepairTemplate(
   raw: string,
   workflowId: string | undefined,

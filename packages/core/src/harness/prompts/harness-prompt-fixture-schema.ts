@@ -25,6 +25,8 @@ export const harnessPromptFixtureSchema = z.object({
   definitions: z.array(harnessPromptDefinitionSchema).optional(),
   fewShots: z.array(harnessPromptFewShotSchema).optional(),
   repairHint: z.string().optional(),
+  /** When true, prepend {@link ECP_ASSISTANT_IDENTITY_PRIMER} to the system prompt. */
+  identity: z.boolean().optional(),
 })
 
 /** Parsed harness prompt fixture. @category Harness */

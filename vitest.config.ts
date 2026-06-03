@@ -91,25 +91,9 @@ export default defineConfig({
         repoRoot,
         "packages/harnesses/browser/src/index.ts"
       ),
-      "@ecp/harnesses-browser/repair-workflow-json": path.resolve(
-        repoRoot,
-        "packages/harnesses/browser/src/repair-workflow-json.ts"
-      ),
-      "@ecp/harnesses-browser/presentation": path.resolve(
-        repoRoot,
-        "packages/harnesses/browser/src/presentation.ts"
-      ),
-      "@ecp/harnesses-browser/normalize-workflow-output": path.resolve(
-        repoRoot,
-        "packages/harnesses/browser/src/normalize-workflow-output.ts"
-      ),
       "@ecp/harnesses-browser/request-capability-hints": path.resolve(
         repoRoot,
         "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
-      ),
-      "@ecp/harnesses-browser/summarize-environment": path.resolve(
-        repoRoot,
-        "packages/harnesses/browser/src/_internal/summarize-environment.ts"
       ),
     },
   },
@@ -184,25 +168,9 @@ export default defineConfig({
         extends: true,
         resolve: {
           alias: {
-            "@ecp/harnesses-browser/presentation": path.resolve(
-              repoRoot,
-              "packages/harnesses/browser/src/presentation.ts"
-            ),
-            "@ecp/harnesses-browser/normalize-workflow-output": path.resolve(
-              repoRoot,
-              "packages/harnesses/browser/src/normalize-workflow-output.ts"
-            ),
-            "@ecp/harnesses-browser/repair-workflow-json": path.resolve(
-              repoRoot,
-              "packages/harnesses/browser/src/repair-workflow-json.ts"
-            ),
             "@ecp/harnesses-browser/request-capability-hints": path.resolve(
               repoRoot,
               "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
-            ),
-            "@ecp/harnesses-browser/summarize-environment": path.resolve(
-              repoRoot,
-              "packages/harnesses/browser/src/_internal/summarize-environment.ts"
             ),
           },
         },
@@ -266,38 +234,10 @@ export default defineConfig({
               replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
             },
             {
-              find: "@ecp/harnesses-browser/presentation",
-              replacement: path.resolve(
-                repoRoot,
-                "packages/harnesses/browser/src/presentation.ts"
-              ),
-            },
-            {
-              find: "@ecp/harnesses-browser/normalize-workflow-output",
-              replacement: path.resolve(
-                repoRoot,
-                "packages/harnesses/browser/src/normalize-workflow-output.ts"
-              ),
-            },
-            {
-              find: "@ecp/harnesses-browser/repair-workflow-json",
-              replacement: path.resolve(
-                repoRoot,
-                "packages/harnesses/browser/src/repair-workflow-json.ts"
-              ),
-            },
-            {
               find: "@ecp/harnesses-browser/request-capability-hints",
               replacement: path.resolve(
                 repoRoot,
                 "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
-              ),
-            },
-            {
-              find: "@ecp/harnesses-browser/summarize-environment",
-              replacement: path.resolve(
-                repoRoot,
-                "packages/harnesses/browser/src/_internal/summarize-environment.ts"
               ),
             },
           ],

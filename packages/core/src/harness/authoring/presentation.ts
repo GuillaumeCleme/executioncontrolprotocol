@@ -1,8 +1,8 @@
 import type { HarnessOperationFeedback, ValidationIssue } from "@ecp/types"
 
 /**
- * Format structured harness feedback for model repair prompts (eval harnesses).
- * @category Evals
+ * Format structured harness feedback for model repair prompts.
+ * @category Harness
  */
 export function formatFeedbackForModel(feedback: HarnessOperationFeedback[]): string | undefined {
   const issues = feedback.flatMap((f) => f.issues)
@@ -17,7 +17,7 @@ export function formatFeedbackForModel(feedback: HarnessOperationFeedback[]): st
 
 /**
  * Compact repair instructions for small models (avoids echoing long prose).
- * @category Evals
+ * @category Harness
  */
 export function formatStructuredRepairForModel(
   feedback: HarnessOperationFeedback[]
@@ -42,7 +42,7 @@ export function isRepairTemplateEcho(raw: string): boolean {
 
 /**
  * True when model output looks like echoed validation/repair text, not a document.
- * @category Evals
+ * @category Harness
  */
 export function isRepairFeedbackEcho(
   raw: string,
@@ -78,7 +78,7 @@ export function isRepairFeedbackEcho(
 
 /**
  * Detect echo from structured issues only.
- * @category Evals
+ * @category Harness
  */
 export function isIssuesOnlyOutput(raw: string, issues: ValidationIssue[]): boolean {
   const formatted = issues

@@ -1,8 +1,8 @@
-import type { Ecp } from "@ecp/core"
+import type { Ecp } from "../../environment/ecp.js"
 
 /**
  * Encode a plain object for inclusion in a harness user prompt.
- * @internal Eval harness only.
+ * @category Harness
  */
 export async function encodeForPrompt(
   ecp: Ecp,

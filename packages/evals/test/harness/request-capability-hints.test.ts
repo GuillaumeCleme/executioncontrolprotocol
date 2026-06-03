@@ -6,7 +6,7 @@ import {
   collectPatchGoalFeedback,
   inferRequiredCapabilityIds,
 } from "../../../harnesses/browser/src/_internal/request-capability-hints.js"
-import type { CompactEnvironmentSummary } from "../../../harnesses/browser/src/_internal/summarize-environment.js"
+import type { CompactEnvironmentSummary } from "@ecp/core"
 import type { WorkflowManifest } from "@ecp/types"
 
 const summary: CompactEnvironmentSummary = {

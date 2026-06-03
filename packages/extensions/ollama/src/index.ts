@@ -10,7 +10,8 @@ async function ollamaChat(
   model: string,
   prompt: string,
   system?: string,
-  context?: unknown
+  context?: unknown,
+  requestOptions?: Record<string, unknown>
 ): Promise<string> {
   const messages = [
     ...(system ? [{ role: "system" as const, content: system }] : []),
@@ -26,7 +27,10 @@ async function ollamaChat(
       model,
       messages,
       stream: false,
-      options: { num_ctx: 8192 },
+      options: {
+        num_ctx: 8192,
+        ...(requestOptions ?? {}),
+      },
     }),
   })
   if (!res.ok) throw new Error(`Ollama API error: ${res.status}`)
@@ -60,7 +64,8 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
           model,
           parsed.prompt,
           parsed.system,
-          parsed.context
+          parsed.context,
+          parsed.options as Record<string, unknown> | undefined
         )
         return { text }
       }),

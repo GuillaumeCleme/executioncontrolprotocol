@@ -65,7 +65,7 @@ const MATRIX_ASSISTANT = {
     includeRunContext: true,
     runContextFormat: "@ecp/format-json",
   },
-  repair: EVAL_HARNESS_REPAIR,
+  repair: { ...EVAL_HARNESS_REPAIR, safeReplyFallback: true },
   trace: EVAL_HARNESS_TRACE,
 } as const
 

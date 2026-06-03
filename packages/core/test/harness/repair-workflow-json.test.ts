@@ -3,9 +3,8 @@ import {
   repairWorkflowJsonSyntax,
   repairPatchJsonSyntax,
   hoistWorkflowStepsInRawJson,
-} from "../src/repair-workflow-json.js"
+} from "../../src/harness/authoring/repair-workflow-json.js"
 
-/** Parse helper that throws a readable message on failure. */
 function parse(raw: string): unknown {
   return JSON.parse(raw)
 }

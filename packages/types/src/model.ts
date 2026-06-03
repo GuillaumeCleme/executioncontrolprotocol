@@ -30,6 +30,8 @@ export const modelGenerateInputSchema = z.object({
   context: z.unknown().optional(),
   /** Output format hint for providers without native support. */
   responseFormat: z.enum(["text", "json", "toon", "eql"]).optional(),
+  /** Provider-specific options (e.g. temperature, top_p for Ollama). */
+  options: z.record(z.string(), z.unknown()).optional(),
 })
 
 /** Normalized model generate input type. @category Harness */

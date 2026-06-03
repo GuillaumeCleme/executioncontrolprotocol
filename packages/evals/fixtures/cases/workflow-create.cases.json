@@ -26,6 +26,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -70,6 +71,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -114,6 +116,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -154,6 +157,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -194,6 +198,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -234,6 +239,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -274,6 +280,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -314,6 +321,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -354,6 +362,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -394,6 +403,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -434,6 +444,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -472,6 +483,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]

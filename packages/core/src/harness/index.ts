@@ -16,7 +16,7 @@ export type {
   HarnessOutputOf,
 } from "./types.js"
 export type { HarnessCapabilityContext } from "./context.js"
-export { callModelGenerate } from "./call-model.js"
+export { callModelGenerate, HARNESS_MODEL_GENERATE_OPTIONS } from "./call-model.js"
 export {
   isCoreFormatterId,
   CORE_FORMATTER_IDS,
@@ -44,3 +44,4 @@ export {
   type HarnessPromptFixture,
   type HarnessPromptFixtureId,
 } from "./prompts/index.js"
+export * from "./authoring/index.js"

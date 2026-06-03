@@ -1,6 +1,6 @@
 import { collectModelOutputFeedback } from "@ecp/core"
 import type { HarnessOperationFeedback, WorkflowManifest } from "@ecp/types"
-import type { CompactEnvironmentSummary } from "./summarize-environment.js"
+import type { CompactEnvironmentSummary } from "@ecp/core"
 
 function stepHasInputRef(step: WorkflowManifest["steps"][number]): boolean {
   if (!("input" in step) || step.input === undefined) return false

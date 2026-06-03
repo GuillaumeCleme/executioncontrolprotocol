@@ -78,7 +78,7 @@
           },
           {
             "kind": "answerContains",
-            "text": "start"
+            "text": "run"
           }
         ],
         "judge": {
@@ -242,7 +242,6 @@
         "judge": {
           "enabled": true,
           "goal": "Confirm patch",
-          "rubric": "Answer discusses patching or updating the echo step input and references the failed run or step echo.",
           "requireApproved": true
         }
       }
@@ -272,6 +271,126 @@
         "judge": {
           "enabled": true,
           "goal": "Capabilities list",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-11",
+      "suite": "assistant",
+      "title": "What is ECP",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What is ECP?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "ECP"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Defines ECP in one or two sentences",
+          "rubric": "Mentions workflows or governed environments",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-12",
+      "suite": "assistant",
+      "title": "Identity",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What can you do?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "workflow"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "States assistant capabilities",
+          "rubric": "Mentions building workflows and answering ECP or environment questions",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-13",
+      "suite": "assistant",
+      "title": "Register refusal",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Register a new extension for me."
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "cannot"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Graceful refusal",
+          "rubric": "Explains cannot register and offers alternatives",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-14",
+      "suite": "assistant",
+      "title": "Environment help",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What capabilities are available?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "test.echo"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Lists capabilities",
+          "rubric": "Names capability ids from the environment",
           "requireApproved": true
         }
       }

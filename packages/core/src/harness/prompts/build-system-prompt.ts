@@ -3,6 +3,7 @@ import { formatSchemaExampleEql, formatSchemaExampleJson } from "./load-schema-e
 import type { HarnessPromptFixture } from "./harness-prompt-fixture-schema.js"
 import { HARNESS_PROMPT_FIXTURE_IDS } from "./harness-prompt-fixture-schema.js"
 import { eqlPrimerForOutputSchema } from "./eql-primer.js"
+import { ECP_ASSISTANT_IDENTITY_PRIMER } from "./identity-primer.js"
 
 function usesEql(fixture: HarnessPromptFixture): boolean {
   return fixture.promptFormat !== "json"
@@ -54,8 +55,11 @@ export function buildSystemPrompt(fixtureId: string): string {
     ? formatSchemaExampleEql(fixture.outputSchema)
     : formatSchemaExampleJson(fixture.outputSchema)
 
+  const identityBlock = fixture.identity ? [ECP_ASSISTANT_IDENTITY_PRIMER] : []
+
   const sections = eql
     ? [
+        ...identityBlock,
         eqlPrimerForOutputSchema(fixture.outputSchema),
         fixture.outputSchema === "@ecp.patch"
           ? undefined
@@ -67,6 +71,7 @@ export function buildSystemPrompt(fixtureId: string): string {
         "Reply with SQL-like EQL only. No markdown fences. No header line.",
       ].filter((s): s is string => s !== undefined && s.length > 0)
     : [
+        ...identityBlock,
         fixture.role,
         fixture.task,
         `Output schema: ${fixture.outputSchema}`,

@@ -20,17 +20,21 @@ function stepInputWithLines(step: StepNode): string[] {
   return lines
 }
 
-/** Compact workflow step row for model prompts (eval harness internal). */
+/** Compact workflow step row for model prompts. @category Harness */
 export interface CompactWorkflowStepRow {
+  /** Step id. */
   id: string
+  /** Capability id. */
   uses: string
+  /** Optional label. */
   label?: string
+  /** Input field keys. */
   inputKeys: string[]
 }
 
 /**
  * Summarize a workflow manifest for harness user prompts.
- * @internal Eval harness only — not part of @ecp/core.
+ * @category Harness
  */
 export function summarizeWorkflowManifest(manifest: WorkflowManifest): {
   workflowId: string
@@ -60,7 +64,7 @@ export function summarizeWorkflowManifest(manifest: WorkflowManifest): {
 
 /**
  * Format workflow summary as prompt lines.
- * @internal Eval harness only.
+ * @category Harness
  */
 export function formatWorkflowSummaryLines(
   manifest: WorkflowManifest,
@@ -88,7 +92,7 @@ export function formatWorkflowSummaryLines(
 
 /**
  * Format workflow as EQL-shaped lines for patch/create context in user prompts.
- * @internal Eval harness only.
+ * @category Harness
  */
 export function formatWorkflowSummaryEqlLines(
   manifest: WorkflowManifest,

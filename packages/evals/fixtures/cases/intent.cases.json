@@ -23,6 +23,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -56,6 +57,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -89,6 +91,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -124,6 +127,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -157,6 +161,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -192,6 +197,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -227,6 +233,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -260,6 +267,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -295,6 +303,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -330,6 +339,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -363,6 +373,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -398,6 +409,7 @@
             "ids": [
               "@ecp/format-toon",
               "@ecp/format-eql",
+              "@ecp/format-json",
               "@ecp/test",
               "@ecp/demo"
             ]
@@ -406,6 +418,42 @@
         "judge": {
           "enabled": true,
           "goal": "Intent should be workflow-create",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "intent-13",
+      "suite": "intent",
+      "title": "Identity",
+      "harness": "intent-classification",
+      "model": "default",
+      "input": {
+        "message": "What can you do?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "intent",
+            "value": "general"
+          },
+          {
+            "kind": "descriptorListsExtensions",
+            "ids": [
+              "@ecp/format-toon",
+              "@ecp/format-eql",
+              "@ecp/format-json",
+              "@ecp/test",
+              "@ecp/demo"
+            ]
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Intent should be general",
           "requireApproved": true
         }
       }

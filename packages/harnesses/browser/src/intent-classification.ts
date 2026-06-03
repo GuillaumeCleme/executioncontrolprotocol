@@ -11,6 +11,11 @@ import {
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
+  formatEnvironmentSummaryLines,
+  summarizeEnvironmentDescriptor,
+  encodeForPrompt,
+  formatFeedbackForModel,
+  isRepairFeedbackEcho,
 } from "@ecp/core"
 import {
   ECP_CORE_FORMATTER_IDS,
@@ -24,13 +29,7 @@ import {
   type ValidationResult,
 } from "@ecp/types"
 import { z } from "zod"
-import {
-  formatEnvironmentSummaryLines,
-  summarizeEnvironmentDescriptor,
-} from "./_internal/summarize-environment.js"
-import { encodeForPrompt } from "./_internal/encode-prompt-text.js"
 import { BROWSER_HARNESS_ID } from "./harness-ids.js"
-import { formatFeedbackForModel, isRepairFeedbackEcho } from "./presentation.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z

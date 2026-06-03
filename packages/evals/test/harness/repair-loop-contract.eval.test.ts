@@ -4,7 +4,7 @@ import {
   collectModelOutputFeedback,
   type ModelRepairGenerateContext,
 } from "@ecp/core"
-import { formatFeedbackForModel } from "../../../harnesses/browser/src/presentation.js"
+import { formatFeedbackForModel } from "@ecp/core"
 
 /**
  * Deterministic contract test for the harness repair loop.

@@ -10,6 +10,7 @@ import type {
   EcpIntent,
   EnvironmentDescriptor,
   HarnessInvokeResult,
+  HarnessReply,
   ValidationResult,
   WorkflowManifest,
 } from "@ecp/types"
@@ -29,6 +30,7 @@ import { useChromeModelInstall } from "./hooks/useChromeModelInstall.js"
 import { useSplitPane } from "./hooks/useSplitPane.js"
 import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout.js"
 import { looksLikeWorkflowRequest } from "./lib/chat-routing.js"
+import { formatRegisteredCapabilitiesSummary } from "./lib/capability-summary.js"
 import { createDemoAppEnvironment } from "./lib/demo-environment.js"
 import {
   harnessInvokeChatError,
@@ -37,7 +39,6 @@ import {
 } from "./lib/harness-invoke-debug.js"
 import { environmentSourceFromDescriptor } from "./lib/environment-source.js"
 import {
-  GUIDE_CHAT_CAPABILITY,
   providerCapabilityId,
   readStoredProviderMode,
   storeProviderMode,
@@ -80,6 +81,11 @@ export function App() {
 
   const environmentSource = useMemo(
     () => environmentSourceFromDescriptor(descriptor),
+    [descriptor]
+  )
+
+  const capabilitySummary = useMemo(
+    () => formatRegisteredCapabilitiesSummary(descriptor),
     [descriptor]
   )
 
@@ -242,6 +248,30 @@ export function App() {
     chat.appendAgent(msg)
   }
 
+  const runAssistant = async (userRequest: string, cap: string) => {
+    if (!ecp) return
+    const invoked = await ecp
+      .invoke(BROWSER_HARNESS_CAPABILITY)
+      .uses(cap)
+      .with({
+        task: HARNESS_TASKS.WORKFLOW_ASSISTANT,
+        message: userRequest,
+      })
+      .process()
+
+    logHarnessInvoke("workflow-assistant", invoked)
+
+    if (!invoked.success || !invoked.result) {
+      throw new Error(harnessInvokeChatError(invoked))
+    }
+
+    const harnessResult = invoked.result as HarnessInvokeResult<HarnessReply>
+    logHarnessSuccess("workflow-assistant", harnessResult)
+    const answer = harnessResult.artifact.answer
+    chat.appendAgent(answer)
+    chat.setStatus(assistantMode === "guided" ? "Guided mode" : "Ready")
+  }
+
   const classifyIntent = async (message: string, cap: string): Promise<EcpIntent | null> => {
     if (!ecp) return null
     try {
@@ -277,8 +307,7 @@ export function App() {
           ? providerCapabilityId("demo")
           : providerCapabilityId(providerMode)
 
-      let routeToAuthoring =
-        assistantMode === "authoring" || looksLikeWorkflowRequest(userRequest)
+      let routeToAuthoring = looksLikeWorkflowRequest(userRequest)
 
       if (assistantMode === "guided" && !routeToAuthoring) {
         const intent = await classifyIntent(userRequest, cap)
@@ -288,20 +317,8 @@ export function App() {
       }
 
       if (!routeToAuthoring) {
-        const guide = await ecp.invoke(GUIDE_CHAT_CAPABILITY).with({ message: userRequest }).process()
-        console.group("[ecp] guided chat")
-        console.log("success:", guide.success)
-        console.log("result:", guide.result)
-        console.log("diagnostics:", guide.diagnostics)
-        console.groupEnd()
-        if (!guide.success || !guide.result) {
-          throw new Error(
-            guide.diagnostics.map((d) => d.message).join("; ") || "Guide chat failed"
-          )
-        }
-        const text = String((guide.result as { text: string }).text)
-        chat.appendAgent(text)
-        chat.setStatus("Guided mode")
+        chat.setStatus("Answering...")
+        await runAssistant(userRequest, cap)
         return
       }
 
@@ -427,6 +444,7 @@ export function App() {
         onSubmit={() => void onSubmit()}
         disabled={!ecp || chatBlocked}
         hero={chatHero}
+        capabilitySummary={capabilitySummary}
       />
 
       {showProviderModal ? (

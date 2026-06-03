@@ -10,10 +10,10 @@ function nextId(): string {
 }
 
 const GUIDED_WELCOME =
-  "Welcome to the ECP Graph Editor. I am your guided assistant (offline). Ask about workflows, the environment, Mermaid graphs, or validation. When you are ready to generate a workflow, say something like: create a demo echo workflow."
+  "Welcome to the ECP Graph Editor. I can build workflows, answer ECP questions, and explain what is registered in this environment. Try: What is ECP? or create a demo echo workflow."
 
 const AUTHORING_WELCOME =
-  "Describe a workflow to create, or ask for changes once one exists."
+  "Describe a workflow to create or patch, or ask what I can do in this environment."
 
 /** Chat history and status helpers. */
 export function useChatHistory(initialMode: AssistantMode = "authoring") {
