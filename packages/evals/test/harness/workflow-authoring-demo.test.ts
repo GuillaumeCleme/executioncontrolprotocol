@@ -9,10 +9,10 @@ import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { registerFormatToonExtension } from "@ecp/format-toon"
 import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
 import {
-  EVAL_HARNESS_TASKS,
-  EVALS_HARNESS_CAPABILITY,
-  EVALS_HARNESS_ID,
-  registerEvalHarnesses,
+  HARNESS_TASKS,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  BROWSER_NANO_HARNESS_ID,
+  registerBrowserNanoHarnesses,
 } from "@ecp/evals"
 import { assertHarnessInvokeSuccess } from "./assert-harness-result.js"
 
@@ -20,7 +20,7 @@ const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".
 
 async function createEvalAuthoringDemoEnv() {
   await registerCoreFormats()
-  registerEvalHarnesses()
+  registerBrowserNanoHarnesses()
   await registerNodeRuntime()
   await registerTestExtension()
   await registerDemoExtension()
@@ -36,7 +36,7 @@ async function createEvalAuthoringDemoEnv() {
       extension("@ecp/demo").with({}),
     ])
     .withHarnesses([
-      harness(EVALS_HARNESS_ID)
+      harness(BROWSER_NANO_HARNESS_ID)
         .uses("@ecp/demo.generate")
         .with({
           output: { schema: "@ecp.workflow", format: "@ecp/format-eql", validate: true },
@@ -49,8 +49,8 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
     const env = await createEvalAuthoringDemoEnv()
     const ecp = await env.init()
     const result = await ecp
-      .invoke(EVALS_HARNESS_CAPABILITY)
-      .with({ task: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING, request: "Create an echo workflow" })
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
+      .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "Create an echo workflow" })
       .process()
 
     assertHarnessInvokeSuccess(result)
@@ -67,9 +67,9 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
     ) as WorkflowManifest
 
     const result = await ecp
-      .invoke(EVALS_HARNESS_CAPABILITY)
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
       .with({
-        task: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING,
+        task: HARNESS_TASKS.WORKFLOW_AUTHORING,
         request: "Patch the echo step input value.",
         manifest,
       })

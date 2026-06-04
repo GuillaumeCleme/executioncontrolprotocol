@@ -1,0 +1,27 @@
+/**
+ * Browser Nano harness (`@ecp/harness-browser-nano`): workflow authoring, intent, assistant.
+ * Tuned for on-device and ~1B models. Used by browser demo and `@ecp/evals` matrix tests.
+ * @category Harness
+ */
+export {
+  BROWSER_NANO_HARNESS_ID,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+} from "./harness-ids.js"
+
+export {
+  registerBrowserNanoHarnesses,
+  resetBrowserNanoHarnessRegistrationForTests,
+} from "./register.js"
+
+export {
+  HARNESS_TASKS,
+  HARNESS_NANO_REPAIR,
+  HARNESS_NANO_TRACE,
+  HARNESS_NANO_BINDING,
+  HARNESS_BROWSER_NANO_DEMO_BINDING,
+  getHarnessNanoConfig,
+  type HarnessTask,
+  type HarnessProfile,
+} from "./harness-nano-config.js"
+
+export type { BrowserNanoHarnessInput } from "./browser-nano-harness.js"

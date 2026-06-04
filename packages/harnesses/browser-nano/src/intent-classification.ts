@@ -29,7 +29,7 @@ import {
   type ValidationResult,
 } from "@ecp/types"
 import { z } from "zod"
-import { BROWSER_HARNESS_ID } from "./harness-ids.js"
+import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z
@@ -216,7 +216,7 @@ const evalsIntentClassificationHarness = defineHarness("@ecp", "evals-intent-cla
     })
 
     const trace: HarnessInvokeResult["trace"] = {
-      harness: BROWSER_HARNESS_ID,
+      harness: BROWSER_NANO_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
       outputSchema: config.output.schema,

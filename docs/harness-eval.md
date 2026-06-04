@@ -8,7 +8,7 @@ For a **full matrix catalog** (every case, assertion, judge goal, and fixture), 
 
 | Harness | Capability | Purpose |
 | ------- | ---------- | ------- |
-| `@ecp/harness-browser` | `@ecp/harness-browser.evaluate` | Browser demo + Ollama/matrix evals; route with input `task` (`workflow-authoring`, `intent-classification`, `workflow-assistant`) |
+| `@ecp/harness-browser-nano` | `@ecp/harness-browser-nano.evaluate` | Browser demo + Ollama/matrix evals; route with input `task` (`workflow-authoring`, `intent-classification`, `workflow-assistant`) |
 
 ## `@ecp/evals` package
 
@@ -39,7 +39,7 @@ Source: [`packages/evals/src/profiles/chrome-nano.ts`](../packages/evals/src/pro
 
 ### Reusable harness, swappable providers
 
-`@ecp/harness-browser` owns prompts, repair loops, EQL decode, and validation. Providers only implement `@ecp/model.generate`. Matrix evals use `createHarnessMatrixEnvironment(profile)` — the same harness binding (`HARNESS_MATRIX_BINDING`) for Ollama and Chrome; only `.uses()` and runtime change.
+`@ecp/harness-browser-nano` owns prompts, repair loops, EQL decode, and validation. Providers only implement `@ecp/model.generate`. Matrix evals use `createHarnessMatrixEnvironment(profile)` — the same harness binding (`HARNESS_NANO_BINDING`) for Ollama and Chrome; only `.uses()` and runtime change.
 
 The browser demo uses the same matrix harness profile; the UI swaps providers via `.uses(@ecp/chrome-ai.generate)` (or OpenAI, demo stub, etc.) at invoke time.
 
@@ -75,10 +75,10 @@ Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, fai
 
 | Scenario | Invoke | Encoding |
 | -------- | ------ | -------- |
-| Create workflow | `@ecp/harness-browser.evaluate` + `task: "workflow-authoring"` | `@ecp/format-json` |
-| Patch workflow | `@ecp/harness-browser.evaluate` + `task: "workflow-authoring"` | `@ecp/format-json` + `@ecp.patch` |
-| Intent | `@ecp/harness-browser.evaluate` + `task: "intent-classification"` | `@ecp/format-json` |
-| Assistant | `@ecp/harness-browser.evaluate` + `task: "workflow-assistant"` | `@ecp/format-json` |
+| Create workflow | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@ecp/format-json` |
+| Patch workflow | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@ecp/format-json` + `@ecp.patch` |
+| Intent | `@ecp/harness-browser-nano.evaluate` + `task: "intent-classification"` | `@ecp/format-json` |
+| Assistant | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-assistant"` | `@ecp/format-json` |
 
 Workflow environment: [`packages/evals/src/environments/harness-ollama-workflow.ts`](../packages/evals/src/environments/harness-ollama-workflow.ts).
 

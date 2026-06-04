@@ -10,11 +10,11 @@ import {
 } from "@ecp/types"
 import { z } from "zod"
 import {
-  getHarnessMatrixConfig,
+  getHarnessNanoConfig,
   HARNESS_TASKS,
   type HarnessProfile,
   type HarnessTask,
-} from "./harness-matrix-config.js"
+} from "./harness-nano-config.js"
 import { invokeIntentClassification } from "./intent-classification.js"
 import { invokeWorkflowAssistant } from "./workflow-assistant.js"
 import { invokeWorkflowAuthoring } from "./workflow-authoring.js"
@@ -39,11 +39,12 @@ const harnessInputSchema = z.discriminatedUnion("task", [
   }),
 ])
 
-export type BrowserHarnessInput = z.infer<typeof harnessInputSchema>
+/** Input for {@link BROWSER_NANO_HARNESS_ID} evaluate. @category Harness */
+export type BrowserNanoHarnessInput = z.infer<typeof harnessInputSchema>
 
 const harnessBindingSchema = z
   .object({
-    harnessProfile: z.enum(["matrix", "browser-demo"]).optional(),
+    harnessProfile: z.enum(["nano", "browser-demo"]).optional(),
     repair: z.record(z.string(), z.unknown()).optional(),
     trace: z.record(z.string(), z.unknown()).optional(),
     context: z.record(z.string(), z.unknown()).optional(),
@@ -54,11 +55,8 @@ function handlerContextForTask(
   task: HarnessTask,
   ctx: HarnessCapabilityContext<Record<string, unknown>>
 ): HarnessCapabilityContext<Record<string, unknown>> {
-  const profile = (ctx.config.harnessProfile as HarnessProfile | undefined) ?? "matrix"
-  const taskConfig = getHarnessMatrixConfig(task, profile) as Record<
-    string,
-    Record<string, unknown>
-  >
+  const profile = (ctx.config.harnessProfile as HarnessProfile | undefined) ?? "nano"
+  const taskConfig = getHarnessNanoConfig(task, profile) as Record<string, Record<string, unknown>>
   const envConfig = ctx.config as Record<string, Record<string, unknown> | undefined>
   return {
     ...ctx,
@@ -73,7 +71,7 @@ function handlerContextForTask(
   }
 }
 
-const browserHarnessDefinition = defineHarness("@ecp", "harness-browser")
+const browserNanoHarnessDefinition = defineHarness("@ecp", "harness-browser-nano")
   .withConfig(harnessBindingSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -104,7 +102,7 @@ const browserHarnessDefinition = defineHarness("@ecp", "harness-browser")
   })
   .build()
 
-/** Register the unified harness (`@ecp/harness-browser`). @category Harness */
-export function registerBrowserHarness(): void {
-  catalogHarness(browserHarnessDefinition)
+/** Register Browser Nano harness (`@ecp/harness-browser-nano`). @category Harness */
+export function registerBrowserNanoHarness(): void {
+  catalogHarness(browserNanoHarnessDefinition)
 }

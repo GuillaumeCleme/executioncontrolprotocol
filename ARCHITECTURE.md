@@ -82,7 +82,7 @@ Policies can:
 - `@ecp/policies`: standard policies (budget, approval, state-control)
 - `@ecp/mcp`: MCP adapter exposing an environment to agents
 - `@ecp/cli`: CLI for compile/validate/describe/search/run/encode/decode
-- `@ecp/harnesses-browser`: harness tasks used by demo + evals
+- `@ecp/harnesses-browser-nano`: harness tasks used by demo + evals
 - `@ecp/evals` (private): harness/provider eval fixtures + matrix tests
 - `apps/browser-demo`: reference UI app using the browser runtime + harnesses
 

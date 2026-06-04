@@ -5,7 +5,7 @@ import {
   collectCreateCapabilityFeedback,
   collectPatchGoalFeedback,
   inferRequiredCapabilityIds,
-} from "../../../harnesses/browser/src/_internal/request-capability-hints.js"
+} from "../../../harnesses/browser-nano/src/_internal/request-capability-hints.js"
 import type { CompactEnvironmentSummary } from "@ecp/core"
 import type { WorkflowManifest } from "@ecp/types"
 

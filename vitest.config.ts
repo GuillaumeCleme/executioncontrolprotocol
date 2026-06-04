@@ -87,13 +87,13 @@ export default defineConfig({
         "packages/extensions/ollama/src/index.ts"
       ),
       "@ecp/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
-      "@ecp/harnesses-browser": path.resolve(
+      "@ecp/harnesses-browser-nano": path.resolve(
         repoRoot,
-        "packages/harnesses/browser/src/index.ts"
+        "packages/harnesses/browser-nano/src/index.ts"
       ),
-      "@ecp/harnesses-browser/request-capability-hints": path.resolve(
+      "@ecp/harnesses-browser-nano/request-capability-hints": path.resolve(
         repoRoot,
-        "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+        "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
       ),
     },
   },
@@ -168,9 +168,9 @@ export default defineConfig({
         extends: true,
         resolve: {
           alias: {
-            "@ecp/harnesses-browser/request-capability-hints": path.resolve(
+            "@ecp/harnesses-browser-nano/request-capability-hints": path.resolve(
               repoRoot,
-              "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+              "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
             ),
           },
         },
@@ -234,10 +234,10 @@ export default defineConfig({
               replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
             },
             {
-              find: "@ecp/harnesses-browser/request-capability-hints",
+              find: "@ecp/harnesses-browser-nano/request-capability-hints",
               replacement: path.resolve(
                 repoRoot,
-                "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+                "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
               ),
             },
           ],

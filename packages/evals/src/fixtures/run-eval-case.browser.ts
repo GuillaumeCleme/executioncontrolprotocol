@@ -25,9 +25,9 @@ import {
   logEvalCaseInvoke,
 } from "./eval-debug.js"
 import {
-  EVAL_HARNESS_TASKS,
-  EVALS_HARNESS_CAPABILITY,
-  type EvalHarnessTask,
+  HARNESS_TASKS,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  type HarnessTask,
 } from "../harness-bindings.js"
 import { MATRIX_EVAL_EXTENSION_IDS } from "../harness-eval-config.js"
 
@@ -40,10 +40,10 @@ function withInvokeSuccessAssertion(
   return [{ kind: "invokeSuccess" }, ...assertions]
 }
 
-const HARNESS_TASK_BY_CASE_NAME: Record<string, EvalHarnessTask> = {
-  [EVAL_HARNESS_NAMES.WORKFLOW_AUTHORING]: EVAL_HARNESS_TASKS.WORKFLOW_AUTHORING,
-  [EVAL_HARNESS_NAMES.INTENT_CLASSIFICATION]: EVAL_HARNESS_TASKS.INTENT_CLASSIFICATION,
-  [EVAL_HARNESS_NAMES.WORKFLOW_ASSISTANT]: EVAL_HARNESS_TASKS.WORKFLOW_ASSISTANT,
+const HARNESS_TASK_BY_CASE_NAME: Record<string, HarnessTask> = {
+  [EVAL_HARNESS_NAMES.WORKFLOW_AUTHORING]: HARNESS_TASKS.WORKFLOW_AUTHORING,
+  [EVAL_HARNESS_NAMES.INTENT_CLASSIFICATION]: HARNESS_TASKS.INTENT_CLASSIFICATION,
+  [EVAL_HARNESS_NAMES.WORKFLOW_ASSISTANT]: HARNESS_TASKS.WORKFLOW_ASSISTANT,
 }
 
 function withHarnessTask(
@@ -80,7 +80,7 @@ export async function runSingleEvalCase(
   }
 
   const result = await ecp
-    .invoke(EVALS_HARNESS_CAPABILITY as HarnessCapabilityId)
+    .invoke(BROWSER_NANO_HARNESS_CAPABILITY as HarnessCapabilityId)
     .with(withHarnessTask(caseRow.harness, input))
     .process()
 
@@ -132,7 +132,7 @@ export async function runFlowEvalCase(
     }
 
     const result = await ecp
-      .invoke(EVALS_HARNESS_CAPABILITY as HarnessCapabilityId)
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY as HarnessCapabilityId)
       .with(withHarnessTask(step.harness, input))
       .process()
 

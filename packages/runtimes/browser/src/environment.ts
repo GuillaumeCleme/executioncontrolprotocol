@@ -23,10 +23,10 @@ import { registerChromeAiExtension } from "@ecp/chrome-ai"
 import { registerOpenaiExtension } from "@ecp/extension-openai"
 import { registerClaudeExtension } from "@ecp/claude"
 import {
-  BROWSER_HARNESS_ID,
-  HARNESS_BROWSER_DEMO_BINDING,
-  registerBrowserHarnesses,
-} from "@ecp/harnesses-browser"
+  BROWSER_NANO_HARNESS_ID,
+  HARNESS_BROWSER_NANO_DEMO_BINDING,
+  registerBrowserNanoHarnesses,
+} from "@ecp/harnesses-browser-nano"
 import "@ecp/format-eql"
 import "@ecp/format-toon"
 import "@ecp/format-mermaid"
@@ -50,7 +50,7 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerOpenaiExtension(registry)
   await registerClaudeExtension(registry)
   await registerStandardPolicies(registry)
-  registerBrowserHarnesses()
+  registerBrowserNanoHarnesses()
 }
 
 /**
@@ -89,9 +89,9 @@ export function createBrowserDemoEnvironment(
       extension("@ecp/browser").with({}),
     ])
     .withHarnesses([
-      harness(BROWSER_HARNESS_ID, "Harness")
+      harness(BROWSER_NANO_HARNESS_ID, "Harness")
         .uses("@ecp/demo.generate")
-        .with({ ...HARNESS_BROWSER_DEMO_BINDING }),
+        .with({ ...HARNESS_BROWSER_NANO_DEMO_BINDING }),
     ])
     .withPolicies([
       policy("@ecp/registry-control").with({

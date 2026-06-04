@@ -14,7 +14,7 @@
 | `packages/cli/` | `ecp` CLI (`@ecp/cli`) |
 | `packages/policies/` | Budget, approval, state-control (`@ecp/policies`) |
 | `packages/evals/` | Harness/provider eval tests (`@ecp/evals`, private); pinned `gemma3:1b` @ `localhost:11434` — see [packages/evals/README.md](packages/evals/README.md) |
-| `packages/harnesses/browser/` | Unified LLM harness (`@ecp/harnesses-browser`) — browser demo + eval matrix |
+| `packages/harnesses/browser-nano/` | Browser Nano harness (`@ecp/harnesses-browser-nano`) — small-model demo + eval matrix |
 | `packages/extensions/*/` | First-party extensions |
 | `archive/legacy-v0.5/` | Archived v0.5 Oclif CLI and snippets |
 | `ecp-overhaul.md` | Implementation spec (source of truth) |
@@ -164,7 +164,7 @@ Build order: `tsc -b tsconfig.build.json` (types → core → … → cli).
 
 Reusable harness helpers are exported from `@ecp/core`: `defineHarness`, `runModelRepairLoop`, `buildSystemPrompt`, `summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `buildAssistantSafeReply`, etc. Shared task input Zod schemas live in `@ecp/types` (`HARNESS_TASK_IDS`, `harnessWorkflowAssistantInputSchema`, …).
 
-`@ecp/harnesses-browser` is the product harness (browser demo + eval matrix). The **`workflow-assistant`** task is the unified assistant (ECP FAQ, identity, environment help, run Q&A). Optional `identity: true` on prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER`.
+`@ecp/harnesses-browser-nano` is the **Browser Nano** harness (small models; browser demo + eval matrix). A separate harness package is intended for stronger cloud models. The **`workflow-assistant`** task is the unified assistant (ECP FAQ, identity, environment help, run Q&A). Optional `identity: true` on prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER`.
 
 ### Harness eval integrity
 

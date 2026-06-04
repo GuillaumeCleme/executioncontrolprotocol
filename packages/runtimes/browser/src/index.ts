@@ -41,12 +41,12 @@ export {
 } from "./authoring/browser-authoring-service.js"
 export { encodeAuthoringPanels } from "./authoring/browser-authoring-panels.js"
 export {
-  BROWSER_HARNESS_CAPABILITY,
-  BROWSER_HARNESS_ID,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  BROWSER_NANO_HARNESS_ID,
   HARNESS_TASKS,
-  BROWSER_HARNESS_CAPABILITY as WORKFLOW_AUTHORING_CAPABILITY,
-  BROWSER_HARNESS_CAPABILITY as INTENT_CLASSIFICATION_CAPABILITY,
-} from "@ecp/harnesses-browser"
+  BROWSER_NANO_HARNESS_CAPABILITY as WORKFLOW_AUTHORING_CAPABILITY,
+  BROWSER_NANO_HARNESS_CAPABILITY as INTENT_CLASSIFICATION_CAPABILITY,
+} from "@ecp/harnesses-browser-nano"
 export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
 export type { Ecp } from "@ecp/core"
 

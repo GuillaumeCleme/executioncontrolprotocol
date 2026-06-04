@@ -13,7 +13,7 @@ Product harnesses (prompts, eval-specific normalization) live outside core:
 
 | Harness id | Package | Role |
 | ---------- | ------- | ---- |
-| `@ecp/harness-browser` | `@ecp/harnesses-browser` | Browser demo + Ollama/matrix evals (routes by input `task`) |
+| `@ecp/harness-browser-nano` | `@ecp/harnesses-browser-nano` | Browser demo + Ollama/matrix evals (routes by input `task`) |
 
 See [harness-eval.md](harness-eval.md) for local Ollama evaluation.
 
@@ -29,7 +29,7 @@ Product harness handlers load **harness prompts** from `@ecp/core` — not from 
 
 API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@ecp/core`.
 
-**Handler internals:** compact descriptor/workflow/run summaries, repair presentation, and JSON normalization for small models are exported from `@ecp/core` (`summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `normalizeWorkflowDocumentCandidate`, etc.). Product-specific heuristics (e.g. capability hints) stay in harness packages such as `@ecp/harnesses-browser`.
+**Handler internals:** compact descriptor/workflow/run summaries, repair presentation, and JSON normalization for small models are exported from `@ecp/core` (`summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `normalizeWorkflowDocumentCandidate`, etc.). Product-specific heuristics (e.g. capability hints) stay in harness packages such as `@ecp/harnesses-browser-nano`.
 
 **Identity:** optional `identity: true` on harness prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER` via `buildSystemPrompt`. The unified `workflow-assistant` task answers ECP FAQ, identity, environment help, and run-aware Q&A.
 

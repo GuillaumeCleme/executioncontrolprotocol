@@ -17,8 +17,8 @@ export {
   resetActiveEvalProvider,
 } from "./profiles/eval-provider-context.js"
 export {
-  EVAL_HARNESS_REPAIR,
-  EVAL_HARNESS_TRACE,
+  HARNESS_NANO_REPAIR,
+  HARNESS_NANO_TRACE,
   INTENT_EVAL_EXTENSIONS,
   INTENT_EVAL_HARNESS_CONFIG,
   WORKFLOW_EVAL_EXTENSIONS,
@@ -29,12 +29,12 @@ export {
   MATRIX_ASSISTANT_HARNESS_CONFIG,
 } from "./harness-eval-config.js"
 export {
-  EVALS_HARNESS_ID,
-  EVALS_HARNESS_CAPABILITY,
-  EVAL_HARNESS_TASKS,
-  registerEvalHarnesses,
-  resetEvalHarnessesRegistrationForTests,
-  type EvalHarnessTask,
+  BROWSER_NANO_HARNESS_ID,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  HARNESS_TASKS,
+  registerBrowserNanoHarnesses,
+  resetBrowserNanoHarnessRegistrationForTests,
+  type HarnessTask,
 } from "./harness-bindings.js"
 export {
   ollamaEvalReady,

@@ -40,7 +40,7 @@ LLM judge assertions (`@ecp/ollama.evaluate`) are skipped automatically when the
 
 | Layer | Package / id | Swappable? |
 | ----- | ------------ | ---------- |
-| Harness (prompts, repair, decode) | `@ecp/harness-browser` | **No** — reusable for all providers |
+| Harness (prompts, repair, decode) | `@ecp/harness-browser-nano` | **No** — reusable for all providers |
 | Provider | `@ecp/ollama.generate`, `@ecp/chrome-ai.generate`, … | **Yes** — environment `.uses()` only |
 | Eval cases | `fixtures/cases/*.json` | Shared across providers |
 
@@ -71,10 +71,10 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
-| **Matrix (72 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| **Matrix (72 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser-nano` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
 | **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | same harness | same encoding |
-| Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser` workflow task | `@ecp/format-eql` |
-| Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser` intent task | `@ecp/format-eql` |
+| Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser-nano` workflow task | `@ecp/format-eql` |
+| Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser-nano` intent task | `@ecp/format-eql` |
 | Combined (both) | `createHarnessOllamaEnvironment()` | both tasks | EQL output |
 | Demo (not counted) | demo provider env | same harness ids | deterministic stubs only |
 
@@ -99,7 +99,7 @@ Tests live under [`test/harness/*.eval.test.ts`](test/harness/) (Node + Ollama) 
 
 ## Traceability when a model fails
 
-Harness results include a `trace` object when invoke succeeds. Eval tests enable full trace via `EVAL_HARNESS_TRACE` (`includePrompt`, `includeRawOutput`, `includeValidation`).
+Harness results include a `trace` object when invoke succeeds. Eval tests enable full trace via `HARNESS_NANO_TRACE` (`includePrompt`, `includeRawOutput`, `includeValidation`).
 
 ### Eval debug logging (`ECP_EVAL_DEBUG`)
 
@@ -126,7 +126,7 @@ Each failure block includes:
 
 - **input** — resolved case input (manifest summarized when present)
 - **expected assertions** — human-readable `describeAssertionExpectation` per assertion
-- **prompt** / **rawModelOutput** — from `trace` (requires `EVAL_HARNESS_TRACE`, already on for matrix)
+- **prompt** / **rawModelOutput** — from `trace` (requires `HARNESS_NANO_TRACE`, already on for matrix)
 - **artifact** — decoded JSON (truncated)
 - **assertion mismatch** — expected vs `extractAssertionActual` snapshot
 
@@ -158,7 +158,7 @@ Typical failure stages for intent evals:
 
 Core collectors (`collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback`) produce `HarnessOperationFeedback` with paths and codes. Eval harnesses format that into repair prompts via `formatFeedbackForModel` from `@ecp/core`.
 
-Harness config supports `repair` (enabled in eval via `EVAL_HARNESS_REPAIR`):
+Harness config supports `repair` (enabled in eval via `HARNESS_NANO_REPAIR`):
 
 | Setting | Eval default | Effect |
 | ------- | ------------ | ------ |

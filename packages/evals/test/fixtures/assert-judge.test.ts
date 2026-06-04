@@ -22,7 +22,7 @@ const caseRow = {
 const harnessOutput = {
   artifact: { schema: "@ecp.harness.reply", answer: "ok" },
   raw: "{}",
-  trace: { harness: "@ecp/harness-browser" },
+  trace: { harness: "@ecp/harness-browser-nano" },
 } as HarnessInvokeResult
 
 describe("assertJudge", () => {

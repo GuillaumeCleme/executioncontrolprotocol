@@ -5,16 +5,16 @@ import { registerDemoExtension } from "@ecp/demo"
 import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { ECP_INTENT_VALUES } from "@ecp/types"
 import {
-  EVAL_HARNESS_TASKS,
-  EVALS_HARNESS_CAPABILITY,
-  EVALS_HARNESS_ID,
-  registerEvalHarnesses,
+  HARNESS_TASKS,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  BROWSER_NANO_HARNESS_ID,
+  registerBrowserNanoHarnesses,
 } from "@ecp/evals"
 import { expectHarnessIntent } from "./assert-harness-result.js"
 
 async function createEvalIntentDemoEnv() {
   await registerCoreFormats()
-  registerEvalHarnesses()
+  registerBrowserNanoHarnesses()
   await registerNodeRuntime()
   await registerDemoExtension()
   await registerFormatEqlExtension()
@@ -26,7 +26,7 @@ async function createEvalIntentDemoEnv() {
       extension("@ecp/demo").with({}),
     ])
     .withHarnesses([
-      harness(EVALS_HARNESS_ID)
+      harness(BROWSER_NANO_HARNESS_ID)
         .uses("@ecp/demo.generate")
         .with({
           output: { schema: "@ecp.intent", format: "@ecp/format-eql", validate: true },
@@ -39,9 +39,9 @@ describe("evals-intent-classification harness (demo provider)", () => {
     const env = await createEvalIntentDemoEnv()
     const ecp = await env.init()
     const result = await ecp
-      .invoke(EVALS_HARNESS_CAPABILITY)
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
       .with({
-        task: EVAL_HARNESS_TASKS.INTENT_CLASSIFICATION,
+        task: HARNESS_TASKS.INTENT_CLASSIFICATION,
         message: "Create a new workflow that sends email",
       })
       .process()
@@ -54,9 +54,9 @@ describe("evals-intent-classification harness (demo provider)", () => {
     const env = await createEvalIntentDemoEnv()
     const ecp = await env.init()
     const result = await ecp
-      .invoke(EVALS_HARNESS_CAPABILITY)
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
       .with({
-        task: EVAL_HARNESS_TASKS.INTENT_CLASSIFICATION,
+        task: HARNESS_TASKS.INTENT_CLASSIFICATION,
         message: "Update the echo step label",
       })
       .process()

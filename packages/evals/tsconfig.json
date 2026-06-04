@@ -9,7 +9,7 @@
     { "path": "../types" },
     { "path": "../core" },
     { "path": "../runtimes/browser" },
-    { "path": "../harnesses/browser" },
+    { "path": "../harnesses/browser-nano" },
     { "path": "../runtimes/node" },
     { "path": "../extensions/ollama" },
     { "path": "../extensions/chrome-ai" },

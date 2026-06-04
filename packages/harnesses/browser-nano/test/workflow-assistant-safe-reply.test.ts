@@ -11,10 +11,10 @@ import {
 } from "@ecp/core"
 import { registerTestExtension } from "../../../core/src/testing/test-extension.js"
 import {
-  BROWSER_HARNESS_CAPABILITY,
-  registerBrowserHarnesses,
-  resetHarnessRegistrationForTests,
-} from "@ecp/harnesses-browser"
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  registerBrowserNanoHarnesses,
+  resetBrowserNanoHarnessRegistrationForTests,
+} from "@ecp/harnesses-browser-nano"
 import { registerFormatEqlExtension } from "@ecp/format-eql"
 import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@ecp/node"
 import {
@@ -40,8 +40,8 @@ describe("workflow-assistant safe reply fallback", () => {
     await registerNodeRuntime()
     await registerTestExtension()
     catalogExtension(invalidGenExtension)
-    resetHarnessRegistrationForTests()
-    registerBrowserHarnesses()
+    resetBrowserNanoHarnessRegistrationForTests()
+    registerBrowserNanoHarnesses()
   })
 
   it("returns safe reply when decode/repair fails", async () => {
@@ -53,7 +53,7 @@ describe("workflow-assistant safe reply fallback", () => {
         extension("@ecp/invalid-gen").with({}),
       ])
       .withHarnesses([
-        harness("@ecp/harness-browser")
+        harness("@ecp/harness-browser-nano")
           .uses("@ecp/invalid-gen.generate")
           .with({ repair: { maxAttempts: 0 } }),
       ])
@@ -61,7 +61,7 @@ describe("workflow-assistant safe reply fallback", () => {
     const ecp = await env.init()
     try {
       const result = await ecp
-        .invoke(BROWSER_HARNESS_CAPABILITY)
+        .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
         .with({
           task: "workflow-assistant",
           message: "Tell me a joke.",

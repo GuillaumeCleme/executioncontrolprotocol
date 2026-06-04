@@ -76,7 +76,7 @@ flowchart TD
 | **Deterministic assertions** | `assertions.ts` | Yes | Exact field checks in Vitest |
 | **LLM judge** | `@ecp/ollama.evaluate` | Yes on errors; lenient on judge parse failure | See [judge section](#llm-judge-ecpollamaevaluate) |
 
-**Repair loop:** `EVAL_HARNESS_REPAIR` sets `maxAttempts: 3`, and handlers use `1 + maxAttempts` → **up to 4 model calls** per case. Failed attempts append structured repair text (`formatStructuredRepairForModel`) plus fixture `repairHint` from `@ecp/core` harness prompts.
+**Repair loop:** `HARNESS_NANO_REPAIR` sets `maxAttempts: 3`, and handlers use `1 + maxAttempts` → **up to 4 model calls** per case. Failed attempts append structured repair text (`formatStructuredRepairForModel`) plus fixture `repairHint` from `@ecp/core` harness prompts.
 
 **Eval-only JSON repair** (before decode): `repairWorkflowJsonSyntax` / `repairPatchJsonSyntax` in `@ecp/evals` — hoists nested `steps`, fixes floating `"as"`, strips stray `)` / `"`, etc. These are **not** production browser behavior; they measure 1B output quality under a forgiving pre-decode pass.
 
@@ -405,4 +405,4 @@ npm run eval:matrix    # matrix Vitest files only
 npm run eval:harness   # full eval project (matrix + unit + smoke)
 ```
 
-On failure, check Vitest output for `diagnostics`, `rawModelOutput` (truncated), and `validation` paths. Enable trace fields via `EVAL_HARNESS_TRACE` in harness config for full prompt text in `HarnessInvokeResult.trace`.
+On failure, check Vitest output for `diagnostics`, `rawModelOutput` (truncated), and `validation` paths. Enable trace fields via `HARNESS_NANO_TRACE` in harness config for full prompt text in `HarnessInvokeResult.trace`.

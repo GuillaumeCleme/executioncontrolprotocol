@@ -1,7 +1,7 @@
 {
-  "name": "@ecp/harnesses-browser",
+  "name": "@ecp/harnesses-browser-nano",
   "version": "1.0.0",
-  "description": "Unified ECP harness (browser demo + eval matrix)",
+  "description": "Browser Nano ECP harness for on-device and small models (demo + eval matrix)",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,

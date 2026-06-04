@@ -5,7 +5,7 @@ import {
   registerCoreFormats,
   registerTestExtension,
 } from "@ecp/core"
-import { registerEvalHarnesses, EVALS_HARNESS_ID } from "../harness-bindings.js"
+import { registerBrowserNanoHarnesses, BROWSER_NANO_HARNESS_ID } from "../harness-bindings.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
 import { registerOllamaExtension } from "@ecp/extension-ollama"
 import { registerFormatEqlExtension } from "@ecp/format-eql"
@@ -25,7 +25,7 @@ export async function createHarnessOllamaIntentEnvironment() {
   const { providerId } = OLLAMA_GEMMA_1B_EVAL
 
   await registerCoreFormats()
-  registerEvalHarnesses()
+  registerBrowserNanoHarnesses()
   await registerNodeRuntime()
   await registerOllamaExtension()
   await registerFormatEqlExtension()
@@ -36,7 +36,7 @@ export async function createHarnessOllamaIntentEnvironment() {
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([ollamaEvalExtensionBinding(), ...evalOperationsExtensionBindings()])
     .withHarnesses([
-      harness(EVALS_HARNESS_ID)
+      harness(BROWSER_NANO_HARNESS_ID)
         .uses(`${providerId}.generate`)
         .with({ ...INTENT_EVAL_HARNESS_CONFIG }),
     ])

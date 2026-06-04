@@ -20,9 +20,9 @@ export const ecpWorkspaceAliases: Record<string, string> = {
   "@ecp/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
   "@ecp/extension-openai": path.resolve(repoRoot, "packages/extensions/openai/src/index.ts"),
   "@ecp/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
-  "@ecp/harnesses-browser": path.resolve(repoRoot, "packages/harnesses/browser/src/index.ts"),
-  "@ecp/harnesses-browser/request-capability-hints": path.resolve(
+  "@ecp/harnesses-browser-nano": path.resolve(repoRoot, "packages/harnesses/browser-nano/src/index.ts"),
+  "@ecp/harnesses-browser-nano/request-capability-hints": path.resolve(
     repoRoot,
-    "packages/harnesses/browser/src/_internal/request-capability-hints.ts"
+    "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
   ),
 }

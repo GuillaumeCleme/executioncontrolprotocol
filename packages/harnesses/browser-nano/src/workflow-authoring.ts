@@ -47,7 +47,7 @@ import {
   inferPatchTargetStepId,
   inferRequestedLabel,
 } from "./_internal/request-capability-hints.js"
-import { BROWSER_HARNESS_ID } from "./harness-ids.js"
+import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
 function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<string> {
   const uses = new Set<string>()
@@ -444,7 +444,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
       process.env.ECP_EVAL_DEBUG_INCLUDE_SYSTEM_PROMPT?.toLowerCase() !== "off"
 
     const trace: HarnessInvokeResult["trace"] & Record<string, unknown> = {
-      harness: BROWSER_HARNESS_ID,
+      harness: BROWSER_NANO_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
       outputSchema,

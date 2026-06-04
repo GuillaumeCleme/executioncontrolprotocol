@@ -36,7 +36,7 @@ import {
   type WorkflowManifest,
 } from "@ecp/types"
 import { z } from "zod"
-import { BROWSER_HARNESS_ID } from "./harness-ids.js"
+import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z.string().default("workflow-assistant"),
@@ -238,7 +238,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
       })
 
       const trace: HarnessInvokeResult["trace"] = {
-        harness: BROWSER_HARNESS_ID,
+        harness: BROWSER_NANO_HARNESS_ID,
         provider: ctx.uses,
         model: input.model,
         outputSchema: config.output.schema,
@@ -263,7 +263,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
       const safeReply = buildAssistantSafeReply()
       const safeRaw = formatReplyAsEql(safeReply)
       const trace: HarnessInvokeResult["trace"] = {
-        harness: BROWSER_HARNESS_ID,
+        harness: BROWSER_NANO_HARNESS_ID,
         provider: ctx.uses,
         model: input.model,
         outputSchema: config.output.schema,
@@ -293,7 +293,7 @@ function decodedValidationStub(valid = true): ValidationResult {
   }
 }
 
-/** Assistant task handler (invoked by unified `@ecp/harness-browser`). @category Harness */
+/** Assistant task handler (invoked by `@ecp/harness-browser-nano`). @category Harness */
 export async function invokeWorkflowAssistant(
   input: { message: string; runContext?: unknown; model?: string },
   ctx: HarnessCapabilityContext<Record<string, unknown>>

@@ -1,16 +1,16 @@
 /**
- * Eval-facing harness API from `@ecp/harnesses-browser`.
+ * Eval-facing harness API from `@ecp/harnesses-browser-nano`.
  * @category Evals
  */
 export {
-  registerEvalHarnesses,
-  resetEvalHarnessesRegistrationForTests,
-  EVALS_HARNESS_ID,
-  EVALS_HARNESS_CAPABILITY,
-  EVAL_HARNESS_TASKS,
-  EVAL_HARNESS_REPAIR,
-  EVAL_HARNESS_TRACE,
-  EVAL_MATRIX_HARNESS_BINDING,
-  getEvalMatrixHarnessConfig,
-  type EvalHarnessTask,
-} from "@ecp/harnesses-browser"
+  registerBrowserNanoHarnesses,
+  resetBrowserNanoHarnessRegistrationForTests,
+  BROWSER_NANO_HARNESS_ID,
+  BROWSER_NANO_HARNESS_CAPABILITY,
+  HARNESS_TASKS,
+  HARNESS_NANO_REPAIR,
+  HARNESS_NANO_TRACE,
+  HARNESS_NANO_BINDING,
+  getHarnessNanoConfig,
+  type HarnessTask,
+} from "@ecp/harnesses-browser-nano"

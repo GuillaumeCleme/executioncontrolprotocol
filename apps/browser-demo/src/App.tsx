@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   BrowserAuthoringService,
   HARNESS_TASKS,
-  BROWSER_HARNESS_CAPABILITY,
+  BROWSER_NANO_HARNESS_CAPABILITY,
   installBrowserWorkflowShim,
   type BrowserOperationalEcp,
 } from "@ecp/browser"
@@ -203,7 +203,7 @@ export function App() {
   const runAuthoring = async (userRequest: string, cap: string) => {
     if (!ecp) return
     const invoked = await ecp
-      .invoke(BROWSER_HARNESS_CAPABILITY)
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
       .uses(cap)
       .with({
         task: HARNESS_TASKS.WORKFLOW_AUTHORING,
@@ -251,7 +251,7 @@ export function App() {
   const runAssistant = async (userRequest: string, cap: string) => {
     if (!ecp) return
     const invoked = await ecp
-      .invoke(BROWSER_HARNESS_CAPABILITY)
+      .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
       .uses(cap)
       .with({
         task: HARNESS_TASKS.WORKFLOW_ASSISTANT,
@@ -276,7 +276,7 @@ export function App() {
     if (!ecp) return null
     try {
       const invoked = await ecp
-        .invoke(BROWSER_HARNESS_CAPABILITY)
+        .invoke(BROWSER_NANO_HARNESS_CAPABILITY)
         .uses(cap)
         .with({ task: HARNESS_TASKS.INTENT_CLASSIFICATION, message })
         .process()
