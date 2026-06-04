@@ -394,6 +394,253 @@
           "requireApproved": true
         }
       }
+    },
+    {
+      "id": "asst-15",
+      "suite": "assistant",
+      "title": "Off-topic joke",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Tell me a joke."
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerRedirectsToScope"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Politely declines off-topic request and redirects to ECP/workflow topics",
+          "rubric": "Brief polite decline mentioning workflows, ECP, or capabilities",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-16",
+      "suite": "assistant",
+      "title": "Off-topic weather",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What's the weather today?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerRedirectsToScope"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Politely declines off-topic request and redirects to ECP/workflow topics",
+          "rubric": "Brief polite decline mentioning workflows, ECP, or capabilities",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-17",
+      "suite": "assistant",
+      "title": "Off-topic cover letter",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Write a cover letter for a software job."
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerRedirectsToScope"
+          },
+          {
+            "kind": "answerMaxLength",
+            "max": 220
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Politely declines off-topic request and redirects to ECP/workflow topics",
+          "rubric": "Brief polite decline mentioning workflows, ECP, or capabilities",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-18",
+      "suite": "assistant",
+      "title": "Gibberish",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "asdf qwerty ???"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerRedirectsToScope"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Politely declines off-topic request and redirects to ECP/workflow topics",
+          "rubric": "Brief polite decline mentioning workflows, ECP, or capabilities",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-19",
+      "suite": "assistant",
+      "title": "MCP vs ECP",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "How is MCP different from ECP?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "ECP"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Contrasts MCP and ECP",
+          "rubric": "Mentions both MCP and ECP in a brief accurate way",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-20",
+      "suite": "assistant",
+      "title": "Workflow definition",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What is a workflow in ECP?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "workflow"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Defines ECP workflow",
+          "rubric": "Mentions steps, capabilities, or portable manifests",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-21",
+      "suite": "assistant",
+      "title": "Off-topic task",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "Write my resume."
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerRedirectsToScope"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Politely declines off-topic request and redirects to ECP/workflow topics",
+          "rubric": "Brief polite decline mentioning workflows, ECP, or capabilities",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "asst-22",
+      "suite": "assistant",
+      "title": "FAQ brevity",
+      "harness": "workflow-assistant",
+      "model": "default",
+      "input": {
+        "message": "What is ECP?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "ECP"
+          },
+          {
+            "kind": "answerMaxLength",
+            "max": 280
+          },
+          {
+            "kind": "rawNotContains",
+            "text": "```"
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Defines ECP briefly",
+          "rubric": "One or two sentences, no markdown fences",
+          "requireApproved": true
+        }
+      }
     }
   ]
 }

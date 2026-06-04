@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { isEnvironmentQuestion } from "../../src/harness/authoring/environment-question.js"
-import { buildAssistantSafeReply } from "../../src/harness/authoring/safe-reply.js"
+import {
+  answerRedirectsToHarnessScope,
+  buildAssistantSafeReply,
+  HARNESS_ASSISTANT_OUT_OF_SCOPE_ANSWER,
+  HARNESS_ASSISTANT_SAFE_REPLY_MESSAGE,
+  HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE,
+} from "../../src/harness/authoring/safe-reply.js"
 
 describe("isEnvironmentQuestion", () => {
   it("detects capability and identity questions", () => {
@@ -19,5 +25,27 @@ describe("buildAssistantSafeReply", () => {
     const reply = buildAssistantSafeReply()
     expect(reply.schema).toBe("@ecp.harness.reply")
     expect(reply.answer.length).toBeGreaterThan(10)
+  })
+
+  it("includes the shared scope redirect phrase", () => {
+    expect(HARNESS_ASSISTANT_SAFE_REPLY_MESSAGE).toContain(
+      HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE
+    )
+    expect(HARNESS_ASSISTANT_OUT_OF_SCOPE_ANSWER).toContain(
+      HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE
+    )
+    expect(buildAssistantSafeReply().answer).toContain(HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE)
+  })
+})
+
+describe("answerRedirectsToHarnessScope", () => {
+  it("matches redirect answers", () => {
+    expect(answerRedirectsToHarnessScope(HARNESS_ASSISTANT_OUT_OF_SCOPE_ANSWER)).toBe(true)
+    expect(answerRedirectsToHarnessScope("Ask about workflows or capabilities.")).toBe(true)
+    expect(answerRedirectsToHarnessScope("That is outside my scope.")).toBe(true)
+  })
+
+  it("rejects unrelated answers", () => {
+    expect(answerRedirectsToHarnessScope("Sure, here is a joke for you.")).toBe(false)
   })
 })

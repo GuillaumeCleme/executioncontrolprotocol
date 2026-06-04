@@ -40,6 +40,9 @@ const deterministicAssertionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("descriptorListsCapabilities"), ids: z.array(z.string()) }),
   z.object({ kind: z.literal("citationStepId"), value: z.string() }),
   z.object({ kind: z.literal("answerContains"), text: z.string() }),
+  z.object({ kind: z.literal("answerMaxLength"), max: z.number() }),
+  z.object({ kind: z.literal("rawNotContains"), text: z.string() }),
+  z.object({ kind: z.literal("answerRedirectsToScope") }),
   z.object({ kind: z.literal("inputRefPresent"), stepId: z.string() }),
   z.object({ kind: z.literal("stepOrder"), stepIds: z.array(z.string()).min(1) }),
 ])

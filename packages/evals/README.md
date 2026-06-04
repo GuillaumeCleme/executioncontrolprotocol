@@ -71,7 +71,7 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
-| **Matrix (52+ cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| **Matrix (72 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
 | **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | same harness | same encoding |
 | Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser` workflow task | `@ecp/format-eql` |
 | Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser` intent task | `@ecp/format-eql` |
@@ -190,9 +190,9 @@ Cases live in [`fixtures/cases/*.cases.json`](fixtures/cases/) as `{ "cases": [ 
 | ---- | ----- | ----- |
 | `workflow-create.cases.json` | `workflow-create` | 12 |
 | `workflow-patch.cases.json` | `workflow-patch` | 12 |
-| `intent.cases.json` | `intent` | 12 |
-| `assistant.cases.json` | `assistant` | 10 |
-| `flow.cases.json` | `flow` | 6 |
+| `intent.cases.json` | `intent` | 17 |
+| `assistant.cases.json` | `assistant` | 22 |
+| `flow.cases.json` | `flow` | 9 |
 
 **Full case-by-case report:** [docs/harness-eval-matrix-report.md](../../docs/harness-eval-matrix-report.md).
 
@@ -200,7 +200,7 @@ Supporting JSON: [`fixtures/workflows/`](fixtures/workflows/), [`fixtures/runs/`
 
 Assertions per row:
 
-- **Deterministic** — schema, validation, intent, step `uses`, patch outcomes, descriptor extension order.
+- **Deterministic** — schema, validation, intent, step `uses`, patch outcomes, descriptor extension order, `answerRedirectsToScope`, `answerMaxLength`, `rawNotContains`.
 - **Judge** (optional) — `@ecp/ollama.evaluate` with `goal` / `rubric`; set `requireApproved: true` when the model must pass review. Judge errors fail closed (never treated as pass).
 
 Harness **system prompts** and intent few-shots live in [`packages/core/fixtures/harness-prompts/`](../core/fixtures/harness-prompts/) (loaded via `buildSystemPrompt` from `@ecp/core`). Eval case JSON holds inputs and assertions only.

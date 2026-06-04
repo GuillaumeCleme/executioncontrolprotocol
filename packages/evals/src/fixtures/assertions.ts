@@ -1,5 +1,6 @@
 import { expect } from "vitest"
 import type { Ecp, Environment } from "@ecp/core"
+import { answerRedirectsToHarnessScope } from "@ecp/core"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   ECP_INTENT_SCHEMA,
@@ -192,6 +193,28 @@ export async function assertDeterministic(
         expect(artifact.answer.toLowerCase(), `${label} answer text`).toContain(
           assertion.text.toLowerCase()
         )
+        break
+      }
+      case "answerMaxLength": {
+        const artifact = harnessOutput.artifact as HarnessReply
+        expect(
+          artifact.answer.length,
+          `${label} answer length`
+        ).toBeLessThanOrEqual(assertion.max)
+        break
+      }
+      case "rawNotContains": {
+        const rawOutput = harnessOutput.trace?.rawOutput
+        expect(typeof rawOutput, `${label} raw output present`).toBe("string")
+        expect(String(rawOutput), `${label} raw output`).not.toContain(assertion.text)
+        break
+      }
+      case "answerRedirectsToScope": {
+        const artifact = harnessOutput.artifact as HarnessReply
+        expect(
+          answerRedirectsToHarnessScope(artifact.answer),
+          `${label} answer redirects to harness scope`
+        ).toBe(true)
         break
       }
       case "descriptorListsExtensions": {

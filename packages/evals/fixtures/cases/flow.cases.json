@@ -355,6 +355,149 @@
           }
         }
       ]
+    },
+    {
+      "id": "flow-07",
+      "suite": "flow",
+      "title": "FAQ what is ECP routing",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "What is ECP?"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "faq"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "What is ECP?"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              },
+              {
+                "kind": "answerContains",
+                "text": "ECP"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Defines ECP",
+              "rubric": "Mentions workflows or governed environments",
+              "requireApproved": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-08",
+      "suite": "flow",
+      "title": "Identity routing",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "What can you do?"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "general"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "What can you do?"
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              },
+              {
+                "kind": "answerContains",
+                "text": "workflow"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "States assistant capabilities",
+              "rubric": "Mentions building workflows and answering ECP questions",
+              "requireApproved": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-09",
+      "suite": "flow",
+      "title": "Off-topic joke routing",
+      "model": "default",
+      "steps": [
+        {
+          "harness": "intent-classification",
+          "input": {
+            "message": "Tell me a joke."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "intent",
+                "value": "general"
+              }
+            ],
+            "judge": {
+              "enabled": false
+            }
+          }
+        },
+        {
+          "harness": "workflow-assistant",
+          "input": {
+            "message": "Tell me a joke."
+          },
+          "assertions": {
+            "deterministic": [
+              {
+                "kind": "replySchema"
+              },
+              {
+                "kind": "answerRedirectsToScope"
+              }
+            ],
+            "judge": {
+              "enabled": true,
+              "goal": "Politely declines off-topic request and redirects to ECP/workflow topics",
+              "rubric": "Brief polite decline mentioning workflows, ECP, or capabilities",
+              "requireApproved": true
+            }
+          }
+        }
+      ]
     }
   ]
 }

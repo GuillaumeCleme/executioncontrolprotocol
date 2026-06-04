@@ -457,6 +457,148 @@
           "requireApproved": true
         }
       }
+    },
+    {
+      "id": "intent-14",
+      "suite": "intent",
+      "title": "Off-topic recipe",
+      "harness": "intent-classification",
+      "model": "default",
+      "input": {
+        "message": "Best pizza recipe?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "intent",
+            "value": "general"
+          },
+          {
+            "kind": "descriptorListsExtensions",
+            "ids": [
+              "@ecp/format-toon",
+              "@ecp/format-eql",
+              "@ecp/format-json",
+              "@ecp/test",
+              "@ecp/demo"
+            ]
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Intent should be general",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "intent-15",
+      "suite": "intent",
+      "title": "FAQ patch how-to",
+      "harness": "intent-classification",
+      "model": "default",
+      "input": {
+        "message": "How does step patching work in ECP?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "intent",
+            "value": "faq"
+          },
+          {
+            "kind": "descriptorListsExtensions",
+            "ids": [
+              "@ecp/format-toon",
+              "@ecp/format-eql",
+              "@ecp/format-json",
+              "@ecp/test",
+              "@ecp/demo"
+            ]
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Intent should be faq",
+          "requireApproved": true
+        }
+      }
+    },
+    {
+      "id": "intent-16",
+      "suite": "intent",
+      "title": "Label patch",
+      "harness": "intent-classification",
+      "model": "default",
+      "input": {
+        "message": "Change the echo step label to Greeting."
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "intent",
+            "value": "workflow-patch"
+          },
+          {
+            "kind": "descriptorListsExtensions",
+            "ids": [
+              "@ecp/format-toon",
+              "@ecp/format-eql",
+              "@ecp/format-json",
+              "@ecp/test",
+              "@ecp/demo"
+            ]
+          }
+        ],
+        "judge": {
+          "enabled": false
+        }
+      }
+    },
+    {
+      "id": "intent-17",
+      "suite": "intent",
+      "title": "Off-topic weather",
+      "harness": "intent-classification",
+      "model": "default",
+      "input": {
+        "message": "What's the weather today?"
+      },
+      "assertions": {
+        "deterministic": [
+          {
+            "kind": "invokeSuccess"
+          },
+          {
+            "kind": "intent",
+            "value": "general"
+          },
+          {
+            "kind": "descriptorListsExtensions",
+            "ids": [
+              "@ecp/format-toon",
+              "@ecp/format-eql",
+              "@ecp/format-json",
+              "@ecp/test",
+              "@ecp/demo"
+            ]
+          }
+        ],
+        "judge": {
+          "enabled": true,
+          "goal": "Intent should be general",
+          "requireApproved": true
+        }
+      }
     }
   ]
 }

@@ -4,6 +4,12 @@ import { fileURLToPath } from "node:url"
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../fixtures/cases")
 const matrixExt = ["@ecp/format-toon", "@ecp/format-eql", "@ecp/format-json", "@ecp/test", "@ecp/demo"]
+const offTopicJudge = {
+  enabled: true,
+  goal: "Politely declines off-topic request and redirects to ECP/workflow topics",
+  rubric: "Brief polite decline mentioning workflows, ECP, or capabilities",
+  requireApproved: true,
+}
 const baseDet = [
   { kind: "invokeSuccess" },
   { kind: "artifactSchema", value: "@ecp.workflow" },
@@ -84,6 +90,10 @@ const intents = [
   ["intent-11", "FAQ how", "How does workflow patching work?", "faq", true],
   ["intent-12", "Build", "Build a pipeline with echo and notify.", "workflow-create", true],
   ["intent-13", "Identity", "What can you do?", "general", true],
+  ["intent-14", "Off-topic recipe", "Best pizza recipe?", "general", true],
+  ["intent-15", "FAQ patch how-to", "How does step patching work in ECP?", "faq", true],
+  ["intent-16", "Label patch", "Change the echo step label to Greeting.", "workflow-patch", false],
+  ["intent-17", "Off-topic weather", "What's the weather today?", "general", true],
 ].map(([id, title, message, intent, judge]) => ({
   id,
   suite: "intent",
@@ -118,6 +128,14 @@ const assistants = [
   ["asst-12", "Identity", "What can you do?", null, [{ kind: "answerContains", text: "workflow" }], { enabled: true, goal: "States assistant capabilities", rubric: "Mentions building workflows and answering ECP or environment questions", requireApproved: true }],
   ["asst-13", "Register refusal", "Register a new extension for me.", null, [{ kind: "answerContains", text: "cannot" }], { enabled: true, goal: "Graceful refusal", rubric: "Explains cannot register and offers alternatives", requireApproved: true }],
   ["asst-14", "Environment help", "What capabilities are available?", null, [{ kind: "answerContains", text: "test.echo" }], { enabled: true, goal: "Lists capabilities", rubric: "Names capability ids from the environment", requireApproved: true }],
+  ["asst-15", "Off-topic joke", "Tell me a joke.", null, [{ kind: "answerRedirectsToScope" }], offTopicJudge],
+  ["asst-16", "Off-topic weather", "What's the weather today?", null, [{ kind: "answerRedirectsToScope" }], offTopicJudge],
+  ["asst-17", "Off-topic cover letter", "Write a cover letter for a software job.", null, [{ kind: "answerRedirectsToScope" }, { kind: "answerMaxLength", max: 220 }], offTopicJudge],
+  ["asst-18", "Gibberish", "asdf qwerty ???", null, [{ kind: "answerRedirectsToScope" }], offTopicJudge],
+  ["asst-19", "MCP vs ECP", "How is MCP different from ECP?", null, [{ kind: "answerContains", text: "ECP" }], { enabled: true, goal: "Contrasts MCP and ECP", rubric: "Mentions both MCP and ECP in a brief accurate way", requireApproved: true }],
+  ["asst-20", "Workflow definition", "What is a workflow in ECP?", null, [{ kind: "answerContains", text: "workflow" }], { enabled: true, goal: "Defines ECP workflow", rubric: "Mentions steps, capabilities, or portable manifests", requireApproved: true }],
+  ["asst-21", "Off-topic task", "Write my resume.", null, [{ kind: "answerRedirectsToScope" }], offTopicJudge],
+  ["asst-22", "FAQ brevity", "What is ECP?", null, [{ kind: "answerContains", text: "ECP" }, { kind: "answerMaxLength", max: 280 }, { kind: "rawNotContains", text: "```" }], { enabled: true, goal: "Defines ECP briefly", rubric: "One or two sentences, no markdown fences", requireApproved: true }],
 ].map(([id, title, message, runFixture, extra, judge]) => ({
   id,
   suite: "assistant",
@@ -306,6 +324,69 @@ const flows = [
         assertions: {
           deterministic: [{ kind: "citationStepId", value: "echo" }],
           judge: { enabled: true, goal: "Points to echo step", requireApproved: true },
+        },
+      },
+    ],
+  },
+  {
+    id: "flow-07",
+    suite: "flow",
+    title: "FAQ what is ECP routing",
+    model: "default",
+    steps: [
+      {
+        harness: "intent-classification",
+        input: { message: "What is ECP?" },
+        assertions: { deterministic: [{ kind: "intent", value: "faq" }], judge: { enabled: false } },
+      },
+      {
+        harness: "workflow-assistant",
+        input: { message: "What is ECP?" },
+        assertions: {
+          deterministic: [{ kind: "replySchema" }, { kind: "answerContains", text: "ECP" }],
+          judge: { enabled: true, goal: "Defines ECP", rubric: "Mentions workflows or governed environments", requireApproved: true },
+        },
+      },
+    ],
+  },
+  {
+    id: "flow-08",
+    suite: "flow",
+    title: "Identity routing",
+    model: "default",
+    steps: [
+      {
+        harness: "intent-classification",
+        input: { message: "What can you do?" },
+        assertions: { deterministic: [{ kind: "intent", value: "general" }], judge: { enabled: false } },
+      },
+      {
+        harness: "workflow-assistant",
+        input: { message: "What can you do?" },
+        assertions: {
+          deterministic: [{ kind: "replySchema" }, { kind: "answerContains", text: "workflow" }],
+          judge: { enabled: true, goal: "States assistant capabilities", rubric: "Mentions building workflows and answering ECP questions", requireApproved: true },
+        },
+      },
+    ],
+  },
+  {
+    id: "flow-09",
+    suite: "flow",
+    title: "Off-topic joke routing",
+    model: "default",
+    steps: [
+      {
+        harness: "intent-classification",
+        input: { message: "Tell me a joke." },
+        assertions: { deterministic: [{ kind: "intent", value: "general" }], judge: { enabled: false } },
+      },
+      {
+        harness: "workflow-assistant",
+        input: { message: "Tell me a joke." },
+        assertions: {
+          deterministic: [{ kind: "replySchema" }, { kind: "answerRedirectsToScope" }],
+          judge: offTopicJudge,
         },
       },
     ],

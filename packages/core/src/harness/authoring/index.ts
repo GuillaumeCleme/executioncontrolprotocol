@@ -36,6 +36,9 @@ export {
 export { encodeForPrompt } from "./encode-prompt-text.js"
 export { isEnvironmentQuestion } from "./environment-question.js"
 export {
+  answerRedirectsToHarnessScope,
   buildAssistantSafeReply,
+  HARNESS_ASSISTANT_OUT_OF_SCOPE_ANSWER,
   HARNESS_ASSISTANT_SAFE_REPLY_MESSAGE,
+  HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE,
 } from "./safe-reply.js"
