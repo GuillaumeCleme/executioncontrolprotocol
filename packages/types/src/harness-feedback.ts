@@ -38,4 +38,8 @@ export interface HarnessRepairAttempt {
   feedback: HarnessOperationFeedback[]
   /** Raw model output for this attempt. */
   rawOutput?: string
+  /** Wall-clock ms in model generate for this attempt (when timing debug enabled). */
+  generateMs?: number
+  /** Wall-clock ms in harness evaluate (compile/decode/validate) for this attempt. */
+  evaluateMs?: number
 }

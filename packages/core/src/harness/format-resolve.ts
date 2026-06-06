@@ -37,9 +37,13 @@ export function isFormatterRegistered(formatId: string): boolean {
  * Infer model response format hint from formatter id.
  * @category Harness
  */
+/** Logical harness output format for TypeScript source (not an extension id). @category Harness */
+export const HARNESS_OUTPUT_FORMAT_TYPESCRIPT = "typescript" as const
+
 export function inferResponseFormatFromFormatter(
   formatId: string
 ): "text" | "json" | "toon" | "eql" | undefined {
+  if (formatId === HARNESS_OUTPUT_FORMAT_TYPESCRIPT) return "text"
   const id = normalizeFormatId(formatId)
   if (id === ECP_CORE_FORMATTER_IDS.JSON) return "json"
   if (id === "@ecp/format-toon") return "toon"

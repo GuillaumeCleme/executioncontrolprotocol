@@ -19,6 +19,29 @@ export function isEvalDebugEnabled(): boolean {
   return evalDebugMode() !== "off"
 }
 
+/** Whether eval tests log harness repair-loop and phase timing (`ECP_EVAL_DEBUG_TIMING=1`). @category Evals */
+export function isEvalTimingDebugEnabled(): boolean {
+  const raw = process.env.ECP_EVAL_DEBUG_TIMING?.trim().toLowerCase()
+  return raw === "1" || raw === "true" || raw === "on" || raw === "all"
+}
+
+/** Log per-case eval wall-clock breakdown when {@link isEvalTimingDebugEnabled}. @category Evals */
+export function logEvalCaseTiming(
+  label: string,
+  phases: Record<string, number | string | boolean | undefined>
+): void {
+  if (!isEvalTimingDebugEnabled()) return
+  const lines = [`ECP_EVAL_DEBUG_TIMING case [${label}]`]
+  for (const [key, value] of Object.entries(phases)) {
+    if (value === undefined) continue
+    lines.push(
+      `  ${key}: ${typeof value === "number" ? `${Math.round(value)}ms` : String(value)}`
+    )
+  }
+  console.warn(lines.join("\n"))
+  writeNdjson({ type: "eval-case", label, ...phases })
+}
+
 function shouldLogCase(success: boolean): boolean {
   const mode = evalDebugMode()
   if (mode === "off") return false

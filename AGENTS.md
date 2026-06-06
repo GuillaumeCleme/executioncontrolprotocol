@@ -15,6 +15,7 @@
 | `packages/policies/` | Budget, approval, state-control (`@ecp/policies`) |
 | `packages/evals/` | Harness/provider eval tests (`@ecp/evals`, private); pinned `gemma3:1b` @ `localhost:11434` — see [packages/evals/README.md](packages/evals/README.md) |
 | `packages/harnesses/browser-nano/` | Browser Nano harness (`@ecp/harnesses-browser-nano`) — small-model demo + eval matrix |
+| `packages/harnesses/browser-coding/` | Browser Coding harness (`@ecp/harnesses-browser-coding`) — TypeScript/Fluent surface; Qwen 4B eval matrix |
 | `packages/extensions/*/` | First-party extensions |
 | `archive/legacy-v0.5/` | Archived v0.5 Oclif CLI and snippets |
 | `ecp-overhaul.md` | Implementation spec (source of truth) |
@@ -164,7 +165,12 @@ Build order: `tsc -b tsconfig.build.json` (types → core → … → cli).
 
 Reusable harness helpers are exported from `@ecp/core`: `defineHarness`, `runModelRepairLoop`, `buildSystemPrompt`, `summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `buildAssistantSafeReply`, etc. Shared task input Zod schemas live in `@ecp/types` (`HARNESS_TASK_IDS`, `harnessWorkflowAssistantInputSchema`, …).
 
-`@ecp/harnesses-browser-nano` is the **Browser Nano** harness (small models; browser demo + eval matrix). A separate harness package is intended for stronger cloud models. The **`workflow-assistant`** task is the unified assistant (ECP FAQ, identity, environment help, run Q&A). Optional `identity: true` on prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER`.
+| Harness | Package | Id | Model surface | Eval profile |
+| ------- | ------- | -- | ------------- | ------------ |
+| Browser Nano | `@ecp/harnesses-browser-nano` | `@ecp/harness-browser-nano` | EQL | `ollama-gemma-1b` (`gemma3:1b`) — demo + `npm run eval:matrix` |
+| Browser Coding | `@ecp/harnesses-browser-coding` | `@ecp/harness-browser-coding` | TypeScript (Fluent + typed intent/reply) | `ollama-qwen-coder-1.5b` (`qwen2.5-coder:1.5b`) — `npm run eval:matrix:coding` only |
+
+`compileHarnessArtifactSource` in `@ecp/core/compile` evaluates intent/reply TS modules. Workflow create/patch use `compileWorkflowSource`. The **`workflow-assistant`** task is the unified assistant (ECP FAQ, identity, environment help, run Q&A). Optional `identity: true` on prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER`.
 
 ### Harness eval integrity
 

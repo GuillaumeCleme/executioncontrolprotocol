@@ -95,6 +95,10 @@ export default defineConfig({
         repoRoot,
         "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
       ),
+      "@ecp/harnesses-browser-coding": path.resolve(
+        repoRoot,
+        "packages/harnesses/browser-coding/src/index.ts"
+      ),
     },
   },
   test: {
@@ -166,14 +170,6 @@ export default defineConfig({
       },
       {
         extends: true,
-        resolve: {
-          alias: {
-            "@ecp/harnesses-browser-nano/request-capability-hints": path.resolve(
-              repoRoot,
-              "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
-            ),
-          },
-        },
         test: {
           name: "eval",
           include: [
@@ -181,6 +177,14 @@ export default defineConfig({
             "packages/evals/test/fixtures/**/*.test.ts",
           ],
           testTimeout: 180_000,
+          server: {
+            deps: {
+              inline: [
+                "@ecp/harnesses-browser-coding",
+                "@ecp/harnesses-browser-nano",
+              ],
+            },
+          },
         },
       },
       {

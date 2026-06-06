@@ -24,6 +24,7 @@ export { registerCoreFormats } from "./formats/register-core-formats.js"
 export * from "./harness/index.js"
 export * from "./feedback/index.js"
 export { stripMarkdownCodeFences } from "./encoding/strip-markdown-fences.js"
+export { stripHarnessTypeScriptOutput } from "./encoding/strip-harness-typescript-output.js"
 export { workflow, WorkflowBuilder } from "./workflow/builder.js"
 export { parallel, branch, loop } from "./workflow/flow.js"
 

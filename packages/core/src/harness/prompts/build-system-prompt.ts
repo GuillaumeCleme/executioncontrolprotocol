@@ -4,9 +4,14 @@ import type { HarnessPromptFixture } from "./harness-prompt-fixture-schema.js"
 import { HARNESS_PROMPT_FIXTURE_IDS } from "./harness-prompt-fixture-schema.js"
 import { eqlPrimerForOutputSchema } from "./eql-primer.js"
 import { ECP_ASSISTANT_IDENTITY_PRIMER } from "./identity-primer.js"
+import { typescriptPrimerForOutputSchema } from "./typescript-primer.js"
 
 function usesEql(fixture: HarnessPromptFixture): boolean {
-  return fixture.promptFormat !== "json"
+  return fixture.promptFormat === "eql"
+}
+
+function usesTypeScript(fixture: HarnessPromptFixture): boolean {
+  return fixture.promptFormat === "typescript"
 }
 
 function formatAllowedValues(fixture: HarnessPromptFixture): string[] {
@@ -29,10 +34,12 @@ function formatDefinitions(fixture: HarnessPromptFixture): string[] {
 
 function formatFewShots(fixture: HarnessPromptFixture): string[] {
   if (!fixture.fewShots?.length) return []
-  const eql = usesEql(fixture)
-  const lines: string[] = [
-    eql ? "Additional examples (message -> EQL output):" : "Examples (message -> JSON output):",
-  ]
+  const header = usesTypeScript(fixture)
+    ? "Examples (message -> TypeScript output):"
+    : usesEql(fixture)
+      ? "Additional examples (message -> EQL output):"
+      : "Examples (message -> JSON output):"
+  const lines: string[] = [header]
   for (const shot of fixture.fewShots) {
     lines.push(`User: ${shot.message}`)
     if (typeof shot.output === "string") {
@@ -50,12 +57,25 @@ function formatFewShots(fixture: HarnessPromptFixture): string[] {
  */
 export function buildSystemPrompt(fixtureId: string): string {
   const fixture = loadHarnessPromptFixture(fixtureId)
+  const identityBlock = fixture.identity ? [ECP_ASSISTANT_IDENTITY_PRIMER] : []
+
+  if (usesTypeScript(fixture)) {
+    const sections = [
+      ...identityBlock,
+      typescriptPrimerForOutputSchema(fixture.outputSchema),
+      ...formatFewShots(fixture),
+      [fixture.role, fixture.task].filter(Boolean).join("\n"),
+      ...formatAllowedValues(fixture),
+      ...formatDefinitions(fixture),
+      "Reply with TypeScript only. No markdown fences. No prose outside code.",
+    ].filter((s) => s.length > 0)
+    return sections.join("\n\n")
+  }
+
   const eql = usesEql(fixture)
   const example = eql
     ? formatSchemaExampleEql(fixture.outputSchema)
     : formatSchemaExampleJson(fixture.outputSchema)
-
-  const identityBlock = fixture.identity ? [ECP_ASSISTANT_IDENTITY_PRIMER] : []
 
   const sections = eql
     ? [
@@ -99,4 +119,36 @@ export function buildWorkflowCreateSystemPrompt(): string {
  */
 export function buildWorkflowPatchSystemPrompt(): string {
   return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH)
+}
+
+/**
+ * System prompt for coding harness workflow create.
+ * @category Harness
+ */
+export function buildWorkflowCreateCodingSystemPrompt(): string {
+  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE_CODING)
+}
+
+/**
+ * System prompt for coding harness workflow patch.
+ * @category Harness
+ */
+export function buildWorkflowPatchCodingSystemPrompt(): string {
+  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH_CODING)
+}
+
+/**
+ * System prompt for coding harness intent classification.
+ * @category Harness
+ */
+export function buildIntentClassificationCodingSystemPrompt(): string {
+  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION_CODING)
+}
+
+/**
+ * System prompt for coding harness workflow assistant.
+ * @category Harness
+ */
+export function buildWorkflowAssistantCodingSystemPrompt(): string {
+  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_ASSISTANT_CODING)
 }

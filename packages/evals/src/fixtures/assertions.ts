@@ -12,6 +12,12 @@ import {
   type WorkflowManifest,
 } from "@ecp/types"
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
+import { OLLAMA_QWEN_CODER_15B_EVAL } from "../profiles/ollama-qwen.js"
+
+const JUDGE_ENABLED_PROFILE_IDS: Set<string> = new Set([
+  OLLAMA_GEMMA_1B_EVAL.id,
+  OLLAMA_QWEN_CODER_15B_EVAL.id,
+])
 import { getActiveEvalProvider } from "../profiles/eval-provider-context.js"
 import type { EvalProviderProfile } from "../profiles/eval-provider.js"
 import type { DeterministicAssertion, EvalCase, JudgeAssertion } from "./eval-case-schema.js"
@@ -268,7 +274,7 @@ export async function assertJudge(
 ): Promise<void> {
   if (!judge.enabled) return
   const provider = getActiveEvalProvider()
-  if (provider.id !== OLLAMA_GEMMA_1B_EVAL.id) {
+  if (!JUDGE_ENABLED_PROFILE_IDS.has(provider.id)) {
     return
   }
   const label = caseLabel(caseRow, stepIndex)

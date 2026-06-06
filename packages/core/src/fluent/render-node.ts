@@ -5,6 +5,7 @@ import type {
   StepNode,
   WorkflowNode,
 } from "@ecp/types"
+import { slugify } from "../util/slug.js"
 import { renderExprValue } from "./render-expr.js"
 import { renderInputValue, type ImportNeeds } from "./render-value.js"
 
@@ -12,6 +13,10 @@ function renderStep(step: StepNode, needs: ImportNeeds, indent: string): string 
   const lines: string[] = []
   const labelArg = step.label ? `, ${JSON.stringify(step.label)}` : ""
   lines.push(`${indent}step(${JSON.stringify(step.uses)}${labelArg})`)
+  const defaultId = slugify(step.label ?? String(step.uses))
+  if (step.id && (step.id !== defaultId || step.as !== undefined)) {
+    lines.push(`${indent}  .id(${JSON.stringify(step.id)})`)
+  }
   if (step.when) {
     needs.expr = true
     lines.push(`${indent}  .when(${renderExprValue(step.when)})`)

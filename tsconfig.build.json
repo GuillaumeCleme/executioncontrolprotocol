@@ -6,6 +6,7 @@
     { "path": "packages/runtimes/node" },
     { "path": "packages/runtimes/browser" },
     { "path": "packages/harnesses/browser-nano" },
+    { "path": "packages/harnesses/browser-coding" },
     { "path": "packages/policies" },
     { "path": "packages/mcp" },
     { "path": "packages/extensions/memory" },

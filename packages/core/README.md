@@ -20,7 +20,7 @@ Do **not** import Node built-ins from the main barrel. Bundlers (Vite, etc.) sho
 | Subpath | Host | Purpose |
 | ------- | ---- | ------- |
 | `@ecp/core/node` | Node | Re-exports `@ecp/core/loaders` + `@ecp/core/compile` |
-| `@ecp/core/compile` | Node | Native esbuild compile, temp-file module eval |
+| `@ecp/core/compile` | Node | `compileWorkflowSource`, `compileHarnessArtifactSource` (intent/reply TS), temp-file module eval |
 | `@ecp/core/loaders` | Node | File I/O for CLI and Node apps |
 | `@ecp/core/browser` | Browser | Authoring subset: builders, validate, Fluent encode, **browser-safe** `compileWorkflowSource` (esbuild-wasm + `globalThis.__ecpWorkflowShim`) |
 

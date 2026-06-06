@@ -25,3 +25,13 @@ export {
 } from "./harness-nano-config.js"
 
 export type { BrowserNanoHarnessInput } from "./browser-nano-harness.js"
+
+export {
+  buildPatchOperationHintLines,
+  buildRequestCapabilityHintLines,
+  collectPatchGoalFeedback,
+  collectCreateCapabilityFeedback,
+  collectCreateStepCountFeedback,
+  inferPatchTargetStepId,
+  inferRequiredCapabilityIds,
+} from "./_internal/request-capability-hints.js"

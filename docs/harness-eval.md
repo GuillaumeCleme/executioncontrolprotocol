@@ -8,7 +8,10 @@ For a **full matrix catalog** (every case, assertion, judge goal, and fixture), 
 
 | Harness | Capability | Purpose |
 | ------- | ---------- | ------- |
-| `@ecp/harness-browser-nano` | `@ecp/harness-browser-nano.evaluate` | Browser demo + Ollama/matrix evals; route with input `task` (`workflow-authoring`, `intent-classification`, `workflow-assistant`) |
+| `@ecp/harness-browser-nano` | `@ecp/harness-browser-nano.evaluate` | Browser demo + Ollama Gemma matrix; EQL output |
+| `@ecp/harness-browser-coding` | `@ecp/harness-browser-coding.evaluate` | Ollama Qwen coding matrix; TypeScript (Fluent + typed intent/reply) |
+
+Both harnesses use the same `task` routing: `workflow-authoring`, `intent-classification`, `workflow-assistant`.
 
 ## `@ecp/evals` package
 
@@ -49,6 +52,19 @@ The browser demo uses the same matrix harness profile; the UI swaps providers vi
 ollama pull gemma3:1b
 npm run eval:matrix
 ```
+
+Browser Coding matrix (Qwen 2.5 Coder 1.5B, same 72 JSON fixtures):
+
+```sh
+ollama pull qwen2.5-coder:1.5b
+npm run eval:matrix:coding
+```
+
+Profile: `ollama-qwen-coder-1.5b` in [`packages/evals/src/profiles/ollama-qwen.ts`](../packages/evals/src/profiles/ollama-qwen.ts).
+
+Browser Coding uses **Fluent TypeScript only** (full revised `export default workflow(...)` modules). Patch/create user prompts use [`buildFluentPatchHintLines`](../packages/harnesses/browser-coding/src/fluent-patch-hints.ts), not EQL `UPDATE STEP` / `DELETE STEP` vocabulary. Baselines rendered with [`renderWorkflowToFluent`](../packages/core/src/fluent/render-workflow.ts) emit stable `.id("stepId")` on steps.
+
+Recent matrix snapshot (`qwen2.5-coder:1.5b`, 63 deterministic cases across patch/create/assistant/intent): **72/73 passed** (remaining failures are occasional model flakiness, e.g. `asst-04`).
 
 Chrome Nano (same fixture matrix, Vitest browser + installed Chrome):
 

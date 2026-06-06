@@ -21,6 +21,7 @@ export {
   isCoreFormatterId,
   CORE_FORMATTER_IDS,
   inferResponseFormatFromFormatter,
+  HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
 } from "./format-resolve.js"
 export {
   runModelRepairLoop,
@@ -29,6 +30,12 @@ export {
   type RunModelRepairLoopOptions,
   type ModelRepairLoopResult,
 } from "./run-model-repair-loop.js"
+export {
+  isHarnessTimingDebugEnabled,
+  summarizeRepairAttemptTiming,
+  formatRepairLoopTimingReport,
+  logRepairLoopTiming,
+} from "./repair-loop-timing.js"
 export {
   harnessPromptFixtureSchema,
   HARNESS_PROMPT_FIXTURE_IDS,
@@ -40,6 +47,10 @@ export {
   buildSystemPrompt,
   buildWorkflowCreateSystemPrompt,
   buildWorkflowPatchSystemPrompt,
+  buildWorkflowCreateCodingSystemPrompt,
+  buildWorkflowPatchCodingSystemPrompt,
+  buildIntentClassificationCodingSystemPrompt,
+  buildWorkflowAssistantCodingSystemPrompt,
   buildRepairHint,
   type HarnessPromptFixture,
   type HarnessPromptFixtureId,

@@ -3,6 +3,7 @@ import { ECP_CORE_FORMATTER_IDS } from "@ecp/types"
 import { catalogExtension } from "../../src/registry/extension-catalog.js"
 import { formatToonExtension } from "@ecp/format-toon"
 import {
+  HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
   inferResponseFormatFromFormatter,
   isCoreFormatterId,
   isFormatterRegistered,
@@ -25,6 +26,7 @@ describe("format-resolve", () => {
     expect(inferResponseFormatFromFormatter("@ecp/format-toon")).toBe("toon")
     expect(inferResponseFormatFromFormatter("@ecp/format-fluent")).toBe("text")
     expect(inferResponseFormatFromFormatter("@ecp/unknown-format")).toBe("text")
+    expect(inferResponseFormatFromFormatter(HARNESS_OUTPUT_FORMAT_TYPESCRIPT)).toBe("text")
   })
 
   it("reports formatter registration for core and cataloged extensions", () => {

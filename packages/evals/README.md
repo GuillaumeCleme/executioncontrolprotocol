@@ -72,6 +72,7 @@ npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eva
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
 | **Matrix (72 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser-nano` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| **Matrix Coding (72 cases)** | `createHarnessOllamaCodingMatrixEnvironment()` | `@ecp/harness-browser-coding` | TypeScript (Fluent workflows + typed intent/reply) |
 | **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | same harness | same encoding |
 | Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser-nano` workflow task | `@ecp/format-eql` |
 | Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser-nano` intent task | `@ecp/format-eql` |
@@ -111,6 +112,8 @@ Set **`ECP_EVAL_DEBUG`** when running eval tests to print structured troubleshoo
 | `all` / `verbose` | Log **every** case (context before invoke + full invoke report) |
 
 Optional: **`ECP_EVAL_DEBUG_FILE`** — append one JSON object per line (e.g. `.cursor/eval-debug.ndjson`).
+
+**Repair-loop timing:** set **`ECP_EVAL_DEBUG_TIMING=1`** to log per-attempt `generateMs` (Ollama API) vs `evaluateMs` (compile/validate) and per-case `invokeMs` / `judgeMs`. Use with [`matrix-coding-debug.eval.test.ts`](test/harness/matrix-coding-debug.eval.test.ts) for a focused failing-case subset.
 
 Example:
 

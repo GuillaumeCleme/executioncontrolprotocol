@@ -2,6 +2,10 @@ import type {
   HarnessOperationFeedback,
   HarnessRepairAttempt,
 } from "@ecp/types"
+import {
+  isHarnessTimingDebugEnabled,
+  logRepairLoopTiming,
+} from "./repair-loop-timing.js"
 
 /** Context for a single repair-loop model generation call. @category Harness */
 export interface ModelRepairGenerateContext {
@@ -54,18 +58,31 @@ export async function runModelRepairLoop<TArtifact = unknown>(
   const attempts: HarnessRepairAttempt[] = []
   let priorFeedback: HarnessOperationFeedback[] = []
   let lastRaw = ""
+  const recordTiming = isHarnessTimingDebugEnabled()
+  const loopStarted = recordTiming ? performance.now() : 0
 
   for (let attempt = 0; attempt < options.maxAttempts; attempt++) {
+    const genStart = recordTiming ? performance.now() : 0
     const { raw } = await options.generate({ attempt, priorFeedback })
+    const generateMs = recordTiming ? performance.now() - genStart : undefined
     lastRaw = typeof raw === "string" ? raw : JSON.stringify(raw, null, 2)
+    const evalStart = recordTiming ? performance.now() : 0
     const evaluated = await options.evaluate(raw, { attempt, priorFeedback })
+    const evaluateMs = recordTiming ? performance.now() - evalStart : undefined
     attempts.push({
       attempt,
       feedback: evaluated.feedback,
       rawOutput: raw,
+      ...(generateMs !== undefined ? { generateMs } : {}),
+      ...(evaluateMs !== undefined ? { evaluateMs } : {}),
     })
 
     if (evaluated.success && evaluated.artifact !== undefined) {
+      if (recordTiming) {
+        logRepairLoopTiming("repair-loop success", attempts, {
+          loopTotalMs: performance.now() - loopStarted,
+        })
+      }
       return {
         artifact: evaluated.artifact,
         raw,
@@ -76,12 +93,20 @@ export async function runModelRepairLoop<TArtifact = unknown>(
     priorFeedback = [...priorFeedback, ...evaluated.feedback]
   }
 
+  if (recordTiming) {
+    logRepairLoopTiming("repair-loop exhausted", attempts, {
+      loopTotalMs: performance.now() - loopStarted,
+    })
+  }
+
   const lastAttempt = attempts[attempts.length - 1]
   const issueSummary = lastAttempt?.feedback
     .flatMap((f) => f.issues)
     .map((i) => (i.path ? `${i.path}: ${i.message}` : i.message))
     .join("; ")
-  throw new Error(
+  const err = new Error(
     `${issueSummary || "Harness evaluate failed after repair attempts"}\n---\nrawModelOutput:\n${lastRaw.slice(0, 4000)}`
-  )
+  ) as Error & { repairAttempts?: HarnessRepairAttempt[] }
+  err.repairAttempts = attempts
+  throw err
 }

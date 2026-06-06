@@ -1,5 +1,6 @@
 import type { Ecp, Environment } from "@ecp/core"
-import type { HarnessCapabilityId } from "@ecp/types"
+import { formatRepairLoopTimingReport } from "@ecp/core"
+import type { HarnessCapabilityId, HarnessInvokeResult } from "@ecp/types"
 import {
   EVAL_HARNESS_NAMES,
   isFlowEvalCase,
@@ -22,8 +23,10 @@ import {
 import {
   evalDebugContextFromCase,
   isEvalDebugEnabled,
+  isEvalTimingDebugEnabled,
   logEvalCaseContext,
   logEvalCaseInvoke,
+  logEvalCaseTiming,
 } from "./eval-debug.js"
 import {
   HARNESS_TASKS,
@@ -36,6 +39,8 @@ import { MATRIX_EVAL_EXTENSION_IDS } from "../harness-eval-config.js"
 export interface RunEvalCaseOptions {
   /** Use Vite-bundled fixtures (browser Vitest) instead of node:fs. */
   browserFixtures?: boolean
+  /** Harness evaluate capability (default Browser Nano). */
+  harnessCapability?: HarnessCapabilityId
 }
 
 function resolveInvokeInput(
@@ -105,29 +110,65 @@ export async function runSingleEvalCase(
     logEvalCaseContext({ ...debugCtx, assertions: deterministic })
   }
 
+  const harnessCapability =
+    options?.harnessCapability ?? (BROWSER_NANO_HARNESS_CAPABILITY as HarnessCapabilityId)
+
+  const timingEnabled = isEvalTimingDebugEnabled()
+  const caseStarted = timingEnabled ? performance.now() : 0
+  const invokeStarted = timingEnabled ? performance.now() : 0
+
   const result = await ecp
-    .invoke(BROWSER_NANO_HARNESS_CAPABILITY as HarnessCapabilityId)
+    .invoke(harnessCapability)
     .with(withHarnessTask(caseRow.harness, input))
     .process()
+
+  const invokeMs = timingEnabled ? performance.now() - invokeStarted : undefined
 
   if (isEvalDebugEnabled()) {
     logEvalCaseInvoke({ ...debugCtx, assertions: deterministic }, result)
   }
 
   const judge = caseRow.assertions.judge
+  let assertMs: number | undefined
+  let judgeMs: number | undefined
 
-  if (!isJudgeOnly(judge)) {
-    const harnessOutput = await assertDeterministic(caseRow, result, deterministic, {
-      ecp,
-      env,
-      descriptorExtensionIds: MATRIX_EVAL_EXTENSION_IDS as unknown as string[],
-    })
-    await assertJudge(caseRow, harnessOutput, judge, ecp)
-  } else {
-    if (!result.success) {
-      throw new Error(`[${caseRow.id}] invoke failed in judge-only mode`)
+  try {
+    if (!isJudgeOnly(judge)) {
+      const assertStarted = timingEnabled ? performance.now() : 0
+      const harnessOutput = await assertDeterministic(caseRow, result, deterministic, {
+        ecp,
+        env,
+        descriptorExtensionIds: MATRIX_EVAL_EXTENSION_IDS as unknown as string[],
+      })
+      assertMs = timingEnabled ? performance.now() - assertStarted : undefined
+      const judgeStarted = timingEnabled ? performance.now() : 0
+      await assertJudge(caseRow, harnessOutput, judge, ecp)
+      judgeMs = timingEnabled ? performance.now() - judgeStarted : undefined
+    } else {
+      if (!result.success) {
+        throw new Error(`[${caseRow.id}] invoke failed in judge-only mode`)
+      }
+      const judgeStarted = timingEnabled ? performance.now() : 0
+      await assertJudge(caseRow, result.result as never, judge, ecp)
+      judgeMs = timingEnabled ? performance.now() - judgeStarted : undefined
     }
-    await assertJudge(caseRow, result.result as never, judge, ecp)
+  } finally {
+    if (timingEnabled) {
+      const repairAttempts =
+        result.success && result.result && typeof result.result === "object"
+          ? (result.result as HarnessInvokeResult).trace?.repairAttempts
+          : undefined
+      if (repairAttempts?.length) {
+        console.warn(formatRepairLoopTimingReport(caseRow.id, repairAttempts))
+      }
+      logEvalCaseTiming(caseRow.id, {
+        invokeMs,
+        assertMs,
+        judgeMs,
+        caseTotalMs: performance.now() - caseStarted,
+        invokeSuccess: result.success,
+      })
+    }
   }
 }
 
@@ -158,8 +199,11 @@ export async function runFlowEvalCase(
       logEvalCaseContext({ ...debugCtx, assertions: deterministic })
     }
 
+    const harnessCapability =
+      options?.harnessCapability ?? (BROWSER_NANO_HARNESS_CAPABILITY as HarnessCapabilityId)
+
     const result = await ecp
-      .invoke(BROWSER_NANO_HARNESS_CAPABILITY as HarnessCapabilityId)
+      .invoke(harnessCapability)
       .with(withHarnessTask(step.harness, input))
       .process()
 

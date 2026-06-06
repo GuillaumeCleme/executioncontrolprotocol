@@ -21,6 +21,7 @@
     "@ecp/chrome-ai": "1.0.0",
     "@ecp/core": "1.0.0",
     "@ecp/harnesses-browser-nano": "1.0.0",
+    "@ecp/harnesses-browser-coding": "1.0.0",
     "@ecp/demo": "1.0.0",
     "@ecp/extension-ollama": "1.0.0",
     "@ecp/format-eql": "1.0.0",

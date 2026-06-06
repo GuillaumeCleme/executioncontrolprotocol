@@ -35,6 +35,8 @@
     "test:eval:matrix": "vitest run --project eval packages/evals/test/harness/matrix-workflow-create.eval.test.ts packages/evals/test/harness/matrix-workflow-patch.eval.test.ts packages/evals/test/harness/matrix-intent.eval.test.ts packages/evals/test/harness/matrix-assistant.eval.test.ts packages/evals/test/harness/eval-matrix-count.test.ts packages/evals/test/harness/matrix-descriptor-order.eval.test.ts packages/evals/test/fixtures/load-eval-cases.test.ts",
     "eval:harness": "npm run test:eval",
     "eval:matrix": "npm run test:eval:matrix",
+    "test:eval:matrix:coding": "vitest run --project eval packages/evals/test/harness/matrix-workflow-create-coding.eval.test.ts packages/evals/test/harness/matrix-workflow-patch-coding.eval.test.ts packages/evals/test/harness/matrix-intent-coding.eval.test.ts packages/evals/test/harness/matrix-assistant-coding.eval.test.ts packages/evals/test/harness/eval-matrix-count.test.ts packages/evals/test/fixtures/load-eval-cases.test.ts",
+    "eval:matrix:coding": "npm run test:eval:matrix:coding",
     "eval:matrix:chrome": "vitest run --project eval-browser",
     "eval:matrix:chrome:smoke": "vitest run --project eval-browser packages/evals/test/browser/matrix-workflow-patch.eval.test.ts packages/evals/test/browser/matrix-intent.eval.test.ts packages/evals/test/browser/matrix-descriptor-order.eval.test.ts",
     "eval": "npm run eval:harness",

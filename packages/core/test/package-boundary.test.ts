@@ -12,9 +12,11 @@ const NODE_HOST_REL = new Set([
   "loaders/files.ts",
   "loaders/index.ts",
   "compile/evaluate.ts",
+  "compile/evaluate-harness-artifact.ts",
   "compile/transpile.ts",
   "compile/index.ts",
   "compile/entry.ts",
+  "harness/repair-loop-timing.ts",
 ])
 
 const NODE_IMPORT_PATTERNS = [
