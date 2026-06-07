@@ -4,11 +4,19 @@ export type ProviderMode = "chrome-ai" | "openai" | "claude" | "demo"
 /** Chat assistant behavior. */
 export type AssistantMode = "guided" | "authoring"
 
+/** Provider modes selectable in the first-run modal (cloud providers are coming soon). */
+export const SELECTABLE_PROVIDER_MODES: readonly ProviderMode[] = ["chrome-ai", "demo"] as const
+
 const PROVIDER_CAPABILITY: Record<ProviderMode, string> = {
   "chrome-ai": "@ecp/chrome-ai.generate",
   openai: "@ecp/openai.generate",
   claude: "@ecp/claude.generate",
   demo: "@ecp/demo.generate",
+}
+
+/** Whether the provider can be chosen in the demo UI. */
+export function isProviderModeSelectable(mode: ProviderMode): boolean {
+  return SELECTABLE_PROVIDER_MODES.includes(mode)
 }
 
 /** Map provider mode to a harness-compatible generate capability id. */
@@ -19,12 +27,17 @@ export function providerCapabilityId(mode: ProviderMode): string {
 /** localStorage key for persisted provider mode (not API keys). */
 export const PROVIDER_MODE_STORAGE_KEY = "ecp:browser-demo:provider-mode"
 
+function parseProviderMode(raw: string | null): ProviderMode | null {
+  if (raw === "chrome-ai" || raw === "openai" || raw === "claude" || raw === "demo") return raw
+  return null
+}
+
 /** Read persisted provider mode for this demo app. */
 export function readStoredProviderMode(): ProviderMode | null {
   if (typeof localStorage === "undefined") return null
-  const raw = localStorage.getItem(PROVIDER_MODE_STORAGE_KEY)
-  if (raw === "chrome-ai" || raw === "openai" || raw === "claude" || raw === "demo") return raw
-  return null
+  const mode = parseProviderMode(localStorage.getItem(PROVIDER_MODE_STORAGE_KEY))
+  if (mode && !isProviderModeSelectable(mode)) return null
+  return mode
 }
 
 /** Persist provider mode for this demo app (session keys are never stored). */

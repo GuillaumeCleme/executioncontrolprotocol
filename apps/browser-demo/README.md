@@ -41,6 +41,20 @@ Open the URL Vite prints (default `http://localhost:5173`).
 
 **Panel encoding:** all Code/Workflow views fan out from the canonical **`@ecp.workflow` manifest** (JSON). Mermaid uses `.with({ direction: "LR" })` on `@ecp/format-mermaid` encode (default is `TD`).
 
+## GitHub Pages
+
+Live demo: [https://guillaumecleme.github.io/executioncontrolprotocol/](https://guillaumecleme.github.io/executioncontrolprotocol/)
+
+Deploys automatically on every push to **`main`** via [`.github/workflows/pages-browser-demo.yml`](../../.github/workflows/pages-browser-demo.yml). One-time setup: GitHub repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+Local Pages build (same asset paths as CI):
+
+```sh
+GITHUB_PAGES=true GITHUB_REPOSITORY=GuillaumeCleme/executioncontrolprotocol npm run build:browser-demo:pages
+```
+
+First-run provider modal: **Chrome built-in AI** and **Demo mode** are selectable; OpenAI and Claude are marked **coming soon**.
+
 ## Spec
 
 Behavior and milestones: [docs/ecp-browser-demo.md](../../docs/ecp-browser-demo.md).

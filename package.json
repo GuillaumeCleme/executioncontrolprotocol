@@ -45,6 +45,7 @@
     "test:browser:watch": "vitest --project browser",
     "dev:browser-demo": "npm run dev -w @ecp/browser-demo",
     "build:browser-demo": "npm run build -w @ecp/browser-demo",
+    "build:browser-demo:pages": "npm run build:pages -w @ecp/browser-demo",
     "typecheck:browser-demo": "npm run typecheck -w @ecp/browser-demo",
     "check": "npm run build && npm run generate:schema && npm run lint && npm run build:browser-demo && npm run test:unit && npm run test:integration && npm run test:e2e",
     "generate:schema": "npm run generate:schema -w @ecp/types",

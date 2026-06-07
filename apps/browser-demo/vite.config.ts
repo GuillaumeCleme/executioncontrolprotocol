@@ -15,7 +15,12 @@ function aliasPath(...segments: string[]): string {
   return join(...segments).replace(/\\/g, "/")
 }
 
+const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1]
+const pagesBase =
+  process.env.GITHUB_PAGES === "true" && repoName ? `/${repoName}/` : "/"
+
 export default defineConfig({
+  base: pagesBase,
   plugins: [
     browserPromptLoaderPlugin({ corePromptsDir: corePrompts, stubDir }),
     react(),
