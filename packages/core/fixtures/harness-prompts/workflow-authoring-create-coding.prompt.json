@@ -1,0 +1,38 @@
+{
+  "id": "workflow-authoring-create-coding",
+  "role": "You are an ECP workflow author for coding models. You build valid workflows using only the Fluent API (TypeScript).",
+  "task": "Create a workflow: import { workflow, step, ref } from \"@ecp/core\" and export default workflow(...).run([...]). Start with import — never output the word typescript on its own line. Every step must use a real capability id from the environment summary. When the request says one step or minimal workflow, export exactly one step in .run([...]). Chain steps with ref(\"priorStep.output\") when passing outputs. No EQL or JSON-only workflow blobs.",
+  "outputSchema": "@ecp.workflow",
+  "promptFormat": "typescript",
+  "fewShots": [
+    {
+      "message": "Create a minimal @ecp.workflow with one step id echo using @ecp/test.echo and input value hello.",
+      "output": "import { workflow, step } from \"@ecp/core\"\n\nexport default workflow(\"Minimal Echo\")\n  .run([step(\"@ecp/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\")])"
+    },
+    {
+      "message": "Create a workflow with echo (@ecp/test.echo) then summarize (@ecp/demo.summarize) passing echo output.",
+      "output": "import { workflow, step, ref } from \"@ecp/core\"\n\nexport default workflow(\"Echo then summarize\")\n  .run([\n    step(\"@ecp/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\"),\n    step(\"@ecp/demo.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
+    },
+    {
+      "message": "Build a workflow: first @ecp/demo.validate then @ecp/test.echo.",
+      "output": "import { workflow, step } from \"@ecp/core\"\n\nexport default workflow(\"Validate then echo\")\n  .run([\n    step(\"@ecp/demo.validate\", \"Validate\").id(\"validate\").with({ payload: { ok: true } }).as(\"validated\"),\n    step(\"@ecp/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\"),\n  ])"
+    },
+    {
+      "message": "Create workflow with @ecp/test.echo and a final @ecp/demo.notify step.",
+      "output": "import { workflow, step, ref } from \"@ecp/core\"\n\nexport default workflow(\"Echo and notify\")\n  .run([\n    step(\"@ecp/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\"),\n    step(\"@ecp/demo.notify\", \"Notify\")\n      .id(\"notify\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"notified\"),\n  ])"
+    },
+    {
+      "message": "Create a 3-step workflow using @ecp/demo.validate, @ecp/test.echo, and @ecp/demo.summarize.",
+      "output": "import { workflow, step, ref } from \"@ecp/core\"\n\nexport default workflow(\"Validate echo summarize\")\n  .run([\n    step(\"@ecp/demo.validate\", \"Validate\").id(\"validate\").with({ payload: { ok: true } }).as(\"validated\"),\n    step(\"@ecp/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\"),\n    step(\"@ecp/demo.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
+    },
+    {
+      "message": "Create workflow id minimal-echo with one @ecp/test.echo step labeled Runner.",
+      "output": "import { workflow, step } from \"@ecp/core\"\n\nexport default workflow(\"Runner\")\n  .id(\"minimal-echo\")\n  .run([step(\"@ecp/test.echo\", \"Runner\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\")])"
+    },
+    {
+      "message": "Create a two-step workflow using @ecp/test.echo and @ecp/demo.translate.",
+      "output": "import { workflow, step } from \"@ecp/core\"\n\nexport default workflow(\"Echo translate\")\n  .run([\n    step(\"@ecp/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\"),\n    step(\"@ecp/demo.translate\", \"Translate\").id(\"translate\").with({ text: \"hello\", targetLang: \"es\" }).as(\"translated\"),\n  ])"
+    }
+  ],
+  "repairHint": "Return corrected Fluent TypeScript only. Every step capability must exist in the environment summary. One-step requests must export exactly one step(). Never use identifier typescript."
+}

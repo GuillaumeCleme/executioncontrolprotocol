@@ -1,0 +1,35 @@
+{
+  "name": "@ecp/harnesses-browser-nano",
+  "version": "1.0.0",
+  "description": "Browser Nano ECP harness for on-device and small models (demo + eval matrix)",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./request-capability-hints": {
+      "types": "./dist/_internal/request-capability-hints.d.ts",
+      "import": "./dist/_internal/request-capability-hints.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "peerDependencies": {
+    "@ecp/core": "^1.0.0",
+    "@ecp/types": "^1.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@ecp/core": "1.0.0",
+    "@ecp/types": "1.0.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  }
+}

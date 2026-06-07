@@ -1,0 +1,53 @@
+{
+  "schema": "@ecp.environment.describe",
+  "version": "1.0",
+  "environment": {
+    "id": "disc",
+    "label": "Discovery"
+  },
+  "runtime": {
+    "id": "@ecp/in-memory",
+    "features": {
+      "loops": true
+    }
+  },
+  "extensions": [
+    {
+      "id": "@ecp/test",
+      "order": 0,
+      "capabilities": ["@ecp/test.echo"]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "@ecp/test.echo",
+      "label": "Echo",
+      "extension": "@ecp/test",
+      "inputSchema": {
+        "value": "string!"
+      },
+      "outputSchema": {
+        "output": "object"
+      }
+    },
+    {
+      "id": "@ecp/memory.search",
+      "label": "Search Memory",
+      "extension": "@ecp/memory",
+      "inputSchema": {
+        "query": "string!",
+        "since": "string"
+      },
+      "outputSchema": {
+        "results": "array"
+      }
+    }
+  ],
+  "policies": [
+    {
+      "id": "@ecp/budget",
+      "label": "Budget Guardrails",
+      "summary": "Spend limits"
+    }
+  ]
+}

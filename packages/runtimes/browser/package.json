@@ -1,0 +1,39 @@
+{
+  "name": "@ecp/browser",
+  "version": "1.0.0",
+  "description": "ECP browser runtime and environment extensions",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "peerDependencies": {
+    "zod": "^3.24.0"
+  },
+  "dependencies": {
+    "@ecp/chrome-ai": "1.0.0",
+    "@ecp/claude": "1.0.0",
+    "@ecp/core": "1.0.0",
+    "@ecp/harnesses-browser-nano": "1.0.0",
+    "@ecp/demo": "1.0.0",
+    "@ecp/format-eql": "1.0.0",
+    "@ecp/format-mermaid": "1.0.0",
+    "@ecp/format-toon": "1.0.0",
+    "@ecp/extension-openai": "1.0.0",
+    "@ecp/policies": "1.0.0",
+    "@ecp/types": "1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  }
+}

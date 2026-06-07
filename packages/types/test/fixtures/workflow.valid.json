@@ -1,0 +1,14 @@
+{
+  "schema": "@ecp.workflow",
+  "version": "1.0",
+  "workflow": { "id": "echo", "label": "Echo" },
+  "steps": [
+    {
+      "type": "step",
+      "id": "echo",
+      "uses": "@ecp/test.echo",
+      "input": { "value": "hi" },
+      "as": "echo"
+    }
+  ]
+}

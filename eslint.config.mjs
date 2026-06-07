@@ -4,7 +4,7 @@ import * as espree from "espree";
 
 export default tseslint.config(
   {
-    ignores: ["**/dist/", "**/node_modules/", "**/coverage/"],
+    ignores: ["**/dist/", "**/node_modules/", "**/coverage/", "archive/**"],
   },
   ...tseslint.configs.recommended,
   {
@@ -12,6 +12,38 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_" },
+      ],
+    },
+  },
+  // Package boundary: extensions and harnesses are environment-agnostic and must
+  // depend only on @ecp/types + @ecp/core. They may not import host packages.
+  // Scoped to `src` so integration tests may still use a host runtime.
+  {
+    files: [
+      "packages/extensions/**/src/**/*.ts",
+      "packages/harnesses/**/src/**/*.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "@ecp/node",
+                "@ecp/node/*",
+                "@ecp/browser",
+                "@ecp/browser/*",
+                "@ecp/cli",
+                "@ecp/cli/*",
+                "@ecp/mcp",
+                "@ecp/mcp/*",
+              ],
+              message:
+                "Extensions and harnesses must not import host packages (@ecp/node, @ecp/browser, @ecp/cli, @ecp/mcp). Depend on @ecp/types and @ecp/core only.",
+            },
+          ],
+        },
       ],
     },
   },

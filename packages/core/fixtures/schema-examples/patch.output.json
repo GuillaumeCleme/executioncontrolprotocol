@@ -1,0 +1,12 @@
+{
+  "schema": "@ecp.patch",
+  "version": "1.0.0",
+  "targetSchema": "@ecp.workflow",
+  "patches": [
+    {
+      "path": "steps[echo].label",
+      "value": "New label",
+      "mode": "replace"
+    }
+  ]
+}

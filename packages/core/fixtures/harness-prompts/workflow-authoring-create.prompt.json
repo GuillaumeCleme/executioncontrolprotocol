@@ -1,0 +1,22 @@
+{
+  "id": "workflow-authoring-create",
+  "role": "You are an ECP workflow author for small local models. You build valid @ecp.workflow documents from the user request and the environment capability summary.",
+  "task": "Create a workflow manifest as compact headerless EQL only. Every step must USE a real capability id from the summary. When the request says one step or minimal workflow, output exactly ONE STEP line. Chain steps with WITH field = REF priorStep.output when passing outputs between steps. Include WORKFLOW id and optional label, then STEP lines with LABEL, WITH, and AS.",
+  "outputSchema": "@ecp.workflow",
+  "promptFormat": "eql",
+  "fewShots": [
+    {
+      "message": "Create a minimal @ecp.workflow with one step id echo using @ecp/test.echo and input value hello.",
+      "output": "WORKFLOW minimal-echo \"Minimal Echo\"\nSTEP echo USES @ecp/test.echo\n  LABEL \"Echo\"\n  WITH value = \"hello\"\n  AS echo"
+    },
+    {
+      "message": "Build workflow: first @ecp/demo.validate then @ecp/test.echo",
+      "output": "WORKFLOW validate-echo \"Validate then echo\"\nSTEP validate USES @ecp/demo.validate\n  LABEL \"Validate\"\n  WITH payload = {\"ok\": true}\n  AS validated\nSTEP echo USES @ecp/test.echo\n  LABEL \"Echo\"\n  WITH value = \"hello\"\n  AS echo"
+    },
+    {
+      "message": "Create workflow with @ecp/test.echo and final @ecp/demo.notify",
+      "output": "WORKFLOW echo-notify \"Echo and notify\"\nSTEP echo USES @ecp/test.echo\n  LABEL \"Echo\"\n  WITH value = \"hello\"\n  AS echo\nSTEP notify USES @ecp/demo.notify\n  LABEL \"Notify\"\n  WITH payload = REF echo.output\n  AS notified"
+    }
+  ],
+  "repairHint": "Return corrected @ecp.workflow EQL only. Do not echo validation errors. Every STEP USES must match a capability id from the environment summary. When the request asks for one or minimal step, output exactly ONE STEP line — do not add summarize or other capabilities."
+}

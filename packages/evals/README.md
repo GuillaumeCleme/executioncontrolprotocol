@@ -1,0 +1,295 @@
+# @ecp/evals
+
+Private workspace package for **harness eval tests**: real model providers, strict assertions, optional local Ollama.
+
+Eval configuration is **baked into source** (model id, base URL, harness bindings)—not driven by `OLLAMA_MODEL` / `OLLAMA_BASE_URL` environment variables.
+
+## Pinned profile (default)
+
+| Field | Value |
+| ----- | ----- |
+| Profile id | `ollama-gemma-1b` |
+| Provider | `@ecp/ollama` |
+| Base URL | `http://localhost:11434` |
+| Model | `gemma3:1b` |
+
+Defined in [`src/profiles/ollama-gemma.ts`](src/profiles/ollama-gemma.ts) as `OLLAMA_GEMMA_1B_EVAL`.
+
+## Chrome Nano profile (browser matrix)
+
+| Field | Value |
+| ----- | ----- |
+| Profile id | `chrome-nano` |
+| Provider | `@ecp/chrome-ai` |
+| Generate capability | `@ecp/chrome-ai.generate` |
+| Runtime | `@ecp/browser` (Vitest browser project) |
+
+Defined in [`src/profiles/chrome-nano.ts`](src/profiles/chrome-nano.ts) as `CHROME_NANO_EVAL`.
+
+**Same harness, same fixtures, same assertions** as Ollama matrix — only the provider binding and runtime differ. See [`createHarnessMatrixEnvironment()`](src/environments/create-harness-matrix-environment.ts).
+
+```sh
+npm run eval:matrix:chrome
+```
+
+Requires Google Chrome with the on-device Gemini Nano model available (`LanguageModel` API). Tests **skip** when Nano is not ready (same contract as Ollama skip).
+
+LLM judge assertions (`@ecp/ollama.evaluate`) are skipped automatically when the active provider is not Ollama.
+
+## Harness vs provider
+
+| Layer | Package / id | Swappable? |
+| ----- | ------------ | ---------- |
+| Harness (prompts, repair, decode) | `@ecp/harness-browser-nano` | **No** — reusable for all providers |
+| Provider | `@ecp/ollama.generate`, `@ecp/chrome-ai.generate`, … | **Yes** — environment `.uses()` only |
+| Eval cases | `fixtures/cases/*.json` | Shared across providers |
+
+To add a provider: implement `@ecp/model.generate`, add an `EvalProviderProfile`, call `createHarnessMatrixEnvironment(profile)`. Do not change harness task handlers.
+
+## Run evals
+
+```sh
+ollama pull gemma3:1b
+npm run eval:matrix
+```
+
+Smoke subset (legacy + fixture count, no matrix Ollama cases):
+
+```sh
+npm run test:eval:smoke
+```
+
+From the repo root. Tests **skip** when Ollama is down or the model is not pulled; when Ollama is up, failures are real regressions.
+
+Run one eval file:
+
+```sh
+npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eval.test.ts
+```
+
+## Eval sets
+
+| Eval set | Environment factory | Harness | Encoding |
+| -------- | ------------------- | ------- | -------- |
+| **Matrix (72 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@ecp/harness-browser-nano` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| **Matrix Coding (72 cases)** | `createHarnessOllamaCodingMatrixEnvironment()` | `@ecp/harness-browser-coding` | TypeScript (Fluent workflows + typed intent/reply) |
+| **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | same harness | same encoding |
+| Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@ecp/harness-browser-nano` workflow task | `@ecp/format-eql` |
+| Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@ecp/harness-browser-nano` intent task | `@ecp/format-eql` |
+| Combined (both) | `createHarnessOllamaEnvironment()` | both tasks | EQL output |
+| Demo (not counted) | demo provider env | same harness ids | deterministic stubs only |
+
+### Extension alignment (matrix)
+
+Matrix evals bind **formatters, test, and demo stubs** only (no memory/storage/telemetry):
+
+| Extension | Why |
+| --------- | --- |
+| `@ecp/ollama` | Model provider (`gemma3:1b`) and `@ecp/ollama.evaluate` judge |
+| `@ecp/format-toon` | Legacy descriptor encoding (optional; matrix uses plain-text + EQL grammar in prompts) |
+| `@ecp/format-eql` | Harness model output (workflow, patch, intent, reply) — headerless |
+| `@ecp/format-json` | Run context encoding (core formatter, explicit binding) |
+| `@ecp/test` | `@ecp/test.echo` in workflow prompts |
+| `@ecp/demo` | Stub ops: `summarize`, `translate`, `notify`, `validate` (not the LLM provider) |
+
+Legacy smoke environments use `@ecp/format-toon` + `@ecp/test` only.
+
+Harness config lives in [`src/harness-eval-config.ts`](src/harness-eval-config.ts). Intent evals set `includeEnvironmentDescriptor: true` so the model sees available capabilities before classifying.
+
+Tests live under [`test/harness/*.eval.test.ts`](test/harness/) (Node + Ollama) and [`test/browser/*.eval.test.ts`](test/browser/) (Chrome Nano).
+
+## Traceability when a model fails
+
+Harness results include a `trace` object when invoke succeeds. Eval tests enable full trace via `HARNESS_NANO_TRACE` (`includePrompt`, `includeRawOutput`, `includeValidation`).
+
+### Eval debug logging (`ECP_EVAL_DEBUG`)
+
+Set **`ECP_EVAL_DEBUG`** when running eval tests to print structured troubleshooting output for each case (console warnings + optional NDJSON file).
+
+| Value | Behavior |
+| ----- | -------- |
+| `1` / `true` / `failures` | Log **failed** invokes and assertion mismatches only |
+| `all` / `verbose` | Log **every** case (context before invoke + full invoke report) |
+
+Optional: **`ECP_EVAL_DEBUG_FILE`** — append one JSON object per line (e.g. `.cursor/eval-debug.ndjson`).
+
+**Repair-loop timing:** set **`ECP_EVAL_DEBUG_TIMING=1`** to log per-attempt `generateMs` (Ollama API) vs `evaluateMs` (compile/validate) and per-case `invokeMs` / `judgeMs`. Use with [`matrix-coding-debug.eval.test.ts`](test/harness/matrix-coding-debug.eval.test.ts) for a focused failing-case subset.
+
+Example:
+
+```sh
+# Windows PowerShell
+$env:ECP_EVAL_DEBUG = "failures"
+$env:ECP_EVAL_DEBUG_FILE = ".cursor/eval-debug.ndjson"
+npm run build
+npx vitest run --project eval packages/evals/test/harness/matrix-workflow-patch.eval.test.ts -t "wf-patch-03"
+```
+
+Each failure block includes:
+
+- **input** — resolved case input (manifest summarized when present)
+- **expected assertions** — human-readable `describeAssertionExpectation` per assertion
+- **prompt** / **rawModelOutput** — from `trace` (requires `HARNESS_NANO_TRACE`, already on for matrix)
+- **artifact** — decoded JSON (truncated)
+- **assertion mismatch** — expected vs `extractAssertionActual` snapshot
+
+All matrix / `runEvalCase` tests pick this up automatically; no per-test changes required.
+
+| Failure stage | What you see |
+| ------------- | ------------ |
+| **Invoke failed** (`success: false`) | `assertHarnessInvokeSuccess` prints `formatInvokeFailure(result)` — diagnostics codes/messages. Decode errors from the harness include `rawModelOutput:` in the diagnostic text. |
+| **Wrong artifact** (invoke succeeded) | Use `expect(..., harnessTraceHint(harnessOutput))` or `expectHarnessIntent(result, intent)` — Vitest shows prompt, raw model text, validation errors, provider, and model. |
+| **Manual inspection** | `formatHarnessTrace(harnessOutput)` in [`src/fixtures/harness-trace-format.ts`](src/fixtures/harness-trace-format.ts) (re-exported from [`test/harness/assert-harness-result.ts`](test/harness/assert-harness-result.ts)) |
+
+Example on assertion mismatch:
+
+```ts
+import { expectHarnessIntent, harnessTraceHint } from "./assert-harness-result.js"
+
+const output = expectHarnessIntent(result, ECP_INTENT_VALUES.WORKFLOW_CREATE)
+// or
+expect(got.intent, harnessTraceHint(harnessOutput)).toBe(ECP_INTENT_VALUES.WORKFLOW_PATCH)
+```
+
+Typical failure stages for intent evals:
+
+1. **Model** — malformed EQL in `trace.rawOutput` (fences, prose, invented capabilities). Repair retries strip fences and pass decode errors back to the model.
+2. **Decode** — `@ecp/format-eql` rejects output; error message includes field paths and `rawModelOutput`.
+3. **Validation** — decoded document missing required schema fields or invalid enums (`trace.validation`).
+
+### Repair loop (model learns from failures)
+
+Core collectors (`collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback`) produce `HarnessOperationFeedback` with paths and codes. Eval harnesses format that into repair prompts via `formatFeedbackForModel` from `@ecp/core`.
+
+Harness config supports `repair` (enabled in eval via `HARNESS_NANO_REPAIR`):
+
+| Setting | Eval default | Effect |
+| ------- | ------------ | ------ |
+| `enabled` | `true` | Retry after decode, patch, or validation failures |
+| `maxAttempts` | `2` | Up to 3 total model calls (initial + 2 repairs) |
+| `includeValidationErrors` | `true` | Next prompt includes `path: message [CODE]` details |
+
+On retry, the model sees lines like:
+
+```text
+Previous attempt failed. Fix these issues and return corrected output only:
+schema: Required [INVALID_TYPE]; patches: Required [INVALID_TYPE]
+Patch document must include: schema @ecp.patch, version, targetSchema @ecp.workflow, patches array...
+```
+
+Inspect the repair prompt in `trace.prompt` on the final successful or failed attempt.
+
+Run a single eval with verbose Vitest output:
+
+```sh
+npx vitest run --project eval packages/evals/test/harness/intent-classification.eval.test.ts --reporter=verbose
+```
+
+## Fixture-driven matrix (JSON)
+
+Cases live in [`fixtures/cases/*.cases.json`](fixtures/cases/) as `{ "cases": [ ... ] }` arrays. Vitest matrix tests load them with `loadEvalCases()` and `runEvalCase()`—no new `it()` per row.
+
+| File | Suite | Count |
+| ---- | ----- | ----- |
+| `workflow-create.cases.json` | `workflow-create` | 12 |
+| `workflow-patch.cases.json` | `workflow-patch` | 12 |
+| `intent.cases.json` | `intent` | 17 |
+| `assistant.cases.json` | `assistant` | 22 |
+| `flow.cases.json` | `flow` | 9 |
+
+**Full case-by-case report:** [docs/harness-eval-matrix-report.md](../../docs/harness-eval-matrix-report.md).
+
+Supporting JSON: [`fixtures/workflows/`](fixtures/workflows/), [`fixtures/runs/`](fixtures/runs/).
+
+Assertions per row:
+
+- **Deterministic** — schema, validation, intent, step `uses`, patch outcomes, descriptor extension order, `answerRedirectsToScope`, `answerMaxLength`, `rawNotContains`.
+- **Judge** (optional) — `@ecp/ollama.evaluate` with `goal` / `rubric`; set `requireApproved: true` when the model must pass review. Judge errors fail closed (never treated as pass).
+
+Harness **system prompts** and intent few-shots live in [`packages/core/fixtures/harness-prompts/`](../core/fixtures/harness-prompts/) (loaded via `buildSystemPrompt` from `@ecp/core`). Eval case JSON holds inputs and assertions only.
+
+**Flow cases:** step 0 failures are intent harness invoke failures, not run/fixture load failures (see [harness-eval.md](../../docs/harness-eval.md)).
+
+Regenerate baseline case files from the generator script:
+
+```sh
+node packages/evals/scripts/generate-eval-cases.mjs
+```
+
+## Creating a new eval case (manual)
+
+### 1. Add a JSON row
+
+Edit the suite file under `fixtures/cases/` (see table above). Use `model: "default"` for the pinned Gemma profile.
+
+### 2. Add a fixture (optional)
+
+```text
+packages/evals/fixtures/my-workflow.json
+```
+
+Use for patch evals or golden baselines.
+
+### 3. Add a test file
+
+Create `packages/evals/test/harness/my-scenario.eval.test.ts`:
+
+```ts
+import { describe, expect, it } from "vitest"
+import { harnessCapabilityId } from "@ecp/types"
+import {
+  OLLAMA_GEMMA_1B_EVAL,
+  createHarnessOllamaWorkflowEnvironment,
+  ollamaEvalReady,
+} from "@ecp/evals"
+import { assertHarnessInvokeSuccess, harnessResult } from "./assert-harness-result.js"
+
+const readiness = await ollamaEvalReady()
+
+describe.skipIf(!readiness.ready)(
+  `my scenario (${readiness.profileId} ${readiness.model})`,
+  () => {
+    it("does something assertable", async () => {
+        const env = await createHarnessOllamaWorkflowEnvironment()
+        const ecp = await env.init()
+
+        const result = await ecp
+          .invoke(EVALS_WORKFLOW_AUTHORING_CAPABILITY)
+          .with({
+            request: "Natural language request for the model.",
+            model: OLLAMA_GEMMA_1B_EVAL.model,
+          })
+          .process()
+
+        assertHarnessInvokeSuccess(result)
+        const out = harnessResult(result)
+        expect(out.artifact.schema).toBe("@ecp.workflow")
+        await ecp.terminate()
+    })
+  }
+)
+```
+
+Eval tests use a **120s** default timeout on the Vitest `eval` project (`testTimeout` in [`vitest.config.ts`](../../vitest.config.ts)).
+
+Reuse [`assert-harness-result.ts`](test/harness/assert-harness-result.ts) for `assertHarnessInvokeSuccess`, `harnessTraceHint`, and `expectHarnessIntent`.
+
+### 4. Assert narrowly
+
+Prefer checks the model can reliably satisfy:
+
+- `result.success`, `artifact.schema`, `validation.valid`
+- `trace.decodeSucceeded`, `trace.outputFormat`
+- Concrete workflow fields (step count, label, input value) for patch cases
+
+### 5. Fast offline tests stay in `@ecp/core`
+
+Deterministic harness behavior (demo provider, mocks) belongs in `packages/core/test/harness/` and runs in `npm run test:unit`. Reserve `@ecp/evals` for real model scrutiny.
+
+## Changing the pinned model
+
+Edit [`src/profiles/ollama-gemma.ts`](src/profiles/ollama-gemma.ts) and update environment factories if bindings change. Re-run `ollama pull <new-tag>` locally and align CI model pull in [`.github/workflows/evals.yml`](../../.github/workflows/evals.yml).
+
+## More documentation
+
+See [Harness evaluation](../../docs/harness-eval.md) in `docs/`.

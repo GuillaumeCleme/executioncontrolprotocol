@@ -1,0 +1,23 @@
+{
+  "name": "@ecp/extension-storage",
+  "version": "1.0.0",
+  "description": "Key-value blob storage extension for ECP",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist", "README.md"],
+  "scripts": { "build": "tsc -b" },
+  "peerDependencies": {
+    "@ecp/core": "^1.0.0",
+    "@ecp/types": "^1.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@ecp/core": "1.0.0",
+    "@ecp/types": "1.0.0",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  }
+}
