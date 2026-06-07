@@ -21,7 +21,6 @@ export {
   HARNESS_BROWSER_NANO_DEMO_BINDING,
   getHarnessNanoConfig,
   type HarnessTask,
-  type HarnessProfile,
 } from "./harness-nano-config.js"
 
 export type { BrowserNanoHarnessInput } from "./browser-nano-harness.js"

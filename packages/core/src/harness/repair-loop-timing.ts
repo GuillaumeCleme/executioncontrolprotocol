@@ -1,22 +1,32 @@
-import { appendFileSync, mkdirSync } from "node:fs"
-import { dirname } from "node:path"
 import type { HarnessRepairAttempt } from "@ecp/types"
+
+function readHarnessEnv(name: string): string | undefined {
+  if (typeof process === "undefined" || !process.env) return undefined
+  return process.env[name]
+}
 
 /** Whether repair-loop per-phase timing is recorded and logged (`ECP_EVAL_DEBUG_TIMING=1`). @category Harness */
 export function isHarnessTimingDebugEnabled(): boolean {
-  const raw = process.env.ECP_EVAL_DEBUG_TIMING?.trim().toLowerCase()
+  const raw = readHarnessEnv("ECP_EVAL_DEBUG_TIMING")?.trim().toLowerCase()
   return raw === "1" || raw === "true" || raw === "on" || raw === "all"
 }
 
 function appendTimingNdjson(entry: Record<string, unknown>): void {
-  const file = process.env.ECP_EVAL_DEBUG_FILE?.trim()
+  if (typeof window !== "undefined") return
+  const file = readHarnessEnv("ECP_EVAL_DEBUG_FILE")?.trim()
   if (!file) return
-  try {
-    mkdirSync(dirname(file), { recursive: true })
-    appendFileSync(file, `${JSON.stringify(entry)}\n`, "utf8")
-  } catch {
-    // best-effort
-  }
+  void import("node:fs")
+    .then((fs) =>
+      import("node:path").then((path) => {
+        try {
+          fs.mkdirSync(path.dirname(file), { recursive: true })
+          fs.appendFileSync(file, `${JSON.stringify(entry)}\n`, "utf8")
+        } catch {
+          // best-effort
+        }
+      })
+    )
+    .catch(() => {})
 }
 
 function ms(n: number): string {

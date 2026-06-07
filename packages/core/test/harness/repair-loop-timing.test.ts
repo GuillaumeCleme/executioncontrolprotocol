@@ -1,5 +1,17 @@
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { runModelRepairLoop } from "../../src/harness/run-model-repair-loop.js"
 import { isHarnessTimingDebugEnabled } from "../../src/harness/repair-loop-timing.js"
+
+describe("isHarnessTimingDebugEnabled", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it("returns false when process is undefined (browser)", () => {
+    vi.stubGlobal("process", undefined)
+    expect(isHarnessTimingDebugEnabled()).toBe(false)
+  })
+})
 
 describe("runModelRepairLoop timing", () => {
   it("records generateMs and evaluateMs when ECP_EVAL_DEBUG_TIMING is set", async () => {

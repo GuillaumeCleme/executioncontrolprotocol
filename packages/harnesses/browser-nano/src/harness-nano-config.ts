@@ -1,5 +1,6 @@
 /**
  * Per-task Browser Nano harness binding defaults (shared repair/trace; task-specific output/context).
+ * Single EQL output surface for eval matrix and browser demo — provider is hot-swapped at invoke.
  * @category Harness
  */
 export const HARNESS_NANO_TRACE = {
@@ -28,9 +29,6 @@ export const HARNESS_TASKS = {
 } as const
 
 export type HarnessTask = (typeof HARNESS_TASKS)[keyof typeof HARNESS_TASKS]
-
-/** Binding profile: nano eval matrix vs browser demo UI. */
-export type HarnessProfile = "nano" | "browser-demo"
 
 const NANO_INTENT = {
   promptFixture: "intent-classification",
@@ -63,14 +61,8 @@ const NANO_ASSISTANT = {
   trace: HARNESS_NANO_TRACE,
 } as const
 
-/** Full harness binding config for a task (nano or browser-demo profile). */
-export function getHarnessNanoConfig(
-  task: HarnessTask,
-  profile: HarnessProfile = "nano"
-): Record<string, unknown> {
-  if (profile === "browser-demo") {
-    return getHarnessNanoConfig(task, "nano")
-  }
+/** Full harness binding config for a task (EQL outputs for all nano tasks). */
+export function getHarnessNanoConfig(task: HarnessTask): Record<string, unknown> {
   switch (task) {
     case HARNESS_TASKS.INTENT_CLASSIFICATION:
       return { ...NANO_INTENT }
@@ -85,16 +77,13 @@ export function getHarnessNanoConfig(
 
 /** Loose env binding for nano eval matrix environments. */
 export const HARNESS_NANO_BINDING = {
-  harnessProfile: "nano" as HarnessProfile,
   repair: HARNESS_NANO_REPAIR,
   trace: HARNESS_NANO_TRACE,
   context: SHARED_CONTEXT,
 } as const
 
-/** Loose env binding for browser demo (nano harness; provider swapped at invoke). */
-export const HARNESS_BROWSER_NANO_DEMO_BINDING = {
-  harnessProfile: "nano" as HarnessProfile,
-  repair: HARNESS_NANO_REPAIR,
-  trace: HARNESS_NANO_TRACE,
-  context: SHARED_CONTEXT,
-} as const
+/**
+ * Browser demo uses the same harness binding as eval matrix tests.
+ * Only the model provider (`.uses(...)` at invoke) differs in the demo app.
+ */
+export const HARNESS_BROWSER_NANO_DEMO_BINDING = HARNESS_NANO_BINDING

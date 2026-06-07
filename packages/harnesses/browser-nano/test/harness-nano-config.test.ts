@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { HARNESS_TASKS, getHarnessNanoConfig } from "../src/harness-nano-config.js"
+import {
+  HARNESS_BROWSER_NANO_DEMO_BINDING,
+  HARNESS_NANO_BINDING,
+  HARNESS_TASKS,
+  getHarnessNanoConfig,
+} from "../src/harness-nano-config.js"
 
 describe("HARNESS_TASKS", () => {
   it("exposes the three harness task ids", () => {
@@ -27,15 +32,20 @@ describe("getHarnessNanoConfig", () => {
     expect((config.output as { schema: string }).schema).toBe("@ecp.harness.reply")
   })
 
+  it("uses EQL output format for every task", () => {
+    for (const task of Object.values(HARNESS_TASKS)) {
+      const config = getHarnessNanoConfig(task)
+      expect((config.output as { format: string }).format).toBe("@ecp/format-eql")
+    }
+  })
+
   it("enables the repair loop with multiple attempts", () => {
     const config = getHarnessNanoConfig(HARNESS_TASKS.WORKFLOW_AUTHORING)
     expect((config.repair as { enabled: boolean; maxAttempts: number }).enabled).toBe(true)
     expect((config.repair as { maxAttempts: number }).maxAttempts).toBeGreaterThan(1)
   })
 
-  it("returns the nano config for the browser-demo profile (parity today)", () => {
-    const nano = getHarnessNanoConfig(HARNESS_TASKS.WORKFLOW_AUTHORING, "nano")
-    const demo = getHarnessNanoConfig(HARNESS_TASKS.WORKFLOW_AUTHORING, "browser-demo")
-    expect(demo).toEqual(nano)
+  it("browser demo binding matches eval matrix binding", () => {
+    expect(HARNESS_BROWSER_NANO_DEMO_BINDING).toBe(HARNESS_NANO_BINDING)
   })
 })

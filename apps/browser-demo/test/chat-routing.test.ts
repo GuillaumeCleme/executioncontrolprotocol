@@ -1,14 +1,15 @@
 import { describe, expect, it } from "vitest"
-import { looksLikeWorkflowRequest } from "../src/lib/chat-routing.js"
+import { ECP_INTENT_VALUES } from "@ecp/types"
+import { intentRoutesToAuthoring } from "../src/lib/chat-routing.js"
 
-describe("looksLikeWorkflowRequest", () => {
-  it("detects explicit workflow creation", () => {
-    expect(looksLikeWorkflowRequest("create a demo echo workflow")).toBe(true)
-    expect(looksLikeWorkflowRequest("build a workflow with echo step")).toBe(true)
+describe("intentRoutesToAuthoring", () => {
+  it("routes workflow intents to authoring", () => {
+    expect(intentRoutesToAuthoring(ECP_INTENT_VALUES.WORKFLOW_CREATE)).toBe(true)
+    expect(intentRoutesToAuthoring(ECP_INTENT_VALUES.WORKFLOW_PATCH)).toBe(true)
   })
 
-  it("does not treat general questions as workflow requests", () => {
-    expect(looksLikeWorkflowRequest("What is a workflow?")).toBe(false)
-    expect(looksLikeWorkflowRequest("How does validation work?")).toBe(false)
+  it("routes faq and general intents to assistant", () => {
+    expect(intentRoutesToAuthoring(ECP_INTENT_VALUES.FAQ)).toBe(false)
+    expect(intentRoutesToAuthoring(ECP_INTENT_VALUES.GENERAL)).toBe(false)
   })
 })

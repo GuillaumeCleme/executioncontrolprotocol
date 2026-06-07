@@ -89,12 +89,14 @@ Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, fai
 | **Workflow operations (smoke)** | `createHarnessOllamaWorkflowEnvironment()` | [`workflow-authoring.eval.test.ts`](../packages/evals/test/harness/workflow-authoring.eval.test.ts) |
 | **Intent routing (smoke)** | `createHarnessOllamaIntentEnvironment()` | [`intent-classification.eval.test.ts`](../packages/evals/test/harness/intent-classification.eval.test.ts) |
 
-| Scenario | Invoke | Encoding |
-| -------- | ------ | -------- |
-| Create workflow | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@ecp/format-json` |
-| Patch workflow | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@ecp/format-json` + `@ecp.patch` |
-| Intent | `@ecp/harness-browser-nano.evaluate` + `task: "intent-classification"` | `@ecp/format-json` |
-| Assistant | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-assistant"` | `@ecp/format-json` |
+| Scenario | Invoke | Model output encoding |
+| -------- | ------ | --------------------- |
+| Create workflow | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@ecp/format-eql` |
+| Patch workflow | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@ecp/format-eql` |
+| Intent | `@ecp/harness-browser-nano.evaluate` + `task: "intent-classification"` | `@ecp/format-eql` |
+| Assistant | `@ecp/harness-browser-nano.evaluate` + `task: "workflow-assistant"` | `@ecp/format-eql` |
+
+Browser demo and Chrome Nano matrix evals share **`HARNESS_NANO_BINDING`**; only the model provider (`.uses(...)` at invoke) differs. Run context in prompts may still use `@ecp/format-json` for encoding prior run results — that is separate from the model's structured reply format.
 
 Workflow environment: [`packages/evals/src/environments/harness-ollama-workflow.ts`](../packages/evals/src/environments/harness-ollama-workflow.ts).
 

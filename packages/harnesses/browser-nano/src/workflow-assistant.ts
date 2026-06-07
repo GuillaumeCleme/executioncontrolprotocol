@@ -158,8 +158,9 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
         lines.push("Workflow (summary):", workflowText, "")
       }
       if (repairText) {
+        const outputLabel = outputIsEql ? "EQL" : "JSON"
         lines.push(
-          "Previous attempt failed. Fix these issues and return corrected EQL only:",
+          `Previous attempt failed. Fix these issues and return corrected ${outputLabel} only:`,
           repairText,
           buildRepairHint(promptFixtureId)
         )
@@ -207,7 +208,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
               success: false,
               feedback: [
                 collectModelOutputFeedback(
-                  "Output echoed validation errors instead of a document. Return only harness reply EQL."
+                  "Output echoed validation errors instead of a document. Return only a valid harness reply."
                 ),
               ],
             }
@@ -260,8 +261,8 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
       if (!config.repair.safeReplyFallback) {
         throw err
       }
-      const safeReply = buildAssistantSafeReply()
-      const safeRaw = formatReplyAsEql(safeReply)
+      const fallbackReply = buildAssistantSafeReply()
+      const safeRaw = formatReplyAsEql(fallbackReply)
       const trace: HarnessInvokeResult["trace"] = {
         harness: BROWSER_NANO_HARNESS_ID,
         provider: ctx.uses,
@@ -274,7 +275,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@ecp", "evals-workfl
         ...(config.trace.includeRawOutput ? { rawOutput: lastRaw || safeRaw } : {}),
       }
       return {
-        artifact: safeReply,
+        artifact: fallbackReply,
         raw: lastRaw || safeRaw,
         validation: decodedValidationStub(false),
         trace,

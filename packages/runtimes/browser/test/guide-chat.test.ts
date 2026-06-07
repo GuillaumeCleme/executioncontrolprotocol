@@ -27,4 +27,19 @@ describe("@ecp/browser.guideChat", () => {
     expect(text).toMatch(/demo echo/i)
     await ecp.terminate()
   })
+
+  it("introduces capabilities for identity questions", async () => {
+    await registerBrowserDefaults()
+    const env = createBrowserDemoEnvironment("guide-chat-test-3")
+    const ecp = await createEcp(env)
+    const result = await ecp
+      .invoke("@ecp/browser.guideChat")
+      .with({ message: "What can you do?" })
+      .process()
+    expect(result.success).toBe(true)
+    const text = String((result.result as { text: string }).text)
+    expect(text).toMatch(/workflow/i)
+    expect(text).toMatch(/@ecp\/test\.echo/)
+    await ecp.terminate()
+  })
 })

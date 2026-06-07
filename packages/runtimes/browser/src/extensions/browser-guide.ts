@@ -29,6 +29,22 @@ function guideReply(message: string): string {
     ].join(" ")
   }
 
+  if (/what is ecp|execution control protocol/.test(lower)) {
+    return [
+      "ECP is the Execution Control Protocol: portable workflows run in governed environments",
+      "that bind tools, models, policies, and runtimes alongside MCP tool calling.",
+    ].join(" ")
+  }
+
+  if (/what can you do|what are you|who are you|help me|introduce/.test(lower)) {
+    return [
+      "I help you build and patch ECP workflows in this editor, explain ECP concepts,",
+      "and describe capabilities registered in this environment (for example @ecp/test.echo and @ecp/demo.*).",
+      "Ask about workflows, the environment panel, validation, or Chrome AI.",
+      'To generate a workflow, try: "Create a demo echo workflow."',
+    ].join(" ")
+  }
+
   if (lower.includes("workflow") || lower.includes("fluent") || lower.includes("step")) {
     return [
       "Workflows in ECP are built from steps bound to capabilities.",
@@ -76,10 +92,10 @@ function guideReply(message: string): string {
   }
 
   return [
-    "Welcome to the ECP Graph Editor. I am in **guided mode** (offline help).",
-    "You can explore the layout, edit Fluent when a workflow exists, and read the Mermaid graph.",
-    "Ask about workflows, environment, validation, or Chrome AI.",
-    'To generate a workflow, say something like: "Create a demo echo workflow."',
+    "Welcome to the ECP Graph Editor.",
+    "I can explain workflows, the environment, validation, Mermaid graphs, and Chrome AI.",
+    "Ask what I can do, what ECP is, or how to run a workflow.",
+    'To generate a workflow, say: "Create a demo echo workflow."',
   ].join(" ")
 }
 

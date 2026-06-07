@@ -53,7 +53,7 @@ Do not add demo UI types (e.g. `ProviderMode`) to `@ecp/browser`; keep them in t
 npm install
 npm run build
 npm run generate:schema   # writes packages/types/dist/schemas/*.json
-npm run check    # build + generate:schema + lint + typecheck:browser-demo + test:unit + test:integration + test:e2e
+npm run check    # build + generate:schema + lint + build:browser-demo + test:unit + test:integration + test:e2e
 npm run test:unit
 npm run test:eval      # harness evals (Ollama gemma3:1b; skips when unavailable)
 npm run eval:harness   # alias for test:eval
@@ -134,6 +134,8 @@ await ecp.run(manifest)
 ### Browser
 
 Local demo: `npm run dev:browser-demo` (see [apps/browser-demo/README.md](apps/browser-demo/README.md)). Spec: [docs/ecp-browser-demo.md](docs/ecp-browser-demo.md).
+
+**Browser demo chat:** FAQ and assistant replies must come from the bound model provider via `@ecp/harness-browser-nano` (`workflow-assistant` task). Do not route user-facing chat through template capabilities (`@ecp/browser.guideChat`) or other non-model stand-ins. Browser demo and eval matrix share **`HARNESS_NANO_BINDING`** (EQL outputs for intent, workflow, and assistant); only the provider (`.uses(...)` at invoke) differs in the demo app.
 
 **Mechanism vs policy:** `@ecp/browser-registry` handles freeze, `globalThis.ecp`, and auto-bind. **`@ecp/registry-control`** (bound as a policy) authorizes dynamic extension registration via `policy:pre` and `registryRequest` on the policy context.
 

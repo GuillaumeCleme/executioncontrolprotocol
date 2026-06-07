@@ -14,7 +14,6 @@ import type {
   ValidationResult,
   WorkflowManifest,
 } from "@ecp/types"
-import { ECP_INTENT_VALUES } from "@ecp/types"
 import type { Ecp } from "@ecp/core"
 import { compileWorkflowSource } from "@ecp/core/browser"
 import { ChatPanel } from "./components/ChatPanel.js"
@@ -29,7 +28,7 @@ import { useChatHistory } from "./hooks/useChatHistory.js"
 import { useChromeModelInstall } from "./hooks/useChromeModelInstall.js"
 import { useSplitPane } from "./hooks/useSplitPane.js"
 import { useWorkspaceLayout } from "./hooks/useWorkspaceLayout.js"
-import { looksLikeWorkflowRequest } from "./lib/chat-routing.js"
+import { intentRoutesToAuthoring } from "./lib/chat-routing.js"
 import { formatRegisteredCapabilitiesSummary } from "./lib/capability-summary.js"
 import { createDemoAppEnvironment } from "./lib/demo-environment.js"
 import {
@@ -267,8 +266,7 @@ export function App() {
 
     const harnessResult = invoked.result as HarnessInvokeResult<HarnessReply>
     logHarnessSuccess("workflow-assistant", harnessResult)
-    const answer = harnessResult.artifact.answer
-    chat.appendAgent(answer)
+    chat.appendAgent(harnessResult.artifact.answer)
     chat.setStatus(assistantMode === "guided" ? "Guided mode" : "Ready")
   }
 
@@ -302,19 +300,11 @@ export function App() {
     setPrompt("")
 
     try {
-      const cap =
-        assistantMode === "guided"
-          ? providerCapabilityId("demo")
-          : providerCapabilityId(providerMode)
+      const cap = providerCapabilityId(providerMode)
 
-      let routeToAuthoring = looksLikeWorkflowRequest(userRequest)
-
-      if (assistantMode === "guided" && !routeToAuthoring) {
-        const intent = await classifyIntent(userRequest, cap)
-        routeToAuthoring =
-          intent?.intent === ECP_INTENT_VALUES.WORKFLOW_CREATE ||
-          intent?.intent === ECP_INTENT_VALUES.WORKFLOW_PATCH
-      }
+      chat.setStatus("Classifying intent...")
+      const classified = await classifyIntent(userRequest, cap)
+      const routeToAuthoring = classified ? intentRoutesToAuthoring(classified.intent) : false
 
       if (!routeToAuthoring) {
         chat.setStatus("Answering...")

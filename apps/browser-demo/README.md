@@ -31,7 +31,11 @@ npm run build
 npm run dev:browser-demo
 ```
 
-`npm run check` typechecks this app via `npm run typecheck:browser-demo` (project TSC). `npm run dev` does not — use typecheck before shipping UI changes.
+Chat routes every message through `@ecp/harness-browser-nano`: **`intent-classification`** first, then **`workflow-authoring`** or **`workflow-assistant`** from the classified intent. The demo uses the same harness binding as eval matrix tests (`HARNESS_NANO_BINDING` / EQL outputs); only the provider id is swapped at invoke (e.g. `@ecp/chrome-ai.generate`).
+
+```sh
+npm run build:browser-demo
+```
 
 Open the URL Vite prints (default `http://localhost:5173`).
 

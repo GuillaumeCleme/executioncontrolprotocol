@@ -1,16 +1,11 @@
-/** Whether a guided-mode message should trigger workflow authoring. */
-export function looksLikeWorkflowRequest(message: string): boolean {
-  const lower = message.toLowerCase()
-  if (lower.includes("patch") || lower.includes("update workflow") || lower.includes("change workflow")) {
-    return true
-  }
-  if (
-    lower.includes("create") ||
-    lower.includes("build") ||
-    lower.includes("generate") ||
-    lower.includes("add step")
-  ) {
-    return lower.includes("workflow") || lower.includes("echo") || lower.includes("step")
-  }
-  return false
+import { ECP_INTENT_VALUES, type EcpIntentValue } from "@ecp/types"
+
+/**
+ * Map harness {@link EcpIntentValue} to workflow-authoring vs workflow-assistant.
+ * Routing policy lives in the demo shell; classification comes from the nano harness.
+ */
+export function intentRoutesToAuthoring(intent: EcpIntentValue): boolean {
+  return (
+    intent === ECP_INTENT_VALUES.WORKFLOW_CREATE || intent === ECP_INTENT_VALUES.WORKFLOW_PATCH
+  )
 }
