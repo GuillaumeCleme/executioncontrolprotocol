@@ -11,3 +11,7 @@ coverage/
 
 # Local config files
 ecp.config.yaml
+
+# Secrets
+.env
+apps/browser-demo/.env

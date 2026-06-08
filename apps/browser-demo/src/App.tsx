@@ -37,6 +37,7 @@ import {
   logHarnessSuccess,
 } from "./lib/harness-invoke-debug.js"
 import { environmentSourceFromDescriptor } from "./lib/environment-source.js"
+import { logUserPrompt } from "./lib/log-user-prompt.js"
 import {
   providerCapabilityId,
   readStoredProviderMode,
@@ -296,6 +297,10 @@ export function App() {
     if (!ecp || !prompt.trim()) return
     const userRequest = prompt.trim()
     chat.appendUser(userRequest)
+    void logUserPrompt(userRequest, {
+      assistantMode,
+      providerMode,
+    })
     chat.setStatus("Thinking...")
     setPrompt("")
 
