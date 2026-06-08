@@ -140,3 +140,4 @@ export {
   buildWorkflowPatchSystemPrompt,
 } from "./harness/prompts/build-system-prompt.js"
 export { buildRepairHint } from "./harness/prompts/build-repair-hint.js"
+export * from "./harness/authoring/index.js"

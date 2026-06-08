@@ -27,7 +27,7 @@
     "test": "npm run build && npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:watch": "vitest --project unit",
     "test:coverage": "vitest run --project unit --coverage",
-    "test:unit": "vitest run --project unit",
+    "test:unit": "npm run generate:schema && vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "test:e2e": "vitest run --project e2e",
     "test:eval": "vitest run --project eval",
