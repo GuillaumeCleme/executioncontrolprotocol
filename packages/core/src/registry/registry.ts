@@ -1,4 +1,4 @@
-import type { CapabilityId, NamespacedId, RegistryRegistrationRequest } from "@ecp/types"
+import type { CapabilityId, NamespacedId, RegistryRegistrationRequest } from "@executioncontextprotocol/types"
 import type {
   CapabilityDefinition,
   ExtensionDefinition,

@@ -1,4 +1,4 @@
-import type { EcpSchema } from "@ecp/types"
+import type { EcpSchema } from "@executioncontextprotocol/types"
 
 /**
  * Infer ECP schema discriminator from a document object.

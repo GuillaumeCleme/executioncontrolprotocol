@@ -8,7 +8,7 @@ import {
   OLLAMA_QWEN_CODER_15B_EVAL,
   runEvalCase,
   setActiveEvalProvider,
-} from "@ecp/evals"
+} from "@executioncontextprotocol/evals"
 
 setActiveEvalProvider(OLLAMA_QWEN_CODER_15B_EVAL)
 

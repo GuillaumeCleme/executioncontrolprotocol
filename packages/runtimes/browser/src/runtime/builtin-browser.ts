@@ -1,14 +1,14 @@
-import { defineRuntime, globalRegistry } from "@ecp/core"
+import { defineRuntime, globalRegistry } from "@executioncontextprotocol/core"
 import { z } from "zod"
 import { BrowserRuntimeExecutor } from "./browser-executor.js"
 
 export { BrowserRuntimeExecutor } from "./browser-executor.js"
 
 /** Browser runtime id. @category Runtime */
-export const BROWSER_RUNTIME_ID = "@ecp/browser" as const
+export const BROWSER_RUNTIME_ID = "@executioncontextprotocol/browser" as const
 
 /** Built-in browser runtime definition. @category Runtime */
-export const browserRuntimeDefinition = defineRuntime("@ecp", "browser")
+export const browserRuntimeDefinition = defineRuntime("@executioncontextprotocol", "browser")
   .withConfig({
     maxConcurrency: z.number().optional(),
     allowParallel: z.boolean().default(true),
@@ -16,7 +16,7 @@ export const browserRuntimeDefinition = defineRuntime("@ecp", "browser")
   })
   .withExecutor(new BrowserRuntimeExecutor())
 
-/** Register `@ecp/browser` on the global registry. */
+/** Register `@executioncontextprotocol/browser` on the global registry. */
 export async function registerBrowserRuntime(registry = globalRegistry): Promise<void> {
   if (!registry.getRuntime(BROWSER_RUNTIME_ID)) {
     await registry.registerRuntime(browserRuntimeDefinition)

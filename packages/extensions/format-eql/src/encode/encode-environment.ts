@@ -1,5 +1,5 @@
-import type { EnvironmentManifest } from "@ecp/types"
-import type { EcpFormatOptions } from "@ecp/types"
+import type { EnvironmentManifest } from "@executioncontextprotocol/types"
+import type { EcpFormatOptions } from "@executioncontextprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { EqlWriter, formatLiteral } from "./writer.js"
 

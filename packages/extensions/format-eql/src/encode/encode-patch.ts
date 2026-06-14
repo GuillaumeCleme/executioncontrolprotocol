@@ -1,6 +1,6 @@
-import type { EcpPatchDocument, InputValue, StepNode } from "@ecp/types"
+import type { EcpPatchDocument, InputValue, StepNode } from "@executioncontextprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
-import type { EcpFormatOptions } from "@ecp/types"
+import type { EcpFormatOptions } from "@executioncontextprotocol/types"
 import { EqlWriter, formatInputValue, formatLiteral } from "./writer.js"
 
 interface StepUpdateFields {

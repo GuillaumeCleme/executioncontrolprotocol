@@ -3,8 +3,8 @@ import {
   LATEST_ECP_VERSION,
   type DecodeResult,
   type EcpSchema,
-} from "@ecp/types"
-import { decodeFailure, ecpPatchDocumentSchema, validateWorkflow, type UtilityCapabilityContext } from "@ecp/core"
+} from "@executioncontextprotocol/types"
+import { decodeFailure, ecpPatchDocumentSchema, validateWorkflow, type UtilityCapabilityContext } from "@executioncontextprotocol/core"
 import type { EqlDecodeInput } from "../schemas.js"
 import { EQL_ERROR_CODES, eqlIssue } from "./diagnostics.js"
 import { detectHeader, parseEql } from "./parser.js"

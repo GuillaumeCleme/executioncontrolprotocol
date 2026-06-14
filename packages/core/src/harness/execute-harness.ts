@@ -5,7 +5,7 @@ import {
   type CapabilityId,
   type HarnessCapabilityId,
   type InvokeResult,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type { Environment } from "../environment/environment.js"
 import { createUtilityCapabilityContext } from "../encoding/utility-context.js"
 import { evaluatePolicies } from "../runtime/policy-engine.js"
@@ -28,7 +28,7 @@ function invokeFailure(
   capabilityId: HarnessCapabilityId,
   code: string,
   message: string,
-  validation?: import("@ecp/types").ValidationResult
+  validation?: import("@executioncontextprotocol/types").ValidationResult
 ): InvokeResult {
   return {
     schema: "@ecp.invoke.result",

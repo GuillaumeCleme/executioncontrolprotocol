@@ -1,4 +1,4 @@
-import type { PendingMutation, StoreStateHandle } from "@ecp/types"
+import type { PendingMutation, StoreStateHandle } from "@executioncontextprotocol/types"
 import { getAtPath, setAtPath } from "../util/path.js"
 
 function randomUUID(): string {

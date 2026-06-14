@@ -5,7 +5,7 @@ import type {
   PatchResult,
   ValidationIssue,
   ValidationResult,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 
 function issueKey(issue: ValidationIssue): string {
   return `${issue.path ?? ""}|${issue.code}|${issue.message}`

@@ -2,12 +2,12 @@ import {
   catalogHarness,
   defineHarness,
   type HarnessCapabilityContext,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   type HarnessEvaluateOutput,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { z } from "zod"
 import { getHarnessNanoConfig, HARNESS_TASKS, type HarnessTask } from "./harness-nano-config.js"
 import { invokeIntentClassification } from "./intent-classification.js"
@@ -63,7 +63,7 @@ function handlerContextForTask(
   }
 }
 
-const browserNanoHarnessDefinition = defineHarness("@ecp", "harness-browser-nano")
+const browserNanoHarnessDefinition = defineHarness("@executioncontextprotocol", "harness-browser-nano")
   .withConfig(harnessBindingSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -94,7 +94,7 @@ const browserNanoHarnessDefinition = defineHarness("@ecp", "harness-browser-nano
   })
   .build()
 
-/** Register Browser Nano harness (`@ecp/harness-browser-nano`). @category Harness */
+/** Register Browser Nano harness (`@executioncontextprotocol/harness-browser-nano`). @category Harness */
 export function registerBrowserNanoHarness(): void {
   catalogHarness(browserNanoHarnessDefinition)
 }

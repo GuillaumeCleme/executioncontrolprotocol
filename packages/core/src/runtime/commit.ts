@@ -1,5 +1,5 @@
-import type { CommitMode } from "@ecp/types"
-import type { PendingMutation } from "@ecp/types"
+import type { CommitMode } from "@executioncontextprotocol/types"
+import type { PendingMutation } from "@executioncontextprotocol/types"
 import { getAtPath, setAtPath } from "../util/path.js"
 
 /** Apply staged mutations and step output commit. */

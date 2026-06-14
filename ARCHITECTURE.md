@@ -30,9 +30,9 @@ ECP uses three layers of composition:
 - **Definition**: declares reusable implementation/contract  
   `defineExtension(...)`, `defineRuntime(...)`, `definePolicy(...)`
 - **Binding**: configures a definition inside an environment  
-  `extension("@ecp/memory").with({ ... })`, `runtime("@ecp/local").with({ ... })`
+  `extension("@executioncontextprotocol/memory").with({ ... })`, `runtime("@executioncontextprotocol/local").with({ ... })`
 - **Invocation**: calls a capability from inside a workflow  
-  `step("@ecp/memory.search").with(input).as("signals")`
+  `step("@executioncontextprotocol/memory.search").with(input).as("signals")`
 
 ------------------------------------------------------------------------
 
@@ -50,8 +50,8 @@ definitions are available.
 
 Key boundary:
 
-> **Extensions never import hosts.** Extension packages depend on `@ecp/types` +
-> `@ecp/core` only. Host packages (`@ecp/node`, `@ecp/browser`) wrap core.
+> **Extensions never import hosts.** Extension packages depend on `@executioncontextprotocol/types` +
+> `@executioncontextprotocol/core` only. Host packages (`@executioncontextprotocol/node`, `@executioncontextprotocol/browser`) wrap core.
 
 ------------------------------------------------------------------------
 
@@ -74,17 +74,17 @@ Policies can:
 
 ## Package architecture (at a glance)
 
-- `@ecp/types`: protocol types + JSON Schema artifacts
-- `@ecp/core`: runtime-agnostic fluent API + environment + local engine
-- `@ecp/node`: Node runtime host
-- `@ecp/browser`: browser runtime host (not the demo UI)
-- `@ecp/extensions/*`: first-party extensions (written like third-party extensions)
-- `@ecp/policies`: standard policies (budget, approval, state-control)
-- `@ecp/mcp`: MCP adapter exposing an environment to agents
-- `@ecp/cli`: CLI for compile/validate/describe/search/run/encode/decode
-- `@ecp/harnesses-browser-nano`: harness tasks used by demo + evals
-- `@ecp/evals` (private): harness/provider eval fixtures + matrix tests
-- `apps/browser-demo`: reference UI app using the browser runtime + harnesses
+- `@executioncontextprotocol/types`: protocol types + JSON Schema artifacts
+- `@executioncontextprotocol/core`: runtime-agnostic fluent API + environment + local engine
+- `@executioncontextprotocol/node`: Node runtime host
+- `@executioncontextprotocol/browser`: browser runtime host (not the demo UI)
+- `@executioncontextprotocol/extensions/*`: first-party extensions (written like third-party extensions)
+- `@executioncontextprotocol/policies`: standard policies (budget, approval, state-control)
+- `@executioncontextprotocol/mcp`: MCP adapter exposing an environment to agents
+- `@executioncontextprotocol/cli`: CLI for compile/validate/describe/search/run/encode/decode
+- `@executioncontextprotocol/harnesses-browser-nano`: harness tasks used by demo + evals
+- `@executioncontextprotocol/evals` (private): harness/provider eval fixtures + matrix tests
+- [executioncontrolprotocol-browser-demo](https://github.com/GuillaumeCleme/executioncontrolprotocol-browser-demo): reference UI app using the browser runtime + harnesses
 
 ------------------------------------------------------------------------
 

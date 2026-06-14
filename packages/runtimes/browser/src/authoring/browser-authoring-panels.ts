@@ -1,6 +1,6 @@
-import type { Ecp } from "@ecp/core"
-import { normalizeWorkflowManifest } from "@ecp/core"
-import type { WorkflowManifest } from "@ecp/types"
+import type { Ecp } from "@executioncontextprotocol/core"
+import { normalizeWorkflowManifest } from "@executioncontextprotocol/core"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
 import type { AuthoringPanels } from "./browser-authoring-service.js"
 
 /** Minimal ECP surface for panel encoding. @category Authoring */
@@ -20,11 +20,11 @@ export async function encodeAuthoringPanels(
   const [fluent, toon, mermaid] = await Promise.all([
     ecp
       .encode(canonical)
-      .uses("@ecp/format-fluent")
-      .with({ target: "browser", importFrom: "@ecp/browser" })
+      .uses("@executioncontextprotocol/format-fluent")
+      .with({ target: "browser", importFrom: "@executioncontextprotocol/browser" })
       .process(),
-    ecp.encode(canonical).uses("@ecp/format-toon").with({ headers: false, compact: true }).process(),
-    ecp.encode(canonical).uses("@ecp/format-mermaid").with({ direction: "LR" }).process(),
+    ecp.encode(canonical).uses("@executioncontextprotocol/format-toon").with({ headers: false, compact: true }).process(),
+    ecp.encode(canonical).uses("@executioncontextprotocol/format-mermaid").with({ direction: "LR" }).process(),
   ])
 
   return {

@@ -1,4 +1,4 @@
-import type { EcpPatchInput, EcpSchema, PatchResult } from "@ecp/types"
+import type { EcpPatchInput, EcpSchema, PatchResult } from "@executioncontextprotocol/types"
 import { applyPatch } from "./apply-patch.js"
 
 /** Fluent builder for `ecp.patch()`. @category Patch */
@@ -29,7 +29,7 @@ export function createPatchBuilder<T>(
         throw new Error("Patch operation requires .with(patchInput) before .process()")
       }
       return applyPatch(
-        document as import("@ecp/types").WorkflowManifest,
+        document as import("@executioncontextprotocol/types").WorkflowManifest,
         patchInput,
         targetSchema
       ) as PatchResult<T>

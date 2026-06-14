@@ -1,4 +1,4 @@
-import type { HarnessId } from "@ecp/types"
+import type { HarnessId } from "@executioncontextprotocol/types"
 import type { Environment } from "../environment/environment.js"
 import type { ResolvedHarnessBinding } from "../environment/bindings.js"
 

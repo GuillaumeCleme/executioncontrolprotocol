@@ -1,6 +1,6 @@
-import { harness } from "@ecp/core"
-import { createBrowserDemoEnvironment, registerBrowserDefaults } from "@ecp/browser"
-import { registerTestExtension } from "@ecp/core"
+import { harness } from "@executioncontextprotocol/core"
+import { createBrowserDemoEnvironment, registerBrowserDefaults } from "@executioncontextprotocol/browser"
+import { registerTestExtension } from "@executioncontextprotocol/core"
 import { BROWSER_NANO_HARNESS_ID } from "../harness-bindings.js"
 import { HARNESS_NANO_BINDING } from "../harness-eval-config.js"
 import type { EvalProviderProfile } from "../profiles/eval-provider.js"
@@ -28,7 +28,7 @@ export async function createHarnessBrowserMatrixEnvironment(provider: EvalProvid
       .uses(provider.generateCapability)
       .with({ ...HARNESS_NANO_BINDING }),
   ])
-  env.addExtensionBinding("@ecp/test", {})
-  env.addExtensionBinding("@ecp/format-json", {})
+  env.addExtensionBinding("@executioncontextprotocol/test", {})
+  env.addExtensionBinding("@executioncontextprotocol/format-json", {})
   return env
 }

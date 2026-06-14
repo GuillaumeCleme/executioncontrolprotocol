@@ -8,7 +8,7 @@ describe("encode workflow to EQL", () => {
     const text = encodeWorkflowToEql(manifest)
     expect(text).toContain("ECP @ecp.workflow 1.0")
     expect(text).toContain('WORKFLOW echo-test "Echo test"')
-    expect(text).toContain("STEP echo USES @ecp/test.echo")
+    expect(text).toContain("STEP echo USES @executioncontextprotocol/test.echo")
     expect(text).toContain("LABEL Echo")
     expect(text).toMatch(/WITH value = "hello from fluent API"/)
     expect(text).toContain("AS echo")

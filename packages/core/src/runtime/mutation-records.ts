@@ -1,4 +1,4 @@
-import type { MutationRecord, PendingMutation } from "@ecp/types"
+import type { MutationRecord, PendingMutation } from "@executioncontextprotocol/types"
 
 function getAtPath(obj: Record<string, unknown>, path: string): unknown {
   const parts = path.split(".")

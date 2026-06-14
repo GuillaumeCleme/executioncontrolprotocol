@@ -6,8 +6,8 @@ import {
   ecpEncodeResultSchema,
 } from "../encoding/schemas.js"
 import { decodeJson, encodeJson } from "../encoding/json-codec.js"
-import type { EcpDecodeInput, EcpEncodeInput, EcpSchema } from "@ecp/types"
-import { ecpIntentSchema } from "@ecp/types"
+import type { EcpDecodeInput, EcpEncodeInput, EcpSchema } from "@executioncontextprotocol/types"
+import { ecpIntentSchema } from "@executioncontextprotocol/types"
 import { validateWorkflow } from "../validate/workflow.js"
 import { ecpPatchDocumentSchema } from "../patch/patch-document.js"
 import { emptyValidationResult } from "../validate/workflow-schema.js"
@@ -16,9 +16,9 @@ import { zodIssuesToValidationIssues } from "../validate/zod-mapper.js"
 function validateDecodedDocument(
   document: unknown,
   targetSchema?: EcpSchema
-): import("@ecp/types").ValidationResult {
+): import("@executioncontextprotocol/types").ValidationResult {
   if (targetSchema === "@ecp.workflow") {
-    return validateWorkflow(document as import("@ecp/types").WorkflowManifest)
+    return validateWorkflow(document as import("@executioncontextprotocol/types").WorkflowManifest)
   }
   if (targetSchema === "@ecp.patch") {
     const parsed = ecpPatchDocumentSchema.safeParse(document)
@@ -38,9 +38,9 @@ function validateDecodedDocument(
 }
 
 /** Core JSON format extension. @category Formats */
-export const formatJsonExtension = defineExtension("@ecp", "format-json")
+export const formatJsonExtension = defineExtension("@executioncontextprotocol", "format-json")
   .withCapabilities([
-    capabilityFor("@ecp/format-json", "encode")
+    capabilityFor("@executioncontextprotocol/format-json", "encode")
       .withInput(ecpEncodeInputSchema)
       .withOutput(ecpEncodeResultSchema)
       .withHandler((input) =>
@@ -50,7 +50,7 @@ export const formatJsonExtension = defineExtension("@ecp", "format-json")
           sourceVersion: (input as EcpEncodeInput).sourceVersion,
         })
       ),
-    capabilityFor("@ecp/format-json", "decode")
+    capabilityFor("@executioncontextprotocol/format-json", "decode")
       .withInput(ecpDecodeInputSchema)
       .withOutput(ecpDecodeResultSchema)
       .withHandler((input) => {

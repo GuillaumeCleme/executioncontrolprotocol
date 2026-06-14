@@ -1,7 +1,7 @@
-import { harnessCapabilityId, type HarnessCapabilityId, type HarnessId } from "@ecp/types"
+import { harnessCapabilityId, type HarnessCapabilityId, type HarnessId } from "@executioncontextprotocol/types"
 
 /** Browser Nano harness id (small on-device models; demo + eval matrix). @category Harness */
-export const BROWSER_NANO_HARNESS_ID = "@ecp/harness-browser-nano" as HarnessId
+export const BROWSER_NANO_HARNESS_ID = "@executioncontextprotocol/harness-browser-nano" as HarnessId
 
 /** Evaluate capability for all Browser Nano harness tasks. @category Harness */
 export const BROWSER_NANO_HARNESS_CAPABILITY: HarnessCapabilityId =

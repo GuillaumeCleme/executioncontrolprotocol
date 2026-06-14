@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
-import { environment, extension, harness, runtime, registerCoreFormats, registerTestExtension } from "@ecp/core"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
-import { registerDemoExtension } from "@ecp/demo"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { registerFormatToonExtension } from "@ecp/format-toon"
-import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import { environment, extension, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontextprotocol/core"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import type { HarnessInvokeResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY,
   BROWSER_NANO_HARNESS_ID,
   registerBrowserNanoHarnesses,
-} from "@ecp/evals"
+} from "@executioncontextprotocol/evals"
 import { assertHarnessInvokeSuccess } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
@@ -30,16 +30,16 @@ async function createEvalAuthoringDemoEnv() {
   return environment("evals-harness-authoring-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([
-      extension("@ecp/format-eql").with({}),
-      extension("@ecp/format-toon").with({}),
-      extension("@ecp/test").with({}),
-      extension("@ecp/demo").with({}),
+      extension("@executioncontextprotocol/format-eql").with({}),
+      extension("@executioncontextprotocol/format-toon").with({}),
+      extension("@executioncontextprotocol/test").with({}),
+      extension("@executioncontextprotocol/demo").with({}),
     ])
     .withHarnesses([
       harness(BROWSER_NANO_HARNESS_ID)
-        .uses("@ecp/demo.generate")
+        .uses("@executioncontextprotocol/demo.generate")
         .with({
-          output: { schema: "@ecp.workflow", format: "@ecp/format-eql", validate: true },
+          output: { schema: "@ecp.workflow", format: "@executioncontextprotocol/format-eql", validate: true },
         }),
     ])
 }

@@ -1,4 +1,4 @@
-import { ECP_ENCODING_ERROR_CODES } from "@ecp/types"
+import { ECP_ENCODING_ERROR_CODES } from "@executioncontextprotocol/types"
 import type { CapabilityDefinition } from "../definitions/types.js"
 import type { Registry } from "../registry/registry.js"
 import {

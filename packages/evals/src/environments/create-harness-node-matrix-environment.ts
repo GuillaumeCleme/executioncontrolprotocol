@@ -1,10 +1,10 @@
-import { environment, harness, runtime, registerCoreFormats, registerTestExtension } from "@ecp/core"
-import { registerDemoExtension } from "@ecp/demo"
+import { environment, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontextprotocol/core"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { registerBrowserNanoHarnesses, BROWSER_NANO_HARNESS_ID } from "../harness-bindings.js"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
-import { registerOllamaExtension } from "@ecp/extension-ollama"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { registerFormatToonExtension } from "@ecp/format-toon"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
+import { registerOllamaExtension } from "@executioncontextprotocol/extension-ollama"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
 import { HARNESS_NANO_BINDING } from "../harness-eval-config.js"
 import type { EvalProviderProfile } from "../profiles/eval-provider.js"
 import { matrixExtensionBindings, providerExtensionBinding } from "./shared-eval-extensions.js"
@@ -13,7 +13,7 @@ async function registerNodeMatrixEval(provider: EvalProviderProfile): Promise<vo
   await registerCoreFormats()
   registerBrowserNanoHarnesses()
   await registerNodeRuntime()
-  if (provider.providerId === "@ecp/ollama") {
+  if (provider.providerId === "@executioncontextprotocol/ollama") {
     await registerOllamaExtension()
   }
   await registerFormatEqlExtension()

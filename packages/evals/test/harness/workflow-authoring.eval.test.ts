@@ -2,14 +2,14 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
-import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import type { HarnessInvokeResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
   OLLAMA_GEMMA_1B_EVAL,
   createHarnessOllamaWorkflowEnvironment,
   ollamaEvalReady,
-} from "@ecp/evals"
-import { HARNESS_TASKS } from "@ecp/evals"
+} from "@executioncontextprotocol/evals"
+import { HARNESS_TASKS } from "@executioncontextprotocol/evals"
 import { assertHarnessInvokeSuccess, harnessResult, harnessTraceHint } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
@@ -28,7 +28,7 @@ describe.skipIf(!readiness.ready)(
         .with({
           task: HARNESS_TASKS.WORKFLOW_AUTHORING,
           request:
-            "Create a minimal echo workflow with one step using @ecp/test.echo and input value hello.",
+            "Create a minimal echo workflow with one step using @executioncontextprotocol/test.echo and input value hello.",
           model: OLLAMA_GEMMA_1B_EVAL.model,
         })
         .process()
@@ -38,7 +38,7 @@ describe.skipIf(!readiness.ready)(
       expect(harnessOutput.artifact.schema, harnessTraceHint(harnessOutput)).toBe("@ecp.workflow")
       expect(harnessOutput.artifact.steps?.length ?? 0).toBeGreaterThanOrEqual(1)
       expect(harnessOutput.trace.decodeSucceeded).toBe(true)
-      expect(harnessOutput.trace.outputFormat).toBe("@ecp/format-eql")
+      expect(harnessOutput.trace.outputFormat).toBe("@executioncontextprotocol/format-eql")
       expect(harnessOutput.validation?.valid ?? true).toBe(true)
 
       await ecp.terminate()

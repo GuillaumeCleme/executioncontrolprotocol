@@ -1,5 +1,5 @@
-import type { HarnessReply } from "@ecp/types"
-import type { EcpFormatOptions } from "@ecp/types"
+import type { HarnessReply } from "@executioncontextprotocol/types"
+import type { EcpFormatOptions } from "@executioncontextprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { EqlWriter, formatLiteral } from "./writer.js"
 

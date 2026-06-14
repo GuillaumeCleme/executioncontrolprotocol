@@ -10,7 +10,7 @@
       "type": "step",
       "id": "echo",
       "label": "Echo",
-      "uses": "@ecp/test.echo",
+      "uses": "@executioncontextprotocol/test.echo",
       "input": { "value": "seed" },
       "as": "echo"
     },
@@ -18,7 +18,7 @@
       "type": "step",
       "id": "summarize",
       "label": "Summarize",
-      "uses": "@ecp/demo.summarize",
+      "uses": "@executioncontextprotocol/demo.summarize",
       "input": { "payload": { "$ref": "state.echo.output" } },
       "as": "summary"
     }

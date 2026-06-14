@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
-import { globalRegistry } from "@ecp/core"
+import { globalRegistry } from "@executioncontextprotocol/core"
 import { registerAllExtensions, BUNDLED_EXTENSION_IDS } from "../src/index.js"
 
-describe("@ecp/extensions registerAllExtensions", () => {
+describe("@executioncontextprotocol/extensions registerAllExtensions", () => {
   it("registers every bundled extension id", async () => {
     await registerAllExtensions()
     for (const id of BUNDLED_EXTENSION_IDS) {
@@ -11,13 +11,13 @@ describe("@ecp/extensions registerAllExtensions", () => {
   })
 
   it("includes the harness format extensions that encode workflows", () => {
-    expect(BUNDLED_EXTENSION_IDS).toContain("@ecp/format-eql")
-    expect(BUNDLED_EXTENSION_IDS).toContain("@ecp/format-mermaid")
-    expect(BUNDLED_EXTENSION_IDS).toContain("@ecp/format-toon")
+    expect(BUNDLED_EXTENSION_IDS).toContain("@executioncontextprotocol/format-eql")
+    expect(BUNDLED_EXTENSION_IDS).toContain("@executioncontextprotocol/format-mermaid")
+    expect(BUNDLED_EXTENSION_IDS).toContain("@executioncontextprotocol/format-toon")
   })
 
   it("does not bundle host-specific or credentialed providers", () => {
-    expect(BUNDLED_EXTENSION_IDS).not.toContain("@ecp/chrome-ai")
-    expect(BUNDLED_EXTENSION_IDS).not.toContain("@ecp/claude")
+    expect(BUNDLED_EXTENSION_IDS).not.toContain("@executioncontextprotocol/chrome-ai")
+    expect(BUNDLED_EXTENSION_IDS).not.toContain("@executioncontextprotocol/claude")
   })
 })

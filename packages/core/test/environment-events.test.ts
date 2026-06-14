@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest"
 import { hook, defineExtension } from "../src/index.js"
 import { extension, runtime } from "../src/index.js"
-import { NODE_RUNTIME_ID, registerNodeRuntime } from "@ecp/node"
+import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontextprotocol/node"
 import { environment } from "../src/environment/environment.js"
 import { globalRegistry } from "../src/registry/registry.js"
 
 const events: string[] = []
 
-const spyExt = defineExtension("@ecp", "env-spy")
+const spyExt = defineExtension("@executioncontextprotocol", "env-spy")
   .withConfig({})
   .withHooks([
     hook("environment:created", async (ctx) => {
@@ -32,12 +32,12 @@ describe("environment lifecycle", () => {
   it("emits configuring and ready on init, beforeRun on run, terminate on terminate", async () => {
     events.length = 0
     await registerNodeRuntime()
-    if (!globalRegistry.getExtension("@ecp/env-spy")) {
+    if (!globalRegistry.getExtension("@executioncontextprotocol/env-spy")) {
       await globalRegistry.registerExtension(spyExt)
     }
     const env = environment("evt")
       .withRuntime(runtime(NODE_RUNTIME_ID))
-      .withExtensions([extension("@ecp/env-spy").with({})])
+      .withExtensions([extension("@executioncontextprotocol/env-spy").with({})])
 
     const ecp = await env.init()
     expect(events).toContain("environment:created")

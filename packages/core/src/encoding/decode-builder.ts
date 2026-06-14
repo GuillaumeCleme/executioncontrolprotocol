@@ -4,8 +4,8 @@ import type {
   EcpSchema,
   EcpVersion,
   NamespacedId,
-} from "@ecp/types"
-import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION, ecpIntentSchema } from "@ecp/types"
+} from "@executioncontextprotocol/types"
+import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION, ecpIntentSchema } from "@executioncontextprotocol/types"
 import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
 import { EcpError } from "./errors.js"
 import { invokeDecodeCapability } from "./invoke-utility.js"
@@ -38,9 +38,9 @@ interface DecodeState {
 function validateDecodedDocument(
   document: unknown,
   targetSchema?: EcpSchema
-): import("@ecp/types").ValidationResult {
+): import("@executioncontextprotocol/types").ValidationResult {
   if (targetSchema === "@ecp.workflow") {
-    return validateWorkflow(document as import("@ecp/types").WorkflowManifest)
+    return validateWorkflow(document as import("@executioncontextprotocol/types").WorkflowManifest)
   }
   if (targetSchema === "@ecp.patch") {
     const parsed = ecpPatchDocumentSchema.safeParse(document)
@@ -97,7 +97,7 @@ export function createDecodeBuilder(
       if (!state.extensionId) {
         throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODER_NOT_FOUND, {
           message:
-            "Decode requires .uses(formatterId), e.g. .uses(\"@ecp/format-json\") or .uses(\"@ecp/format-toon\").",
+            "Decode requires .uses(formatterId), e.g. .uses(\"@executioncontextprotocol/format-json\") or .uses(\"@executioncontextprotocol/format-toon\").",
         })
       }
 

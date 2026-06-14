@@ -1,4 +1,4 @@
-import type { EnvironmentDescriptor } from "@ecp/types"
+import type { EnvironmentDescriptor } from "@executioncontextprotocol/types"
 
 /** Compact capability row for model prompts. @category Harness */
 export interface CompactCapabilityRow {
@@ -55,7 +55,7 @@ export function summarizeEnvironmentDescriptor(
 export type EnvironmentSummaryFormat = "plain" | "eql-create" | "eql-patch"
 
 function isWorkflowStepCapability(capId: string): boolean {
-  return capId.startsWith("@ecp/test.") || capId.startsWith("@ecp/demo.")
+  return capId.startsWith("@executioncontextprotocol/test.") || capId.startsWith("@executioncontextprotocol/demo.")
 }
 
 function workflowStepCapabilities(summary: CompactEnvironmentSummary): CompactCapabilityRow[] {

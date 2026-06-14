@@ -1,4 +1,4 @@
-import { ECP_FORMATS, LATEST_ECP_VERSION } from "@ecp/types"
+import { ECP_FORMATS, LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 import type {
   DecodeResult,
   EcpFormatOptions,
@@ -7,7 +7,7 @@ import type {
   EcpVersion,
   EncodeResult,
   ValidationResult,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { emptyValidationResult } from "../validate/workflow-schema.js"
 
 /**

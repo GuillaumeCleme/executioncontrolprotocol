@@ -1,15 +1,15 @@
 import { describe, it } from "vitest"
-import { environment, extension, harness, runtime, registerCoreFormats } from "@ecp/core"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@ecp/node"
-import { registerDemoExtension } from "@ecp/demo"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { ECP_INTENT_VALUES } from "@ecp/types"
+import { environment, extension, harness, runtime, registerCoreFormats } from "@executioncontextprotocol/core"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { ECP_INTENT_VALUES } from "@executioncontextprotocol/types"
 import {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY,
   BROWSER_NANO_HARNESS_ID,
   registerBrowserNanoHarnesses,
-} from "@ecp/evals"
+} from "@executioncontextprotocol/evals"
 import { expectHarnessIntent } from "./assert-harness-result.js"
 
 async function createEvalIntentDemoEnv() {
@@ -22,14 +22,14 @@ async function createEvalIntentDemoEnv() {
   return environment("evals-harness-intent-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([
-      extension("@ecp/format-eql").with({}),
-      extension("@ecp/demo").with({}),
+      extension("@executioncontextprotocol/format-eql").with({}),
+      extension("@executioncontextprotocol/demo").with({}),
     ])
     .withHarnesses([
       harness(BROWSER_NANO_HARNESS_ID)
-        .uses("@ecp/demo.generate")
+        .uses("@executioncontextprotocol/demo.generate")
         .with({
-          output: { schema: "@ecp.intent", format: "@ecp/format-eql", validate: true },
+          output: { schema: "@ecp.intent", format: "@executioncontextprotocol/format-eql", validate: true },
         }),
     ])
 }

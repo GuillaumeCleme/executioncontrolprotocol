@@ -1,11 +1,11 @@
 # Harness definitions (design + implementation)
 
-Implemented in `@ecp/core` (framework only):
+Implemented in `@executioncontextprotocol/core` (framework only):
 
 - Harness framework: `defineHarness`, `catalogHarness`, `executeHarnessInvoke`, `runModelRepairLoop`
-- Operation feedback: `collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback` (`HarnessOperationFeedback` in `@ecp/types`)
-- Provider capability: `@ecp/<provider>.generate` (`@ecp/model.generate` contract)
-- Core formatters: `@ecp/format-json`, `@ecp/format-fluent` (cataloged from core, not workspace extension packages)
+- Operation feedback: `collectDecodeFeedback`, `collectPatchFeedback`, `collectValidationFeedback` (`HarnessOperationFeedback` in `@executioncontextprotocol/types`)
+- Provider capability: `@executioncontextprotocol/<provider>.generate` (`@executioncontextprotocol/model.generate` contract)
+- Core formatters: `@executioncontextprotocol/format-json`, `@executioncontextprotocol/format-fluent` (cataloged from core, not workspace extension packages)
 - Environment: `harness(id).uses(provider.generate).with(config)` via `withHarnesses([...])`
 - Invoke: `ecp.invoke(harnessId.evaluate).uses(override?).with(input)`
 
@@ -13,13 +13,13 @@ Product harnesses (prompts, eval-specific normalization) live outside core:
 
 | Harness id | Package | Role |
 | ---------- | ------- | ---- |
-| `@ecp/harness-browser-nano` | `@ecp/harnesses-browser-nano` | Browser demo + Ollama/matrix evals (routes by input `task`) |
+| `@executioncontextprotocol/harness-browser-nano` | `@executioncontextprotocol/harnesses-browser-nano` | Browser demo + Ollama/matrix evals (routes by input `task`) |
 
 See [harness-eval.md](harness-eval.md) for local Ollama evaluation.
 
 ## Prompt and schema fixtures (shared harness prompts)
 
-Product harness handlers load **harness prompts** from `@ecp/core` — not from eval case JSON.
+Product harness handlers load **harness prompts** from `@executioncontextprotocol/core` — not from eval case JSON.
 
 | Tier | Location | Contents |
 | ---- | -------- | -------- |
@@ -27,19 +27,19 @@ Product harness handlers load **harness prompts** from `@ecp/core` — not from 
 | Harness prompts | `packages/core/fixtures/harness-prompts/*.prompt.json` | Role, task, intent definitions, few-shots, repair hints |
 | Eval cases | `packages/evals/fixtures/cases/*.cases.json` | Inputs and assertions only (no system prompt text) |
 
-API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@ecp/core`.
+API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@executioncontextprotocol/core`.
 
-**Handler internals:** compact descriptor/workflow/run summaries, repair presentation, and JSON normalization for small models are exported from `@ecp/core` (`summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `normalizeWorkflowDocumentCandidate`, etc.). Product-specific heuristics (e.g. capability hints) stay in harness packages such as `@ecp/harnesses-browser-nano`.
+**Handler internals:** compact descriptor/workflow/run summaries, repair presentation, and JSON normalization for small models are exported from `@executioncontextprotocol/core` (`summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `normalizeWorkflowDocumentCandidate`, etc.). Product-specific heuristics (e.g. capability hints) stay in harness packages such as `@executioncontextprotocol/harnesses-browser-nano`.
 
 **Identity:** optional `identity: true` on harness prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER` via `buildSystemPrompt`. The unified `workflow-assistant` task answers ECP FAQ, identity, environment help, and run-aware Q&A.
 
-**Task input contracts:** shared Zod shapes in `@ecp/types` (`harnessIntentClassificationInputSchema`, `harnessWorkflowAuthoringInputSchema`, `harnessWorkflowAssistantInputSchema`).
+**Task input contracts:** shared Zod shapes in `@executioncontextprotocol/types` (`harnessIntentClassificationInputSchema`, `harnessWorkflowAuthoringInputSchema`, `harnessWorkflowAssistantInputSchema`).
 
 ## Harness operation feedback (core contract)
 
 Core runtime operations return structured envelopes (`DecodeResult`, `PatchResult`, `ValidationResult`). Harnesses must not rely on bare Zod messages like `Required` without paths.
 
-Use collectors in `@ecp/core` to build `HarnessOperationFeedback`:
+Use collectors in `@executioncontextprotocol/core` to build `HarnessOperationFeedback`:
 
 | Collector | Source | `stage` |
 | --------- | ------ | ------- |
@@ -66,8 +66,8 @@ Each feedback record includes `issues: ValidationIssue[]` (path, code, message, 
 | `withOutput(schema)` | handler return type is `z.infer<typeof schema>` |
 
 ```ts
-import { defineHarness } from "@ecp/core"
-import type { HarnessConfigOf, HarnessInputOf } from "@ecp/core"
+import { defineHarness } from "@executioncontextprotocol/core"
+import type { HarnessConfigOf, HarnessInputOf } from "@executioncontextprotocol/core"
 import { z } from "zod"
 
 const harnessConfigSchema = z.object({ system: z.string() })
@@ -76,7 +76,7 @@ const harnessInputSchema = z.object({ message: z.string(), model: z.string().opt
 export type MyHarnessInput = HarnessInputOf<typeof harnessInputSchema>
 export type MyHarnessConfig = HarnessConfigOf<typeof harnessConfigSchema>
 
-import { harnessEvaluateOutputSchema } from "@ecp/types"
+import { harnessEvaluateOutputSchema } from "@executioncontextprotocol/types"
 
 export const myHarness = defineHarness("@acme", "assistant")
   .withConfig(harnessConfigSchema)
@@ -105,8 +105,8 @@ Instead of:
 ```ts
 output: {
   schema: "@ecp.workflow",
-  format: "@ecp/format-toon",
-  decode: "@ecp/format-toon.decode",
+  format: "@executioncontextprotocol/format-toon",
+  decode: "@executioncontextprotocol/format-toon.decode",
   validate: true,
 }
 ```
@@ -116,7 +116,7 @@ Use:
 ```ts
 output: {
   schema: "@ecp.workflow",
-  format: "@ecp/format-toon",
+  format: "@executioncontextprotocol/format-toon",
   validate: true,
 }
 ```
@@ -129,7 +129,7 @@ ctx.decode(raw)
   .to(config.output.schema)
 ```
 
-That keeps it consistent with the existing encode/decode grammar, where the formatter extension is selected via `.uses("@ecp/format-toon")`. The browser demo already uses this pattern for TOON and Mermaid panel generation, with the canonical workflow manifest feeding independent encoders.
+That keeps it consistent with the existing encode/decode grammar, where the formatter extension is selected via `.uses("@executioncontextprotocol/format-toon")`. The browser demo already uses this pattern for TOON and Mermaid panel generation, with the canonical workflow manifest feeding independent encoders.
 
 So the rule becomes:
 
@@ -140,7 +140,7 @@ For patching:
 ```ts
 output: {
   schema: "@ecp.patch",
-  format: "@ecp/format-toon",
+  format: "@executioncontextprotocol/format-toon",
   apply: "ecp.patch",
   validateResult: true,
 }
@@ -151,7 +151,7 @@ For JSON intent classification:
 ```ts
 output: {
   schema: "@ecp.intent",
-  format: "@ecp/format-json",
+  format: "@executioncontextprotocol/format-json",
   validate: true,
 }
 ```
@@ -169,7 +169,7 @@ output: {
 But I would probably prefer even JSON to be modeled as a formatter eventually:
 
 ```ts
-format: "@ecp/format-json"
+format: "@executioncontextprotocol/format-json"
 ```
 
 That keeps the contract uniform.
@@ -185,19 +185,19 @@ This should **not** be order-sensitive:
 ```ts
 environment("browser-demo-app")
   .withHarnesses([
-    harness("@ecp/workflow-authoring")
-      .uses("@ecp/ollama.generate")
+    harness("@executioncontextprotocol/workflow-authoring")
+      .uses("@executioncontextprotocol/ollama.generate")
       .with({
         output: {
           schema: "@ecp.workflow",
-          format: "@ecp/format-toon",
+          format: "@executioncontextprotocol/format-toon",
           validate: true,
         },
       }),
   ])
   .withExtensions([
-    extension("@ecp/ollama").with({ model: "gemma3:4b" }),
-    extension("@ecp/format-toon").with({}),
+    extension("@executioncontextprotocol/ollama").with({ model: "gemma3:4b" }),
+    extension("@executioncontextprotocol/format-toon").with({}),
   ]);
 ```
 
@@ -223,7 +223,7 @@ environment compile/finalize phase
   freeze registry if browser policy requires it
 
 environment invocation phase
-  ecp.invoke("@ecp/workflow-authoring")
+  ecp.invoke("@executioncontextprotocol/workflow-authoring")
 ```
 
 So harness dependency checks should happen during:
@@ -249,22 +249,22 @@ The builder should only record intent.
 
 When the environment finalizes, each harness binding should validate:
 
-| Dependency         | Check                                                                  |
-| ------------------ | ---------------------------------------------------------------------- |
-| Harness ID         | Registered harness definition exists                                   |
-| `.uses(...)`       | Capability exists in the bound environment                             |
-| Provider interface | Capability satisfies expected interface, such as `@ecp/model.generate` |
-| `output.format`    | Formatter extension exists                                             |
-| `output.schema`    | Known schema or schema resolver exists                                 |
-| Policies           | Active policies allow provider and formatter use                       |
-| Runtime support    | Runtime supports direct invoke/harness invocation                      |
+| Dependency         | Check                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------- |
+| Harness ID         | Registered harness definition exists                                                        |
+| `.uses(...)`       | Capability exists in the bound environment                                                  |
+| Provider interface | Capability satisfies expected interface, such as `@executioncontextprotocol/model.generate` |
+| `output.format`    | Formatter extension exists                                                                  |
+| `output.schema`    | Known schema or schema resolver exists                                                      |
+| Policies           | Active policies allow provider and formatter use                                            |
+| Runtime support    | Runtime supports direct invoke/harness invocation                                           |
 
 Example validation errors:
 
 ```json
 {
   "code": "UNKNOWN_HARNESS",
-  "message": "Harness @ecp/workflow-authoring is not registered.",
+  "message": "Harness @executioncontextprotocol/workflow-authoring is not registered.",
   "path": "harnesses[0].id"
 }
 ```
@@ -272,18 +272,18 @@ Example validation errors:
 ```json
 {
   "code": "UNKNOWN_HARNESS_PROVIDER",
-  "message": "Harness @ecp/workflow-authoring uses @ecp/ollama.generate, but @ecp/ollama is not bound in this environment.",
+  "message": "Harness @executioncontextprotocol/workflow-authoring uses @executioncontextprotocol/ollama.generate, but @executioncontextprotocol/ollama is not bound in this environment.",
   "path": "harnesses[0].uses",
-  "suggestions": ["Bind extension(\"@ecp/ollama\").with({...})"]
+  "suggestions": ["Bind extension(\"@executioncontextprotocol/ollama\").with({...})"]
 }
 ```
 
 ```json
 {
   "code": "UNKNOWN_OUTPUT_FORMAT",
-  "message": "Harness @ecp/workflow-authoring references output format @ecp/format-toon, but that formatter is not available.",
+  "message": "Harness @executioncontextprotocol/workflow-authoring references output format @executioncontextprotocol/format-toon, but that formatter is not available.",
   "path": "harnesses[0].config.output.format",
-  "suggestions": ["Bind extension(\"@ecp/format-toon\").with({})"]
+  "suggestions": ["Bind extension(\"@executioncontextprotocol/format-toon\").with({})"]
 }
 ```
 
@@ -299,24 +299,24 @@ export const localHarnessEnvironment = environment(
   "Local Authoring Test"
 )
   .withRuntime(
-    runtime("@ecp/local", "Local Runtime").with({})
+    runtime("@executioncontextprotocol/local", "Local Runtime").with({})
   )
 
   .withExtensions([
-    extension("@ecp/ollama", "Ollama").with({
+    extension("@executioncontextprotocol/ollama", "Ollama").with({
       baseUrl: "http://localhost:11434",
       model: "gemma3:4b",
       temperature: 0.1,
       maxTokens: 4096,
     }),
 
-    extension("@ecp/format-toon", "TOON Formatter").with({}),
+    extension("@executioncontextprotocol/format-toon", "TOON Formatter").with({}),
 
-    extension("@ecp/test", "Test Capabilities").with({}),
+    extension("@executioncontextprotocol/test", "Test Capabilities").with({}),
   ])
 
   .withPolicies([
-    policy("@ecp/budget", "Local Budget").with({
+    policy("@executioncontextprotocol/budget", "Local Budget").with({
       maxModelCalls: 4,
       maxRetries: 1,
       maxTokens: 8000,
@@ -324,19 +324,19 @@ export const localHarnessEnvironment = environment(
   ])
 
   .withHarnesses([
-    harness("@ecp/workflow-authoring", "Workflow Authoring")
-      .uses("@ecp/ollama.generate")
+    harness("@executioncontextprotocol/workflow-authoring", "Workflow Authoring")
+      .uses("@executioncontextprotocol/ollama.generate")
       .with({
         system: "Return only ECP TOON workflow text. No markdown fences.",
 
         context: {
           includeEnvironmentDescriptor: true,
-          descriptorFormat: "@ecp/format-toon",
+          descriptorFormat: "@executioncontextprotocol/format-toon",
         },
 
         output: {
           schema: "@ecp.workflow",
-          format: "@ecp/format-toon",
+          format: "@executioncontextprotocol/format-toon",
           validate: true,
         },
 
@@ -358,7 +358,7 @@ export const localHarnessEnvironment = environment(
 Then invocation:
 
 ```ts
-const result = await ecp.invoke("@ecp/workflow-authoring.evaluate")
+const result = await ecp.invoke("@executioncontextprotocol/workflow-authoring.evaluate")
   .with({
     request: "Create a workflow that echoes hello.",
   });
@@ -367,8 +367,8 @@ const result = await ecp.invoke("@ecp/workflow-authoring.evaluate")
 Override provider for Chrome Nano:
 
 ```ts
-const result = await ecp.invoke("@ecp/workflow-authoring")
-  .uses("@ecp/chrome-ai.generate")
+const result = await ecp.invoke("@executioncontextprotocol/workflow-authoring")
+  .uses("@executioncontextprotocol/chrome-ai.generate")
   .with({
     request: "Create a workflow that echoes hello.",
   });
@@ -384,13 +384,13 @@ The handler should read only `output.format`:
 
 ```ts
 export const workflowAuthoringHarness = defineHarness(
-  "@ecp",
+  "@executioncontextprotocol",
   "workflow-authoring"
 )
   .withConfig(WorkflowAuthoringHarnessConfig)
   .withInput(WorkflowAuthoringHarnessInput)
   .withOutput(WorkflowAuthoringHarnessOutput)
-  .usesInterface("@ecp/model.generate")
+  .usesInterface("@executioncontextprotocol/model.generate")
   .withHandler(async (input, ctx) => {
     const config = ctx.config;
 
@@ -430,7 +430,7 @@ export const workflowAuthoringHarness = defineHarness(
       raw: generated.text,
       validation,
       trace: {
-        harness: "@ecp/workflow-authoring",
+        harness: "@executioncontextprotocol/workflow-authoring",
         provider: ctx.uses,
         model: input.model,
         outputSchema: config.output.schema,
@@ -447,8 +447,8 @@ Helper:
 
 ```ts
 function inferResponseFormat(format: string) {
-  if (format === "@ecp/format-toon") return "toon";
-  if (format === "@ecp/format-json") return "json";
+  if (format === "@executioncontextprotocol/format-toon") return "toon";
+  if (format === "@executioncontextprotocol/format-json") return "json";
   return "text";
 }
 ```
@@ -471,7 +471,7 @@ const WorkflowAuthoringHarnessConfig = z.object({
 
   output: z.object({
     schema: z.string().default("@ecp.workflow"),
-    format: z.string().default("@ecp/format-toon"),
+    format: z.string().default("@executioncontextprotocol/format-toon"),
     validate: z.boolean().default(true),
     apply: z.string().optional(),
     validateResult: z.boolean().optional(),
@@ -506,16 +506,16 @@ That means these are equivalent:
 ```ts
 environment("demo")
   .withExtensions([
-    extension("@ecp/ollama").with({}),
-    extension("@ecp/format-toon").with({}),
+    extension("@executioncontextprotocol/ollama").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
   ])
   .withHarnesses([
-    harness("@ecp/workflow-authoring")
-      .uses("@ecp/ollama.generate")
+    harness("@executioncontextprotocol/workflow-authoring")
+      .uses("@executioncontextprotocol/ollama.generate")
       .with({
         output: {
           schema: "@ecp.workflow",
-          format: "@ecp/format-toon",
+          format: "@executioncontextprotocol/format-toon",
         },
       }),
   ]);
@@ -526,18 +526,18 @@ And:
 ```ts
 environment("demo")
   .withHarnesses([
-    harness("@ecp/workflow-authoring")
-      .uses("@ecp/ollama.generate")
+    harness("@executioncontextprotocol/workflow-authoring")
+      .uses("@executioncontextprotocol/ollama.generate")
       .with({
         output: {
           schema: "@ecp.workflow",
-          format: "@ecp/format-toon",
+          format: "@executioncontextprotocol/format-toon",
         },
       }),
   ])
   .withExtensions([
-    extension("@ecp/ollama").with({}),
-    extension("@ecp/format-toon").with({}),
+    extension("@executioncontextprotocol/ollama").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
   ]);
 ```
 
@@ -552,7 +552,7 @@ I’d lock in these rules:
 | Rule                  | Decision                                                                |
 | --------------------- | ----------------------------------------------------------------------- |
 | Harness invocation    | Use `ecp.invoke(harnessId)`                                             |
-| Provider selection    | Use `.uses("@ecp/provider.generate")`                                   |
+| Provider selection    | Use `.uses("@executioncontextprotocol/provider.generate")`              |
 | Provider default      | Environment harness binding supplies default `.uses()`                  |
 | Runtime override      | `ecp.invoke(...).uses(...)` overrides default                           |
 | Output format         | Use only `output.format`                                                |
@@ -565,8 +565,8 @@ I’d lock in these rules:
 This keeps the design tight:
 
 ```ts
-ecp.invoke("@ecp/workflow-authoring.evaluate")
-  .uses("@ecp/ollama.generate")
+ecp.invoke("@executioncontextprotocol/workflow-authoring.evaluate")
+  .uses("@executioncontextprotocol/ollama.generate")
   .with({ request })
 ```
 

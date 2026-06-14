@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 import {
   collectDecodeFeedback,
   collectPatchFeedback,
@@ -89,16 +89,16 @@ describe("harness feedback collectors", () => {
         {
           severity: "error",
           code: "UNKNOWN_CAPABILITY",
-          message: "Capability @ecp/missing is not registered.",
+          message: "Capability @executioncontextprotocol/missing is not registered.",
           path: "steps.echo.uses",
-          suggestions: ["@ecp/test.echo"],
+          suggestions: ["@executioncontextprotocol/test.echo"],
         },
       ],
       warnings: [],
     })
 
     expect(feedback.stage).toBe("validate")
-    expect(feedback.issues[0]?.suggestions).toContain("@ecp/test.echo")
+    expect(feedback.issues[0]?.suggestions).toContain("@executioncontextprotocol/test.echo")
   })
 
   it("flattenHarnessFeedbackIssues dedupes by path code and message", () => {

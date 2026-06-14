@@ -1,7 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "tsconfig.build.json" },
-    { "path": "apps/browser-demo" }
+    { "path": "tsconfig.build.json" }
   ]
 }

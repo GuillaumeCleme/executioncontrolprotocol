@@ -1,4 +1,4 @@
-import type { ValidationResult, WorkflowManifest } from "@ecp/types"
+import type { ValidationResult, WorkflowManifest } from "@executioncontextprotocol/types"
 
 /** Transpile or syntax error. @category Compile */
 export interface CompileDiagnostic {

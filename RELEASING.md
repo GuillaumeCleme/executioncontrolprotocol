@@ -19,12 +19,12 @@ Check locally (same as development CI):
 npm run version:check-vs-npm
 ```
 
-## Published packages (`@ecp/*`)
+## Published packages (`@executioncontextprotocol/*`)
 
-- `@ecp/types` — protocol types and generated JSON Schemas (`dist/schemas/`)
-- `@ecp/core` — fluent API, environment, local runtime
-- `@ecp/cli` — `ecp` Oclif CLI (`compile`, `validate`, `describe`, `search`, `run`)
-- `@ecp/policies`, `@ecp/mcp`, and `@ecp/extension-*` as needed
+- `@executioncontextprotocol/types` — protocol types and generated JSON Schemas (`dist/schemas/`)
+- `@executioncontextprotocol/core` — fluent API, environment, local runtime
+- `@executioncontextprotocol/cli` — `ecp` Oclif CLI (`compile`, `validate`, `describe`, `search`, `run`)
+- `@executioncontextprotocol/policies`, `@executioncontextprotocol/mcp`, and `@executioncontextprotocol/extension-*` as needed
 
 Run **`npm run build`** and **`npm run generate:schema`** from the repo root before release; packages ship compiled **`dist/`** JS.
 

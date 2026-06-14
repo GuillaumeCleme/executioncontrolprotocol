@@ -1,4 +1,4 @@
-import type { StepNode, WorkflowManifest, WorkflowNode } from "@ecp/types"
+import type { StepNode, WorkflowManifest, WorkflowNode } from "@executioncontextprotocol/types"
 import { slugify } from "../util/slug.js"
 
 function ensureUniqueId(base: string, used: Set<string>): string {

@@ -4,10 +4,10 @@ import {
   globalRegistry,
   type EnvironmentConfigResolver,
   type LifecycleContext,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import { z } from "zod"
 
-const EXT_ID = "@ecp/browser-session-config"
+const EXT_ID = "@executioncontextprotocol/browser-session-config"
 
 const sessionValues = new Map<string, unknown>()
 
@@ -77,7 +77,7 @@ export function getBrowserSessionValue(name: string): unknown {
 }
 
 /** Browser session-only config extension. @category Extensions */
-export const browserSessionConfigExtension = defineExtension("@ecp", "browser-session-config")
+export const browserSessionConfigExtension = defineExtension("@executioncontextprotocol", "browser-session-config")
   .withConfig({
     allowSecrets: z.boolean().default(true),
     persist: z.boolean().default(false),
@@ -88,7 +88,7 @@ export const browserSessionConfigExtension = defineExtension("@ecp", "browser-se
   ])
   .build()
 
-/** Register `@ecp/browser-session-config`. */
+/** Register `@executioncontextprotocol/browser-session-config`. */
 export async function registerBrowserSessionConfigExtension(
   registry = globalRegistry
 ): Promise<void> {

@@ -1,4 +1,4 @@
-import type { Ecp, Environment } from "@ecp/core"
+import type { Ecp, Environment } from "@executioncontextprotocol/core"
 import { exposeBrowserRegistry, type BrowserEcpGlobal } from "./extensions/browser-registry.js"
 
 /** Operational ECP with optional browser registry helpers on the global object. @category Environment */

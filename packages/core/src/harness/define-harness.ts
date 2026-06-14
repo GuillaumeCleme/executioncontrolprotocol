@@ -1,5 +1,5 @@
-import type { HarnessId, NamespacedId } from "@ecp/types"
-import { ECP_MODEL_GENERATE_INTERFACE } from "@ecp/types"
+import type { HarnessId, NamespacedId } from "@executioncontextprotocol/types"
+import { ECP_MODEL_GENERATE_INTERFACE } from "@executioncontextprotocol/types"
 import type { z } from "zod"
 import { getCatalogedHarness } from "./harness-catalog.js"
 import type { ErasedHarnessHandler, HarnessDefinition, HarnessHandler } from "./types.js"

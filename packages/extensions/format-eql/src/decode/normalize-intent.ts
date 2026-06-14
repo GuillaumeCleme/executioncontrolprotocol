@@ -1,4 +1,4 @@
-import { ECP_INTENT_SCHEMA, type EcpIntent } from "@ecp/types"
+import { ECP_INTENT_SCHEMA, type EcpIntent } from "@executioncontextprotocol/types"
 import type { EqlIntentDoc } from "./ast.js"
 
 export function intentFromEql(doc: EqlIntentDoc): EcpIntent {

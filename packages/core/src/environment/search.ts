@@ -1,5 +1,5 @@
-import { LATEST_ECP_VERSION } from "@ecp/types"
-import type { EnvironmentDescriptor, SearchOptions, SearchResult, SearchResultItem } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, SearchOptions, SearchResult, SearchResultItem } from "@executioncontextprotocol/types"
 
 function tokenize(query: string): string[] {
   return query.toLowerCase().split(/\s+/).filter(Boolean)

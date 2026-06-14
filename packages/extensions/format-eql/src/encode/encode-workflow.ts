@@ -1,6 +1,6 @@
-import type { StepNode, WorkflowManifest } from "@ecp/types"
+import type { StepNode, WorkflowManifest } from "@executioncontextprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
-import type { EcpFormatOptions } from "@ecp/types"
+import type { EcpFormatOptions } from "@executioncontextprotocol/types"
 import { EqlWriter, formatInputValue, formatLiteral, formatWhen } from "./writer.js"
 
 export function encodeWorkflowToEql(

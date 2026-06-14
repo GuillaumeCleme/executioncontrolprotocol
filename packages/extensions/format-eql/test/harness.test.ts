@@ -6,7 +6,7 @@ import {
   ECP_INTENT_VALUES,
   type EcpIntent,
   type HarnessReply,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { decodeFromEql } from "../src/decode/decode-eql.js"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import { testCtx } from "./helpers.js"

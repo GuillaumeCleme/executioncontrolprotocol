@@ -1,6 +1,6 @@
-import { InMemoryRuntimeExecutor } from "@ecp/core"
-import type { RunResult, WorkflowManifest } from "@ecp/types"
-import type { RuntimeExecutionContext, RuntimeExecutor } from "@ecp/core"
+import { InMemoryRuntimeExecutor } from "@executioncontextprotocol/core"
+import type { RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { RuntimeExecutionContext, RuntimeExecutor } from "@executioncontextprotocol/core"
 
 /** Browser runtime executor (delegates to in-memory engine). @category Runtime */
 export class BrowserRuntimeExecutor implements RuntimeExecutor {

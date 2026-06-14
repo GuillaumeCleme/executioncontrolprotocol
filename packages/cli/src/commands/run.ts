@@ -1,5 +1,5 @@
 import { Flags } from "@oclif/core"
-import { loadWorkflowFile } from "@ecp/core/loaders"
+import { loadWorkflowFile } from "@executioncontextprotocol/core/loaders"
 import { readJsonFile, runWithCommandError } from "../lib/command-helpers.js"
 import { WorkflowEnvCommand } from "../lib/env-module-command.js"
 

@@ -1,4 +1,4 @@
-import { ECP_CORE_FORMATTER_IDS, type NamespacedId } from "@ecp/types"
+import { ECP_CORE_FORMATTER_IDS, type NamespacedId } from "@executioncontextprotocol/types"
 import { getCatalogedExtension, normalizeExtensionId } from "../registry/extension-catalog.js"
 
 /** Core formatter ids that do not require environment binding. @category Harness */
@@ -46,7 +46,7 @@ export function inferResponseFormatFromFormatter(
   if (formatId === HARNESS_OUTPUT_FORMAT_TYPESCRIPT) return "text"
   const id = normalizeFormatId(formatId)
   if (id === ECP_CORE_FORMATTER_IDS.JSON) return "json"
-  if (id === "@ecp/format-toon") return "toon"
-  if (id === "@ecp/format-eql") return "eql"
+  if (id === "@executioncontextprotocol/format-toon") return "toon"
+  if (id === "@executioncontextprotocol/format-eql") return "eql"
   return "text"
 }

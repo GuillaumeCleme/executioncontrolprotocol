@@ -13,4 +13,4 @@ export {
   HARNESS_CODING_BINDING,
   getHarnessCodingConfig,
   type HarnessTask,
-} from "@ecp/harnesses-browser-coding"
+} from "@executioncontextprotocol/harnesses-browser-coding"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { StepNode, WorkflowManifest } from "@ecp/types"
+import type { StepNode, WorkflowManifest } from "@executioncontextprotocol/types"
 import { decodeWorkflow, encodeWorkflow, loadWorkflowFixture } from "./helpers.js"
 
 describe("decode workflow from EQL", () => {
@@ -24,7 +24,7 @@ describe("decode workflow from EQL", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW flow
 PARALLEL p
-  STEP a USES @ecp/test.echo
+  STEP a USES @executioncontextprotocol/test.echo
 END`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(false)

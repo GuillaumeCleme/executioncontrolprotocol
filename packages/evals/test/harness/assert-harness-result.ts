@@ -1,5 +1,5 @@
 import { expect } from "vitest"
-import type { EcpIntentValue, HarnessInvokeResult, InvokeResult } from "@ecp/types"
+import type { EcpIntentValue, HarnessInvokeResult, InvokeResult } from "@executioncontextprotocol/types"
 import { formatHarnessTrace, formatInvokeFailure } from "../../src/fixtures/harness-trace-format.js"
 
 export { formatHarnessTrace, formatInvokeFailure } from "../../src/fixtures/harness-trace-format.js"

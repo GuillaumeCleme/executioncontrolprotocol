@@ -7,7 +7,7 @@ import {
   setBrowserSessionValue,
 } from "../src/index.js"
 
-describe("@ecp/browser-session-config terminate", () => {
+describe("@executioncontextprotocol/browser-session-config terminate", () => {
   it("clears session values on ecp.terminate()", async () => {
     await registerBrowserDefaults()
     setBrowserSessionValue("OPENAI_API_KEY", "secret-test-key")

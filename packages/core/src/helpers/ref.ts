@@ -1,4 +1,4 @@
-import type { RefValue } from "@ecp/types"
+import type { RefValue } from "@executioncontextprotocol/types"
 
 /** Options for optional refs. */
 export interface RefOptions {

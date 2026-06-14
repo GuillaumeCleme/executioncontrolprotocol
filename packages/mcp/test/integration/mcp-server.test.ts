@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { Client } from "@modelcontextprotocol/sdk/client/index.js"
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js"
 import { createEcpMcpServer } from "../../src/index.js"
-import { extension, workflow, step, registerTestExtension } from "@ecp/core"
-import { environment } from "@ecp/node"
-import type { Ecp } from "@ecp/core"
+import { extension, workflow, step, registerTestExtension } from "@executioncontextprotocol/core"
+import { environment } from "@executioncontextprotocol/node"
+import type { Ecp } from "@executioncontextprotocol/core"
 
 type TextContent = { type: string; text: string }
 
@@ -16,17 +16,17 @@ function parseText(content: TextContent[] | undefined): unknown {
 }
 
 const echoWorkflow = workflow("Echo")
-  .run([step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("out")])
+  .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("out")])
   .toManifest()
 
-describe("@ecp/mcp wire protocol (Client <-> Server)", () => {
+describe("@executioncontextprotocol/mcp wire protocol (Client <-> Server)", () => {
   let ecp: Ecp
   let client: Client
 
   beforeEach(async () => {
     await registerTestExtension()
     const env = (await environment("mcp-wire")).withExtensions([
-      extension("@ecp/test", "Test").with({}),
+      extension("@executioncontextprotocol/test", "Test").with({}),
     ])
     ecp = await env.init()
 
@@ -81,7 +81,7 @@ describe("@ecp/mcp wire protocol (Client <-> Server)", () => {
 
   it("reports validation failure for an unknown capability", async () => {
     const broken = workflow("Broken")
-      .run([step("@ecp/test.does-not-exist", "X").with({}).as("o")])
+      .run([step("@executioncontextprotocol/test.does-not-exist", "X").with({}).as("o")])
       .toManifest()
     const res = await client.callTool({
       name: "ecp.validate_workflow",
@@ -130,9 +130,9 @@ describe("@ecp/mcp wire protocol (Client <-> Server)", () => {
   })
 
   it("reads a single capability via the templated resource", async () => {
-    const read = await client.readResource({ uri: "ecp://capabilities/@ecp/test.echo" })
+    const read = await client.readResource({ uri: "ecp://capabilities/@executioncontextprotocol/test.echo" })
     const capability = JSON.parse(read.contents[0]!.text as string) as { id: string }
-    expect(capability.id).toBe("@ecp/test.echo")
+    expect(capability.id).toBe("@executioncontextprotocol/test.echo")
   })
 
   it("lists prompts and renders author_workflow", async () => {
@@ -153,6 +153,6 @@ describe("@ecp/mcp wire protocol (Client <-> Server)", () => {
       .map((m) => (m.content.type === "text" ? m.content.text : ""))
       .join("\n")
     expect(text).toContain("echo a value")
-    expect(text).toContain("@ecp/test.echo")
+    expect(text).toContain("@executioncontextprotocol/test.echo")
   })
 })

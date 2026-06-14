@@ -8,25 +8,25 @@ import {
   harness,
   HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE,
   registerCoreFormats,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import { registerTestExtension } from "../../../core/src/testing/test-extension.js"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
   registerBrowserNanoHarnesses,
   resetBrowserNanoHarnessRegistrationForTests,
-} from "@ecp/harnesses-browser-nano"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@ecp/node"
+} from "@executioncontextprotocol/harnesses-browser-nano"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   modelGenerateInputSchema,
   modelGenerateOutputSchema,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 
-const invalidGenExtension = defineExtension("@ecp", "invalid-gen")
+const invalidGenExtension = defineExtension("@executioncontextprotocol", "invalid-gen")
   .withConfig({})
   .withCapabilities([
-    capabilityFor("@ecp/invalid-gen", "generate")
+    capabilityFor("@executioncontextprotocol/invalid-gen", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async () => ({ text: "NOT VALID EQL AT ALL" })),
@@ -48,13 +48,13 @@ describe("workflow-assistant safe reply fallback", () => {
     const env = environment("workflow-assistant-safe-reply-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@ecp/format-eql").with({}),
-        extension("@ecp/test").with({}),
-        extension("@ecp/invalid-gen").with({}),
+        extension("@executioncontextprotocol/format-eql").with({}),
+        extension("@executioncontextprotocol/test").with({}),
+        extension("@executioncontextprotocol/invalid-gen").with({}),
       ])
       .withHarnesses([
-        harness("@ecp/harness-browser-nano")
-          .uses("@ecp/invalid-gen.generate")
+        harness("@executioncontextprotocol/harness-browser-nano")
+          .uses("@executioncontextprotocol/invalid-gen.generate")
           .with({ repair: { maxAttempts: 0 } }),
       ])
 

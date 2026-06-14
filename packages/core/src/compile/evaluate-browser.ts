@@ -1,4 +1,4 @@
-import type { WorkflowManifest } from "@ecp/types"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
 import { extractWorkflowFromModule } from "./extract-workflow-module.js"
 
 export { extractWorkflowFromModule } from "./extract-workflow-module.js"

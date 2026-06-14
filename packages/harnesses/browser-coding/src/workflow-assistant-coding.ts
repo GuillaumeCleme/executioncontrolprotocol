@@ -1,4 +1,4 @@
-import { compileHarnessArtifactSource } from "@ecp/core/compile"
+import { compileHarnessArtifactSource } from "@executioncontextprotocol/core/compile"
 import {
   answerRedirectsToHarnessScope,
   buildAssistantSafeReply,
@@ -20,7 +20,7 @@ import {
   stripHarnessTypeScriptOutput,
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   ECP_MODEL_GENERATE_INTERFACE,
@@ -35,7 +35,7 @@ import {
   type HarnessRunContext,
   type ValidationResult,
   type WorkflowManifest,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
 
@@ -81,9 +81,9 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@ecp/format-json"),
+      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
       includeRunContext: z.boolean().default(true),
-      runContextFormat: z.string().default("@ecp/format-json"),
+      runContextFormat: z.string().default("@executioncontextprotocol/format-json"),
     })
     .default({}),
   output: z
@@ -123,7 +123,7 @@ function formatReplyAsTypeScript(reply: HarnessReply): string {
   const citations =
     reply.citations?.length &&
     `,\n  citations: ${JSON.stringify(reply.citations, null, 2).replace(/\n/g, "\n  ")}`
-  return `import type { HarnessReply } from "@ecp/types"
+  return `import type { HarnessReply } from "@executioncontextprotocol/types"
 
 export const reply: HarnessReply = {
   schema: "@ecp.harness.reply",
@@ -131,7 +131,7 @@ export const reply: HarnessReply = {
 }`
 }
 
-const codingAssistantHarness = defineHarness("@ecp", "browser-coding-workflow-assistant")
+const codingAssistantHarness = defineHarness("@executioncontextprotocol", "browser-coding-workflow-assistant")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -299,7 +299,7 @@ const codingAssistantHarness = defineHarness("@ecp", "browser-coding-workflow-as
           if (!looksLikeHarnessTypeScriptSource(raw)) {
             feedback.push(
               collectModelOutputFeedback(
-                "Return only a TypeScript module starting with import type { HarnessReply } from \"@ecp/types\" — no prose outside code."
+                "Return only a TypeScript module starting with import type { HarnessReply } from \"@executioncontextprotocol/types\" — no prose outside code."
               )
             )
             return { success: false, feedback }
