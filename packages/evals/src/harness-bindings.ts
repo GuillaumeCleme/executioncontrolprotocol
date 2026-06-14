@@ -1,5 +1,5 @@
 /**
- * Eval-facing harness API from `@ecp/harnesses-browser-nano`.
+ * Eval-facing harness API from `@executioncontextprotocol/harnesses-browser-nano`.
  * @category Evals
  */
 export {
@@ -13,4 +13,4 @@ export {
   HARNESS_NANO_BINDING,
   getHarnessNanoConfig,
   type HarnessTask,
-} from "@ecp/harnesses-browser-nano"
+} from "@executioncontextprotocol/harnesses-browser-nano"

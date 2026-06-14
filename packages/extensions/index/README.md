@@ -1,10 +1,10 @@
-# @ecp/extensions
+# @executioncontextprotocol/extensions
 
 Optional convenience bundle that registers the **host-agnostic, dependency-light**
 first-party extensions in one call.
 
 ```ts
-import { registerAllExtensions } from "@ecp/extensions"
+import { registerAllExtensions } from "@executioncontextprotocol/extensions"
 
 await registerAllExtensions()
 ```
@@ -13,16 +13,16 @@ await registerAllExtensions()
 
 | Extension | Purpose |
 | --------- | ------- |
-| `@ecp/memory` | Memory capabilities + lifecycle hooks |
-| `@ecp/storage` | Key/value storage capabilities |
-| `@ecp/slack` | Slack send capability |
-| `@ecp/telemetry` | Lifecycle telemetry hooks |
-| `@ecp/openai` | OpenAI model provider |
-| `@ecp/ollama` | Local Ollama model provider |
-| `@ecp/format-toon` | TOON encode/decode |
-| `@ecp/format-eql` | EQL encode/decode (harness output) |
-| `@ecp/format-mermaid` | Mermaid encode (workflow graph) |
-| `@ecp/demo` | Offline deterministic demo provider/ops |
+| `@executioncontextprotocol/memory` | Memory capabilities + lifecycle hooks |
+| `@executioncontextprotocol/storage` | Key/value storage capabilities |
+| `@executioncontextprotocol/slack` | Slack send capability |
+| `@executioncontextprotocol/telemetry` | Lifecycle telemetry hooks |
+| `@executioncontextprotocol/openai` | OpenAI model provider |
+| `@executioncontextprotocol/ollama` | Local Ollama model provider |
+| `@executioncontextprotocol/format-toon` | TOON encode/decode |
+| `@executioncontextprotocol/format-eql` | EQL encode/decode (harness output) |
+| `@executioncontextprotocol/format-mermaid` | Mermaid encode (workflow graph) |
+| `@executioncontextprotocol/demo` | Offline deterministic demo provider/ops |
 
 The exact set is exported as `BUNDLED_EXTENSION_IDS`.
 
@@ -33,11 +33,11 @@ host-specific or require credentials. Register them explicitly when needed:
 
 | Extension | Why excluded |
 | --------- | ------------ |
-| `@ecp/chrome-ai` | Browser-only (Chrome on-device `LanguageModel` API) |
-| `@ecp/claude` | Requires Anthropic provider configuration/credentials |
+| `@executioncontextprotocol/chrome-ai` | Browser-only (Chrome on-device `LanguageModel` API) |
+| `@executioncontextprotocol/claude` | Requires Anthropic provider configuration/credentials |
 
 ```ts
-import { registerChromeAiExtension } from "@ecp/chrome-ai"
+import { registerChromeAiExtension } from "@executioncontextprotocol/chrome-ai"
 await registerChromeAiExtension()
 ```
 

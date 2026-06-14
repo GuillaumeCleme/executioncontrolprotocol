@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { HarnessOperationFeedback } from "@ecp/types"
+import type { HarnessOperationFeedback } from "@executioncontextprotocol/types"
 import {
   formatFeedbackForModel,
   formatStructuredRepairForModel,

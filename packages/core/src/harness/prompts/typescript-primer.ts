@@ -1,25 +1,25 @@
-import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@ecp/types"
+import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@executioncontextprotocol/types"
 
-const INTENT_TEMPLATE = `import type { EcpIntent } from "@ecp/types"
+const INTENT_TEMPLATE = `import type { EcpIntent } from "@executioncontextprotocol/types"
 
 export const intent: EcpIntent = {
   schema: "@ecp.intent",
   intent: "faq",
 }`
 
-const REPLY_TEMPLATE = `import type { HarnessReply } from "@ecp/types"
+const REPLY_TEMPLATE = `import type { HarnessReply } from "@executioncontextprotocol/types"
 
 export const reply: HarnessReply = {
   schema: "@ecp.harness.reply",
   answer: "Your answer here.",
 }`
 
-const WORKFLOW_TEMPLATE = `import { workflow, step, ref } from "@ecp/core"
+const WORKFLOW_TEMPLATE = `import { workflow, step, ref } from "@executioncontextprotocol/core"
 
 export default workflow("Example")
   .id("example-wf")
   .run([
-    step("@ecp/test.echo", "Echo").id("echo").with({ value: "hello" }).as("echo"),
+    step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hello" }).as("echo"),
   ])`
 
 /**
@@ -41,7 +41,7 @@ export function typescriptPrimerForOutputSchema(outputSchema: string): string {
   const workflowApi =
     outputSchema === "@ecp.workflow"
       ? [
-          "Allowed @ecp/core imports: workflow, step, ref, branch, parallel, loop.",
+          "Allowed @executioncontextprotocol/core imports: workflow, step, ref, branch, parallel, loop.",
           "Use .id(\"stepId\") on steps when ids must stay stable across edits.",
           "Never output the word typescript on its own line before imports.",
         ]

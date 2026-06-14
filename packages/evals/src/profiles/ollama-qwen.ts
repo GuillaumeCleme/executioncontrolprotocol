@@ -6,8 +6,8 @@ import type { EvalProviderProfile } from "./eval-provider.js"
  */
 export const OLLAMA_QWEN_CODER_15B_EVAL = {
   id: "ollama-qwen-coder-1.5b",
-  providerId: "@ecp/ollama",
-  generateCapability: "@ecp/ollama.generate",
+  providerId: "@executioncontextprotocol/ollama",
+  generateCapability: "@executioncontextprotocol/ollama.generate",
   runtime: "node",
   model: "qwen2.5-coder:1.5b",
   extensionBinding: {

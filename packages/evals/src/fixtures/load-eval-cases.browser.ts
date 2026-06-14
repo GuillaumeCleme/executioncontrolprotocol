@@ -1,10 +1,10 @@
-import type { RunResult, WorkflowManifest } from "@ecp/types"
+import type { RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import {
   harnessRunContextSchema,
   runResultSchema,
   toHarnessRunContext,
   type HarnessRunContext,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import {
   evalCaseSchema,
   type EvalCase,

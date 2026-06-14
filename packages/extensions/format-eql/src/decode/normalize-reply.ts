@@ -2,7 +2,7 @@ import {
   ECP_HARNESS_REPLY_CITATION_KINDS,
   ECP_HARNESS_REPLY_SCHEMA,
   type HarnessReply,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type { EqlReplyDoc } from "./ast.js"
 
 const citationKinds = new Set<string>(Object.values(ECP_HARNESS_REPLY_CITATION_KINDS))

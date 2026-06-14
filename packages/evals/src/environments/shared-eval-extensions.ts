@@ -1,4 +1,4 @@
-import { extension } from "@ecp/core"
+import { extension } from "@executioncontextprotocol/core"
 import { MATRIX_EVAL_EXTENSION_IDS } from "../harness-eval-config.js"
 import type { EvalProviderProfile } from "../profiles/eval-provider.js"
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
@@ -25,9 +25,9 @@ export function ollamaEvalExtensionBinding() {
  */
 export function evalOperationsExtensionBindings() {
   return [
-    extension("@ecp/format-toon").with({}),
-    extension("@ecp/format-eql").with({}),
-    extension("@ecp/test").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
+    extension("@executioncontextprotocol/format-eql").with({}),
+    extension("@executioncontextprotocol/test").with({}),
   ]
 }
 

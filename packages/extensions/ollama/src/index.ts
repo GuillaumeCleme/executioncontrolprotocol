@@ -1,7 +1,7 @@
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontextprotocol/core"
 import { z } from "zod"
 
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
 
 const GenerateInput = modelGenerateInputSchema
 
@@ -38,15 +38,15 @@ async function ollamaChat(
   return data.message.content
 }
 
-/** @ecp/ollama extension. @category Extensions */
-export const ollamaExtension = defineExtension("@ecp", "ollama")
+/** @executioncontextprotocol/ollama extension. @category Extensions */
+export const ollamaExtension = defineExtension("@executioncontextprotocol", "ollama")
   .withConfig({
     baseURL: z.string().optional(),
     defaultModel: z.string().optional(),
     timeoutMs: z.number().optional(),
   })
   .withCapabilities([
-    capabilityFor("@ecp/ollama", "generate")
+    capabilityFor("@executioncontextprotocol/ollama", "generate")
       .withInput(GenerateInput)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -69,7 +69,7 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
         )
         return { text }
       }),
-    capabilityFor("@ecp/ollama", "evaluate")
+    capabilityFor("@executioncontextprotocol/ollama", "evaluate")
       .withInput(
         z.object({
           artifact: z.unknown(),
@@ -125,9 +125,9 @@ export const ollamaExtension = defineExtension("@ecp", "ollama")
 
 catalogExtension(ollamaExtension)
 
-/** Register @ecp/ollama. */
+/** Register @executioncontextprotocol/ollama. */
 export async function registerOllamaExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@ecp/ollama")) {
+  if (!globalRegistry.getExtension("@executioncontextprotocol/ollama")) {
     await globalRegistry.registerExtension(ollamaExtension)
   }
 }

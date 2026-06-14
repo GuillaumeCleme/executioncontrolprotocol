@@ -4,7 +4,7 @@ globs: packages/cli/**/*.ts
 alwaysApply: false
 ---
 
-# CLI command conventions (`@ecp/cli`)
+# CLI command conventions (`@executioncontextprotocol/cli`)
 
 ## User-facing tokens (kebab-case, same family as spec literals)
 

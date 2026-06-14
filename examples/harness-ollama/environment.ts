@@ -1,1 +1,1 @@
-export { createHarnessOllamaEnvironment } from "@ecp/evals"
+export { createHarnessOllamaEnvironment } from "@executioncontextprotocol/evals"

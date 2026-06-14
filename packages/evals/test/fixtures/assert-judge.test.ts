@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from "vitest"
-import type { Ecp } from "@ecp/core"
-import type { HarnessInvokeResult } from "@ecp/types"
+import type { Ecp } from "@executioncontextprotocol/core"
+import type { HarnessInvokeResult } from "@executioncontextprotocol/types"
 import { assertJudge } from "../../src/fixtures/assertions.js"
 import type { EvalCase } from "../../src/fixtures/eval-case-schema.js"
 import { CHROME_NANO_EVAL } from "../../src/profiles/chrome-nano.js"
@@ -22,7 +22,7 @@ const caseRow = {
 const harnessOutput = {
   artifact: { schema: "@ecp.harness.reply", answer: "ok" },
   raw: "{}",
-  trace: { harness: "@ecp/harness-browser-nano" },
+  trace: { harness: "@executioncontextprotocol/harness-browser-nano" },
 } as HarnessInvokeResult
 
 describe("assertJudge", () => {
@@ -63,7 +63,7 @@ describe("assertJudge", () => {
             success: false,
             schema: "@ecp.invoke.result",
             version: "1.0",
-            capabilityId: "@ecp/ollama.evaluate",
+            capabilityId: "@executioncontextprotocol/ollama.evaluate",
             diagnostics: [{ message: "rate limited" }],
           }),
         }),
@@ -91,7 +91,7 @@ describe("assertJudge", () => {
     } as unknown as Ecp
 
     await assertJudge(caseRow, harnessOutput, caseRow.assertions.judge, ecp)
-    expect(ecp.invoke).toHaveBeenCalledWith("@ecp/ollama.evaluate")
+    expect(ecp.invoke).toHaveBeenCalledWith("@executioncontextprotocol/ollama.evaluate")
   })
 
   it("passes when evaluate approves", async () => {

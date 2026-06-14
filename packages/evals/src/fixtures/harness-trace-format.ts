@@ -1,4 +1,4 @@
-import type { HarnessInvokeResult, InvokeResult } from "@ecp/types"
+import type { HarnessInvokeResult, InvokeResult } from "@executioncontextprotocol/types"
 
 const RAW_OUTPUT_PREVIEW_CHARS = 4000
 

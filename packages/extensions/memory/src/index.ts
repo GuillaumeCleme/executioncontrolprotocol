@@ -1,17 +1,17 @@
-import { defineExtension, capabilityFor, globalRegistry, hook, catalogExtension } from "@ecp/core"
+import { defineExtension, capabilityFor, globalRegistry, hook, catalogExtension } from "@executioncontextprotocol/core"
 import { z } from "zod"
 
 const store = new Map<string, unknown[]>()
 
-/** In-memory stub for @ecp/memory. @category Extensions */
-export const memoryExtension = defineExtension("@ecp", "memory")
+/** In-memory stub for @executioncontextprotocol/memory. @category Extensions */
+export const memoryExtension = defineExtension("@executioncontextprotocol", "memory")
   .withConfig({
     hydrateModels: z.boolean().default(true),
     rememberOutputs: z.boolean().default(false),
     collections: z.array(z.string()).default([]),
   })
   .withCapabilities([
-    capabilityFor("@ecp/memory", "search")
+    capabilityFor("@executioncontextprotocol/memory", "search")
       .withInput(z.object({ query: z.string(), since: z.string().optional() }))
       .withOutput(z.object({ results: z.array(z.unknown()) }))
       .withHandler(async (input) => {
@@ -21,7 +21,7 @@ export const memoryExtension = defineExtension("@ecp", "memory")
           results: all.filter((r) => JSON.stringify(r).toLowerCase().includes(q)),
         }
       }),
-    capabilityFor("@ecp/memory", "remember")
+    capabilityFor("@executioncontextprotocol/memory", "remember")
       .withInput(z.object({ entry: z.unknown(), collection: z.string().optional() }))
       .withOutput(z.object({ stored: z.boolean() }))
       .withHandler(async (input) => {
@@ -47,7 +47,7 @@ export const memoryExtension = defineExtension("@ecp", "memory")
 catalogExtension(memoryExtension)
 
 export async function registerMemoryExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@ecp/memory")) {
+  if (!globalRegistry.getExtension("@executioncontextprotocol/memory")) {
     await globalRegistry.registerExtension(memoryExtension)
   }
 }

@@ -4,7 +4,7 @@ import {
   type EcpPatchDocument,
   type EcpPatchEntry,
   type StepNode,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type { EqlPatchDoc, EqlStepAdd } from "./ast.js"
 
 function stepNodeFromAdd(add: EqlStepAdd): StepNode {

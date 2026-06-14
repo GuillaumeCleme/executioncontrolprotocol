@@ -31,7 +31,7 @@ export async function transpileWorkflowSource(
 
 /**
  * Bundle workflow module with dependencies (Node host).
- * Resolves `@ecp/core` and extension imports.
+ * Resolves `@executioncontextprotocol/core` and extension imports.
  */
 export async function bundleWorkflowSource(
   source: string,
@@ -61,16 +61,16 @@ export async function bundleWorkflowSource(
     write: false,
     packages: "bundle",
     alias: {
-      "@ecp/core/compile": join(repoRoot, "packages/core/dist/compile/entry.js"),
-      "@ecp/core/loaders": join(repoRoot, "packages/core/dist/loaders/index.js"),
-      "@ecp/core/browser": join(repoRoot, "packages/core/dist/browser.js"),
-      "@ecp/core": join(repoRoot, "packages/core/dist/index.js"),
-      "@ecp/core/testing": join(repoRoot, "packages/core/dist/testing/index.js"),
-      "@ecp/node": join(repoRoot, "packages/runtimes/node/dist/index.js"),
-      "@ecp/browser": join(repoRoot, "packages/runtimes/browser/dist/index.js"),
-      "@ecp/types": join(repoRoot, "packages/types/dist/index.js"),
-      "@ecp/policies": join(repoRoot, "packages/policies/dist/index.js"),
-      "@ecp/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
+      "@executioncontextprotocol/core/compile": join(repoRoot, "packages/core/dist/compile/entry.js"),
+      "@executioncontextprotocol/core/loaders": join(repoRoot, "packages/core/dist/loaders/index.js"),
+      "@executioncontextprotocol/core/browser": join(repoRoot, "packages/core/dist/browser.js"),
+      "@executioncontextprotocol/core": join(repoRoot, "packages/core/dist/index.js"),
+      "@executioncontextprotocol/core/testing": join(repoRoot, "packages/core/dist/testing/index.js"),
+      "@executioncontextprotocol/node": join(repoRoot, "packages/runtimes/node/dist/index.js"),
+      "@executioncontextprotocol/browser": join(repoRoot, "packages/runtimes/browser/dist/index.js"),
+      "@executioncontextprotocol/types": join(repoRoot, "packages/types/dist/index.js"),
+      "@executioncontextprotocol/policies": join(repoRoot, "packages/policies/dist/index.js"),
+      "@executioncontextprotocol/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
     },
   })
   const file = result.outputFiles[0]

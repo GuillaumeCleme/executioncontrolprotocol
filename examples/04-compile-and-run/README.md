@@ -3,12 +3,12 @@
 ## TypeScript fluent API (in process)
 
 ```ts
-import { workflow, step } from "@ecp/core"
-import { environment, extension } from "@ecp/node"
-import "@ecp/core/testing"
+import { workflow, step } from "@executioncontextprotocol/core"
+import { environment, extension } from "@executioncontextprotocol/node"
+import "@executioncontextprotocol/core/testing"
 
 const manifest = workflow("Demo").run([...]).toManifest()
-const env = (await environment("dev")).withExtensions([extension("@ecp/test").with({})])
+const env = (await environment("dev")).withExtensions([extension("@executioncontextprotocol/test").with({})])
 await env.run(manifest)
 ```
 

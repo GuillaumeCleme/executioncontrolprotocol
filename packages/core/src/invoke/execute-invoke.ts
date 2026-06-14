@@ -4,7 +4,7 @@ import {
   type CapabilityId,
   type InvokeResult,
   type UsageSummary,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type { Environment } from "../environment/environment.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
 import { isHarnessCapabilityId } from "../harness/harness-catalog.js"
@@ -14,7 +14,7 @@ import { evaluatePolicies } from "../runtime/policy-engine.js"
 import { createUsageLedger, type CapabilityContext, type PolicyContext } from "../runtime/context.js"
 import { emptyValidationResult } from "../validate/workflow-schema.js"
 import { zodIssuesToValidationIssues } from "../validate/zod-mapper.js"
-import { LATEST_ECP_VERSION as CORE_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION as CORE_VERSION } from "@executioncontextprotocol/types"
 
 const INVOKE_STUB_WORKFLOW = {
   schema: "@ecp.workflow" as const,
@@ -27,7 +27,7 @@ function invokeFailure(
   capabilityId: CapabilityId,
   code: string,
   message: string,
-  validation?: import("@ecp/types").ValidationResult
+  validation?: import("@executioncontextprotocol/types").ValidationResult
 ): InvokeResult {
   return {
     schema: "@ecp.invoke.result",
@@ -82,7 +82,7 @@ export async function executeInvoke(
   if (isHarnessCapabilityId(capabilityId)) {
     return executeHarnessInvoke(
       env,
-      capabilityId as import("@ecp/types").HarnessCapabilityId,
+      capabilityId as import("@executioncontextprotocol/types").HarnessCapabilityId,
       input,
       providerOverride
     )

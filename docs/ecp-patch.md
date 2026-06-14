@@ -8,11 +8,11 @@
 | Termination                | Use `ecp.terminate()`, not `ecp.shutdown()` or `env.shutdown()`.                                                                             |
 | Workflow execution         | Do **not** add `ecp.run()` in this pass. Keep this spec focused on initialization, encoding, decoding, patching, validation, and compaction. |
 | Encode/decode result shape | Avoid nested access like `toon.content` and `decoded.document`. Use a consistent `.result` property.                                         |
-| TOON compaction            | Compaction is `ecp.encode(...).uses("@ecp/format-toon").with({ headers: false, compact: true }).process()`.                                  |
+| TOON compaction            | Compaction is `ecp.encode(...).uses("@executioncontextprotocol/format-toon").with({ headers: false, compact: true }).process()`.             |
 | Patch semantics            | Patching is JSON-only and canonical. TOON can encode/decode patch objects, but patch application always operates on canonical JSON.          |
 | Patch paths                | Use ECP dot/bracket notation with `steps[<id>]`, not labels.                                                                                 |
 | Fluent output              | Keep Fluent API clean. Do **not** render IDs in Fluent API output. IDs belong in JSON serializable objects.                                  |
-| Format extension           | `@ecp/format-toon` already exists and must be extended for header config and patch decoding.                                                 |
+| Format extension           | `@executioncontextprotocol/format-toon` already exists and must be extended for header config and patch decoding.                            |
 | Header config              | Encoders receive a standard options interface with required header config support, plus extensibility via `Record<string, unknown>`.         |
 | Lodash                     | Use lodash for lookup, set, and deep merge where appropriate.                                                                                |
 | Validation                 | Encode/decode/patch must validate and return validation results on failure.                                                                  |
@@ -25,15 +25,15 @@
 
 ```ts
 const env = environment("browser-demo", "Browser Demo")
-  .withRuntime(runtime("@ecp/browser").with({}))
+  .withRuntime(runtime("@executioncontextprotocol/browser").with({}))
   .withExtensions([
-    extension("@ecp/format-toon").with({}),
-    extension("@ecp/format-fluent").with({}),
-    extension("@ecp/demo").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
+    extension("@executioncontextprotocol/format-fluent").with({}),
+    extension("@executioncontextprotocol/demo").with({}),
   ])
   .withPolicies([
-    policy("@ecp/registry-control").with({
-      allowedExtensionNamespaces: ["@ecp/*", "@customer/*"],
+    policy("@executioncontextprotocol/registry-control").with({
+      allowedExtensionNamespaces: ["@executioncontextprotocol/*", "@customer/*"],
       allowDynamicExtensionRegistration: true,
       allowAutoBind: true,
       freezeOn: "environment:beforeRun",
@@ -112,7 +112,7 @@ ecp.terminate()
 Instead of many booleans, simplify freeze timing with a lifecycle hook name.
 
 ```ts
-extension("@ecp/browser-registry").with({
+extension("@executioncontextprotocol/browser-registry").with({
   exposeGlobal: true,
   globalName: "ecp",
   allowRuntimeRegistration: true,
@@ -213,14 +213,14 @@ export interface DecodeResult<T = unknown> {
 ```ts
 const toon = await ecp
   .encode(manifest)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.workflow")
   .with({ headers: false, compact: true })
   .process();
 
 const patch = await ecp
   .decode(agentPatchToon)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.patch")
   .process();
 
@@ -235,7 +235,7 @@ const patched = await ecp
 
 const compact = await ecp
   .encode(patched.result)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.workflow")
   .with({ headers: false, compact: true })
   .process();
@@ -433,30 +433,30 @@ These are not globally banned. But if an extension is used through `ecp.encode()
 Resolution:
 
 ```txt
-ecp.encode(...).uses("@ecp/format-toon")
-  → @ecp/format-toon.encode
+ecp.encode(...).uses("@executioncontextprotocol/format-toon")
+  → @executioncontextprotocol/format-toon.encode
 
-ecp.decode(...).uses("@ecp/format-toon")
-  → @ecp/format-toon.decode
+ecp.decode(...).uses("@executioncontextprotocol/format-toon")
+  → @executioncontextprotocol/format-toon.decode
 ```
 
 ## 7.2 Capability contract
 
 ```ts
-@ecp/format-toon.encode
+@executioncontextprotocol/format-toon.encode
 input: EcpEncodeInput
 output: EncodeResult
 
-@ecp/format-toon.decode
+@executioncontextprotocol/format-toon.decode
 input: EcpDecodeInput
 output: DecodeResult
 ```
 
 ---
 
-# 8. `@ecp/format-toon`
+# 8. `@executioncontextprotocol/format-toon`
 
-`@ecp/format-toon` already exists. Extend it.
+`@executioncontextprotocol/format-toon` already exists. Extend it.
 
 ## 8.1 Must support
 
@@ -477,7 +477,7 @@ version: 1.0
 workflow: weekly-brief "Weekly Brief"
 
 step "Collect Signals"
-  uses: @ecp/memory.search
+  uses: @executioncontextprotocol/memory.search
   in:
     query: weekly risks and decisions
   out: signals
@@ -489,7 +489,7 @@ Headerless output:
 workflow: weekly-brief "Weekly Brief"
 
 step "Collect Signals"
-  uses: @ecp/memory.search
+  uses: @executioncontextprotocol/memory.search
   in:
     query: weekly risks and decisions
   out: signals
@@ -500,7 +500,7 @@ Usage:
 ```ts
 const toon = await ecp
   .encode(manifest)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.workflow")
   .with({ headers: false, compact: true })
   .process();
@@ -511,7 +511,7 @@ const toon = await ecp
 ```ts
 const patch = await ecp
   .decode(headerlessPatchToon)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.patch")
   .process();
 ```
@@ -529,14 +529,14 @@ Do **not** render IDs in generated Fluent API.
 Avoid:
 
 ```ts
-step("@ecp/openai.generate", "Write Brief")
+step("@executioncontextprotocol/openai.generate", "Write Brief")
   .id("write-brief")
 ```
 
 Prefer:
 
 ```ts
-step("@ecp/openai.generate", "Write Brief")
+step("@executioncontextprotocol/openai.generate", "Write Brief")
   .with({
     prompt: "Create a concise brief",
     context: ref("signals.results"),
@@ -552,7 +552,7 @@ When Fluent compiles to JSON manifest, the manifest can include IDs:
 {
   "id": "write-brief",
   "label": "Write Brief",
-  "uses": "@ecp/openai.generate",
+  "uses": "@executioncontextprotocol/openai.generate",
   "input": {
     "prompt": "Create a concise brief"
   },
@@ -943,7 +943,7 @@ Correct flow:
 ```ts
 const patch = await ecp
   .decode(agentPatchToon)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.patch")
   .process();
 
@@ -954,7 +954,7 @@ const patched = await ecp
 
 const compact = await ecp
   .encode(patched.result)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.workflow")
   .with({ headers: false, compact: true })
   .process();
@@ -1077,7 +1077,7 @@ Acceptance criteria:
 
 ---
 
-## Task 7: Update `@ecp/format-toon`
+## Task 7: Update `@executioncontextprotocol/format-toon`
 
 Extend existing package.
 
@@ -1101,7 +1101,7 @@ Acceptance criteria:
 
 ---
 
-## Task 8: Add `@ecp/format-fluent`
+## Task 8: Add `@executioncontextprotocol/format-fluent`
 
 Implement manifest → Fluent source.
 
@@ -1255,7 +1255,7 @@ it("initializes an Ecp operational instance", async () => {
 it("encodes TOON and returns result directly", async () => {
   const encoded = await ecp
     .encode(manifest)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .to("@ecp.workflow")
     .with({ headers: false, compact: true })
     .process();
@@ -1271,7 +1271,7 @@ it("encodes TOON and returns result directly", async () => {
 it("decodes TOON and returns result directly", async () => {
   const decoded = await ecp
     .decode(toon)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .to("@ecp.workflow")
     .process();
 
@@ -1286,7 +1286,7 @@ it("decodes TOON and returns result directly", async () => {
 it("supports headerless compact TOON", async () => {
   const encoded = await ecp
     .encode(manifest)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .to("@ecp.workflow")
     .with({ headers: false, compact: true })
     .process();
@@ -1382,7 +1382,7 @@ it("fails patching when duplicate step ids exist", async () => {
 it("returns validation diagnostics when decode fails", async () => {
   const decoded = await ecp
     .decode(invalidToon)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .to("@ecp.workflow")
     .process();
 

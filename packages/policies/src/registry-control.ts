@@ -1,6 +1,6 @@
-import type { PolicyContext } from "@ecp/core"
-import type { PolicyDecision } from "@ecp/types"
-import { definePolicy, globalRegistry, hook, matchesAnyNamespace } from "@ecp/core"
+import type { PolicyContext } from "@executioncontextprotocol/core"
+import type { PolicyDecision } from "@executioncontextprotocol/types"
+import { definePolicy, globalRegistry, hook, matchesAnyNamespace } from "@executioncontextprotocol/core"
 import { z } from "zod"
 
 type PolicyHookFn = (
@@ -8,7 +8,7 @@ type PolicyHookFn = (
 ) => PolicyDecision | void | Promise<PolicyDecision | void>
 
 function policyHook(
-  event: import("@ecp/types").PolicyLifecycleEvent,
+  event: import("@executioncontextprotocol/types").PolicyLifecycleEvent,
   fn: PolicyHookFn
 ) {
   return hook(event, (lifecycleCtx) =>
@@ -16,7 +16,7 @@ function policyHook(
   )
 }
 
-/** Config for `@ecp/registry-control`. @category Policies */
+/** Config for `@executioncontextprotocol/registry-control`. @category Policies */
 export interface RegistryControlPolicyConfig {
   /** Allowed extension namespace patterns. */
   allowedExtensionNamespaces?: string[]
@@ -28,10 +28,10 @@ export interface RegistryControlPolicyConfig {
   allowAutoBind?: boolean
 }
 
-const POLICY_ID = "@ecp/registry-control"
+const POLICY_ID = "@executioncontextprotocol/registry-control"
 
-/** @ecp/registry-control — governs dynamic extension registration. @category Policies */
-export const registryControlPolicy = definePolicy("@ecp", "registry-control")
+/** @executioncontextprotocol/registry-control — governs dynamic extension registration. @category Policies */
+export const registryControlPolicy = definePolicy("@executioncontextprotocol", "registry-control")
   .withConfig({
     allowedExtensionNamespaces: z.array(z.string()).optional(),
     deniedExtensionNamespaces: z.array(z.string()).default([]),
@@ -93,7 +93,7 @@ export const registryControlPolicy = definePolicy("@ecp", "registry-control")
 
 export { POLICY_ID as REGISTRY_CONTROL_POLICY_ID }
 
-/** Register `@ecp/registry-control` on the global registry. */
+/** Register `@executioncontextprotocol/registry-control` on the global registry. */
 export async function registerRegistryControlPolicy(registry = globalRegistry): Promise<void> {
   if (!registry.getPolicy(POLICY_ID)) {
     await registry.registerPolicy(registryControlPolicy)

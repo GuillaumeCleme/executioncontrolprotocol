@@ -5,7 +5,7 @@ import {
   harnessReplySchema,
   type EcpIntent,
   type HarnessReply,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { zodIssuesToValidationIssues } from "../validate/zod-mapper.js"
 
 /** Schema ids supported by {@link extractArtifactFromModule}. @category Compile */

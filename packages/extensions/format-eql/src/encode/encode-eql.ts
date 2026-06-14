@@ -9,14 +9,14 @@ import {
   type EnvironmentManifest,
   type HarnessReply,
   type WorkflowManifest,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import {
   EcpError,
   encodeFailure,
   ecpPatchDocumentSchema,
   validateWorkflow,
   type UtilityCapabilityContext,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import type { EqlEncodeInput } from "../schemas.js"
 import { resolveEqlOptions } from "../schemas.js"
 import { encodeDescribeToEql } from "./encode-describe.js"

@@ -1,4 +1,4 @@
-import { compileHarnessArtifactSource } from "@ecp/core/compile"
+import { compileHarnessArtifactSource } from "@executioncontextprotocol/core/compile"
 import {
   buildIntentClassificationCodingSystemPrompt,
   buildRepairHint,
@@ -16,7 +16,7 @@ import {
   stripHarnessTypeScriptOutput,
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import {
   ECP_INTENT_SCHEMA,
   ECP_MODEL_GENERATE_INTERFACE,
@@ -26,7 +26,7 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type ValidationResult,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
 
@@ -39,7 +39,7 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(false),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@ecp/format-json"),
+      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
     })
     .default({}),
   output: z
@@ -71,7 +71,7 @@ const harnessInputSchema = z.object({
   model: z.string().optional(),
 })
 
-const codingIntentHarness = defineHarness("@ecp", "browser-coding-intent-classification")
+const codingIntentHarness = defineHarness("@executioncontextprotocol", "browser-coding-intent-classification")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)

@@ -1,4 +1,4 @@
-import type { HarnessRepairAttempt } from "@ecp/types"
+import type { HarnessRepairAttempt } from "@executioncontextprotocol/types"
 
 function readHarnessEnv(name: string): string | undefined {
   if (typeof process === "undefined" || !process.env) return undefined

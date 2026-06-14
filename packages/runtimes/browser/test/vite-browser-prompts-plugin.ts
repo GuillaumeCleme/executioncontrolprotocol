@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs"
 import { join } from "node:path"
 import type { Plugin } from "vite"
 
@@ -10,6 +11,18 @@ export function browserPromptLoaderPlugin(options: {
   stubDir: string
 }): Plugin {
   const { corePromptsDir, stubDir } = options
+
+  function resolveCorePrompt(base: string): string {
+    const jsPath = join(corePromptsDir, `${base}.browser.js`)
+    if (existsSync(jsPath)) return jsPath
+    return join(corePromptsDir, `${base}.browser.ts`)
+  }
+
+  function resolveSchemaPrompt(base: string): string {
+    const jsPath = join(corePromptsDir, `${base}.browser.js`)
+    if (existsSync(jsPath)) return jsPath
+    return join(corePromptsDir, `${base}.browser.ts`)
+  }
 
   function isPromptLoaderId(source: string): boolean {
     return (
@@ -42,10 +55,10 @@ export function browserPromptLoaderPlugin(options: {
     enforce: "pre",
     resolveId(source) {
       if (isPromptLoaderId(source)) {
-        return join(corePromptsDir, "load-harness-prompt.browser.ts")
+        return resolveCorePrompt("load-harness-prompt")
       }
       if (isSchemaLoaderId(source)) {
-        return join(corePromptsDir, "load-schema-example.browser.ts")
+        return resolveSchemaPrompt("load-schema-example")
       }
       if (isPromptNodeId(source)) {
         return join(stubDir, "load-harness-prompt-node-stub.ts")

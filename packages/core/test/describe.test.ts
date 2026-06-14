@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest"
 import { extension, policy } from "../src/index.js"
-import { registerStandardPolicies } from "@ecp/policies"
+import { registerStandardPolicies } from "@executioncontextprotocol/policies"
 import { createTestEnvironment } from "./helpers.js"
 
 describe("environment.describe", () => {
@@ -10,9 +10,9 @@ describe("environment.describe", () => {
 
   it("filters capabilities by match and include", async () => {
     const env = (await createTestEnvironment("d", "D")).withExtensions([
-      extension("@ecp/test", "T").with({}),
+      extension("@executioncontextprotocol/test", "T").with({}),
     ])
-      .withPolicies([policy("@ecp/budget", "B").with({})])
+      .withPolicies([policy("@executioncontextprotocol/budget", "B").with({})])
 
     const ecp = await env.init()
     const desc = await ecp.describe({
@@ -23,21 +23,21 @@ describe("environment.describe", () => {
       },
     })
     expect(desc.capabilities).toHaveLength(1)
-    expect(desc.capabilities[0]?.id).toBe("@ecp/test.echo")
+    expect(desc.capabilities[0]?.id).toBe("@executioncontextprotocol/test.echo")
     expect(desc.capabilities[0]).not.toHaveProperty("inputSchema")
   })
 
   it("filters policies section", async () => {
     const env = (await createTestEnvironment("d")).withExtensions([
-      extension("@ecp/test", "T").with({}),
+      extension("@executioncontextprotocol/test", "T").with({}),
     ])
-      .withPolicies([policy("@ecp/budget", "B").with({ maxModelCalls: 1 })])
+      .withPolicies([policy("@executioncontextprotocol/budget", "B").with({ maxModelCalls: 1 })])
 
     const ecp = await env.init()
     const desc = await ecp.describe({
       policies: { match: "budget", include: ["id", "summary"] },
     })
     expect(desc.policies.length).toBeGreaterThan(0)
-    expect(desc.policies[0]?.id).toBe("@ecp/budget")
+    expect(desc.policies[0]?.id).toBe("@executioncontextprotocol/budget")
   })
 })

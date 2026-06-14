@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { normalizeWorkflowDocumentCandidate } from "@ecp/core"
+import { normalizeWorkflowDocumentCandidate } from "@executioncontextprotocol/core"
 
 describe("normalizeWorkflowDocumentCandidate", () => {
   it("hoists steps nested under workflow and fills schema/version", () => {
@@ -7,7 +7,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
       workflow: {
         id: "minimal-echo",
         label: "Minimal Echo",
-        steps: [{ type: "step", id: "echo", uses: "@ecp/test.echo" }],
+        steps: [{ type: "step", id: "echo", uses: "@executioncontextprotocol/test.echo" }],
       },
     }) as Record<string, unknown>
 
@@ -27,7 +27,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           inputs: { value: "hello" },
           as: "echo",
         },
@@ -43,7 +43,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
       schema: "@ecp.workflow",
       version: "1.0.0",
       workflow: { id: "w", label: "W" },
-      steps: [{ id: "echo", uses: "@ecp/test.echo", as: "echo" }],
+      steps: [{ id: "echo", uses: "@executioncontextprotocol/test.echo", as: "echo" }],
     }) as Record<string, unknown>
     const step = (normalized.steps as Record<string, unknown>[])[0]
     expect(step.type).toBe("step")

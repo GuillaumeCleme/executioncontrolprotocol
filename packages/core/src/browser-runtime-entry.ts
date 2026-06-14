@@ -1,10 +1,10 @@
 /**
- * Browser-safe subset of @ecp/core (no Node compile/loaders).
+ * Browser-safe subset of @executioncontextprotocol/core (no Node compile/loaders).
  * @packageDocumentation
  */
 
-export { LATEST_ECP_VERSION } from "@ecp/types"
-export * from "@ecp/types"
+export { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+export * from "@executioncontextprotocol/types"
 
 export * from "./browser.js"
 export { environment, Environment, type RunOptions } from "./environment/environment.js"

@@ -50,12 +50,12 @@ Encoding and decoding are environment operations:
 ```ts
 const encoded = await env
   .encode(manifest)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 
 const decoded = await env
   .decode(encoded.content)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 ```
 
@@ -64,9 +64,9 @@ const decoded = await env
 Format extensions register normal ECP capabilities:
 
 ```txt
-@ecp/format-toon.encode
-@ecp/format-toon.decode
-@ecp/format-fluent.encode
+@executioncontextprotocol/format-toon.encode
+@executioncontextprotocol/format-toon.decode
+@executioncontextprotocol/format-fluent.encode
 ```
 
 The existing ECP model already uses definitions, bindings, and invocations where extensions define capabilities and environments bind extensions.
@@ -120,32 +120,32 @@ import {
   workflow,
   step,
   ref,
-} from "@ecp/core";
+} from "@executioncontextprotocol/core";
 
 import {
   registerFormatToonExtension,
-} from "@ecp/format-toon";
+} from "@executioncontextprotocol/format-toon";
 
 import {
   registerFormatFluentExtension,
-} from "@ecp/format-fluent";
+} from "@executioncontextprotocol/format-fluent";
 
 registerFormatToonExtension();
 registerFormatFluentExtension();
 
 const env = environment("demo", "Demo Environment")
   .withExtensions([
-    extension("@ecp/format-toon").with({}),
-    extension("@ecp/format-fluent").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
+    extension("@executioncontextprotocol/format-fluent").with({}),
   ]);
 
 const source = `
-  import { workflow, step, ref } from "@ecp/core";
+  import { workflow, step, ref } from "@executioncontextprotocol/core";
 
   export default workflow("Weekly Brief")
     .id("weekly-brief")
     .run([
-      step("@ecp/memory.search", "Collect Signals")
+      step("@executioncontextprotocol/memory.search", "Collect Signals")
         .id("collect-signals")
         .with({
           query: "weekly risks and decisions",
@@ -153,7 +153,7 @@ const source = `
         })
         .as("signals"),
 
-      step("@ecp/openai.generate", "Write Brief")
+      step("@executioncontextprotocol/openai.generate", "Write Brief")
         .id("write-brief")
         .with({
           prompt: "Create a concise brief",
@@ -174,13 +174,13 @@ const manifest = compiled.manifest;
 // JSON manifest → TOON
 const toon = await env
   .encode(manifest)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 
 // TOON → JSON manifest
 const decoded = await env
   .decode(toon.content)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 
 const decodedManifest = decoded.document;
@@ -188,7 +188,7 @@ const decodedManifest = decoded.document;
 // JSON manifest → Fluent API source
 const fluent = await env
   .encode(decodedManifest)
-  .uses("@ecp/format-fluent")
+  .uses("@executioncontextprotocol/format-fluent")
   .process();
 
 console.log(fluent.content);
@@ -259,21 +259,21 @@ packages/
 Published packages:
 
 ```txt
-@ecp/format-toon
-@ecp/format-fluent
+@executioncontextprotocol/format-toon
+@executioncontextprotocol/format-fluent
 ```
 
 Optional convenience re-export:
 
 ```txt
-@ecp/extensions
+@executioncontextprotocol/extensions
 ```
 
 ---
 
 # 5. Type additions
 
-Add to `@ecp/types`.
+Add to `@executioncontextprotocol/types`.
 
 ## 5.1 New schemas
 
@@ -420,15 +420,15 @@ export interface EncodeOperationBuilder {
 ```ts
 const encoded = await env
   .encode(manifest)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 ```
 
 Resolution:
 
 ```txt
-@ecp/format-toon
-→ @ecp/format-toon.encode
+@executioncontextprotocol/format-toon
+→ @executioncontextprotocol/format-toon.encode
 ```
 
 If no `.uses(...)` is provided:
@@ -470,15 +470,15 @@ export interface DecodeOperationBuilder {
 ```ts
 const decoded = await env
   .decode(toon.content)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 ```
 
 Resolution:
 
 ```txt
-@ecp/format-toon
-→ @ecp/format-toon.decode
+@executioncontextprotocol/format-toon
+→ @executioncontextprotocol/format-toon.decode
 ```
 
 Target inference:
@@ -492,7 +492,7 @@ So this is optional:
 ```ts
 const decoded = await env
   .decode(toon.content)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .to("@ecp.workflow")
   .strict()
   .process();
@@ -699,7 +699,7 @@ Required when used by `env.encode()`:
 ## 13.1 Package
 
 ```txt
-@ecp/format-toon
+@executioncontextprotocol/format-toon
 ```
 
 ## 13.2 Exports
@@ -725,7 +725,7 @@ export function decodeToonToWorkflow(
 ## 13.3 Definition
 
 ```ts
-export const formatToonExtension = defineExtension("@ecp", "format-toon")
+export const formatToonExtension = defineExtension("@executioncontextprotocol", "format-toon")
   .withCapabilities([
     capability("encode")
       .withInput(EcpEncodeInputSchema)
@@ -747,17 +747,17 @@ registerFormatToonExtension();
 
 const env = environment("demo")
   .withExtensions([
-    extension("@ecp/format-toon").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
   ]);
 
 const toon = await env
   .encode(manifest)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 
 const decoded = await env
   .decode(toon.content)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 ```
 
@@ -777,7 +777,7 @@ workflow: weekly-brief "Weekly Brief"
 
 ```txt
 step collect-signals "Collect Signals"
-  uses: @ecp/memory.search
+  uses: @executioncontextprotocol/memory.search
   in:
     query: weekly risks and decisions
     since: 7d
@@ -851,14 +851,14 @@ loop create-validate-fix "Create, Validate, Fix"
   max: 3
 
   step generate-image "Generate Image"
-    uses: @ecp/firefly.generateImage
+    uses: @executioncontextprotocol/firefly.generateImage
     in:
       prompt: $creativeInputs.generationPrompt
       controls: $creativeInputs.generationControls
     out: image replace
 
   step validate-image "Validate Image"
-    uses: @ecp/openai.evaluate
+    uses: @executioncontextprotocol/openai.evaluate
     in:
       artifact: $image
     out: brandReview replace
@@ -872,7 +872,7 @@ parallel generate-assets "Generate Assets"
 
   branch copy
     step generate-copy "Generate Copy"
-      uses: @ecp/openai.generate
+      uses: @executioncontextprotocol/openai.generate
       in:
         prompt: Write campaign copy
       out: copy
@@ -880,7 +880,7 @@ parallel generate-assets "Generate Assets"
 
   branch image
     step generate-image "Generate Image"
-      uses: @ecp/firefly.generateImage
+      uses: @executioncontextprotocol/firefly.generateImage
       in:
         prompt: Create campaign image
       out: image
@@ -895,14 +895,14 @@ branch notify-review "Notify Review Result"
 
   case approved when brandReview.approved == true
     step send-approved "Send Approved"
-      uses: @ecp/slack.send
+      uses: @executioncontextprotocol/slack.send
       in:
         message: Approved
   end
 
   case rejected when brandReview.approved == false
     step send-rejected "Send Rejected"
-      uses: @ecp/slack.send
+      uses: @executioncontextprotocol/slack.send
       in:
         message: Rejected
   end
@@ -1047,7 +1047,7 @@ parseExpr(expr)
 ## 17.1 Package
 
 ```txt
-@ecp/format-fluent
+@executioncontextprotocol/format-fluent
 ```
 
 ## 17.2 Purpose
@@ -1079,7 +1079,7 @@ export function encodeWorkflowToFluent(
 ## 17.4 Definition
 
 ```ts
-export const formatFluentExtension = defineExtension("@ecp", "format-fluent")
+export const formatFluentExtension = defineExtension("@executioncontextprotocol", "format-fluent")
   .withCapabilities([
     capability("encode")
       .withInput(EcpEncodeInputSchema)
@@ -1100,12 +1100,12 @@ registerFormatFluentExtension();
 
 const env = environment("demo")
   .withExtensions([
-    extension("@ecp/format-fluent").with({}),
+    extension("@executioncontextprotocol/format-fluent").with({}),
   ]);
 
 const fluent = await env
   .encode(manifest)
-  .uses("@ecp/format-fluent")
+  .uses("@executioncontextprotocol/format-fluent")
   .process();
 
 console.log(fluent.content);
@@ -1118,12 +1118,12 @@ import {
   workflow,
   step,
   ref,
-} from "@ecp/core";
+} from "@executioncontextprotocol/core";
 
 export default workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@ecp/memory.search", "Collect Signals")
+    step("@executioncontextprotocol/memory.search", "Collect Signals")
       .id("collect-signals")
       .with({
         query: "weekly risks and decisions",
@@ -1131,7 +1131,7 @@ export default workflow("Weekly Brief")
       })
       .as("signals"),
 
-    step("@ecp/openai.generate", "Write Brief")
+    step("@executioncontextprotocol/openai.generate", "Write Brief")
       .id("write-brief")
       .with({
         prompt: "Create a concise brief",
@@ -1218,7 +1218,7 @@ import {
   loop,
   parallel,
   branch,
-} from "@ecp/core";
+} from "@executioncontextprotocol/core";
 ```
 
 ## 19.4 Render step
@@ -1229,7 +1229,7 @@ Manifest:
 {
   "id": "write-brief",
   "label": "Write Brief",
-  "uses": "@ecp/openai.generate",
+  "uses": "@executioncontextprotocol/openai.generate",
   "input": {
     "prompt": "Create a concise brief",
     "context": { "$ref": "state.signals.results" }
@@ -1242,7 +1242,7 @@ Manifest:
 Fluent:
 
 ```ts
-step("@ecp/openai.generate", "Write Brief")
+step("@executioncontextprotocol/openai.generate", "Write Brief")
   .id("write-brief")
   .with({
     prompt: "Create a concise brief",
@@ -1301,7 +1301,7 @@ loop(
     id: "create-validate-fix",
   },
   [
-    step("@ecp/firefly.generateImage", "Generate Image")
+    step("@executioncontextprotocol/firefly.generateImage", "Generate Image")
       .id("generate-image")
       .with({
         prompt: ref("creativeInputs.generationPrompt"),
@@ -1317,13 +1317,13 @@ loop(
 parallel(
   [
     [
-      step("@ecp/openai.generate", "Generate Copy")
+      step("@executioncontextprotocol/openai.generate", "Generate Copy")
         .id("generate-copy")
         .with({ prompt: "Write copy" })
         .as("copy"),
     ],
     [
-      step("@ecp/firefly.generateImage", "Generate Image")
+      step("@executioncontextprotocol/firefly.generateImage", "Generate Image")
         .id("generate-image")
         .with({ prompt: "Create image" })
         .as("image"),
@@ -1341,12 +1341,12 @@ parallel(
 ```ts
 branch(
   [
-    step("@ecp/slack.send", "Send Approved")
+    step("@executioncontextprotocol/slack.send", "Send Approved")
       .id("send-approved")
       .when(expr.eq("brandReview.approved", true))
       .with({ message: "Approved" }),
 
-    step("@ecp/slack.send", "Send Rejected")
+    step("@executioncontextprotocol/slack.send", "Send Rejected")
       .id("send-rejected")
       .when(expr.eq("brandReview.approved", false))
       .with({ message: "Rejected" }),
@@ -1370,8 +1370,8 @@ registerFormatFluentExtension();
 
 const env = environment("roundtrip")
   .withExtensions([
-    extension("@ecp/format-toon").with({}),
-    extension("@ecp/format-fluent").with({}),
+    extension("@executioncontextprotocol/format-toon").with({}),
+    extension("@executioncontextprotocol/format-fluent").with({}),
   ]);
 
 const compiled = await compileWorkflowSource({
@@ -1383,19 +1383,19 @@ const manifestA = compiled.manifest;
 
 const toon = await env
   .encode(manifestA)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 
 const decoded = await env
   .decode(toon.content)
-  .uses("@ecp/format-toon")
+  .uses("@executioncontextprotocol/format-toon")
   .process();
 
 const manifestB = decoded.document;
 
 const fluent = await env
   .encode(manifestB)
-  .uses("@ecp/format-fluent")
+  .uses("@executioncontextprotocol/format-fluent")
   .process();
 
 const compiledAgain = await compileWorkflowSource({
@@ -1505,7 +1505,7 @@ it("fails when encoder extension is not registered", async () => {
   await expect(
     env
       .encode(manifest)
-      .uses("@ecp/format-toon")
+      .uses("@executioncontextprotocol/format-toon")
       .process()
   ).rejects.toMatchObject({
     code: "FORMAT_EXTENSION_NOT_FOUND",
@@ -1569,12 +1569,12 @@ it("encodes workflow manifest to TOON", async () => {
 
   const env = environment("test")
     .withExtensions([
-      extension("@ecp/format-toon").with({}),
+      extension("@executioncontextprotocol/format-toon").with({}),
     ]);
 
   const encoded = await env
     .encode(manifest)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(encoded.format).toBe("toon");
@@ -1590,7 +1590,7 @@ it("encodes workflow manifest to TOON", async () => {
 it("decodes TOON to workflow manifest", async () => {
   const decoded = await env
     .decode(toonText)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(decoded.targetSchema).toBe("@ecp.workflow");
@@ -1604,14 +1604,14 @@ it("decodes TOON to workflow manifest", async () => {
 it("round trips refs", async () => {
   const toon = await env
     .encode(refManifest)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(toon.content).toContain("$signals.results");
 
   const decoded = await env
     .decode(toon.content)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(decoded.document.steps[0].input.context).toEqual({
@@ -1626,14 +1626,14 @@ it("round trips refs", async () => {
 it("round trips state handles", async () => {
   const toon = await env
     .encode(stateManifest)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(toon.content).toContain("~creativeInputs");
 
   const decoded = await env
     .decode(toon.content)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(decoded.document.steps[0].input.target).toEqual({
@@ -1676,12 +1676,12 @@ it("encodes workflow manifest to Fluent API source", async () => {
 
   const env = environment("test")
     .withExtensions([
-      extension("@ecp/format-fluent").with({}),
+      extension("@executioncontextprotocol/format-fluent").with({}),
     ]);
 
   const encoded = await env
     .encode(manifest)
-    .uses("@ecp/format-fluent")
+    .uses("@executioncontextprotocol/format-fluent")
     .process();
 
   expect(encoded.format).toBe("fluent");
@@ -1696,7 +1696,7 @@ it("encodes workflow manifest to Fluent API source", async () => {
 it("generated Fluent API source compiles back to manifest", async () => {
   const encoded = await env
     .encode(manifest)
-    .uses("@ecp/format-fluent")
+    .uses("@executioncontextprotocol/format-fluent")
     .process();
 
   const compiled = await compileWorkflowSource({
@@ -1738,8 +1738,8 @@ it("round trips Fluent → JSON → TOON → JSON → Fluent", async () => {
 
   const env = environment("test")
     .withExtensions([
-      extension("@ecp/format-toon").with({}),
-      extension("@ecp/format-fluent").with({}),
+      extension("@executioncontextprotocol/format-toon").with({}),
+      extension("@executioncontextprotocol/format-fluent").with({}),
     ]);
 
   const compiledA = await compileWorkflowSource({
@@ -1751,19 +1751,19 @@ it("round trips Fluent → JSON → TOON → JSON → Fluent", async () => {
 
   const toon = await env
     .encode(manifestA)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   const decoded = await env
     .decode(toon.content)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   const manifestB = decoded.document;
 
   const fluent = await env
     .encode(manifestB)
-    .uses("@ecp/format-fluent")
+    .uses("@executioncontextprotocol/format-fluent")
     .process();
 
   const compiledB = await compileWorkflowSource({
@@ -1792,17 +1792,17 @@ it("does not emit run or step lifecycle during encode/decode", async () => {
   const env = environment("test")
     .withExtensions([
       extension("@test/telemetry").with({}),
-      extension("@ecp/format-toon").with({}),
+      extension("@executioncontextprotocol/format-toon").with({}),
     ]);
 
   await env
     .encode(manifest)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   await env
     .decode(toonText)
-    .uses("@ecp/format-toon")
+    .uses("@executioncontextprotocol/format-toon")
     .process();
 
   expect(events).toEqual([]);
@@ -1830,7 +1830,7 @@ Implementation is complete when all are true:
 
 ## TOON
 
-* `@ecp/format-toon` registers `encode` and `decode`.
+* `@executioncontextprotocol/format-toon` registers `encode` and `decode`.
 * Manifest → TOON works.
 * TOON → manifest works.
 * TOON infers `@ecp.workflow` from the header.
@@ -1840,7 +1840,7 @@ Implementation is complete when all are true:
 
 ## Fluent
 
-* `@ecp/format-fluent` registers `encode`.
+* `@executioncontextprotocol/format-fluent` registers `encode`.
 * Manifest → Fluent API source works.
 * Generated source imports required helpers only.
 * Generated source compiles with `compileWorkflowSource`.
@@ -1858,11 +1858,11 @@ This passes:
 Fluent source
 → compileWorkflowSource
 → manifest A
-→ env.encode().uses("@ecp/format-toon").process()
+→ env.encode().uses("@executioncontextprotocol/format-toon").process()
 → TOON
-→ env.decode().uses("@ecp/format-toon").process()
+→ env.decode().uses("@executioncontextprotocol/format-toon").process()
 → manifest B
-→ env.encode().uses("@ecp/format-fluent").process()
+→ env.encode().uses("@executioncontextprotocol/format-fluent").process()
 → Fluent generated source
 → compileWorkflowSource
 → manifest C
@@ -1918,17 +1918,17 @@ The canonical executable source of truth remains the `@ecp.workflow` JSON manife
 
 The first two format extensions are:
 
-- `@ecp/format-toon`
-- `@ecp/format-fluent`
+- `@executioncontextprotocol/format-toon`
+- `@executioncontextprotocol/format-fluent`
 
-`@ecp/format-toon` provides:
+`@executioncontextprotocol/format-toon` provides:
 
-- `@ecp/format-toon.encode`
-- `@ecp/format-toon.decode`
+- `@executioncontextprotocol/format-toon.encode`
+- `@executioncontextprotocol/format-toon.decode`
 
-`@ecp/format-fluent` provides:
+`@executioncontextprotocol/format-fluent` provides:
 
-- `@ecp/format-fluent.encode`
+- `@executioncontextprotocol/format-fluent.encode`
 
 Together they support the round trip:
 

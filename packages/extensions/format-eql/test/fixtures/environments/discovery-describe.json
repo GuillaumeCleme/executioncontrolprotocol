@@ -6,23 +6,23 @@
     "label": "Discovery"
   },
   "runtime": {
-    "id": "@ecp/in-memory",
+    "id": "@executioncontextprotocol/in-memory",
     "features": {
       "loops": true
     }
   },
   "extensions": [
     {
-      "id": "@ecp/test",
+      "id": "@executioncontextprotocol/test",
       "order": 0,
-      "capabilities": ["@ecp/test.echo"]
+      "capabilities": ["@executioncontextprotocol/test.echo"]
     }
   ],
   "capabilities": [
     {
-      "id": "@ecp/test.echo",
+      "id": "@executioncontextprotocol/test.echo",
       "label": "Echo",
-      "extension": "@ecp/test",
+      "extension": "@executioncontextprotocol/test",
       "inputSchema": {
         "value": "string!"
       },
@@ -31,9 +31,9 @@
       }
     },
     {
-      "id": "@ecp/memory.search",
+      "id": "@executioncontextprotocol/memory.search",
       "label": "Search Memory",
-      "extension": "@ecp/memory",
+      "extension": "@executioncontextprotocol/memory",
       "inputSchema": {
         "query": "string!",
         "since": "string"
@@ -45,7 +45,7 @@
   ],
   "policies": [
     {
-      "id": "@ecp/budget",
+      "id": "@executioncontextprotocol/budget",
       "label": "Budget Guardrails",
       "summary": "Spend limits"
     }

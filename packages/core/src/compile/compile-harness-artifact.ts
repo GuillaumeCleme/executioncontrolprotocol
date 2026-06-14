@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION, type ValidationResult } from "@ecp/types"
+import { LATEST_ECP_VERSION, type ValidationResult } from "@executioncontextprotocol/types"
 import { evaluateHarnessArtifactModule } from "./evaluate-harness-artifact.js"
 import {
   extractArtifactFromModule,
@@ -51,7 +51,7 @@ export async function compileHarnessArtifactSource<T = unknown>(
     typeof process !== "undefined" && process.cwd ? process.cwd() : "."
   try {
     const code =
-      isTypeScriptFile(filename) || options.source.includes("@ecp/")
+      isTypeScriptFile(filename) || options.source.includes("@executioncontextprotocol/")
         ? await bundleWorkflowSource(options.source, filename, resolveDir)
         : options.source
     const mod = await evaluateHarnessArtifactModule(

@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 import { z } from "zod"
 
 /** Capability id pattern: `@namespace/name.capability`. @category Validation */
@@ -151,7 +151,7 @@ export function parseWorkflowManifest(manifest: unknown): ParsedWorkflowManifest
 }
 
 /** Empty validation result template. */
-export function emptyValidationResult(valid: boolean): import("@ecp/types").ValidationResult {
+export function emptyValidationResult(valid: boolean): import("@executioncontextprotocol/types").ValidationResult {
   return {
     schema: "@ecp.validation.result",
     version: LATEST_ECP_VERSION,

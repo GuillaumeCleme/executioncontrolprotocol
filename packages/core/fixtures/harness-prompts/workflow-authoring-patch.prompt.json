@@ -6,8 +6,8 @@
   "promptFormat": "eql",
   "fewShots": [
     {
-      "message": "Insert a validate step before echo using @ecp/demo.validate",
-      "output": "PATCH WORKFLOW echo-test\nADD STEP validate USES @ecp/demo.validate BEFORE echo\n  LABEL \"Validate\"\n  WITH payload = {\"ok\": true}\n  AS validated"
+      "message": "Insert a validate step before echo using @executioncontextprotocol/demo.validate",
+      "output": "PATCH WORKFLOW echo-test\nADD STEP validate USES @executioncontextprotocol/demo.validate BEFORE echo\n  LABEL \"Validate\"\n  WITH payload = {\"ok\": true}\n  AS validated"
     },
     {
       "message": "Ensure summarize input references echo output via $ref.",
@@ -15,7 +15,7 @@
     },
     {
       "message": "Add translate after echo and remove summarize if present.",
-      "output": "PATCH WORKFLOW two-step-chain\nDELETE STEP summarize\nADD STEP translate USES @ecp/demo.translate AFTER echo\n  LABEL \"Translate\"\n  WITH text = REF echo.output\n  AS translated"
+      "output": "PATCH WORKFLOW two-step-chain\nDELETE STEP summarize\nADD STEP translate USES @executioncontextprotocol/demo.translate AFTER echo\n  LABEL \"Translate\"\n  WITH text = REF echo.output\n  AS translated"
     },
     {
       "message": "Move the echo step to run after validate.",

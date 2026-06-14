@@ -10,7 +10,7 @@
       "type": "step",
       "id": "echo",
       "label": "Echo",
-      "uses": "@ecp/test.echo",
+      "uses": "@executioncontextprotocol/test.echo",
       "input": { "value": "before-validate" },
       "as": "echo"
     },
@@ -18,7 +18,7 @@
       "type": "step",
       "id": "validate",
       "label": "Validate",
-      "uses": "@ecp/demo.validate",
+      "uses": "@executioncontextprotocol/demo.validate",
       "input": { "payload": { "ok": true } },
       "as": "validated"
     }

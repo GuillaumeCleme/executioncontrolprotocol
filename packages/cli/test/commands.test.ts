@@ -16,7 +16,7 @@ const BROKEN_WORKFLOW = JSON.stringify({
   schema: "@ecp.workflow",
   version: "1.0",
   workflow: { id: "broken" },
-  steps: [{ type: "step", id: "x", uses: "@ecp/test.does-not-exist", input: {}, as: "x" }],
+  steps: [{ type: "step", id: "x", uses: "@executioncontextprotocol/test.does-not-exist", input: {}, as: "x" }],
 })
 
 interface CliResult {

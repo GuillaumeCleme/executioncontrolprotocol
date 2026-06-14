@@ -1,8 +1,8 @@
 import { describe, expect, it, beforeEach, afterEach } from "vitest"
-import { env } from "@ecp/core"
-import { resolveEnvConfigAsync } from "@ecp/core"
+import { env } from "@executioncontextprotocol/core"
+import { resolveEnvConfigAsync } from "@executioncontextprotocol/core"
 
-describe("@ecp/browser-local-config", () => {
+describe("@executioncontextprotocol/browser-local-config", () => {
   const storage = new Map<string, string>()
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe("@ecp/browser-local-config", () => {
       { theme: env("THEME") },
       [
         {
-          id: "@ecp/browser-local-config",
+          id: "@executioncontextprotocol/browser-local-config",
           resolve(name) {
             if (name === "OPENAI_API_KEY") throw new Error("refuses secret-like key")
             if (!["THEME"].includes(name)) return undefined
@@ -46,7 +46,7 @@ describe("@ecp/browser-local-config", () => {
         { key: env("OPENAI_API_KEY") },
         [
           {
-            id: "@ecp/browser-local-config",
+            id: "@executioncontextprotocol/browser-local-config",
             resolve(name) {
               if (name.toUpperCase().includes("API_KEY")) {
                 throw new Error(`browser-local-config refuses secret-like key: ${name}`)

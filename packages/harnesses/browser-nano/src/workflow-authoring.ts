@@ -25,7 +25,7 @@ import {
   formatStructuredRepairForModel,
   isRepairFeedbackEcho,
   type CompactEnvironmentSummary,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import {
   ECP_CORE_FORMATTER_IDS,
   ECP_MODEL_GENERATE_INTERFACE,
@@ -36,7 +36,7 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type WorkflowManifest,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { z } from "zod"
 import {
   buildPatchOperationHintLines,
@@ -76,7 +76,7 @@ function alignPatchWorkflowId(
 
 const outputConfigSchema = z.object({
   schema: z.string().default("@ecp.workflow"),
-  format: z.string().default("@ecp/format-json"),
+  format: z.string().default("@executioncontextprotocol/format-json"),
   validate: z.boolean().default(true),
 })
 
@@ -88,7 +88,7 @@ const harnessConfigSchema = z.object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       /** When false, only plain-text capability lines are sent (smaller prompts for 1B models). */
       includeEncodedDescriptor: z.boolean().default(true),
-      descriptorFormat: z.string().default("@ecp/format-toon"),
+      descriptorFormat: z.string().default("@executioncontextprotocol/format-toon"),
     })
     .default({}),
   output: outputConfigSchema.default({}),
@@ -116,10 +116,10 @@ const harnessInputSchema = z.object({
 })
 
 /**
- * Eval workflow authoring harness (@ecp/evals-workflow-authoring).
+ * Eval workflow authoring harness (@executioncontextprotocol/evals-workflow-authoring).
  * @category Evals
  */
-const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-authoring-internal")
+const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol", "evals-workflow-authoring-internal")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -132,7 +132,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
     const descriptorFormat = config.context.descriptorFormat ?? format
     const outputIsJson =
       format === ECP_CORE_FORMATTER_IDS.JSON || format.endsWith("/format-json")
-    const outputIsEql = format === "@ecp/format-eql" || format.endsWith("/format-eql")
+    const outputIsEql = format === "@executioncontextprotocol/format-eql" || format.endsWith("/format-eql")
 
     const promptFixtureId =
       config.promptFixture ??
@@ -466,7 +466,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@ecp", "evals-workflow-auth
   })
   .build()
 
-/** Workflow authoring task handler (invoked by unified `@ecp/harness-evals`). @category Evals */
+/** Workflow authoring task handler (invoked by unified `@executioncontextprotocol/harness-evals`). @category Evals */
 export async function invokeWorkflowAuthoring(
   input: { request: string; manifest?: unknown; model?: string },
   ctx: HarnessCapabilityContext<Record<string, unknown>>

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest"
-import { createUsageLedger } from "@ecp/core"
-import type { PolicyContext } from "@ecp/core"
+import { createUsageLedger } from "@executioncontextprotocol/core"
+import type { PolicyContext } from "@executioncontextprotocol/core"
 import { registryControlPolicy } from "../src/registry-control.js"
-import type { RegistryRegistrationRequest } from "@ecp/types"
+import type { RegistryRegistrationRequest } from "@executioncontextprotocol/types"
 
 async function evalPre(
   config: Record<string, unknown>,
   registryRequest: RegistryRegistrationRequest
-): Promise<import("@ecp/types").PolicyDecision | void> {
+): Promise<import("@executioncontextprotocol/types").PolicyDecision | void> {
   const hook = registryControlPolicy.hooks.find((h) => h.event === "policy:pre")
   if (!hook) throw new Error("missing policy:pre")
   const ctx: PolicyContext & { config: Record<string, unknown> } = {
@@ -26,10 +26,10 @@ async function evalPre(
     registryRequest,
     config,
   }
-  return (await hook.handler(ctx as never)) as import("@ecp/types").PolicyDecision | void
+  return (await hook.handler(ctx as never)) as import("@executioncontextprotocol/types").PolicyDecision | void
 }
 
-describe("@ecp/registry-control", () => {
+describe("@executioncontextprotocol/registry-control", () => {
   it("allows extension in allowed namespace", async () => {
     const decision = await evalPre(
       { allowedExtensionNamespaces: ["@customer/*"] },
@@ -41,7 +41,7 @@ describe("@ecp/registry-control", () => {
   it("denies extension outside allowed namespace", async () => {
     const decision = await evalPre(
       { allowedExtensionNamespaces: ["@customer/*"] },
-      { kind: "extension", id: "@ecp/demo" }
+      { kind: "extension", id: "@executioncontextprotocol/demo" }
     )
     expect(decision?.type).toBe("deny")
   })
@@ -58,7 +58,7 @@ describe("@ecp/registry-control", () => {
   })
 
   it("denies policy registration via registry request", async () => {
-    const decision = await evalPre({}, { kind: "policy", id: "@ecp/budget" })
+    const decision = await evalPre({}, { kind: "policy", id: "@executioncontextprotocol/budget" })
     expect(decision?.type).toBe("deny")
   })
 

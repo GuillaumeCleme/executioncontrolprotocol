@@ -1,6 +1,6 @@
-import type { PolicyContext } from "@ecp/core"
-import type { PolicyDecision } from "@ecp/types"
-import { definePolicy, hook, globalRegistry } from "@ecp/core"
+import type { PolicyContext } from "@executioncontextprotocol/core"
+import type { PolicyDecision } from "@executioncontextprotocol/types"
+import { definePolicy, hook, globalRegistry } from "@executioncontextprotocol/core"
 import { z } from "zod"
 import { registerRegistryControlPolicy } from "./registry-control.js"
 
@@ -9,7 +9,7 @@ type PolicyHookFn = (
 ) => PolicyDecision | void | Promise<PolicyDecision | void>
 
 function policyHook(
-  event: import("@ecp/types").PolicyLifecycleEvent,
+  event: import("@executioncontextprotocol/types").PolicyLifecycleEvent,
   fn: PolicyHookFn
 ) {
   return hook(event, (lifecycleCtx) =>
@@ -52,8 +52,8 @@ function evaluateBudget(
   return { type: "allow" }
 }
 
-/** @ecp/budget policy definition. @category Policies */
-export const budgetPolicy = definePolicy("@ecp", "budget")
+/** @executioncontextprotocol/budget policy definition. @category Policies */
+export const budgetPolicy = definePolicy("@executioncontextprotocol", "budget")
   .withConfig({
     maxCostUsd: z.number().optional(),
     maxModelCalls: z.number().optional(),
@@ -69,8 +69,8 @@ export const budgetPolicy = definePolicy("@ecp", "budget")
   ])
   .build()
 
-/** @ecp/approval policy. @category Policies */
-export const approvalPolicy = definePolicy("@ecp", "approval")
+/** @executioncontextprotocol/approval policy. @category Policies */
+export const approvalPolicy = definePolicy("@executioncontextprotocol", "approval")
   .withConfig({
     requireApprovalFor: z.array(z.string()).default([]),
   })
@@ -92,8 +92,8 @@ function pathMatches(path: string, prefix: string): boolean {
   return path === prefix || path.startsWith(`${prefix}.`)
 }
 
-/** @ecp/state-control policy. @category Policies */
-export const stateControlPolicy = definePolicy("@ecp", "state-control")
+/** @executioncontextprotocol/state-control policy. @category Policies */
+export const stateControlPolicy = definePolicy("@executioncontextprotocol", "state-control")
   .withConfig({
     allowedMutablePaths: z.array(z.string()).optional(),
     deniedMutablePaths: z.array(z.string()).optional(),
@@ -176,13 +176,13 @@ export {
 
 /** Register all standard policies. @category Policies */
 export async function registerStandardPolicies(registry = globalRegistry): Promise<void> {
-  if (!registry.getPolicy("@ecp/budget")) {
+  if (!registry.getPolicy("@executioncontextprotocol/budget")) {
     await registry.registerPolicy(budgetPolicy)
   }
-  if (!registry.getPolicy("@ecp/approval")) {
+  if (!registry.getPolicy("@executioncontextprotocol/approval")) {
     await registry.registerPolicy(approvalPolicy)
   }
-  if (!registry.getPolicy("@ecp/state-control")) {
+  if (!registry.getPolicy("@executioncontextprotocol/state-control")) {
     await registry.registerPolicy(stateControlPolicy)
   }
   await registerRegistryControlPolicy(registry)

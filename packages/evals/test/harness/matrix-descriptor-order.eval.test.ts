@@ -3,7 +3,7 @@ import {
   createHarnessOllamaMatrixEnvironment,
   MATRIX_EVAL_EXTENSION_IDS,
   ollamaEvalReady,
-} from "@ecp/evals"
+} from "@executioncontextprotocol/evals"
 
 const readiness = await ollamaEvalReady()
 

@@ -1,4 +1,4 @@
-import { compileWorkflowSource } from "@ecp/core/compile"
+import { compileWorkflowSource } from "@executioncontextprotocol/core/compile"
 import {
   buildRepairHint,
   buildWorkflowCreateCodingSystemPrompt,
@@ -19,12 +19,12 @@ import {
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
   type CompactEnvironmentSummary,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import {
   buildRequestCapabilityHintLines,
   collectCreateCapabilityFeedback,
   collectCreateStepCountFeedback,
-} from "@ecp/harnesses-browser-nano"
+} from "@executioncontextprotocol/harnesses-browser-nano"
 import {
   buildFluentPatchHintLines,
   collectFluentCompileErrorFeedback,
@@ -37,7 +37,7 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type WorkflowManifest,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
 
@@ -65,7 +65,7 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@ecp/format-json"),
+      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
     })
     .default({}),
   output: outputConfigSchema.default({}),
@@ -92,7 +92,7 @@ const harnessInputSchema = z.object({
   model: z.string().optional(),
 })
 
-const codingWorkflowAuthoringHarness = defineHarness("@ecp", "browser-coding-workflow-authoring")
+const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol", "browser-coding-workflow-authoring")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -161,7 +161,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@ecp", "browser-coding-wor
           ]
         : [
             `User request: ${input.request}`,
-            'Required import: import { workflow, step, ref } from "@ecp/core" (include ref even for single-step workflows).',
+            'Required import: import { workflow, step, ref } from "@executioncontextprotocol/core" (include ref even for single-step workflows).',
             ...requestHints,
             ...envBlock,
           ]

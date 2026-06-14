@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest"
-import { createUsageLedger } from "@ecp/core"
-import type { PolicyContext } from "@ecp/core"
+import { createUsageLedger } from "@executioncontextprotocol/core"
+import type { PolicyContext } from "@executioncontextprotocol/core"
 import type {
   PendingMutation,
   PolicyDecision,
   PolicyLifecycleEvent,
   StoreStateHandle,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { stateControlPolicy } from "../src/index.js"
 
 function handle(path: string): StoreStateHandle {
@@ -34,7 +34,7 @@ async function evalPolicy(
   const ctx: PolicyContext & { config: Record<string, unknown> } = {
     workflow: { schema: "@ecp.workflow", version: "1.0.0", workflow: { id: "stub" }, steps: [] },
     run: { id: "run", input: {} },
-    step: { id: "s1", capabilityId: "@ecp/test.echo" },
+    step: { id: "s1", capabilityId: "@executioncontextprotocol/test.echo" },
     state: {},
     input: {},
     usage: createUsageLedger(),
@@ -44,7 +44,7 @@ async function evalPolicy(
   return (await hook.handler(ctx as never)) as PolicyDecision | void
 }
 
-describe("@ecp/state-control enforcement", () => {
+describe("@executioncontextprotocol/state-control enforcement", () => {
   it("denies a path on the denied list (denied wins over allowed)", async () => {
     const decision = await evalPolicy(
       "policy:pre",

@@ -6,12 +6,12 @@
     "label": "Test Environment"
   },
   "runtime": {
-    "id": "@ecp/in-memory",
+    "id": "@executioncontextprotocol/in-memory",
     "label": "In memory"
   },
   "extensions": [
     {
-      "id": "@ecp/test",
+      "id": "@executioncontextprotocol/test",
       "order": 0,
       "label": "Test extension",
       "config": { "enabled": true }
@@ -19,7 +19,7 @@
   ],
   "policies": [
     {
-      "id": "@ecp/budget",
+      "id": "@executioncontextprotocol/budget",
       "order": 1,
       "label": "Budget"
     }

@@ -6,7 +6,7 @@
     {
       "type": "step",
       "id": "echo",
-      "uses": "@ecp/test.echo",
+      "uses": "@executioncontextprotocol/test.echo",
       "input": { "value": "hi" },
       "as": "echo"
     }

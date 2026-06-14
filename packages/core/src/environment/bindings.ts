@@ -1,4 +1,4 @@
-import type { CapabilityId, HarnessId, NamespacedId } from "@ecp/types"
+import type { CapabilityId, HarnessId, NamespacedId } from "@executioncontextprotocol/types"
 import type { HookDefinition } from "../definitions/types.js"
 import {
   cloneConfigForManifest,

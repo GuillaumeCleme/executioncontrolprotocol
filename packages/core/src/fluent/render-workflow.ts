@@ -1,4 +1,4 @@
-import type { WorkflowManifest } from "@ecp/types"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
 import { renderNodes } from "./render-node.js"
 import { createImportNeeds } from "./render-value.js"
 
@@ -6,13 +6,13 @@ import { createImportNeeds } from "./render-value.js"
 export interface RenderWorkflowToFluentOptions {
   /** Prefer compact output (reserved for future formatting). */
   compact?: boolean
-  /** Import module target (`@ecp/core` default, `@ecp/browser` for browser demo). */
-  importFrom?: "@ecp/core" | "@ecp/browser"
+  /** Import module target (`@executioncontextprotocol/core` default, `@executioncontextprotocol/browser` for browser demo). */
+  importFrom?: "@executioncontextprotocol/core" | "@executioncontextprotocol/browser"
 }
 
 function renderImports(
   needs: ReturnType<typeof createImportNeeds>,
-  importFrom: "@ecp/core" | "@ecp/browser"
+  importFrom: "@executioncontextprotocol/core" | "@executioncontextprotocol/browser"
 ): string {
   const names: string[] = ["workflow", "step"]
   if (needs.ref) names.push("ref")
@@ -32,7 +32,7 @@ export function renderWorkflowToFluent(
   manifest: WorkflowManifest,
   _options?: RenderWorkflowToFluentOptions
 ): string {
-  const importFrom = _options?.importFrom ?? "@ecp/core"
+  const importFrom = _options?.importFrom ?? "@executioncontextprotocol/core"
   const needs = createImportNeeds()
   const nodes = renderNodes(manifest.steps, needs, "    ")
   const header = renderImports(needs, importFrom)

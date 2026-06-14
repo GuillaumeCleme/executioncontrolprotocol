@@ -18,21 +18,21 @@ describe("EQL header behavior", () => {
   it("decode infers schema from header", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW hdr-test
-STEP s USES @ecp/test.echo`
+STEP s USES @executioncontextprotocol/test.echo`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(true)
     expect((decoded.result as { workflow: { id: string } }).workflow.id).toBe("hdr-test")
   })
 
   it("decode without header requires targetSchema on input", () => {
-    const decoded = decodeWorkflow("WORKFLOW nohdr\nSTEP s USES @ecp/test.echo", {
+    const decoded = decodeWorkflow("WORKFLOW nohdr\nSTEP s USES @executioncontextprotocol/test.echo", {
       headers: false,
     })
     expect(decoded.success).toBe(true)
   })
 
   it("fails decode without header or targetSchema", () => {
-    const decoded = decodeWorkflow("WORKFLOW orphan\nSTEP s USES @ecp/test.echo")
+    const decoded = decodeWorkflow("WORKFLOW orphan\nSTEP s USES @executioncontextprotocol/test.echo")
     // headers auto + no ECP line still has WORKFLOW — targetSchema provided in helper
     expect(decoded.success).toBe(true)
   })
@@ -41,7 +41,7 @@ STEP s USES @ecp/test.echo`
     const { decodeFromEql } = await import("../src/decode/decode-eql.js")
     const { testCtx } = await import("./helpers.js")
     const decoded = decodeFromEql(
-      { input: "WORKFLOW x\nSTEP s USES @ecp/test.echo" },
+      { input: "WORKFLOW x\nSTEP s USES @executioncontextprotocol/test.echo" },
       testCtx
     )
     expect(decoded.success).toBe(false)

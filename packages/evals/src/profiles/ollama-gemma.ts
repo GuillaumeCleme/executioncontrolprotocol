@@ -6,8 +6,8 @@ import type { EvalProviderProfile } from "./eval-provider.js"
  */
 export const OLLAMA_GEMMA_1B_EVAL = {
   id: "ollama-gemma-1b",
-  providerId: "@ecp/ollama",
-  generateCapability: "@ecp/ollama.generate",
+  providerId: "@executioncontextprotocol/ollama",
+  generateCapability: "@executioncontextprotocol/ollama.generate",
   runtime: "node",
   model: "gemma3:1b",
   extensionBinding: {

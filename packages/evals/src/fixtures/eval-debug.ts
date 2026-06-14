@@ -1,6 +1,6 @@
 import { appendFileSync, mkdirSync } from "node:fs"
 import { dirname } from "node:path"
-import type { HarnessInvokeResult, InvokeResult, WorkflowManifest } from "@ecp/types"
+import type { HarnessInvokeResult, InvokeResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import type { DeterministicAssertion, EvalCase } from "./eval-case-schema.js"
 import { isFlowEvalCase } from "./eval-case-schema.js"
 import { formatHarnessTrace } from "./harness-trace-format.js"

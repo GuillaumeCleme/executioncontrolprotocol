@@ -5,9 +5,9 @@
 export type EvalProviderProfile = {
   /** Profile id for logging and readiness (e.g. ollama-gemma-1b, chrome-nano). */
   id: string
-  /** Provider extension id (e.g. @ecp/ollama, @ecp/chrome-ai). */
+  /** Provider extension id (e.g. @executioncontextprotocol/ollama, @executioncontextprotocol/chrome-ai). */
   providerId: string
-  /** Generate capability invoked by the harness (e.g. @ecp/ollama.generate). */
+  /** Generate capability invoked by the harness (e.g. @executioncontextprotocol/ollama.generate). */
   generateCapability: string
   /** ECP runtime required for this provider. */
   runtime: "node" | "browser"

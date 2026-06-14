@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 import { normalizeWorkflowDocumentCandidate } from "../../src/harness/authoring/normalize-workflow-output.js"
 
 describe("normalizeWorkflowDocumentCandidate", () => {
@@ -16,7 +16,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
     const result = normalizeWorkflowDocumentCandidate({
       workflow: {
         id: "w",
-        steps: [{ uses: "@ecp/test.echo", id: "a", input: {} }],
+        steps: [{ uses: "@executioncontextprotocol/test.echo", id: "a", input: {} }],
       },
     }) as { steps: unknown[]; workflow: { steps?: unknown[] } }
     expect(result.steps).toHaveLength(1)
@@ -26,7 +26,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
   it("renames step `inputs` to `input` and adds type:step", () => {
     const result = normalizeWorkflowDocumentCandidate({
       workflow: { id: "w" },
-      steps: [{ id: "a", uses: "@ecp/test.echo", inputs: { value: "x" } }],
+      steps: [{ id: "a", uses: "@executioncontextprotocol/test.echo", inputs: { value: "x" } }],
     }) as { steps: { type: string; input: { value: string }; inputs?: unknown }[] }
     const step = result.steps[0]!
     expect(step.type).toBe("step")

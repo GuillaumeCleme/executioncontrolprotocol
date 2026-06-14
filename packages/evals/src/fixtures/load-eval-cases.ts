@@ -1,12 +1,12 @@
 import { readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
-import type { RunResult, WorkflowManifest } from "@ecp/types"
+import type { RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import {
   harnessRunContextSchema,
   runResultSchema,
   toHarnessRunContext,
   type HarnessRunContext,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import {
   evalCaseSchema,
   EVAL_SUITE_VALUES,

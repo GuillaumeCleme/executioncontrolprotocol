@@ -1,1 +1,1 @@
-export { ecpIntentSchema, harnessReplySchema } from "@ecp/types"
+export { ecpIntentSchema, harnessReplySchema } from "@executioncontextprotocol/types"

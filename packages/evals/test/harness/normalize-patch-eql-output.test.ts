@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest"
 import {
   normalizePatchEqlRawOutput,
   substitutePatchRepairTemplate,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 
 describe("normalizePatchEqlRawOutput", () => {
   it("prepends PATCH WORKFLOW when the header is missing", () => {
     const raw = `DELETE STEP summarize
-ADD STEP translate USES @ecp/demo.translate AFTER echo
+ADD STEP translate USES @executioncontextprotocol/demo.translate AFTER echo
   LABEL "Translate"`
     expect(normalizePatchEqlRawOutput(raw, "two-step-chain")).toBe(
       `PATCH WORKFLOW two-step-chain
 DELETE STEP summarize
-ADD STEP translate USES @ecp/demo.translate AFTER echo
+ADD STEP translate USES @executioncontextprotocol/demo.translate AFTER echo
   LABEL "Translate"`
     )
   })

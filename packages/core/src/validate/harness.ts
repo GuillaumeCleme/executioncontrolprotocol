@@ -5,7 +5,7 @@ import {
   type HarnessId,
   type ValidationIssue,
   type ValidationResult,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type { Registry } from "../registry/registry.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
 import { getCatalogedHarness } from "../harness/harness-catalog.js"

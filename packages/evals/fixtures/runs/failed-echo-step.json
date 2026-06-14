@@ -20,7 +20,7 @@
         "type": "step",
         "id": "echo",
         "label": "Echo",
-        "uses": "@ecp/test.echo",
+        "uses": "@executioncontextprotocol/test.echo",
         "input": { "value": "" },
         "as": "echo"
       }

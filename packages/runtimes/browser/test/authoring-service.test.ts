@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { registerTestExtension, workflow, step } from "@ecp/core"
+import { registerTestExtension, workflow, step } from "@executioncontextprotocol/core"
 import {
   BrowserAuthoringService,
   HARNESS_TASKS,
@@ -8,13 +8,13 @@ import {
   createEcp,
   registerBrowserDefaults,
 } from "../src/index.js"
-import type { HarnessInvokeResult, WorkflowManifest } from "@ecp/types"
+import type { HarnessInvokeResult, WorkflowManifest } from "@executioncontextprotocol/types"
 
 async function authoringEcp() {
   await registerBrowserDefaults()
   await registerTestExtension()
   const env = createBrowserDemoEnvironment("authoring-test")
-  env.addExtensionBinding("@ecp/test", {})
+  env.addExtensionBinding("@executioncontextprotocol/test", {})
   return createEcp(env)
 }
 
@@ -23,7 +23,7 @@ describe("BrowserAuthoringService", () => {
     const ecp = await authoringEcp()
     const invoked = await ecp
       .invoke(WORKFLOW_AUTHORING_CAPABILITY)
-      .uses("@ecp/demo.generate")
+      .uses("@executioncontextprotocol/demo.generate")
       .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "echo demo workflow" })
       .process()
     expect(invoked.success).toBe(true)
@@ -44,7 +44,7 @@ describe("BrowserAuthoringService", () => {
     const ecp = await authoringEcp()
     const service = new BrowserAuthoringService(ecp)
     const manifest = workflow("Graph test")
-      .run([step("@ecp/test.echo", "Echo step").with({ value: 1 }).as("echo")])
+      .run([step("@executioncontextprotocol/test.echo", "Echo step").with({ value: 1 }).as("echo")])
       .toManifest()
     const panels = await service.encodePanels(manifest)
     expect(panels.mermaid).toContain("Echo step")
@@ -65,7 +65,7 @@ describe("BrowserAuthoringService", () => {
     const service = new BrowserAuthoringService(ecp)
     const invoked = await ecp
       .invoke(WORKFLOW_AUTHORING_CAPABILITY)
-      .uses("@ecp/demo.generate")
+      .uses("@executioncontextprotocol/demo.generate")
       .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "demo" })
       .process()
     const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>

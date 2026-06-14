@@ -1,4 +1,4 @@
-import type { WorkflowManifest } from "@ecp/types"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
 import type { WorkflowBuilder } from "../workflow/builder.js"
 
 const WORKFLOW_EXPORT_NAMES = ["default", "workflow", "defaultWorkflow", "manifest"]

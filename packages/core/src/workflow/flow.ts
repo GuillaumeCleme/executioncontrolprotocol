@@ -1,5 +1,5 @@
-import type { BranchNode, LoopNode, ParallelNode, WorkflowNode } from "@ecp/types"
-import type { ExprValue } from "@ecp/types"
+import type { BranchNode, LoopNode, ParallelNode, WorkflowNode } from "@executioncontextprotocol/types"
+import type { ExprValue } from "@executioncontextprotocol/types"
 import { slugify } from "../util/slug.js"
 import type { StepBuilder } from "../bindings/step.js"
 

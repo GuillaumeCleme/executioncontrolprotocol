@@ -4,7 +4,7 @@ import { stripHarnessTypeScriptOutput } from "../../src/encoding/strip-harness-t
 describe("stripHarnessTypeScriptOutput", () => {
   it("removes a lone leading typescript line", () => {
     const raw = `typescript
-import { workflow, step } from "@ecp/core"
+import { workflow, step } from "@executioncontextprotocol/core"
 
 export default workflow("Echo").run([])`
     expect(stripHarnessTypeScriptOutput(raw)).toMatch(/^import \{ workflow/)
@@ -12,13 +12,13 @@ export default workflow("Echo").run([])`
   })
 
   it("strips ```typescript fences", () => {
-    const raw = "```typescript\nimport { workflow } from \"@ecp/core\"\n```"
-    expect(stripHarnessTypeScriptOutput(raw)).toBe('import { workflow } from "@ecp/core"')
+    const raw = "```typescript\nimport { workflow } from \"@executioncontextprotocol/core\"\n```"
+    expect(stripHarnessTypeScriptOutput(raw)).toBe('import { workflow } from "@executioncontextprotocol/core"')
   })
 
   it("fixes trailing ]);): typo", () => {
-    const raw = `import { workflow, step } from "@ecp/core"
-export default workflow("W").run([step("@ecp/test.echo", "E").as("e")]);):`
+    const raw = `import { workflow, step } from "@executioncontextprotocol/core"
+export default workflow("W").run([step("@executioncontextprotocol/test.echo", "E").as("e")]);):`
     expect(stripHarnessTypeScriptOutput(raw).endsWith("]);")).toBe(true)
   })
 })

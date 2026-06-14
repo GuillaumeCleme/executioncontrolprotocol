@@ -54,46 +54,46 @@ packages/
 
 ## 2.2 Published packages
 
-| Package                    | Purpose                                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `@ecp/types`               | Protocol types, schema constants, JSON schema artifacts, lifecycle event types.                               |
-| `@ecp/core`                | Fluent API, definitions, environment, registry, local runtime, lifecycle engine, validation, local execution. |
-| `@ecp/mcp`                 | MCP server adapter exposing an ECP environment to agents.                                                     |
-| `@ecp/cli`                 | CLI for compile, validate, describe, run, and MCP serving.                                                    |
-| `@ecp/policies`            | Standard policies such as budget, approval, citations.                                                        |
-| `@ecp/runtime-temporal`    | Optional Temporal runtime adapter.                                                                            |
-| `@ecp/extension-memory`    | Memory capabilities and lifecycle hooks.                                                                      |
-| `@ecp/extension-openai`    | OpenAI model capabilities.                                                                                    |
-| `@ecp/extension-slack`     | Slack capabilities.                                                                                           |
-| `@ecp/extension-storage`   | Storage capabilities.                                                                                         |
-| `@ecp/extension-telemetry` | Telemetry lifecycle hooks.                                                                                    |
-| `@ecp/extensions`          | Optional convenience bundle/re-export package.                                                                |
+| Package                                         | Purpose                                                                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `@executioncontextprotocol/types`               | Protocol types, schema constants, JSON schema artifacts, lifecycle event types.                               |
+| `@executioncontextprotocol/core`                | Fluent API, definitions, environment, registry, local runtime, lifecycle engine, validation, local execution. |
+| `@executioncontextprotocol/mcp`                 | MCP server adapter exposing an ECP environment to agents.                                                     |
+| `@executioncontextprotocol/cli`                 | CLI for compile, validate, describe, run, and MCP serving.                                                    |
+| `@executioncontextprotocol/policies`            | Standard policies such as budget, approval, citations.                                                        |
+| `@executioncontextprotocol/runtime-temporal`    | Optional Temporal runtime adapter.                                                                            |
+| `@executioncontextprotocol/extension-memory`    | Memory capabilities and lifecycle hooks.                                                                      |
+| `@executioncontextprotocol/extension-openai`    | OpenAI model capabilities.                                                                                    |
+| `@executioncontextprotocol/extension-slack`     | Slack capabilities.                                                                                           |
+| `@executioncontextprotocol/extension-storage`   | Storage capabilities.                                                                                         |
+| `@executioncontextprotocol/extension-telemetry` | Telemetry lifecycle hooks.                                                                                    |
+| `@executioncontextprotocol/extensions`          | Optional convenience bundle/re-export package.                                                                |
 
 ## 2.3 Dependency direction
 
 ```txt
-@ecp/types
+@executioncontextprotocol/types
    ↑
-@ecp/core
+@executioncontextprotocol/core
    ↑
-@ecp/mcp
-@ecp/cli
-@ecp/policies
-@ecp/runtime-temporal
-@ecp/extension-*
-@ecp/extensions
+@executioncontextprotocol/mcp
+@executioncontextprotocol/cli
+@executioncontextprotocol/policies
+@executioncontextprotocol/runtime-temporal
+@executioncontextprotocol/extension-*
+@executioncontextprotocol/extensions
 ```
 
 Rules:
 
-| Rule                    | Decision                                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------------------- |
-| `@ecp/types`            | Dependency-light, no runtime dependencies.                                               |
-| `@ecp/core`             | Main package. Includes local execution.                                                  |
-| `@ecp/mcp`              | Separate because MCP SDK is optional.                                                    |
-| `@ecp/runtime-temporal` | Separate because Temporal SDK is optional/heavy.                                         |
-| Extensions              | Installed one by one for production.                                                     |
-| `@ecp/extensions`       | Optional convenience package; avoid forcing heavy transitive dependencies when possible. |
+| Rule                                         | Decision                                                                                 |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `@executioncontextprotocol/types`            | Dependency-light, no runtime dependencies.                                               |
+| `@executioncontextprotocol/core`             | Main package. Includes local execution.                                                  |
+| `@executioncontextprotocol/mcp`              | Separate because MCP SDK is optional.                                                    |
+| `@executioncontextprotocol/runtime-temporal` | Separate because Temporal SDK is optional/heavy.                                         |
+| Extensions                                   | Installed one by one for production.                                                     |
+| `@executioncontextprotocol/extensions`       | Optional convenience package; avoid forcing heavy transitive dependencies when possible. |
 
 ---
 
@@ -101,30 +101,30 @@ Rules:
 
 ## 3.1 Definitions vs bindings vs invocations
 
-| Concept    | Example                                            | Purpose                                        |
-| ---------- | -------------------------------------------------- | ---------------------------------------------- |
-| Definition | `defineExtension("@ecp", "memory")`                | Defines reusable implementation/contract.      |
-| Binding    | `extension("@ecp/memory", "Memory").with({...})`   | Configures a definition inside an environment. |
-| Invocation | `step("@ecp/memory.search", "Search").with({...})` | Executes a capability inside a workflow.       |
+| Concept    | Example                                                                 | Purpose                                        |
+| ---------- | ----------------------------------------------------------------------- | ---------------------------------------------- |
+| Definition | `defineExtension("@executioncontextprotocol", "memory")`                | Defines reusable implementation/contract.      |
+| Binding    | `extension("@executioncontextprotocol/memory", "Memory").with({...})`   | Configures a definition inside an environment. |
+| Invocation | `step("@executioncontextprotocol/memory.search", "Search").with({...})` | Executes a capability inside a workflow.       |
 
 ## 3.2 Namespacing
 
 Definitions use namespace + name.
 
 ```ts
-defineExtension("@ecp", "memory");
-defineRuntime("@ecp", "local");
-definePolicy("@ecp", "budget");
+defineExtension("@executioncontextprotocol", "memory");
+defineRuntime("@executioncontextprotocol", "local");
+definePolicy("@executioncontextprotocol", "budget");
 ```
 
 IDs:
 
-| Definition              | ID                   |
-| ----------------------- | -------------------- |
-| Extension               | `@ecp/memory`        |
-| Runtime                 | `@ecp/local`         |
-| Policy                  | `@ecp/budget`        |
-| Capability on extension | `@ecp/memory.search` |
+| Definition              | ID                                        |
+| ----------------------- | ----------------------------------------- |
+| Extension               | `@executioncontextprotocol/memory`        |
+| Runtime                 | `@executioncontextprotocol/local`         |
+| Policy                  | `@executioncontextprotocol/budget`        |
+| Capability on extension | `@executioncontextprotocol/memory.search` |
 
 ## 3.3 JSON schema/version convention
 
@@ -714,10 +714,10 @@ Serialized:
 ```ts
 const prod = environment("production", "Production Environment")
   .withRuntime(
-    runtime("@ecp/local", "Local Runtime").with({})
+    runtime("@executioncontextprotocol/local", "Local Runtime").with({})
   )
   .withExtensions([
-    extension("@ecp/memory", "Business Knowledge Memory").with({
+    extension("@executioncontextprotocol/memory", "Business Knowledge Memory").with({
       hydrateModels: true,
       rememberOutputs: true,
       collections: ["leadership", "metrics", "decisions"],
@@ -725,7 +725,7 @@ const prod = environment("production", "Production Environment")
     }),
   ])
   .withPolicies([
-    policy("@ecp/budget", "Budget Guardrails").with({
+    policy("@executioncontextprotocol/budget", "Budget Guardrails").with({
       maxCostUsd: 2,
       maxModelCalls: 5,
       maxRetries: 2,
@@ -736,7 +736,7 @@ const prod = environment("production", "Production Environment")
 If `.withRuntime(...)` is omitted, default to built-in local runtime:
 
 ```txt
-@ecp/local
+@executioncontextprotocol/local
 ```
 
 ## 8.2 Environment methods
@@ -811,7 +811,7 @@ Search output:
   "results": [
     {
       "type": "capability",
-      "id": "@ecp/slack.send",
+      "id": "@executioncontextprotocol/slack.send",
       "label": "Send Slack Message",
       "score": 0.95,
       "reason": "Matches intent to send a message."
@@ -829,21 +829,21 @@ Search output:
 ```ts
 const weeklyBrief = workflow("Weekly leadership brief")
   .run([
-    step("@ecp/memory.search", "Collect Weekly Signals")
+    step("@executioncontextprotocol/memory.search", "Collect Weekly Signals")
       .with({
         query: "important risks and decisions this week",
         since: "7d",
       })
       .as("signals"),
 
-    step("@ecp/openai.generate", "Generate Executive Brief")
+    step("@executioncontextprotocol/openai.generate", "Generate Executive Brief")
       .with({
         prompt: "Create a concise leadership brief.",
         context: ref("signals.results"),
       })
       .as("brief"),
 
-    step("@ecp/slack.send", "Send Brief to Slack")
+    step("@executioncontextprotocol/slack.send", "Send Brief to Slack")
       .with({
         message: ref("brief.content"),
       }),
@@ -876,7 +876,7 @@ interface WorkflowBuilder {
     {
       "id": "collect-weekly-signals",
       "label": "Collect Weekly Signals",
-      "uses": "@ecp/memory.search",
+      "uses": "@executioncontextprotocol/memory.search",
       "input": {
         "query": "important risks and decisions this week",
         "since": "7d"
@@ -906,8 +906,8 @@ Arrays imply sequence.
 
 ```ts
 workflow("Example").run([
-  step("@ecp/a.do", "A").with({}).as("a"),
-  step("@ecp/b.do", "B").with({ input: ref("a") }).as("b"),
+  step("@executioncontextprotocol/a.do", "A").with({}).as("a"),
+  step("@executioncontextprotocol/b.do", "B").with({ input: ref("a") }).as("b"),
 ]);
 ```
 
@@ -915,11 +915,11 @@ workflow("Example").run([
 
 ```ts
 parallel([
-  step("@ecp/openai.generate", "Generate Copy")
+  step("@executioncontextprotocol/openai.generate", "Generate Copy")
     .with({ prompt: "Write copy" })
     .as("copy"),
 
-  step("@ecp/firefly.generateImage", "Generate Image")
+  step("@executioncontextprotocol/firefly.generateImage", "Generate Image")
     .with({ prompt: "Create image" })
     .as("image"),
 ]);
@@ -936,7 +936,7 @@ Suggested manifest shape:
       {
         "id": "generate-copy",
         "label": "Generate Copy",
-        "uses": "@ecp/openai.generate",
+        "uses": "@executioncontextprotocol/openai.generate",
         "commitAs": "copy"
       }
     ],
@@ -944,7 +944,7 @@ Suggested manifest shape:
       {
         "id": "generate-image",
         "label": "Generate Image",
-        "uses": "@ecp/firefly.generateImage",
+        "uses": "@executioncontextprotocol/firefly.generateImage",
         "commitAs": "image"
       }
     ]
@@ -956,11 +956,11 @@ Suggested manifest shape:
 
 ```ts
 branch([
-  step("@ecp/slack.send", "Notify approval")
+  step("@executioncontextprotocol/slack.send", "Notify approval")
     .when(expr.eq("review.approved", true))
     .with({ message: "Approved" }),
 
-  step("@ecp/slack.send", "Notify rejection")
+  step("@executioncontextprotocol/slack.send", "Notify rejection")
     .when(expr.eq("review.approved", false))
     .with({ message: "Rejected" }),
 ]);
@@ -976,14 +976,14 @@ loop(
     maxRounds: 3,
   },
   [
-    step("@ecp/firefly.generateImage", "Generate Image")
+    step("@executioncontextprotocol/firefly.generateImage", "Generate Image")
       .with({
         prompt: "Create a campaign hero image.",
         feedback: ref("brandReview.feedback", { optional: true }),
       })
       .as("image", { mode: "replace" }),
 
-    step("@ecp/openai.evaluate", "Validate Image")
+    step("@executioncontextprotocol/openai.evaluate", "Validate Image")
       .with({
         artifact: ref("image"),
       })
@@ -1001,7 +1001,7 @@ Business loops belong in workflow logic. Technical retries belong to runtime/pol
 ## 11.1 Runtime definition
 
 ```ts
-const localRuntime = defineRuntime("@ecp", "local")
+const localRuntime = defineRuntime("@executioncontextprotocol", "local")
   .withConfig({})
   .withExecutor(localExecutor);
 ```
@@ -1020,7 +1020,7 @@ export interface RuntimeExecutor {
 ## 11.2 Extension definition
 
 ```ts
-const memory = defineExtension("@ecp", "memory")
+const memory = defineExtension("@executioncontextprotocol", "memory")
   .withConfig({
     hydrateModels: boolean().default(true),
     rememberOutputs: boolean().default(false),
@@ -1091,7 +1091,7 @@ export interface HookDefinition {
 ## 11.5 Policy hooks
 
 ```ts
-const budget = definePolicy("@ecp", "budget")
+const budget = definePolicy("@executioncontextprotocol", "budget")
   .withConfig({
     maxCostUsd: number().optional(),
     maxModelCalls: number().optional(),
@@ -1146,9 +1146,9 @@ const budget = definePolicy("@ecp", "budget")
   "errors": [
     {
       "code": "UNKNOWN_CAPABILITY",
-      "message": "Capability @ecp/slack.post is not registered.",
+      "message": "Capability @executioncontextprotocol/slack.post is not registered.",
       "path": "steps[2].uses",
-      "suggestions": ["@ecp/slack.send"]
+      "suggestions": ["@executioncontextprotocol/slack.send"]
     }
   ],
   "warnings": []
@@ -1162,7 +1162,7 @@ const budget = definePolicy("@ecp", "budget")
 ## 13.1 Package
 
 ```txt
-@ecp/mcp
+@executioncontextprotocol/mcp
 ```
 
 Purpose:
@@ -1324,7 +1324,7 @@ Security rules:
 Package:
 
 ```txt
-@ecp/cli
+@executioncontextprotocol/cli
 ```
 
 Commands:
@@ -1339,7 +1339,7 @@ ecp mcp serve --env environment.ts --transport stdio
 ecp mcp serve --env environment.ts --transport http --port 8787
 ```
 
-CLI should use `@ecp/core` and optional packages as needed.
+CLI should use `@executioncontextprotocol/core` and optional packages as needed.
 
 ---
 
@@ -1348,7 +1348,7 @@ CLI should use `@ecp/core` and optional packages as needed.
 Package:
 
 ```txt
-@ecp/policies
+@executioncontextprotocol/policies
 ```
 
 ## 15.1 Budget policy
@@ -1356,7 +1356,7 @@ Package:
 ID:
 
 ```txt
-@ecp/budget
+@executioncontextprotocol/budget
 ```
 
 Config:
@@ -1383,7 +1383,7 @@ Hooks:
 ID:
 
 ```txt
-@ecp/approval
+@executioncontextprotocol/approval
 ```
 
 Config:
@@ -1410,20 +1410,20 @@ Hooks:
 Package:
 
 ```txt
-@ecp/extension-memory
+@executioncontextprotocol/extension-memory
 ```
 
 ID:
 
 ```txt
-@ecp/memory
+@executioncontextprotocol/memory
 ```
 
 Capabilities:
 
 ```txt
-@ecp/memory.search
-@ecp/memory.remember
+@executioncontextprotocol/memory.search
+@executioncontextprotocol/memory.remember
 ```
 
 Hooks:
@@ -1450,20 +1450,20 @@ Config:
 Package:
 
 ```txt
-@ecp/extension-openai
+@executioncontextprotocol/extension-openai
 ```
 
 ID:
 
 ```txt
-@ecp/openai
+@executioncontextprotocol/openai
 ```
 
 Capabilities:
 
 ```txt
-@ecp/openai.generate
-@ecp/openai.evaluate
+@executioncontextprotocol/openai.generate
+@executioncontextprotocol/openai.evaluate
 ```
 
 Config:
@@ -1480,19 +1480,19 @@ Config:
 Package:
 
 ```txt
-@ecp/extension-slack
+@executioncontextprotocol/extension-slack
 ```
 
 ID:
 
 ```txt
-@ecp/slack
+@executioncontextprotocol/slack
 ```
 
 Capabilities:
 
 ```txt
-@ecp/slack.send
+@executioncontextprotocol/slack.send
 ```
 
 Config:
@@ -1509,7 +1509,7 @@ Config:
 Package:
 
 ```txt
-@ecp/extension-telemetry
+@executioncontextprotocol/extension-telemetry
 ```
 
 Hooks:
@@ -1528,7 +1528,7 @@ Hooks:
 Package:
 
 ```txt
-@ecp/runtime-temporal
+@executioncontextprotocol/runtime-temporal
 ```
 
 Export:
@@ -1569,8 +1569,8 @@ Responsibilities:
 
 Implement:
 
-* `@ecp/types`
-* `@ecp/core`
+* `@executioncontextprotocol/types`
+* `@executioncontextprotocol/core`
 * workflow builder
 * step builder
 * ref/env helpers
@@ -1584,7 +1584,7 @@ Acceptance:
 ```ts
 workflow("Test")
   .run([
-    step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("echo"),
+    step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo"),
   ])
   .toManifest();
 ```
@@ -1646,7 +1646,7 @@ Acceptance:
 
 Implement:
 
-* `@ecp/mcp`
+* `@executioncontextprotocol/mcp`
 * tools: describe, search, validate, run, status
 * resources
 * prompts
@@ -1695,22 +1695,22 @@ Do not implement in v1:
 
 # 20. Final Source-of-Truth Rules
 
-| Area              | Rule                                                                 |
-| ----------------- | -------------------------------------------------------------------- |
-| Workflow manifest | Portable, environment-free execution graph.                          |
-| Environment       | Running container with runtime/extensions/policies/secrets.          |
-| Runtime           | Executes workflow and emits lifecycle.                               |
-| Extensions        | Provide capabilities and/or lifecycle hooks.                         |
-| Policies          | Govern execution with `policy:pre`, `policy:post`, `policy:finally`. |
-| Capabilities      | Step-callable units with input/output/handler.                       |
-| Steps             | `step(ref, label?).with(input).as(key?)`.                            |
-| State             | `.as()` commits output. No `.as()` means run history only.           |
-| Refs              | `ref()` reads workflow state.                                        |
-| Env               | `env()` resolves environment config, not workflow state.             |
-| Describe          | Agent/UI discovery API for running environments.                     |
-| Search            | Agent-friendly fuzzy/semantic discovery.                             |
-| MCP               | Agent-facing access layer over environment APIs.                     |
-| Packages          | Core local engine in `@ecp/core`; heavy integrations optional.       |
+| Area              | Rule                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| Workflow manifest | Portable, environment-free execution graph.                                         |
+| Environment       | Running container with runtime/extensions/policies/secrets.                         |
+| Runtime           | Executes workflow and emits lifecycle.                                              |
+| Extensions        | Provide capabilities and/or lifecycle hooks.                                        |
+| Policies          | Govern execution with `policy:pre`, `policy:post`, `policy:finally`.                |
+| Capabilities      | Step-callable units with input/output/handler.                                      |
+| Steps             | `step(ref, label?).with(input).as(key?)`.                                           |
+| State             | `.as()` commits output. No `.as()` means run history only.                          |
+| Refs              | `ref()` reads workflow state.                                                       |
+| Env               | `env()` resolves environment config, not workflow state.                            |
+| Describe          | Agent/UI discovery API for running environments.                                    |
+| Search            | Agent-friendly fuzzy/semantic discovery.                                            |
+| MCP               | Agent-facing access layer over environment APIs.                                    |
+| Packages          | Core local engine in `@executioncontextprotocol/core`; heavy integrations optional. |
 
 This specification should be implementable directly by coding agents.
 
@@ -1774,7 +1774,7 @@ Workflow manifests may contain `$state`. Environment manifests may contain `$env
 Replace `mutableRef(...)` with `state(...)`.
 
 ```ts
-step("@ecp/creative.fixInputs", "Fix Creative Inputs")
+step("@executioncontextprotocol/creative.fixInputs", "Fix Creative Inputs")
   .when(expr.eq("brandReview.approved", false))
   .with({
     target: state("creativeInputs"),
@@ -2089,12 +2089,12 @@ audit
 
 # 9. Add state-control policy to standard policies
 
-Add a first-party policy to `@ecp/policies`.
+Add a first-party policy to `@executioncontextprotocol/policies`.
 
 ## ID
 
 ```txt
-@ecp/state-control
+@executioncontextprotocol/state-control
 ```
 
 ## Config
@@ -2121,12 +2121,12 @@ export interface StateControlPolicyConfig {
 Default behavior:
 
 * If no state-control policy exists, runtime should still reject writes that do not use `state()` handles.
-* Strict environments can require `@ecp/state-control` when any step uses `$state`.
+* Strict environments can require `@executioncontextprotocol/state-control` when any step uses `$state`.
 
 Recommended validation warning:
 
 ```txt
-Workflow uses state() handles but environment has no @ecp/state-control policy.
+Workflow uses state() handles but environment has no @executioncontextprotocol/state-control policy.
 ```
 
 ---
@@ -2174,7 +2174,7 @@ Add checks:
     {
       "id": "fix-creative-inputs",
       "label": "Fix Creative Inputs",
-      "uses": "@ecp/creative.fixInputs",
+      "uses": "@executioncontextprotocol/creative.fixInputs",
       "input": {
         "target": {
           "$state": "creativeInputs"
@@ -2208,13 +2208,13 @@ Use `state()` for mutable handles.
 ```ts
 const brandImageWorkflow = workflow("Brand image refinement")
   .run([
-    step("@ecp/memory.search", "Load Brand Standards")
+    step("@executioncontextprotocol/memory.search", "Load Brand Standards")
       .with({
         query: "brand standards, visual identity, approved campaign examples",
       })
       .as("brandStandards"),
 
-    step("@ecp/creative.initializeInputs", "Initialize Creative Inputs")
+    step("@executioncontextprotocol/creative.initializeInputs", "Initialize Creative Inputs")
       .with({
         target: state("creativeInputs"),
         value: {
@@ -2233,7 +2233,7 @@ const brandImageWorkflow = workflow("Brand image refinement")
         maxRounds: 3,
       },
       [
-        step("@ecp/firefly.generateImage", "Create Image")
+        step("@executioncontextprotocol/firefly.generateImage", "Create Image")
           .with({
             prompt: ref("creativeInputs.generationPrompt"),
             controls: ref("creativeInputs.generationControls"),
@@ -2241,7 +2241,7 @@ const brandImageWorkflow = workflow("Brand image refinement")
           })
           .as("image", { mode: "replace" }),
 
-        step("@ecp/openai.evaluate", "Validate Image")
+        step("@executioncontextprotocol/openai.evaluate", "Validate Image")
           .with({
             artifact: ref("image"),
             criteria: ref("brandStandards.results"),
@@ -2249,7 +2249,7 @@ const brandImageWorkflow = workflow("Brand image refinement")
           })
           .as("brandReview", { mode: "replace" }),
 
-        step("@ecp/creative.fixInputs", "Fix Creative Inputs")
+        step("@executioncontextprotocol/creative.fixInputs", "Fix Creative Inputs")
           .when(expr.eq("brandReview.approved", false))
           .with({
             target: state("creativeInputs"),
@@ -2269,7 +2269,7 @@ const brandImageWorkflow = workflow("Brand image refinement")
 # 13. Update capability example
 
 ```ts
-const creative = defineExtension("@ecp", "creative")
+const creative = defineExtension("@executioncontextprotocol", "creative")
   .withCapabilities([
     capability("initializeInputs")
       .withInput(InitializeInputsInput)

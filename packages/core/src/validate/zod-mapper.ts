@@ -1,4 +1,4 @@
-import type { ValidationIssue } from "@ecp/types"
+import type { ValidationIssue } from "@executioncontextprotocol/types"
 import type { ZodIssue } from "zod"
 
 /** Map Zod issues to ECP validation issues. @category Validation */

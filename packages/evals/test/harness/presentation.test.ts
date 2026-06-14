@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { isRepairFeedbackEcho } from "@ecp/core"
+import { isRepairFeedbackEcho } from "@executioncontextprotocol/core"
 
 describe("isRepairFeedbackEcho", () => {
   it("detects echoed capability repair prose", () => {
     expect(
       isRepairFeedbackEcho(
-        "Workflow must include steps for every required capability. Missing uses: @ecp/demo.validate."
+        "Workflow must include steps for every required capability. Missing uses: @executioncontextprotocol/demo.validate."
       )
     ).toBe(true)
   })
@@ -19,7 +19,7 @@ describe("isRepairFeedbackEcho", () => {
   it("allows headerless EQL workflow output", () => {
     expect(
       isRepairFeedbackEcho(
-        'WORKFLOW echo-test "Echo"\nSTEP echo USES @ecp/test.echo\n  WITH value = "hello"'
+        'WORKFLOW echo-test "Echo"\nSTEP echo USES @executioncontextprotocol/test.echo\n  WITH value = "hello"'
       )
     ).toBe(false)
   })

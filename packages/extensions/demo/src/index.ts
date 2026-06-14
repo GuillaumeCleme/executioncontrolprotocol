@@ -4,8 +4,8 @@ import {
   defineExtension,
   globalRegistry,
   type Registry,
-} from "@ecp/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
+} from "@executioncontextprotocol/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
 import { z } from "zod"
 
 const GenerateTextInput = z.object({
@@ -43,7 +43,7 @@ function demoAssistantResponse(prompt: string): string {
     return 'REPLY\n  ANSWER "I cannot register or install extensions. I can list loaded capabilities and help you build workflows with them."'
   }
   if (/capabilit|extensions?|plugins?/.test(message)) {
-    return 'REPLY\n  ANSWER "Loaded capabilities include @ecp/test.echo and @ecp/demo.summarize, @ecp/demo.validate, @ecp/demo.notify, @ecp/demo.translate."\n  CITATION extension @ecp/test "@ecp/test.echo"'
+    return 'REPLY\n  ANSWER "Loaded capabilities include @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.summarize, @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.notify, @executioncontextprotocol/demo.translate."\n  CITATION extension @executioncontextprotocol/test "@executioncontextprotocol/test.echo"'
   }
   if (/error|fail|fix/.test(message)) {
     return 'REPLY\n  ANSWER "The echo step failed with an error; patch the echo step input to recover."\n  CITATION step echo "Failed echo step in run context."'
@@ -75,7 +75,7 @@ function demoGenerateHandler(input: { prompt?: string; system?: string }) {
   return {
     text: [
       'WORKFLOW demo-generated "Demo generated"',
-      "STEP echo USES @ecp/test.echo",
+      "STEP echo USES @executioncontextprotocol/test.echo",
       '  LABEL "Demo Echo"',
       '  WITH value = "hello"',
       "  AS echo",
@@ -91,29 +91,29 @@ function demoStubHandler(input: { payload?: unknown }) {
 }
 
 /** Demo model provider for offline browser demo. @category Extensions */
-export const demoExtension = defineExtension("@ecp", "demo")
+export const demoExtension = defineExtension("@executioncontextprotocol", "demo")
   .withCapabilities([
-    capabilityFor("@ecp/demo", "generate")
+    capabilityFor("@executioncontextprotocol/demo", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string; system?: string })),
-    capabilityFor("@ecp/demo", "generateText")
+    capabilityFor("@executioncontextprotocol/demo", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(GenerateTextOutput)
       .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string; system?: string })),
-    capabilityFor("@ecp/demo", "summarize")
+    capabilityFor("@executioncontextprotocol/demo", "summarize")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
-    capabilityFor("@ecp/demo", "translate")
+    capabilityFor("@executioncontextprotocol/demo", "translate")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
-    capabilityFor("@ecp/demo", "notify")
+    capabilityFor("@executioncontextprotocol/demo", "notify")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
-    capabilityFor("@ecp/demo", "validate")
+    capabilityFor("@executioncontextprotocol/demo", "validate")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
@@ -124,7 +124,7 @@ catalogExtension(demoExtension)
 
 /** Register demo extension. @category Extensions */
 export async function registerDemoExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@ecp/demo")) {
+  if (!registry.getExtension("@executioncontextprotocol/demo")) {
     await registry.registerExtension(demoExtension)
   }
 }

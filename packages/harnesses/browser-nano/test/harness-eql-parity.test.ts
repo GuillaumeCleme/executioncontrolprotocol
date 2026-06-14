@@ -7,7 +7,7 @@ import {
   extension,
   harness,
   registerCoreFormats,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import { registerTestExtension } from "../../../core/src/testing/test-extension.js"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
@@ -15,19 +15,19 @@ import {
   HARNESS_NANO_BINDING,
   registerBrowserNanoHarnesses,
   resetBrowserNanoHarnessRegistrationForTests,
-} from "@ecp/harnesses-browser-nano"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@ecp/node"
+} from "@executioncontextprotocol/harnesses-browser-nano"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   modelGenerateInputSchema,
   modelGenerateOutputSchema,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 
-const eqlAssistantExtension = defineExtension("@ecp", "eql-assistant-gen")
+const eqlAssistantExtension = defineExtension("@executioncontextprotocol", "eql-assistant-gen")
   .withConfig({})
   .withCapabilities([
-    capabilityFor("@ecp/eql-assistant-gen", "generate")
+    capabilityFor("@executioncontextprotocol/eql-assistant-gen", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async () => ({
@@ -55,13 +55,13 @@ describe("browser nano harness EQL parity (eval binding = demo binding)", () => 
     const env = environment("workflow-assistant-eql-parity-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@ecp/format-eql").with({}),
-        extension("@ecp/test").with({}),
-        extension("@ecp/eql-assistant-gen").with({}),
+        extension("@executioncontextprotocol/format-eql").with({}),
+        extension("@executioncontextprotocol/test").with({}),
+        extension("@executioncontextprotocol/eql-assistant-gen").with({}),
       ])
       .withHarnesses([
-        harness("@ecp/harness-browser-nano")
-          .uses("@ecp/eql-assistant-gen.generate")
+        harness("@executioncontextprotocol/harness-browser-nano")
+          .uses("@executioncontextprotocol/eql-assistant-gen.generate")
           .with({ ...HARNESS_BROWSER_NANO_DEMO_BINDING }),
       ])
 
