@@ -72,6 +72,7 @@ export async function bundleWorkflowSource(
       "@executioncontextprotocol/policies": join(repoRoot, "packages/policies/dist/index.js"),
       "@executioncontextprotocol/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
       "@executioncontextprotocol/secrets": join(repoRoot, "packages/extensions/secrets/dist/index.js"),
+      "@executioncontextprotocol/browser-secrets": join(repoRoot, "packages/extensions/browser-secrets/dist/index.js"),
       "@executioncontextprotocol/process-env": join(repoRoot, "packages/extensions/process-env/dist/index.js"),
     },
     external: ["@napi-rs/keyring"],

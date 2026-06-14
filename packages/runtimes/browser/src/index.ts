@@ -51,12 +51,25 @@ export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
 export type { Ecp } from "@executioncontextprotocol/core"
 
 export {
+  hasBrowserVault,
+  isBrowserVaultUnlocked,
+  setupBrowserVault,
+  unlockBrowserVault,
+  lockBrowserVault,
+  setBrowserSecret,
+  getBrowserSecret,
+  deleteBrowserSecret,
+  listBrowserSecretKeys,
+} from "@executioncontextprotocol/browser-secrets"
+
+export {
   workflow,
   step,
   ref,
   state,
   env,
   secrets,
+  browser,
   expr,
   parallel,
   branch,

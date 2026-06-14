@@ -4,7 +4,7 @@ import {
   harness,
   runtime,
   policy,
-  env,
+  browser,
   Registry,
   globalRegistry,
 } from "@executioncontextprotocol/core"
@@ -22,6 +22,7 @@ import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { registerChromeAiExtension } from "@executioncontextprotocol/chrome-ai"
 import { registerOpenaiExtension } from "@executioncontextprotocol/extension-openai"
 import { registerClaudeExtension } from "@executioncontextprotocol/claude"
+import { registerBrowserSecretsExtension } from "@executioncontextprotocol/browser-secrets"
 import {
   BROWSER_NANO_HARNESS_ID,
   HARNESS_BROWSER_NANO_DEMO_BINDING,
@@ -34,6 +35,7 @@ import "@executioncontextprotocol/demo"
 import "@executioncontextprotocol/chrome-ai"
 import "@executioncontextprotocol/extension-openai"
 import "@executioncontextprotocol/claude"
+import "@executioncontextprotocol/browser-secrets"
 
 /** Register browser runtime and standard browser extensions. */
 export async function registerBrowserDefaults(registry: Registry = globalRegistry): Promise<void> {
@@ -49,6 +51,7 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerChromeAiExtension(registry)
   await registerOpenaiExtension(registry)
   await registerClaudeExtension(registry)
+  await registerBrowserSecretsExtension(registry)
   await registerStandardPolicies(registry)
   registerBrowserNanoHarnesses()
 }
@@ -72,11 +75,12 @@ export function createBrowserDemoEnvironment(
       extension("@executioncontextprotocol/demo").with({}),
       extension("@executioncontextprotocol/chrome-ai").with({}),
       extension("@executioncontextprotocol/test").with({}),
+      extension("@executioncontextprotocol/browser-secrets").with({}),
       extension("@executioncontextprotocol/openai").with({
-        apiKey: env("OPENAI_API_KEY", { optional: true }),
+        apiKey: browser("OPENAI_API_KEY", { optional: true }),
       }),
       extension("@executioncontextprotocol/claude").with({
-        apiKey: env("ANTHROPIC_API_KEY", { optional: true }),
+        apiKey: browser("ANTHROPIC_API_KEY", { optional: true }),
       }),
       extension("@executioncontextprotocol/browser-registry").with({
         freezeOn: "environment:beforeRun",

@@ -7,6 +7,7 @@ export interface ImportNeeds {
   ref: boolean
   state: boolean
   secrets: boolean
+  browser: boolean
   expr: boolean
   loop: boolean
   parallel: boolean
@@ -21,6 +22,7 @@ export function createImportNeeds(): ImportNeeds {
     ref: false,
     state: false,
     secrets: false,
+    browser: false,
     expr: false,
     loop: false,
     parallel: false,
@@ -46,6 +48,10 @@ export function renderInputValue(value: InputValue, needs: ImportNeeds): string 
     if ("$secret" in value) {
       needs.secrets = true
       return `secrets(${JSON.stringify((value as { $secret: string }).$secret)})`
+    }
+    if ("$browser" in value) {
+      needs.browser = true
+      return `browser(${JSON.stringify((value as { $browser: string }).$browser)})`
     }
     const entries = Object.entries(value).map(
       ([k, v]) => `${JSON.stringify(k)}: ${renderInputValue(v as InputValue, needs)}`

@@ -29,6 +29,7 @@
     "@executioncontextprotocol/format-mermaid": "1.0.0",
     "@executioncontextprotocol/format-toon": "1.0.0",
     "@executioncontextprotocol/extension-openai": "1.0.0",
+    "@executioncontextprotocol/browser-secrets": "1.0.0",
     "@executioncontextprotocol/policies": "1.0.0",
     "@executioncontextprotocol/types": "1.0.0"
   },

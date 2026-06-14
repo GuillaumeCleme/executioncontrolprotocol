@@ -3,7 +3,12 @@ import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "
 import { validateWorkflow } from "./workflow.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
 
-const BROWSER_FORBIDDEN_EXTENSIONS = new Set(["@executioncontextprotocol/process-env", "@executioncontextprotocol/secrets"])
+const BROWSER_FORBIDDEN_EXTENSIONS = new Set([
+  "@executioncontextprotocol/process-env",
+  "@executioncontextprotocol/secrets",
+])
+
+const NODE_FORBIDDEN_EXTENSIONS = new Set(["@executioncontextprotocol/browser-secrets"])
 
 /** Validate workflow against a live environment. */
 export function validateEnvironmentWithWorkflow(
@@ -20,6 +25,17 @@ export function validateEnvironmentWithWorkflow(
         result.errors.push({
           code: "BROWSER_FORBIDDEN_EXTENSION",
           message: `Extension ${ext.id} cannot be used with @executioncontextprotocol/browser runtime.`,
+        })
+      }
+    }
+  }
+  if (rtId === "@executioncontextprotocol/node") {
+    for (const ext of bindings.extensions) {
+      if (NODE_FORBIDDEN_EXTENSIONS.has(String(ext.id))) {
+        result.valid = false
+        result.errors.push({
+          code: "NODE_FORBIDDEN_EXTENSION",
+          message: `Extension ${ext.id} cannot be used with @executioncontextprotocol/node runtime.`,
         })
       }
     }

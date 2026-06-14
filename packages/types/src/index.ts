@@ -10,6 +10,7 @@ export type {
   StateValue,
   EnvValue,
   SecretValue,
+  BrowserValue,
   ExprValue,
   InputValue,
   EcpDocumentBase,

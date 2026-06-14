@@ -70,6 +70,16 @@ export interface SecretValue {
   fallback?: unknown
 }
 
+/** Browser encrypted secrets reference (not portable in workflows). @category Environment */
+export interface BrowserValue {
+  /** Logical key in the browser secrets vault. */
+  $browser: string
+  /** When true, missing secret does not fail resolution. */
+  optional?: boolean
+  /** Fallback when optional secret is missing. */
+  fallback?: unknown
+}
+
 /** Expression value in workflow conditions. @category Workflow */
 export type ExprValue =
   | { eq: [string, unknown] }
@@ -88,6 +98,7 @@ export type InputValue =
   | StateValue
   | EnvValue
   | SecretValue
+  | BrowserValue
 
 /** Base fields on serialized ECP objects. @category Common */
 export interface EcpDocumentBase {
