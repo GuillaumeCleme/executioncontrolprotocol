@@ -1,6 +1,12 @@
-import type { EnvValue } from "@executioncontextprotocol/types"
+import type { EnvValue, SecretValue } from "@executioncontextprotocol/types"
 
-/** Resolves `env("KEY")` values for environment bindings. @category Environment */
+/** Extension id for process environment resolution. @category Environment */
+export const PROCESS_ENV_RESOLVER_ID = "@executioncontextprotocol/process-env"
+
+/** Extension id for OS secrets resolution. @category Environment */
+export const SECRETS_RESOLVER_ID = "@executioncontextprotocol/secrets"
+
+/** Resolves `env("KEY")` and `secrets("KEY")` values for environment bindings. @category Environment */
 export interface EnvironmentConfigResolver {
   /** Resolver identifier (e.g. extension id). */
   id: string
@@ -8,21 +14,40 @@ export interface EnvironmentConfigResolver {
   resolve(name: string): Promise<unknown> | unknown
 }
 
-/** Options when resolving a single env key. @category Environment */
+/** Options when resolving a single config key. @category Environment */
 export interface ResolveEnvNameOptions {
   optional?: boolean
   fallback?: unknown
 }
 
+function findResolver(
+  resolvers: EnvironmentConfigResolver[],
+  id: string
+): EnvironmentConfigResolver | undefined {
+  return resolvers.find((r) => r.id === id)
+}
+
 /**
- * Walk resolver chain for a config key name.
+ * Resolve a key using a specific extension resolver.
  * @category Environment
  */
 export async function resolveConfigName(
   name: string,
   resolvers: EnvironmentConfigResolver[],
-  options?: ResolveEnvNameOptions
+  options?: ResolveEnvNameOptions & { resolverId?: string }
 ): Promise<unknown> {
+  const resolverId = options?.resolverId
+  if (resolverId) {
+    const resolver = findResolver(resolvers, resolverId)
+    if (resolver) {
+      const value = await resolver.resolve(name)
+      if (value !== undefined) return value
+    }
+    if (options?.optional) return options.fallback
+    const label = resolverId === SECRETS_RESOLVER_ID ? "Secret" : "Environment variable"
+    throw new Error(`${label} ${name} is not set`)
+  }
+
   for (const resolver of resolvers) {
     const value = await resolver.resolve(name)
     if (value !== undefined) return value
@@ -32,7 +57,7 @@ export async function resolveConfigName(
 }
 
 /**
- * Resolve `$env` placeholders in a config object using the resolver chain.
+ * Resolve `$env` and `$secret` placeholders in a config object using extension resolvers.
  * @category Environment
  */
 export async function resolveEnvConfigAsync(
@@ -52,9 +77,18 @@ async function resolveEnvValueAsync(
 ): Promise<unknown> {
   if (v !== null && typeof v === "object" && "$env" in v) {
     const e = v as EnvValue
-    return resolveConfigName(e.$env, resolvers, {
+    const envResolvers = resolvers.filter((r) => r.id !== SECRETS_RESOLVER_ID)
+    return resolveConfigName(e.$env, envResolvers, {
       optional: e.optional,
       fallback: e.fallback,
+    })
+  }
+  if (v !== null && typeof v === "object" && "$secret" in v) {
+    const s = v as SecretValue
+    return resolveConfigName(s.$secret, resolvers, {
+      optional: s.optional,
+      fallback: s.fallback,
+      resolverId: SECRETS_RESOLVER_ID,
     })
   }
   if (Array.isArray(v)) {

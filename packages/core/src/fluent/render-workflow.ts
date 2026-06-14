@@ -17,6 +17,7 @@ function renderImports(
   const names: string[] = ["workflow", "step"]
   if (needs.ref) names.push("ref")
   if (needs.state) names.push("state")
+  if (needs.secrets) names.push("secrets")
   if (needs.expr) names.push("expr")
   if (needs.loop) names.push("loop")
   if (needs.parallel) names.push("parallel")

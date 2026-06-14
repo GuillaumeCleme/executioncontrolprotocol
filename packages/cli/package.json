@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@executioncontextprotocol/node": "1.0.0",
+    "@executioncontextprotocol/secrets": "1.0.0",
     "@oclif/core": "^4.10.0"
   },
   "devDependencies": {

@@ -2,10 +2,12 @@ import {
   defineExtension,
   hook,
   globalRegistry,
+  catalogExtension,
+  PROCESS_ENV_RESOLVER_ID,
   type EnvironmentConfigResolver,
+  type LifecycleContext,
 } from "@executioncontextprotocol/core"
 import { z } from "zod"
-import type { LifecycleContext } from "@executioncontextprotocol/core"
 
 const EXT_ID = "@executioncontextprotocol/process-env"
 
@@ -25,7 +27,7 @@ function attachProcessEnvResolver(ctx: LifecycleContext): void {
   const prefix = (cfg.prefix as string | undefined) ?? ""
 
   const resolver: EnvironmentConfigResolver = {
-    id: EXT_ID,
+    id: PROCESS_ENV_RESOLVER_ID,
     resolve(name: string) {
       if (!keyAllowed(name, allowed, denied)) return undefined
       const envKey = prefix ? `${prefix}${name}` : name
@@ -45,9 +47,13 @@ export const processEnvExtension = defineExtension("@executioncontextprotocol", 
   .withHooks([hook("environment:configuring", attachProcessEnvResolver)])
   .build()
 
-/** Register `@executioncontextprotocol/process-env`. */
+catalogExtension(processEnvExtension)
+
+/** Register `@executioncontextprotocol/process-env`. @category Extensions */
 export async function registerProcessEnvExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(processEnvExtension)
   }
 }
+
+export default processEnvExtension

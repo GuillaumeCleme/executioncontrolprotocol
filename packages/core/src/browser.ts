@@ -6,6 +6,7 @@
 export { ref } from "./helpers/ref.js"
 export { state } from "./helpers/state.js"
 export { env } from "./helpers/env.js"
+export { secrets } from "./helpers/secrets.js"
 export { expr } from "./helpers/expr.js"
 
 export * from "./config-schema/index.js"

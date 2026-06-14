@@ -9,6 +9,7 @@ export type {
   RefValue,
   StateValue,
   EnvValue,
+  SecretValue,
   ExprValue,
   InputValue,
   EcpDocumentBase,

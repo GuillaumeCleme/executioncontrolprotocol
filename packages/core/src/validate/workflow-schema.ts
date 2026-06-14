@@ -39,6 +39,15 @@ export const envValueSchema = z
   })
   .strict()
 
+/** OS secrets reference (not portable in workflows). @category Validation */
+export const secretValueSchema = z
+  .object({
+    $secret: z.string().min(1),
+    optional: z.boolean().optional(),
+    fallback: z.unknown().optional(),
+  })
+  .strict()
+
 /** Recursive step input value. @category Validation */
 export const inputValueSchema: z.ZodType<unknown> = z.lazy(() =>
   z.union([
@@ -51,6 +60,7 @@ export const inputValueSchema: z.ZodType<unknown> = z.lazy(() =>
     refValueSchema,
     stateValueSchema,
     envValueSchema,
+    secretValueSchema,
   ])
 )
 

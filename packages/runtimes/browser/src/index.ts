@@ -56,6 +56,7 @@ export {
   ref,
   state,
   env,
+  secrets,
   expr,
   parallel,
   branch,

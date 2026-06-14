@@ -8,16 +8,21 @@ export {
 export {
   processEnvExtension,
   registerProcessEnvExtension,
-} from "./extensions/process-env.js"
+} from "@executioncontextprotocol/process-env"
 
 export {
   secretsExtension,
   registerSecretsExtension,
   setMemorySecret,
   setSecretsProvider,
+  setSecretsStore,
+  resetSecretsStore,
   memorySecretsProvider,
-  type SecretsProvider,
-} from "./extensions/secrets.js"
+  memorySecretsStore,
+  createOsSecretsStore,
+  redactSecret,
+  type SecretsStore,
+} from "@executioncontextprotocol/secrets"
 
 export { registerNodeDefaults, environment } from "./environment.js"
 
@@ -27,6 +32,7 @@ export {
   ref,
   state,
   env,
+  secrets,
   expr,
   parallel,
   branch,

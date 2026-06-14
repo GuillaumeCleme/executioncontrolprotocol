@@ -4,6 +4,7 @@ export * from "@executioncontextprotocol/types"
 export { ref } from "./helpers/ref.js"
 export { state } from "./helpers/state.js"
 export { env } from "./helpers/env.js"
+export { secrets } from "./helpers/secrets.js"
 export { expr } from "./helpers/expr.js"
 
 export * from "./config-schema/index.js"
@@ -34,6 +35,10 @@ export { assignUniqueStepIds } from "./workflow/assign-unique-step-ids.js"
 export { createInvokeBuilder, type InvokeOperationBuilder } from "./invoke/index.js"
 export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
 export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
+export {
+  PROCESS_ENV_RESOLVER_ID,
+  SECRETS_RESOLVER_ID,
+} from "./environment/config-resolver.js"
 export { Registry, globalRegistry, type RegistryRegistrationGuard } from "./registry/registry.js"
 export {
   catalogExtension,

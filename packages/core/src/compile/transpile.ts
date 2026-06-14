@@ -71,9 +71,23 @@ export async function bundleWorkflowSource(
       "@executioncontextprotocol/types": join(repoRoot, "packages/types/dist/index.js"),
       "@executioncontextprotocol/policies": join(repoRoot, "packages/policies/dist/index.js"),
       "@executioncontextprotocol/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
+      "@executioncontextprotocol/secrets": join(repoRoot, "packages/extensions/secrets/dist/index.js"),
+      "@executioncontextprotocol/process-env": join(repoRoot, "packages/extensions/process-env/dist/index.js"),
     },
+    external: ["@napi-rs/keyring"],
+    plugins: [
+      {
+        name: "ecp-keyring-external",
+        setup(build) {
+          build.onResolve({ filter: /^@napi-rs\/keyring/ }, (args) => ({
+            path: args.path,
+            external: true,
+          }))
+        },
+      },
+    ],
   })
-  const file = result.outputFiles[0]
+  const file = result.outputFiles?.[0]
   if (!file) throw new Error("esbuild produced no output")
   return file.text
 }
