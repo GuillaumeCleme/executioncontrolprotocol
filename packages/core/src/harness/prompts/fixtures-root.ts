@@ -1,7 +1,7 @@
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-/** Package root for `@ecp/core` (fixtures live beside `src` and `dist`). @category Harness */
+/** Package root for `@executioncontextprotocol/core` (fixtures live beside `src` and `dist`). @category Harness */
 export const CORE_PACKAGE_ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../.."

@@ -1,7 +1,7 @@
-import { harnessCapabilityId, type HarnessCapabilityId, type HarnessId } from "@ecp/types"
+import { harnessCapabilityId, type HarnessCapabilityId, type HarnessId } from "@executioncontextprotocol/types"
 
 /** Browser Coding harness id (stronger local coding models; eval matrix). @category Harness */
-export const BROWSER_CODING_HARNESS_ID = "@ecp/harness-browser-coding" as HarnessId
+export const BROWSER_CODING_HARNESS_ID = "@executioncontextprotocol/harness-browser-coding" as HarnessId
 
 /** Evaluate capability for all Browser Coding harness tasks. @category Harness */
 export const BROWSER_CODING_HARNESS_CAPABILITY: HarnessCapabilityId =

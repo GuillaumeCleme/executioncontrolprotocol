@@ -1,4 +1,4 @@
-import type { CapabilityId, HarnessId } from "@ecp/types"
+import type { CapabilityId, HarnessId } from "@executioncontextprotocol/types"
 import type { z } from "zod"
 import type { Environment } from "../environment/environment.js"
 import type { Ecp } from "../environment/ecp.js"

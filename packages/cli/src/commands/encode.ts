@@ -1,5 +1,5 @@
 import { Args, Flags } from "@oclif/core"
-import { loadWorkflowFile } from "@ecp/core/loaders"
+import { loadWorkflowFile } from "@executioncontextprotocol/core/loaders"
 import { writeFile } from "node:fs/promises"
 import { runWithCommandError } from "../lib/command-helpers.js"
 import { EnvModuleCommand } from "../lib/env-module-command.js"

@@ -1,13 +1,13 @@
 import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
-import type { UtilityCapabilityContext } from "@ecp/core"
+import type { UtilityCapabilityContext } from "@executioncontextprotocol/core"
 import type {
   EcpPatchDocument,
   EnvironmentDescriptor,
   EnvironmentManifest,
   WorkflowManifest,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { decodeFromEql } from "../src/decode/decode-eql.js"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import type { EqlDecodeInput, EqlEncodeInput } from "../src/schemas.js"

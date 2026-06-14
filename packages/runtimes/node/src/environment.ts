@@ -1,6 +1,6 @@
-import { environment as coreEnvironment, runtime } from "@ecp/core"
-import type { Environment } from "@ecp/core"
-import { registerStandardPolicies } from "@ecp/policies"
+import { environment as coreEnvironment, runtime } from "@executioncontextprotocol/core"
+import type { Environment } from "@executioncontextprotocol/core"
+import { registerStandardPolicies } from "@executioncontextprotocol/policies"
 import { NODE_RUNTIME_ID, registerNodeRuntime } from "./runtime/builtin-node.js"
 import { registerProcessEnvExtension } from "./extensions/process-env.js"
 import { registerSecretsExtension } from "./extensions/secrets.js"
@@ -14,7 +14,7 @@ export async function registerNodeDefaults(): Promise<void> {
 }
 
 /**
- * Create a Node environment with `@ecp/node` runtime pre-bound.
+ * Create a Node environment with `@executioncontextprotocol/node` runtime pre-bound.
  * @category Environment
  */
 export async function environment(id: string, label?: string): Promise<Environment> {

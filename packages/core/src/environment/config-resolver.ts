@@ -1,4 +1,4 @@
-import type { EnvValue } from "@ecp/types"
+import type { EnvValue } from "@executioncontextprotocol/types"
 
 /** Resolves `env("KEY")` values for environment bindings. @category Environment */
 export interface EnvironmentConfigResolver {

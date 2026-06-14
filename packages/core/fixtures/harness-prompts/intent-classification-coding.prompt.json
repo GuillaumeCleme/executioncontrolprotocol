@@ -29,27 +29,27 @@
   "fewShots": [
     {
       "message": "I need a new workflow with echo and summarize.",
-      "output": "import type { EcpIntent } from \"@ecp/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"workflow-create\",\n}"
+      "output": "import type { EcpIntent } from \"@executioncontextprotocol/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"workflow-create\",\n}"
     },
     {
       "message": "The workflow failed on echo, help me fix it.",
-      "output": "import type { EcpIntent } from \"@ecp/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"workflow-patch\",\n}"
+      "output": "import type { EcpIntent } from \"@executioncontextprotocol/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"workflow-patch\",\n}"
     },
     {
       "message": "What is ECP?",
-      "output": "import type { EcpIntent } from \"@ecp/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"faq\",\n}"
+      "output": "import type { EcpIntent } from \"@executioncontextprotocol/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"faq\",\n}"
     },
     {
       "message": "How does workflow patching work?",
-      "output": "import type { EcpIntent } from \"@ecp/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"faq\",\n}"
+      "output": "import type { EcpIntent } from \"@executioncontextprotocol/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"faq\",\n}"
     },
     {
       "message": "Hello there.",
-      "output": "import type { EcpIntent } from \"@ecp/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"general\",\n}"
+      "output": "import type { EcpIntent } from \"@executioncontextprotocol/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"general\",\n}"
     },
     {
       "message": "What extensions are available in this environment?",
-      "output": "import type { EcpIntent } from \"@ecp/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"general\",\n}"
+      "output": "import type { EcpIntent } from \"@executioncontextprotocol/types\"\n\nexport const intent: EcpIntent = {\n  schema: \"@ecp.intent\",\n  intent: \"general\",\n}"
     }
   ],
   "repairHint": "Return corrected TypeScript only. Export const intent must use schema @ecp.intent and a valid intent value."

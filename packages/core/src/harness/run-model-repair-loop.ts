@@ -1,7 +1,7 @@
 import type {
   HarnessOperationFeedback,
   HarnessRepairAttempt,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import {
   isHarnessTimingDebugEnabled,
   logRepairLoopTiming,

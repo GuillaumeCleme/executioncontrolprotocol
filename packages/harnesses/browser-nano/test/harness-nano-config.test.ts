@@ -35,7 +35,7 @@ describe("getHarnessNanoConfig", () => {
   it("uses EQL output format for every task", () => {
     for (const task of Object.values(HARNESS_TASKS)) {
       const config = getHarnessNanoConfig(task)
-      expect((config.output as { format: string }).format).toBe("@ecp/format-eql")
+      expect((config.output as { format: string }).format).toBe("@executioncontextprotocol/format-eql")
     }
   })
 

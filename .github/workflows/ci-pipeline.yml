@@ -1,4 +1,4 @@
-# Reusable CI pipeline for @ecp/* monorepo
+# Reusable CI pipeline for @executioncontextprotocol/* monorepo
 
 name: ci
 
@@ -21,7 +21,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run lint
-      - run: npm run build:browser-demo
       - name: CLI smoke
         run: |
           npx ecp compile examples/01-echo/workflow.ts -o /tmp/ecp-workflow.json

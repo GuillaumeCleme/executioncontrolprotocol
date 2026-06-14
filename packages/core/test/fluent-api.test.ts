@@ -21,7 +21,7 @@ import {
   hook,
   WorkflowBuilder,
 } from "../src/index.js"
-import { NODE_RUNTIME_ID, nodeRuntimeDefinition } from "@ecp/node"
+import { NODE_RUNTIME_ID, nodeRuntimeDefinition } from "@executioncontextprotocol/node"
 
 describe("fluent API surface", () => {
   it("workflow builder chains", () => {
@@ -33,12 +33,12 @@ describe("fluent API surface", () => {
     expect(typeof b.validate).toBe("function")
     expect(typeof b.toGraph).toBe("function")
     expect(b).toBeInstanceOf(WorkflowBuilder)
-    const m = b.run([step("@ecp/test.echo", "S").with({ x: 1 }).as("k")]).toManifest()
+    const m = b.run([step("@executioncontextprotocol/test.echo", "S").with({ x: 1 }).as("k")]).toManifest()
     expect(m.schema).toBe("@ecp.workflow")
   })
 
   it("step builder chains", () => {
-    const s = step("@ecp/test.echo", "Label")
+    const s = step("@executioncontextprotocol/test.echo", "Label")
     expect(typeof s.with).toBe("function")
     expect(typeof s.when).toBe("function")
     expect(typeof s.as).toBe("function")
@@ -48,31 +48,31 @@ describe("fluent API surface", () => {
   })
 
   it("binding builders chain", () => {
-    const e = extension("@ecp/test", "E").with({ a: 1 })
+    const e = extension("@executioncontextprotocol/test", "E").with({ a: 1 })
     expect(typeof e.with).toBe("function")
     expect(e.getConfig()).toEqual({ a: 1 })
 
     const r = runtime(NODE_RUNTIME_ID, "R").with({})
     expect(typeof r.with).toBe("function")
 
-    const p = policy("@ecp/budget", "P").with({ maxModelCalls: 1 })
+    const p = policy("@executioncontextprotocol/budget", "P").with({ maxModelCalls: 1 })
     expect(typeof p.with).toBe("function")
   })
 
   it("definition builders exist", () => {
-    const ext = defineExtension("@ecp", "x")
+    const ext = defineExtension("@executioncontextprotocol", "x")
     expect(typeof ext.withConfig).toBe("function")
     expect(typeof ext.withCapabilities).toBe("function")
     expect(typeof ext.build).toBe("function")
 
-    const rt = defineRuntime("@ecp", "x")
+    const rt = defineRuntime("@executioncontextprotocol", "x")
     expect(typeof rt.withExecutor).toBe("function")
 
-    const pol = definePolicy("@ecp", "x")
+    const pol = definePolicy("@executioncontextprotocol", "x")
     expect(typeof pol.withHooks).toBe("function")
 
     expect(typeof capability("c").withHandler).toBe("function")
-    expect(typeof capabilityFor("@ecp/x" as never, "c").withInput).toBe("function")
+    expect(typeof capabilityFor("@executioncontextprotocol/x" as never, "c").withInput).toBe("function")
     expect(hook("run:before", async () => undefined).event).toBe("run:before")
   })
 
@@ -85,9 +85,9 @@ describe("fluent API surface", () => {
   })
 
   it("flow helpers produce node types", () => {
-    expect(parallel([[step("@ecp/test.echo", "A")]]).type).toBe("parallel")
-    expect(branch([step("@ecp/test.echo", "A")]).type).toBe("branch")
-    expect(loop({ label: "L" }, [step("@ecp/test.echo", "A")]).type).toBe("loop")
+    expect(parallel([[step("@executioncontextprotocol/test.echo", "A")]]).type).toBe("parallel")
+    expect(branch([step("@executioncontextprotocol/test.echo", "A")]).type).toBe("branch")
+    expect(loop({ label: "L" }, [step("@executioncontextprotocol/test.echo", "A")]).type).toBe("loop")
   })
 
   it("environment builder chains", () => {
@@ -102,8 +102,8 @@ describe("fluent API surface", () => {
 
   it("runtime definition uses withExecutor terminator", () => {
     expect(nodeRuntimeDefinition.executor).toBeDefined()
-    expect(defineRuntime("@ecp", "x").withConfig({}).withExecutor(nodeRuntimeDefinition.executor).id).toBe(
-      "@ecp/x"
+    expect(defineRuntime("@executioncontextprotocol", "x").withConfig({}).withExecutor(nodeRuntimeDefinition.executor).id).toBe(
+      "@executioncontextprotocol/x"
     )
   })
 })

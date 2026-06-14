@@ -91,14 +91,11 @@ ollama pull gemma3:1b
 
 ## Browser demo
 
-From the repo root:
+The browser demo app lives in a **separate repository**:
 
-```bash
-npm run dev:browser-demo
-```
+[https://github.com/GuillaumeCleme/executioncontrolprotocol-browser-demo](https://github.com/GuillaumeCleme/executioncontrolprotocol-browser-demo)
 
-See [`apps/browser-demo/README.md`](apps/browser-demo/README.md) and
-[`docs/ecp-browser-demo.md`](docs/ecp-browser-demo.md).
+Clone it as a sibling of this repo and follow its README (`npm install`, `npm run dev`). For local ECP development, use `npm link` as documented there.
 
 ------------------------------------------------------------------------
 

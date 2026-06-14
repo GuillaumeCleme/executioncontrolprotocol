@@ -1,5 +1,5 @@
-import type { EncodeResult, EcpFormatOptions, EcpSchema, EcpVersion, NamespacedId } from "@ecp/types"
-import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION } from "@ecp/types"
+import type { EncodeResult, EcpFormatOptions, EcpSchema, EcpVersion, NamespacedId } from "@executioncontextprotocol/types"
+import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
 import { encodeFailure, getEcpSchema } from "./json-codec.js"
 import { EcpError } from "./errors.js"
@@ -74,7 +74,7 @@ export function createEncodeBuilder(
       if (!state.extensionId) {
         throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_ENCODER_NOT_FOUND, {
           message:
-            "Encode requires .uses(formatterId), e.g. .uses(\"@ecp/format-json\") or .uses(\"@ecp/format-fluent\").",
+            "Encode requires .uses(formatterId), e.g. .uses(\"@executioncontextprotocol/format-json\") or .uses(\"@executioncontextprotocol/format-fluent\").",
         })
       }
 
@@ -87,7 +87,7 @@ export function createEncodeBuilder(
 
       if (sourceSchema === "@ecp.workflow") {
         const validation = validateWorkflow(
-          state.source as import("@ecp/types").WorkflowManifest
+          state.source as import("@executioncontextprotocol/types").WorkflowManifest
         )
         if (!validation.valid) {
           return encodeFailure({

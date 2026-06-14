@@ -1,5 +1,5 @@
-import type { WorkflowManifest } from "@ecp/types"
-import { ECP_PATCH_ERROR_CODES } from "@ecp/types"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
+import { ECP_PATCH_ERROR_CODES } from "@executioncontextprotocol/types"
 import { buildStepIndex } from "./step-index.js"
 
 /** Resolved ECP patch path. @category Patch */

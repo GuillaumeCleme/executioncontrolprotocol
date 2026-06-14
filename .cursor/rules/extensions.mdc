@@ -12,14 +12,14 @@ Treat every extension under `packages/extensions/` as if it were published for *
 
 | Package | Use for |
 | ------- | ------- |
-| `@ecp/types` | Protocol types (`WorkflowManifest`, `EcpSchema`, `EncodedArtifact`, capability IDs, etc.) |
-| `@ecp/core` | `defineExtension`, `capabilityFor`, `catalogExtension`, shared validation (`validateWorkflow`), encoding error types |
-| `zod` | Config and capability I/O schemas (`z.object`, `z.string`, etc.) — import directly from `"zod"`, not through `@ecp/core` |
+| `@executioncontextprotocol/types` | Protocol types (`WorkflowManifest`, `EcpSchema`, `EncodedArtifact`, capability IDs, etc.) |
+| `@executioncontextprotocol/core` | `defineExtension`, `capabilityFor`, `catalogExtension`, shared validation (`validateWorkflow`), encoding error types |
+| `zod` | Config and capability I/O schemas (`z.object`, `z.string`, etc.) — import directly from `"zod"`, not through `@executioncontextprotocol/core` |
 | Third-party libs | Format/SDK deps only (e.g. `@toon-format/toon`) scoped to the extension’s job |
 
-**Do not** depend on `@ecp/node`, `@ecp/browser`, `@ecp/cli`, or `@ecp/mcp` in extension `dependencies` or `devDependencies`.
+**Do not** depend on `@executioncontextprotocol/node`, `@executioncontextprotocol/browser`, `@executioncontextprotocol/cli`, or `@executioncontextprotocol/mcp` in extension `dependencies` or `devDependencies`.
 
-Runtimes and policies follow the same boundary unless they intentionally implement a host (`@ecp/node` runtime, browser registry, etc.).
+Runtimes and policies follow the same boundary unless they intentionally implement a host (`@executioncontextprotocol/node` runtime, browser registry, etc.).
 
 ## Registration and discovery
 
@@ -33,16 +33,16 @@ Consumers (apps, examples, CLI env files) bind extensions in **environment modul
 
 ## Fluent authoring (not an extension)
 
-Manifest ↔ Fluent API conversion lives in **`@ecp/core`** (`renderWorkflowToFluent`, `compileWorkflowSource`, `encodeFluent`, `ecp.encode().as("fluent")`). Do not add a `@ecp/format-fluent` extension package. Extension format packages are for optional encodings (e.g. `@ecp/format-toon`, `@ecp/format-mermaid`).
+Manifest ↔ Fluent API conversion lives in **`@executioncontextprotocol/core`** (`renderWorkflowToFluent`, `compileWorkflowSource`, `encodeFluent`, `ecp.encode().as("fluent")`). Do not add a `@executioncontextprotocol/format-fluent` extension package. Extension format packages are for optional encodings (e.g. `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-mermaid`).
 
 ## Capability handlers
 
-- Handlers receive typed inputs and a **utility** or **capability** context from `@ecp/core`; avoid reaching into `Environment` internals.
+- Handlers receive typed inputs and a **utility** or **capability** context from `@executioncontextprotocol/core`; avoid reaching into `Environment` internals.
 - Use `capabilityFor("@vendor/name", "capability-id")` for stable capability IDs.
-- Import `z` from `"zod"` for config and capability schemas (peer dependency; do not import through `@ecp/core`).
+- Import `z` from `"zod"` for config and capability schemas (peer dependency; do not import through `@executioncontextprotocol/core`).
 
 ```ts
-import { defineExtension, capabilityFor, catalogExtension, globalRegistry } from "@ecp/core"
+import { defineExtension, capabilityFor, catalogExtension, globalRegistry } from "@executioncontextprotocol/core"
 import { z } from "zod"
 
 export const myExtension = defineExtension("@vendor", "my-ext")
@@ -63,10 +63,10 @@ catalogExtension(myExtension)
 ## Tests
 
 - Test the extension in isolation: fixtures for `@ecp.workflow`, `@ecp.environment`, `@ecp.environment.describe`, etc.
-- Use `environment()` from `@ecp/core` for `encode`/`decode` integration tests (no runtime binding required).
-- Do **not** import `@ecp/node` to call `describe()`, `run()`, or wire runtimes; that belongs in `@ecp/core` / `@ecp/node` tests.
-- In-repo stub: `import "@ecp/core/testing"` and `extension("@ecp/test")` only when a test must invoke a real capability handler.
+- Use `environment()` from `@executioncontextprotocol/core` for `encode`/`decode` integration tests (no runtime binding required).
+- Do **not** import `@executioncontextprotocol/node` to call `describe()`, `run()`, or wire runtimes; that belongs in `@executioncontextprotocol/core` / `@executioncontextprotocol/node` tests.
+- In-repo stub: `import "@executioncontextprotocol/core/testing"` and `extension("@executioncontextprotocol/test")` only when a test must invoke a real capability handler.
 
 ## Environment modules (apps/examples, not extensions)
 
-Application `environment.ts` files may import `@ecp/node` or `@ecp/browser` for `environment()`, secrets, and runtime defaults. That layer composes extensions; it is not part of the extension package contract.
+Application `environment.ts` files may import `@executioncontextprotocol/node` or `@executioncontextprotocol/browser` for `environment()`, secrets, and runtime defaults. That layer composes extensions; it is not part of the extension package contract.

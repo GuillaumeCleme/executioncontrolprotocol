@@ -1,6 +1,6 @@
-import type { CapabilityId, CommitMode, InputValue } from "@ecp/types"
-import type { ExprValue } from "@ecp/types"
-import type { StepNode } from "@ecp/types"
+import type { CapabilityId, CommitMode, InputValue } from "@executioncontextprotocol/types"
+import type { ExprValue } from "@executioncontextprotocol/types"
+import type { StepNode } from "@executioncontextprotocol/types"
 import { slugify } from "../util/slug.js"
 
 /** Commit options for `.as()`. */

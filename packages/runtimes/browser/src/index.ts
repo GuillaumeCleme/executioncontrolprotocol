@@ -46,9 +46,9 @@ export {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY as WORKFLOW_AUTHORING_CAPABILITY,
   BROWSER_NANO_HARNESS_CAPABILITY as INTENT_CLASSIFICATION_CAPABILITY,
-} from "@ecp/harnesses-browser-nano"
+} from "@executioncontextprotocol/harnesses-browser-nano"
 export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
-export type { Ecp } from "@ecp/core"
+export type { Ecp } from "@executioncontextprotocol/core"
 
 export {
   workflow,
@@ -72,4 +72,4 @@ export {
   Environment,
   Registry,
   globalRegistry,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"

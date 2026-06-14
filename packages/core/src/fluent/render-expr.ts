@@ -1,4 +1,4 @@
-import type { ExprValue } from "@ecp/types"
+import type { ExprValue } from "@executioncontextprotocol/types"
 
 /**
  * Render expression to Fluent `expr.*` call.

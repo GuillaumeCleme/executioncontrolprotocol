@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 import type {
   CapabilityDescription,
   DescribeQuery,
@@ -6,9 +6,9 @@ import type {
   EnvironmentDescriptor,
   ExtensionDescription,
   PolicyDescription,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type { Registry } from "../registry/registry.js"
-import type { EnvironmentManifest } from "@ecp/types"
+import type { EnvironmentManifest } from "@executioncontextprotocol/types"
 
 function fuzzyMatch(haystack: string, needle: string): boolean {
   return haystack.toLowerCase().includes(needle.toLowerCase())
@@ -114,7 +114,7 @@ export async function buildDescriptor(
     query?.policies?.limit
   )
 
-  const runtimeId = String(manifest.runtime?.id ?? "@ecp/node")
+  const runtimeId = String(manifest.runtime?.id ?? "@executioncontextprotocol/node")
   const runtimeLabel = manifest.runtime?.label
   const runtimeText = `${runtimeId} ${runtimeLabel ?? ""}`
   const includeRuntime =

@@ -1,5 +1,5 @@
-import { LATEST_ECP_VERSION } from "@ecp/types"
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@executioncontextprotocol/types"
 import { slugify } from "../util/slug.js"
 import type { StepBuilder } from "../bindings/step.js"
 import { validateWorkflow } from "../validate/workflow.js"

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { defineExtension, capabilityFor } from "@ecp/core"
+import { defineExtension, capabilityFor } from "@executioncontextprotocol/core"
 import { z } from "zod"
 import { createBrowserTestEnvironment } from "./helpers.js"
 

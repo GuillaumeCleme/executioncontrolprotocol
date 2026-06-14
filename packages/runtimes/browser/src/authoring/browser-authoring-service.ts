@@ -1,5 +1,5 @@
-import type { Ecp } from "@ecp/core"
-import type { ValidationResult, WorkflowManifest } from "@ecp/types"
+import type { Ecp } from "@executioncontextprotocol/core"
+import type { ValidationResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import { encodeAuthoringPanels, type BrowserPanelsEcp } from "./browser-authoring-panels.js"
 
 /** UI-ready encoded panel outputs. @category Authoring */

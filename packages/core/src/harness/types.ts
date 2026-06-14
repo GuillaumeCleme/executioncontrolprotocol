@@ -1,5 +1,5 @@
-import type { HarnessId } from "@ecp/types"
-import { ECP_MODEL_GENERATE_INTERFACE } from "@ecp/types"
+import type { HarnessId } from "@executioncontextprotocol/types"
+import { ECP_MODEL_GENERATE_INTERFACE } from "@executioncontextprotocol/types"
 import type { z } from "zod"
 import type { HarnessCapabilityContext } from "./context.js"
 
@@ -27,7 +27,7 @@ export type ErasedHarnessHandler = HarnessHandler<unknown, unknown, Record<strin
 
 /** Registered harness definition. @category Harness */
 export interface HarnessDefinition {
-  /** Harness id (e.g. `@ecp/evals-workflow-authoring`). */
+  /** Harness id (e.g. `@executioncontextprotocol/evals-workflow-authoring`). */
   id: HarnessId
   /** Namespace segment. */
   namespace: string

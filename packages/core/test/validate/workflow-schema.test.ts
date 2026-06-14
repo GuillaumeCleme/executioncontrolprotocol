@@ -9,7 +9,7 @@ import { validateWorkflow } from "../../src/validate/workflow.js"
 describe("workflowManifestSchema", () => {
   it("accepts a valid builder manifest", () => {
     const manifest = workflow("Echo")
-      .run([step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo")])
       .toManifest()
     expect(() => parseWorkflowManifest(manifest)).not.toThrow()
     expect(validateWorkflow(manifest).valid).toBe(true)
@@ -20,7 +20,7 @@ describe("workflowManifestSchema", () => {
       schema: "@ecp.workflow",
       version: "1.0",
       workflow: { id: "bad" },
-      steps: [{ id: "echo", capabilityId: "@ecp/test.echo", label: "Demo Echo", as: "echo" }],
+      steps: [{ id: "echo", capabilityId: "@executioncontextprotocol/test.echo", label: "Demo Echo", as: "echo" }],
     }
     const parsed = workflowManifestSchema.safeParse(invalid)
     expect(parsed.success).toBe(false)

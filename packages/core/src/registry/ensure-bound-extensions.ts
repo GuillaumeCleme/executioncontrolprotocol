@@ -1,4 +1,4 @@
-import type { NamespacedId } from "@ecp/types"
+import type { NamespacedId } from "@executioncontextprotocol/types"
 import type { ExtensionBindingBuilder } from "../bindings/extension.js"
 import type { Registry } from "./registry.js"
 import { resolveExtensionDefinition, normalizeExtensionId } from "./extension-catalog.js"

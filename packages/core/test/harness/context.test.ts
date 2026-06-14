@@ -24,8 +24,8 @@ describe("createHarnessCapabilityContext", () => {
     })
 
     const ctx = createHarnessCapabilityContext(
-      "@ecp/test" as never,
-      "@ecp/demo.generate" as never,
+      "@executioncontextprotocol/test" as never,
+      "@executioncontextprotocol/demo.generate" as never,
       {},
       {} as never,
       {} as never,
@@ -38,8 +38,8 @@ describe("createHarnessCapabilityContext", () => {
 
   it("passes raw config when configSchema is omitted", () => {
     const ctx = createHarnessCapabilityContext(
-      "@ecp/test" as never,
-      "@ecp/demo.generate" as never,
+      "@executioncontextprotocol/test" as never,
+      "@executioncontextprotocol/demo.generate" as never,
       { custom: true },
       {} as never,
       {} as never,

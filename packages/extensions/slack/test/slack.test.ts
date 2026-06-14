@@ -1,20 +1,20 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import { globalRegistry } from "@ecp/core"
+import { globalRegistry } from "@executioncontextprotocol/core"
 import { registerSlackExtension, slackExtension } from "../src/index.js"
 
-describe("@ecp/slack", () => {
+describe("@executioncontextprotocol/slack", () => {
   beforeEach(async () => {
     await registerSlackExtension()
   })
 
   it("registers the extension and exposes the send capability", () => {
-    const ext = globalRegistry.getExtension("@ecp/slack")
+    const ext = globalRegistry.getExtension("@executioncontextprotocol/slack")
     expect(ext).toBe(slackExtension)
-    expect(ext?.capabilities.map((c) => c.id)).toContain("@ecp/slack.send")
+    expect(ext?.capabilities.map((c) => c.id)).toContain("@executioncontextprotocol/slack.send")
   })
 
   it("send returns an acknowledgement with a timestamp", async () => {
-    const send = slackExtension.capabilities.find((c) => c.id === "@ecp/slack.send")
+    const send = slackExtension.capabilities.find((c) => c.id === "@executioncontextprotocol/slack.send")
     const ctx = { extensionConfig: {}, usage: { increment: () => undefined } }
     const out = (await send?.handler(
       { message: "hello", channel: "#general" },
@@ -25,7 +25,7 @@ describe("@ecp/slack", () => {
   })
 
   it("validates send input against the capability schema", () => {
-    const send = slackExtension.capabilities.find((c) => c.id === "@ecp/slack.send")
+    const send = slackExtension.capabilities.find((c) => c.id === "@executioncontextprotocol/slack.send")
     const parsed = send?.inputSchema?.safeParse({ message: "hi" })
     expect(parsed?.success).toBe(true)
   })

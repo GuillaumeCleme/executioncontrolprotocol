@@ -5,7 +5,7 @@ import {
   loadEvalCases,
   ollamaEvalReady,
   runEvalCase,
-} from "@ecp/evals"
+} from "@executioncontextprotocol/evals"
 
 const readiness = await ollamaEvalReady()
 const cases = loadEvalCases({ suite: EVAL_SUITE_VALUES.WORKFLOW_PATCH })

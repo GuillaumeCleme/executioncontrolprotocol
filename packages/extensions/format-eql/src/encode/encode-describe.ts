@@ -1,5 +1,5 @@
-import type { EnvironmentDescriptor } from "@ecp/types"
-import type { EcpFormatOptions } from "@ecp/types"
+import type { EnvironmentDescriptor } from "@executioncontextprotocol/types"
+import type { EcpFormatOptions } from "@executioncontextprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { isEqlTypesRecord } from "../validate-environment.js"
 import { EqlWriter, formatLiteral } from "./writer.js"

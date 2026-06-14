@@ -3,11 +3,11 @@ import {
   hook,
   globalRegistry,
   type EnvironmentConfigResolver,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import { z } from "zod"
-import type { LifecycleContext } from "@ecp/core"
+import type { LifecycleContext } from "@executioncontextprotocol/core"
 
-const EXT_ID = "@ecp/process-env"
+const EXT_ID = "@executioncontextprotocol/process-env"
 
 function keyAllowed(name: string, allowed: string[], denied: string[]): boolean {
   if (denied.includes(name)) return false
@@ -36,7 +36,7 @@ function attachProcessEnvResolver(ctx: LifecycleContext): void {
 }
 
 /** Process environment config extension. @category Extensions */
-export const processEnvExtension = defineExtension("@ecp", "process-env")
+export const processEnvExtension = defineExtension("@executioncontextprotocol", "process-env")
   .withConfig({
     allowedKeys: z.array(z.string()).default(["*"]),
     deniedKeys: z.array(z.string()).default([]),
@@ -45,7 +45,7 @@ export const processEnvExtension = defineExtension("@ecp", "process-env")
   .withHooks([hook("environment:configuring", attachProcessEnvResolver)])
   .build()
 
-/** Register `@ecp/process-env`. */
+/** Register `@executioncontextprotocol/process-env`. */
 export async function registerProcessEnvExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(processEnvExtension)

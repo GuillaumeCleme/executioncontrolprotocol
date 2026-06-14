@@ -1,4 +1,4 @@
-import type { ValidationIssue } from "@ecp/types"
+import type { ValidationIssue } from "@executioncontextprotocol/types"
 import type { EqlHeader, EqlIntentDoc, EqlReplyCitation, EqlReplyDoc, ParsedLine } from "./ast.js"
 import { eqlSyntaxIssue } from "./diagnostics.js"
 import { parseLiteral } from "./values.js"

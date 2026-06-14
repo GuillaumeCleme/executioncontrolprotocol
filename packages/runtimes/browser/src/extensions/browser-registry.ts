@@ -7,11 +7,11 @@ import {
   type EnvironmentLifecycleHost,
   type ExtensionDefinition,
   type LifecycleContext,
-} from "@ecp/core"
-import type { RegistryRegistrationRequest } from "@ecp/types"
+} from "@executioncontextprotocol/core"
+import type { RegistryRegistrationRequest } from "@executioncontextprotocol/types"
 import { z } from "zod"
 
-const EXT_ID = "@ecp/browser-registry"
+const EXT_ID = "@executioncontextprotocol/browser-registry"
 
 /** Browser global registration surface. @category Extensions */
 export interface BrowserEcpGlobal {
@@ -115,7 +115,7 @@ export function exposeBrowserRegistry(): BrowserEcpGlobal | undefined {
 }
 
 /** Hook-only dynamic registry extension for browser. @category Extensions */
-export const browserRegistryExtension = defineExtension("@ecp", "browser-registry")
+export const browserRegistryExtension = defineExtension("@executioncontextprotocol", "browser-registry")
   .withConfig({
     freezeOn: z.string().default("environment:beforeRun"),
     allowRuntimeRegistration: z.boolean().default(true),
@@ -131,7 +131,7 @@ export const browserRegistryExtension = defineExtension("@ecp", "browser-registr
   ])
   .build()
 
-/** Register `@ecp/browser-registry`. */
+/** Register `@executioncontextprotocol/browser-registry`. */
 export async function registerBrowserRegistryExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(browserRegistryExtension)

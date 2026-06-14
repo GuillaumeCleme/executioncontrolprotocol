@@ -4,11 +4,11 @@ import {
   capabilityFor,
   RegistryFrozenError,
   policy,
-} from "@ecp/core"
+} from "@executioncontextprotocol/core"
 import { z } from "zod"
 import { createBrowserTestEnvironment } from "./helpers.js"
 
-describe("@ecp/browser-registry", () => {
+describe("@executioncontextprotocol/browser-registry", () => {
   it("freezes registry on first run", async () => {
     const customerExt = defineExtension("@customer", "demo")
       .withCapabilities([
@@ -44,7 +44,7 @@ describe("@ecp/browser-registry", () => {
 
   it("denies registration outside allowed namespace via registry-control", async () => {
     const env = (await createBrowserTestEnvironment("deny-test")).withPolicies([
-      policy("@ecp/registry-control").with({
+      policy("@executioncontextprotocol/registry-control").with({
         allowedExtensionNamespaces: ["@customer/*"],
         deniedExtensionNamespaces: [],
       }),
@@ -52,7 +52,7 @@ describe("@ecp/browser-registry", () => {
 
     await env.init()
 
-    const ecpExt = defineExtension("@ecp", "blocked")
+    const ecpExt = defineExtension("@executioncontextprotocol", "blocked")
       .withConfig({})
       .build()
 

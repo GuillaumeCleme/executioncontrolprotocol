@@ -1,4 +1,4 @@
-# @ecp/cli
+# @executioncontextprotocol/cli
 
 ECP command-line interface for running **workflows** (`@ecp.workflow`) in configured
 **environments** (runtime + extensions + policies).
@@ -19,7 +19,7 @@ For the architecture and monorepo package boundaries, start with
 From npm (when published):
 
 ```sh
-npm install -g @ecp/cli
+npm install -g @executioncontextprotocol/cli
 ```
 
 From this monorepo (recommended for development):
@@ -91,7 +91,7 @@ Notes:
 
 ## Related packages
 
-- [`@ecp/core`](../core/README.md): runtime-agnostic core + fluent API
-- [`@ecp/node`](../runtimes/node/README.md): Node runtime host used by CLI examples
-- [`@ecp/types`](../types/README.md): protocol types + generated JSON Schemas
-- [`@ecp/mcp`](../mcp/): MCP server adapter exposing an environment to agents
+- [`@executioncontextprotocol/core`](../core/README.md): runtime-agnostic core + fluent API
+- [`@executioncontextprotocol/node`](../runtimes/node/README.md): Node runtime host used by CLI examples
+- [`@executioncontextprotocol/types`](../types/README.md): protocol types + generated JSON Schemas
+- [`@executioncontextprotocol/mcp`](../mcp/): MCP server adapter exposing an environment to agents

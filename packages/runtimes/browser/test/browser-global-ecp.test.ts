@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { defineExtension, RegistryFrozenError } from "@ecp/core"
+import { defineExtension, RegistryFrozenError } from "@executioncontextprotocol/core"
 import { z } from "zod"
-import { capabilityFor } from "@ecp/core"
+import { capabilityFor } from "@executioncontextprotocol/core"
 import { createBrowserTestEnvironment } from "./helpers.js"
 
 describe("globalThis.ecp", () => {

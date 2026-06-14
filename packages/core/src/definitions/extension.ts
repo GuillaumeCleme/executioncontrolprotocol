@@ -1,4 +1,4 @@
-import type { NamespacedId } from "@ecp/types"
+import type { NamespacedId } from "@executioncontextprotocol/types"
 import { z } from "zod"
 import type {
   CapabilityDefinition,

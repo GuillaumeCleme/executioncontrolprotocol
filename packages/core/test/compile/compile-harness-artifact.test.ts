@@ -3,10 +3,10 @@ import {
   compileHarnessArtifactSource,
   extractArtifactFromModule,
 } from "../../src/compile/compile-harness-artifact.js"
-import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@ecp/types"
+import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@executioncontextprotocol/types"
 
 const INTENT_TS = `
-import type { EcpIntent } from "@ecp/types"
+import type { EcpIntent } from "@executioncontextprotocol/types"
 export const intent: EcpIntent = {
   schema: "@ecp.intent",
   intent: "faq",
@@ -14,7 +14,7 @@ export const intent: EcpIntent = {
 `
 
 const REPLY_TS = `
-import type { HarnessReply } from "@ecp/types"
+import type { HarnessReply } from "@executioncontextprotocol/types"
 export const reply: HarnessReply = {
   schema: "@ecp.harness.reply",
   answer: "ECP governs portable workflows in governed environments.",

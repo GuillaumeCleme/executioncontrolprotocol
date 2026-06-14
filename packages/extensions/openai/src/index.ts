@@ -1,5 +1,5 @@
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension, type Registry } from "@ecp/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@ecp/types"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension, type Registry } from "@executioncontextprotocol/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
 import { z } from "zod"
 import { resolveOpenaiApiKey } from "./resolve-api-key.js"
 
@@ -35,14 +35,14 @@ async function chatComplete(
   return data.choices[0]?.message?.content ?? ""
 }
 
-/** @ecp/openai extension. @category Extensions */
-export const openaiExtension = defineExtension("@ecp", "openai")
+/** @executioncontextprotocol/openai extension. @category Extensions */
+export const openaiExtension = defineExtension("@executioncontextprotocol", "openai")
   .withConfig({
     apiKey: z.string().optional(),
     defaultModel: z.string().optional(),
   })
   .withCapabilities([
-    capabilityFor("@ecp/openai", "generate")
+    capabilityFor("@executioncontextprotocol/openai", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -61,7 +61,7 @@ export const openaiExtension = defineExtension("@ecp", "openai")
         )
         return { text }
       }),
-    capabilityFor("@ecp/openai", "generateText")
+    capabilityFor("@executioncontextprotocol/openai", "generateText")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -80,7 +80,7 @@ export const openaiExtension = defineExtension("@ecp", "openai")
         )
         return { text }
       }),
-    capabilityFor("@ecp/openai", "evaluate")
+    capabilityFor("@executioncontextprotocol/openai", "evaluate")
       .withInput(
         z.object({
           artifact: z.unknown(),
@@ -106,9 +106,9 @@ export const openaiExtension = defineExtension("@ecp", "openai")
 
 catalogExtension(openaiExtension)
 
-/** Register @ecp/openai. */
+/** Register @executioncontextprotocol/openai. */
 export async function registerOpenaiExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@ecp/openai")) {
+  if (!registry.getExtension("@executioncontextprotocol/openai")) {
     await registry.registerExtension(openaiExtension)
   }
 }

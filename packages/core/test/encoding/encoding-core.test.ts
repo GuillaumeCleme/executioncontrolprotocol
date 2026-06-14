@@ -8,14 +8,14 @@ import {
   hook,
   defineExtension,
 } from "../../src/index.js"
-import { NODE_RUNTIME_ID, registerNodeRuntime, runtime } from "@ecp/node"
-import { registerFormatToonExtension } from "@ecp/format-toon"
+import { NODE_RUNTIME_ID, registerNodeRuntime, runtime } from "@executioncontextprotocol/node"
+import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
 import { initEncodingTestEcp } from "../helpers.js"
 
 const sampleManifest = workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@ecp/test.echo", "Collect")
+    step("@executioncontextprotocol/test.echo", "Collect")
       .id("collect")
       .with({ value: "hello" })
       .as("signals"),
@@ -31,9 +31,9 @@ describe("ecp.encode/decode", () => {
     await ecp.terminate()
   })
 
-  it("encodes JSON via @ecp/format-json", async () => {
+  it("encodes JSON via @executioncontextprotocol/format-json", async () => {
     const ecp = await initEncodingTestEcp()
-    const encoded = await ecp.encode(sampleManifest).uses("@ecp/format-json").process()
+    const encoded = await ecp.encode(sampleManifest).uses("@executioncontextprotocol/format-json").process()
     expect(encoded.schema).toBe("@ecp.encode.result")
     expect(encoded.success).toBe(true)
     expect(encoded.format).toBe("json")
@@ -41,11 +41,11 @@ describe("ecp.encode/decode", () => {
     await ecp.terminate()
   })
 
-  it("decodes JSON via @ecp/format-json", async () => {
+  it("decodes JSON via @executioncontextprotocol/format-json", async () => {
     const ecp = await initEncodingTestEcp()
     const decoded = await ecp
       .decode(JSON.stringify(sampleManifest))
-      .uses("@ecp/format-json")
+      .uses("@executioncontextprotocol/format-json")
       .to("@ecp.workflow")
       .process()
     expect(decoded.schema).toBe("@ecp.decode.result")
@@ -58,7 +58,7 @@ describe("ecp.encode/decode", () => {
     const ecp = await initEncodingTestEcp()
     const decoded = await ecp
       .decode('```json\n{"broken":')
-      .uses("@ecp/format-json")
+      .uses("@executioncontextprotocol/format-json")
       .to("@ecp.intent")
       .process()
     expect(decoded.success).toBe(false)
@@ -71,17 +71,17 @@ describe("ecp.encode/decode", () => {
   it("fails when encoder extension is not registered", async () => {
     const ecp = await initEncodingTestEcp()
     await expect(
-      ecp.encode(sampleManifest).uses("@ecp/format-toon").process()
+      ecp.encode(sampleManifest).uses("@executioncontextprotocol/format-toon").process()
     ).rejects.toThrow(/not registered/)
     await ecp.terminate()
   })
 
   it("encodes TOON when extension is registered", async () => {
     await registerFormatToonExtension()
-    const ecp = await initEncodingTestEcp([extension("@ecp/format-toon").with({})])
+    const ecp = await initEncodingTestEcp([extension("@executioncontextprotocol/format-toon").with({})])
     const encoded = await ecp
       .encode(sampleManifest)
-      .uses("@ecp/format-toon")
+      .uses("@executioncontextprotocol/format-toon")
       .to("@ecp.workflow")
       .process()
     expect(encoded.format).toBe("toon")
@@ -98,7 +98,7 @@ describe("encode/decode lifecycle isolation", () => {
     await registerTestExtension()
     await registerFormatToonExtension()
 
-    const spy = defineExtension("@ecp", "telemetry-spy")
+    const spy = defineExtension("@executioncontextprotocol", "telemetry-spy")
       .withHooks([
         hook("run:before", async () => {
           events.push("run:before")
@@ -110,14 +110,14 @@ describe("encode/decode lifecycle isolation", () => {
       .build()
 
     const ecp = await initEncodingTestEcp([
-      extension("@ecp/test").with({}),
+      extension("@executioncontextprotocol/test").with({}),
       extension(spy).with({}),
-      extension("@ecp/format-toon").with({}),
+      extension("@executioncontextprotocol/format-toon").with({}),
     ])
 
-    const toon = await ecp.encode(sampleManifest).uses("@ecp/format-toon").process()
+    const toon = await ecp.encode(sampleManifest).uses("@executioncontextprotocol/format-toon").process()
     expect(toon.success).toBe(true)
-    await ecp.decode(toon.result).uses("@ecp/format-toon").process()
+    await ecp.decode(toon.result).uses("@executioncontextprotocol/format-toon").process()
 
     expect(events).not.toContain("run:before")
     expect(events).not.toContain("step:before")
@@ -131,7 +131,7 @@ describe("env.init", () => {
     await registerTestExtension()
     const env = environment("test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
-      .withExtensions([extension("@ecp/test").with({})])
+      .withExtensions([extension("@executioncontextprotocol/test").with({})])
     const ecp = await env.init()
     expect(ecp.encode).toBeTypeOf("function")
     expect(ecp.decode).toBeTypeOf("function")

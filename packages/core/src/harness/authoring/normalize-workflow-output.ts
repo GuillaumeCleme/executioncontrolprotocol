@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
 
 /**
  * Normalize common model JSON mistakes before workflow validation.

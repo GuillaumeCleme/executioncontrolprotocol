@@ -19,7 +19,7 @@
     },
     {
       "message": "List supported step capabilities.",
-      "output": "REPLY\n  ANSWER \"Supported step capabilities: @ecp/test.echo, @ecp/demo.summarize, @ecp/demo.validate, @ecp/demo.notify, @ecp/demo.translate.\"\n  CITATION extension @ecp/test \"@ecp/test.echo\"\n  CITATION extension @ecp/demo \"@ecp/demo.summarize, @ecp/demo.validate, @ecp/demo.notify, @ecp/demo.translate\""
+      "output": "REPLY\n  ANSWER \"Supported step capabilities: @executioncontextprotocol/test.echo, @executioncontextprotocol/demo.summarize, @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.notify, @executioncontextprotocol/demo.translate.\"\n  CITATION extension @executioncontextprotocol/test \"@executioncontextprotocol/test.echo\"\n  CITATION extension @executioncontextprotocol/demo \"@executioncontextprotocol/demo.summarize, @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.notify, @executioncontextprotocol/demo.translate\""
     },
     {
       "message": "Register a new extension for me.",

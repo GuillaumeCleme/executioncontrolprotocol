@@ -1,5 +1,5 @@
 {
-  "name": "@ecp/workspace",
+  "name": "@executioncontextprotocol/workspace",
   "version": "1.0.0",
   "description": "Execution Control Protocol (ECP) — TypeScript fluent API for workflow authoring and execution",
   "private": true,
@@ -15,8 +15,7 @@
     "packages/evals",
     "packages/harnesses/*",
     "packages/extensions/*",
-    "packages/runtimes/*",
-    "apps/*"
+    "packages/runtimes/*"
   ],
   "scripts": {
     "clean": "node scripts/clean-dist.mjs",
@@ -43,12 +42,8 @@
     "test:browser:install": "playwright install chromium --with-deps",
     "test:browser": "vitest run --project browser",
     "test:browser:watch": "vitest --project browser",
-    "dev:browser-demo": "npm run dev -w @ecp/browser-demo",
-    "build:browser-demo": "npm run build -w @ecp/browser-demo",
-    "build:browser-demo:pages": "npm run build:pages -w @ecp/browser-demo",
-    "typecheck:browser-demo": "npm run typecheck -w @ecp/browser-demo",
-    "check": "npm run build && npm run generate:schema && npm run lint && npm run build:browser-demo && npm run test:unit && npm run test:integration && npm run test:e2e",
-    "generate:schema": "npm run generate:schema -w @ecp/types",
+    "check": "npm run build && npm run generate:schema && npm run lint && npm run test:unit && npm run test:integration && npm run test:e2e",
+    "generate:schema": "npm run generate:schema -w @executioncontextprotocol/types",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -56,11 +51,11 @@
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/browser-playwright": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18",
-    "playwright": "^1.49.0",
     "eslint": "^9.0.0",
     "eslint-plugin-yml": "^3.3.1",
     "husky": "^9.1.7",
     "markdownlint-cli2": "^0.21.0",
+    "playwright": "^1.49.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.0.0",
     "vitest": "^4.0.18"

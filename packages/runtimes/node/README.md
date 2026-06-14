@@ -1,36 +1,36 @@
-# @ecp/node
+# @executioncontextprotocol/node
 
-**Node.js runtime host** for ECP: Node executor, process-env and secrets extensions, and re-exports of Node-only compile from `@ecp/core`.
+**Node.js runtime host** for ECP: Node executor, process-env and secrets extensions, and re-exports of Node-only compile from `@executioncontextprotocol/core`.
 
-## vs `@ecp/core`
+## vs `@executioncontextprotocol/core`
 
 | Package | Role |
 | ------- | ---- |
-| `@ecp/core` | Runtime-agnostic API and in-memory engine |
-| `@ecp/node` | Node host: `@ecp/node` runtime, `process.env`, secrets, `compileWorkflowSource` via `@ecp/core/compile` |
+| `@executioncontextprotocol/core` | Runtime-agnostic API and in-memory engine |
+| `@executioncontextprotocol/node` | Node host: `@executioncontextprotocol/node` runtime, `process.env`, secrets, `compileWorkflowSource` via `@executioncontextprotocol/core/compile` |
 
-Node apps and the CLI compose environments with `@ecp/node`; they import compile/loaders from `@ecp/core/compile` or `@ecp/core/node`, not from the core main barrel.
+Node apps and the CLI compose environments with `@executioncontextprotocol/node`; they import compile/loaders from `@executioncontextprotocol/core/compile` or `@executioncontextprotocol/core/node`, not from the core main barrel.
 
 ## Typical usage
 
 ```ts
-import { environment, extension, workflow, step } from "@ecp/node"
-import "@ecp/core/testing"
+import { environment, extension, workflow, step } from "@executioncontextprotocol/node"
+import "@executioncontextprotocol/core/testing"
 
 const env = (await environment("dev")).withExtensions([
-  extension("@ecp/test").with({}),
+  extension("@executioncontextprotocol/test").with({}),
 ])
 const ecp = await env.init()
 await ecp.run(
   workflow("Echo")
-    .run([step("@ecp/test.echo", "Echo").with({ value: "hi" }).as("out")])
+    .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("out")])
     .toManifest()
 )
 ```
 
 ## Related
 
-- [`@ecp/core`](../core/README.md) — core API and subpaths
-- [`@ecp/cli`](../cli/) — `ecp run`, `ecp compile`, etc. (uses `@ecp/core/loaders` + `@ecp/core/compile`)
+- [`@executioncontextprotocol/core`](../core/README.md) — core API and subpaths
+- [`@executioncontextprotocol/cli`](../cli/) — `ecp run`, `ecp compile`, etc. (uses `@executioncontextprotocol/core/loaders` + `@executioncontextprotocol/core/compile`)
 
 See [AGENTS.md](../../AGENTS.md) for CLI commands and extension catalog rules.

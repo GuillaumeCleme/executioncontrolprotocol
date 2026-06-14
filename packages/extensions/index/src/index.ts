@@ -1,37 +1,37 @@
-export { registerMemoryExtension, memoryExtension } from "@ecp/extension-memory"
-export { registerOpenaiExtension, openaiExtension } from "@ecp/extension-openai"
-export { registerOllamaExtension, ollamaExtension } from "@ecp/extension-ollama"
-export { registerSlackExtension, slackExtension } from "@ecp/extension-slack"
-export { registerStorageExtension, storageExtension } from "@ecp/extension-storage"
-export { registerTelemetryExtension, telemetryExtension } from "@ecp/extension-telemetry"
-export { registerFormatToonExtension, formatToonExtension } from "@ecp/format-toon"
-export { registerFormatEqlExtension, formatEqlExtension } from "@ecp/format-eql"
-export { registerFormatMermaidExtension, formatMermaidExtension } from "@ecp/format-mermaid"
-export { registerDemoExtension, demoExtension } from "@ecp/demo"
+export { registerMemoryExtension, memoryExtension } from "@executioncontextprotocol/extension-memory"
+export { registerOpenaiExtension, openaiExtension } from "@executioncontextprotocol/extension-openai"
+export { registerOllamaExtension, ollamaExtension } from "@executioncontextprotocol/extension-ollama"
+export { registerSlackExtension, slackExtension } from "@executioncontextprotocol/extension-slack"
+export { registerStorageExtension, storageExtension } from "@executioncontextprotocol/extension-storage"
+export { registerTelemetryExtension, telemetryExtension } from "@executioncontextprotocol/extension-telemetry"
+export { registerFormatToonExtension, formatToonExtension } from "@executioncontextprotocol/format-toon"
+export { registerFormatEqlExtension, formatEqlExtension } from "@executioncontextprotocol/format-eql"
+export { registerFormatMermaidExtension, formatMermaidExtension } from "@executioncontextprotocol/format-mermaid"
+export { registerDemoExtension, demoExtension } from "@executioncontextprotocol/demo"
 
-import { registerMemoryExtension } from "@ecp/extension-memory"
-import { registerOpenaiExtension } from "@ecp/extension-openai"
-import { registerOllamaExtension } from "@ecp/extension-ollama"
-import { registerSlackExtension } from "@ecp/extension-slack"
-import { registerStorageExtension } from "@ecp/extension-storage"
-import { registerTelemetryExtension } from "@ecp/extension-telemetry"
-import { registerFormatToonExtension } from "@ecp/format-toon"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { registerFormatMermaidExtension } from "@ecp/format-mermaid"
-import { registerDemoExtension } from "@ecp/demo"
+import { registerMemoryExtension } from "@executioncontextprotocol/extension-memory"
+import { registerOpenaiExtension } from "@executioncontextprotocol/extension-openai"
+import { registerOllamaExtension } from "@executioncontextprotocol/extension-ollama"
+import { registerSlackExtension } from "@executioncontextprotocol/extension-slack"
+import { registerStorageExtension } from "@executioncontextprotocol/extension-storage"
+import { registerTelemetryExtension } from "@executioncontextprotocol/extension-telemetry"
+import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerFormatMermaidExtension } from "@executioncontextprotocol/format-mermaid"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 
 /** Namespaced ids registered by {@link registerAllExtensions}. */
 export const BUNDLED_EXTENSION_IDS = [
-  "@ecp/memory",
-  "@ecp/openai",
-  "@ecp/ollama",
-  "@ecp/slack",
-  "@ecp/storage",
-  "@ecp/telemetry",
-  "@ecp/format-toon",
-  "@ecp/format-eql",
-  "@ecp/format-mermaid",
-  "@ecp/demo",
+  "@executioncontextprotocol/memory",
+  "@executioncontextprotocol/openai",
+  "@executioncontextprotocol/ollama",
+  "@executioncontextprotocol/slack",
+  "@executioncontextprotocol/storage",
+  "@executioncontextprotocol/telemetry",
+  "@executioncontextprotocol/format-toon",
+  "@executioncontextprotocol/format-eql",
+  "@executioncontextprotocol/format-mermaid",
+  "@executioncontextprotocol/demo",
 ] as const
 
 /**
@@ -44,8 +44,8 @@ export const BUNDLED_EXTENSION_IDS = [
  * stub provider.
  *
  * Intentionally excluded (register them explicitly when needed):
- * - `@ecp/chrome-ai` — browser-only (Chrome on-device `LanguageModel` API).
- * - `@ecp/claude` — requires the Anthropic provider configuration/credentials.
+ * - `@executioncontextprotocol/chrome-ai` — browser-only (Chrome on-device `LanguageModel` API).
+ * - `@executioncontextprotocol/claude` — requires the Anthropic provider configuration/credentials.
  *
  * @category Extensions
  */

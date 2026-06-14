@@ -6,37 +6,37 @@ import {
   collectPatchGoalFeedback,
   inferRequiredCapabilityIds,
 } from "../../../harnesses/browser-nano/src/_internal/request-capability-hints.js"
-import type { CompactEnvironmentSummary } from "@ecp/core"
-import type { WorkflowManifest } from "@ecp/types"
+import type { CompactEnvironmentSummary } from "@executioncontextprotocol/core"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
 
 const summary: CompactEnvironmentSummary = {
-  extensions: [{ id: "@ecp/demo", capabilities: ["@ecp/demo.summarize", "@ecp/demo.notify"] }],
+  extensions: [{ id: "@executioncontextprotocol/demo", capabilities: ["@executioncontextprotocol/demo.summarize", "@executioncontextprotocol/demo.notify"] }],
   capabilities: [
-    { id: "@ecp/test.echo", extension: "@ecp/test", inputs: ["value"], outputs: ["text"] },
-    { id: "@ecp/demo.summarize", extension: "@ecp/demo", inputs: ["text"], outputs: [] },
-    { id: "@ecp/demo.notify", extension: "@ecp/demo", inputs: ["payload"], outputs: [] },
-    { id: "@ecp/demo.validate", extension: "@ecp/demo", inputs: ["payload"], outputs: [] },
-    { id: "@ecp/demo.translate", extension: "@ecp/demo", inputs: ["text"], outputs: [] },
+    { id: "@executioncontextprotocol/test.echo", extension: "@executioncontextprotocol/test", inputs: ["value"], outputs: ["text"] },
+    { id: "@executioncontextprotocol/demo.summarize", extension: "@executioncontextprotocol/demo", inputs: ["text"], outputs: [] },
+    { id: "@executioncontextprotocol/demo.notify", extension: "@executioncontextprotocol/demo", inputs: ["payload"], outputs: [] },
+    { id: "@executioncontextprotocol/demo.validate", extension: "@executioncontextprotocol/demo", inputs: ["payload"], outputs: [] },
+    { id: "@executioncontextprotocol/demo.translate", extension: "@executioncontextprotocol/demo", inputs: ["text"], outputs: [] },
   ],
 }
 
 describe("request-capability-hints", () => {
   it("infers echo and summarize from natural language", () => {
     const ids = inferRequiredCapabilityIds(
-      "Create a workflow with echo (@ecp/test.echo) then summarize (@ecp/demo.summarize)",
+      "Create a workflow with echo (@executioncontextprotocol/test.echo) then summarize (@executioncontextprotocol/demo.summarize)",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@ecp/test.echo")
-    expect(ids).toContain("@ecp/demo.summarize")
+    expect(ids).toContain("@executioncontextprotocol/test.echo")
+    expect(ids).toContain("@executioncontextprotocol/demo.summarize")
   })
 
   it("infers validate when capability id appears in request", () => {
     const ids = inferRequiredCapabilityIds(
-      "Build a workflow: first @ecp/demo.validate then @ecp/test.echo.",
+      "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/test.echo.",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@ecp/demo.validate")
-    expect(ids).toContain("@ecp/test.echo")
+    expect(ids).toContain("@executioncontextprotocol/demo.validate")
+    expect(ids).toContain("@executioncontextprotocol/test.echo")
   })
 
   it("does not treat Validate then echo as validate capability", () => {
@@ -44,8 +44,8 @@ describe("request-capability-hints", () => {
       "Validate then echo with hello input",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@ecp/test.echo")
-    expect(ids).not.toContain("@ecp/demo.validate")
+    expect(ids).toContain("@executioncontextprotocol/test.echo")
+    expect(ids).not.toContain("@executioncontextprotocol/demo.validate")
   })
 
   it("collectCreateCapabilityFeedback accepts steps without type field", () => {
@@ -56,7 +56,7 @@ describe("request-capability-hints", () => {
       steps: [
         {
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           label: "Echo",
           as: "echo",
         },
@@ -80,7 +80,7 @@ describe("request-capability-hints", () => {
           type: "step",
           id: "echo",
           label: "Echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           input: { value: "hi" },
           as: "echo",
         },
@@ -99,8 +99,8 @@ describe("request-capability-hints", () => {
       "Add translate after echo and remove summarize if present.",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@ecp/demo.translate")
-    expect(ids).not.toContain("@ecp/demo.summarize")
+    expect(ids).toContain("@executioncontextprotocol/demo.translate")
+    expect(ids).not.toContain("@executioncontextprotocol/demo.summarize")
   })
 
   it("buildPatchOperationHintLines provides workflow context and operation selection", () => {
@@ -112,14 +112,14 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           label: "Echo",
           as: "echo",
         },
         {
           type: "step",
           id: "summarize",
-          uses: "@ecp/demo.summarize",
+          uses: "@executioncontextprotocol/demo.summarize",
           label: "Summarize",
           as: "summary",
         },
@@ -144,7 +144,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           label: "Echo",
           as: "echo",
         },
@@ -164,14 +164,14 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           label: "Echo",
           as: "echo",
         },
         {
           type: "step",
           id: "summarize",
-          uses: "@ecp/demo.summarize",
+          uses: "@executioncontextprotocol/demo.summarize",
           label: "Summarize",
           as: "summary",
         },
@@ -194,14 +194,14 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           label: "Echo",
           as: "echo",
         },
         {
           type: "step",
           id: "summarize",
-          uses: "@ecp/demo.summarize",
+          uses: "@executioncontextprotocol/demo.summarize",
           label: "Summarize",
           as: "summary",
         },
@@ -214,19 +214,19 @@ describe("request-capability-hints", () => {
     )
     const text = lines.join("\n")
     expect(text).toContain("DELETE STEP summarize")
-    expect(text).toContain("ADD STEP translate USES @ecp/demo.translate AFTER echo")
+    expect(text).toContain("ADD STEP translate USES @executioncontextprotocol/demo.translate AFTER echo")
     expect(text).not.toContain("for the new capability")
     expect(text).toContain("Do not UPDATE STEP summarize")
   })
 
   it("buildRequestCapabilityHintLines patch mode does not inject operation templates", () => {
     const lines = buildRequestCapabilityHintLines(
-      "Add a summarize step after echo using @ecp/demo.summarize.",
+      "Add a summarize step after echo using @executioncontextprotocol/demo.summarize.",
       summary,
       { mode: "patch" }
     )
     const text = lines.join("\n")
-    expect(text).not.toContain("ADD STEP summarize USES @ecp/demo.summarize")
+    expect(text).not.toContain("ADD STEP summarize USES @executioncontextprotocol/demo.summarize")
     expect(text).not.toContain("Required: 1 step(s) in order")
   })
 
@@ -239,20 +239,20 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           label: "Echo",
           as: "echo",
         },
       ],
     }
     const feedback = collectPatchGoalFeedback(
-      "Insert a validate step before echo using @ecp/demo.validate.",
+      "Insert a validate step before echo using @executioncontextprotocol/demo.validate.",
       baseline,
       summary,
       baseline
     )
     expect(
-      feedback?.some((f) => f.issues.some((i) => i.message.includes("@ecp/demo.validate")))
+      feedback?.some((f) => f.issues.some((i) => i.message.includes("@executioncontextprotocol/demo.validate")))
     ).toBe(true)
   })
 
@@ -266,7 +266,7 @@ describe("request-capability-hints", () => {
           type: "step",
           id: "echo",
           label: "patched echo",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           input: { value: "hi" },
           as: "echo",
         },
@@ -288,8 +288,8 @@ describe("request-capability-hints", () => {
       version: "1.0.0",
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
-        { type: "step", id: "echo", uses: "@ecp/test.echo", label: "Echo", as: "echo" },
-        { type: "step", id: "validate", uses: "@ecp/demo.validate", label: "Validate", as: "validated" },
+        { type: "step", id: "echo", uses: "@executioncontextprotocol/test.echo", label: "Echo", as: "echo" },
+        { type: "step", id: "validate", uses: "@executioncontextprotocol/demo.validate", label: "Validate", as: "validated" },
       ],
     }
     const lines = buildPatchOperationHintLines(
@@ -309,8 +309,8 @@ describe("request-capability-hints", () => {
       version: "1.0.0",
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
-        { type: "step", id: "echo", uses: "@ecp/test.echo", label: "Echo", as: "echo" },
-        { type: "step", id: "validate", uses: "@ecp/demo.validate", label: "Validate", as: "validated" },
+        { type: "step", id: "echo", uses: "@executioncontextprotocol/test.echo", label: "Echo", as: "echo" },
+        { type: "step", id: "validate", uses: "@executioncontextprotocol/demo.validate", label: "Validate", as: "validated" },
       ],
     }
     const feedback = collectPatchGoalFeedback(

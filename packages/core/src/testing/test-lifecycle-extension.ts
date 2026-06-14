@@ -1,4 +1,4 @@
-import type { LifecycleEvent } from "@ecp/types"
+import type { LifecycleEvent } from "@executioncontextprotocol/types"
 import { defineExtension } from "../definitions/extension.js"
 import { capabilityFor } from "../definitions/capability.js"
 import { hook } from "../definitions/hook.js"
@@ -25,29 +25,29 @@ function spyHook(event: LifecycleEvent) {
 }
 
 /** Lifecycle spy extension for conformance tests. @category Testing */
-export const lifecycleSpyExtension = defineExtension("@ecp", "lifecycle-spy")
+export const lifecycleSpyExtension = defineExtension("@executioncontextprotocol", "lifecycle-spy")
   .withConfig({})
   .withCapabilities([
-    capabilityFor("@ecp/lifecycle-spy", "echo")
+    capabilityFor("@executioncontextprotocol/lifecycle-spy", "echo")
       .withInput(z.object({ value: z.unknown().optional() }))
       .withOutput(z.object({ echo: z.unknown() }))
       .withHandler(async (input) => {
         capabilityInvokeCount++
         return { echo: (input as { value?: unknown }).value ?? "hi" }
       }),
-    capabilityFor("@ecp/lifecycle-spy", "throw")
+    capabilityFor("@executioncontextprotocol/lifecycle-spy", "throw")
       .withInput(z.object({}))
       .withOutput(z.object({}))
       .withHandler(async () => {
         capabilityInvokeCount++
         throw new Error("capability failed")
       }),
-    capabilityFor("@ecp/lifecycle-spy", "merge-state")
+    capabilityFor("@executioncontextprotocol/lifecycle-spy", "merge-state")
       .withInput(z.object({ target: z.unknown() }))
       .withOutput(z.object({ ok: z.boolean() }))
       .withHandler(async (input, ctx) => {
         capabilityInvokeCount++
-        const handle = (input as { target: import("@ecp/types").StoreStateHandle<Record<string, unknown>> })
+        const handle = (input as { target: import("@executioncontextprotocol/types").StoreStateHandle<Record<string, unknown>> })
           .target
         await ctx.store.merge(handle, { merged: true })
         return { ok: true }
@@ -66,7 +66,7 @@ catalogExtension(lifecycleSpyExtension)
 
 /** Register lifecycle spy extension on global registry. */
 export async function registerLifecycleSpyExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@ecp/lifecycle-spy")) {
+  if (!globalRegistry.getExtension("@executioncontextprotocol/lifecycle-spy")) {
     await globalRegistry.registerExtension(lifecycleSpyExtension)
   }
 }

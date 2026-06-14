@@ -1,8 +1,8 @@
-import { defineExtension, hook, globalRegistry, type EnvironmentConfigResolver } from "@ecp/core"
+import { defineExtension, hook, globalRegistry, type EnvironmentConfigResolver } from "@executioncontextprotocol/core"
 import { z } from "zod"
-import type { LifecycleContext } from "@ecp/core"
+import type { LifecycleContext } from "@executioncontextprotocol/core"
 
-const EXT_ID = "@ecp/secrets"
+const EXT_ID = "@executioncontextprotocol/secrets"
 
 /** Secrets provider interface. @category Extensions */
 export interface SecretsProvider {
@@ -58,7 +58,7 @@ function attachSecretsResolver(ctx: LifecycleContext): void {
 }
 
 /** OS / configured secrets extension. @category Extensions */
-export const secretsExtension = defineExtension("@ecp", "secrets")
+export const secretsExtension = defineExtension("@executioncontextprotocol", "secrets")
   .withConfig({
     provider: z.string().default("memory"),
     namespace: z.string().default("ecp"),
@@ -71,7 +71,7 @@ export const secretsExtension = defineExtension("@ecp", "secrets")
   ])
   .build()
 
-/** Register `@ecp/secrets`. */
+/** Register `@executioncontextprotocol/secrets`. */
 export async function registerSecretsExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(secretsExtension)

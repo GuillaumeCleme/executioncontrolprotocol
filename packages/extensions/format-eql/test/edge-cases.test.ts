@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { EcpPatchDocument, WorkflowManifest } from "@ecp/types"
+import type { EcpPatchDocument, WorkflowManifest } from "@executioncontextprotocol/types"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import { encodePatchToEql } from "../src/encode/encode-patch.js"
 import { encodeWorkflowToEql } from "../src/encode/encode-workflow.js"
@@ -11,7 +11,7 @@ describe("EQL edge cases and coverage", () => {
       schema: "@ecp.workflow",
       version: "1.0",
       workflow: { id: "x" },
-      steps: [{ type: "step", id: "s", uses: "@ecp/test.echo" }],
+      steps: [{ type: "step", id: "s", uses: "@executioncontextprotocol/test.echo" }],
     } as WorkflowManifest
     const result = encodeToEql({ source: manifest }, testCtx)
     expect(result.success).toBe(true)
@@ -49,7 +49,7 @@ describe("EQL edge cases and coverage", () => {
         {
           type: "step",
           id: "s",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           input: { msg: "hi" },
         },
       ],
@@ -67,7 +67,7 @@ describe("EQL edge cases and coverage", () => {
         {
           type: "step",
           id: "s",
-          uses: "@ecp/test.echo",
+          uses: "@executioncontextprotocol/test.echo",
           input: { payload: { a: 1, b: "two" } },
         },
       ],
@@ -85,7 +85,7 @@ describe("EQL edge cases and coverage", () => {
     const text = `ECP @ecp.patch 1.0
 PATCH WORKFLOW chain
 DELETE STEP old
-ADD STEP new USES @ecp/test.echo AFTER echo
+ADD STEP new USES @executioncontextprotocol/test.echo AFTER echo
   WITH value = "added"
   LABEL "New"
 MOVE STEP new BEFORE summarize`
@@ -118,7 +118,7 @@ MOVE STEP new BEFORE summarize`
   it("reports syntax error for invalid JSON in WITH", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW bad
-STEP s USES @ecp/test.echo
+STEP s USES @executioncontextprotocol/test.echo
   WITH data = {not-json}`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(false)
@@ -128,7 +128,7 @@ STEP s USES @ecp/test.echo
   it("reports syntax error for empty REF path", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW bad
-STEP s USES @ecp/test.echo
+STEP s USES @executioncontextprotocol/test.echo
   WITH x = REF`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(false)
@@ -141,11 +141,11 @@ STEP s USES @ecp/test.echo
       targetSchema: "@ecp.workflow",
       patches: [
         { path: "workflow.id", mode: "replace", value: "wf" },
-        { path: "steps[s].uses", mode: "replace", value: "@ecp/other" },
+        { path: "steps[s].uses", mode: "replace", value: "@executioncontextprotocol/other" },
       ],
     }
     const text = encodePatchToEql(patch, "wf")
-    expect(text).toContain("USES @ecp/other")
+    expect(text).toContain("USES @executioncontextprotocol/other")
 
     const manifest = {
       schema: "@ecp.workflow",
@@ -153,7 +153,7 @@ STEP s USES @ecp/test.echo
       workflow: { id: "mix" },
       steps: [
         { type: "parallel", id: "p", steps: [] },
-        { type: "step", id: "s", uses: "@ecp/test.echo" },
+        { type: "step", id: "s", uses: "@executioncontextprotocol/test.echo" },
       ],
     } as WorkflowManifest
     const wfText = encodeWorkflowToEql(manifest)
@@ -164,7 +164,7 @@ STEP s USES @ecp/test.echo
   it("reports unsupported WHEN expression", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW w
-STEP s USES @ecp/test.echo
+STEP s USES @executioncontextprotocol/test.echo
   WHEN not-valid`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(false)
@@ -174,7 +174,7 @@ STEP s USES @ecp/test.echo
   it("decodes escaped string literals", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW esc
-STEP s USES @ecp/test.echo
+STEP s USES @executioncontextprotocol/test.echo
   LABEL "say \\"hi\\""`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(true)

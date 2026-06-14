@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION, type EnvironmentDescriptor } from "@ecp/types"
+import { LATEST_ECP_VERSION, type EnvironmentDescriptor } from "@executioncontextprotocol/types"
 import type { EqlDescribeDoc } from "./ast.js"
 
 function inferExtension(capabilityId: string): string {
@@ -18,7 +18,7 @@ export function describeFromEql(doc: EqlDescribeDoc): EnvironmentDescriptor {
       ...(doc.environmentLabel ? { label: doc.environmentLabel } : {}),
     },
     runtime: {
-      id: doc.runtime?.id ?? "@ecp/in-memory",
+      id: doc.runtime?.id ?? "@executioncontextprotocol/in-memory",
       ...(doc.runtime?.label ? { label: doc.runtime.label } : {}),
       features: doc.runtime?.features ?? {},
     },

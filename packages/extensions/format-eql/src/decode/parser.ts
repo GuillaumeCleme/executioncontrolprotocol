@@ -1,4 +1,4 @@
-import type { InputValue, ValidationIssue } from "@ecp/types"
+import type { InputValue, ValidationIssue } from "@executioncontextprotocol/types"
 import type {
   EqlDocument,
   EqlHeader,

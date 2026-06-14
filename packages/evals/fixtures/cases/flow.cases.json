@@ -87,7 +87,7 @@
         {
           "harness": "workflow-authoring",
           "input": {
-            "request": "Create echo then @ecp/demo.summarize workflow."
+            "request": "Create echo then @executioncontextprotocol/demo.summarize workflow."
           },
           "assertions": {
             "deterministic": [
@@ -275,13 +275,13 @@
         {
           "harness": "workflow-authoring",
           "input": {
-            "request": "Create minimal @ecp/test.echo workflow."
+            "request": "Create minimal @executioncontextprotocol/test.echo workflow."
           },
           "assertions": {
             "deterministic": [
               {
                 "kind": "stepUses",
-                "capabilityId": "@ecp/test.echo"
+                "capabilityId": "@executioncontextprotocol/test.echo"
               }
             ],
             "judge": {

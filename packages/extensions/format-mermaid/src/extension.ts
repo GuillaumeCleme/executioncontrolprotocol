@@ -6,9 +6,9 @@ import {
   ecpEncodeResultSchema,
   encodeFailure,
   validateWorkflow,
-} from "@ecp/core"
-import { LATEST_ECP_VERSION, type EcpEncodeInput, type EncodeResult } from "@ecp/types"
-import type { WorkflowManifest } from "@ecp/types"
+} from "@executioncontextprotocol/core"
+import { LATEST_ECP_VERSION, type EcpEncodeInput, type EncodeResult } from "@executioncontextprotocol/types"
+import type { WorkflowManifest } from "@executioncontextprotocol/types"
 import { workflowToMermaid } from "./workflow-to-mermaid.js"
 import { type MermaidEncodeOptions } from "./options.js"
 
@@ -52,9 +52,9 @@ function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
 }
 
 /** Mermaid format extension (encode-only). @category Extensions */
-export const formatMermaidExtension = defineExtension("@ecp", "format-mermaid")
+export const formatMermaidExtension = defineExtension("@executioncontextprotocol", "format-mermaid")
   .withCapabilities([
-    capabilityFor("@ecp/format-mermaid", "encode")
+    capabilityFor("@executioncontextprotocol/format-mermaid", "encode")
       .withInput(ecpEncodeInputSchema)
       .withOutput(ecpEncodeResultSchema)
       .withHandler((input) => encodeToMermaid(input as EcpEncodeInput)),

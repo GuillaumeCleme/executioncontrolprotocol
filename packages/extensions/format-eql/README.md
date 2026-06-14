@@ -1,15 +1,15 @@
-# @ecp/format-eql
+# @executioncontextprotocol/format-eql
 
 ECP format extension for **EQL** (ECP Query Language): keyword-driven text for `@ecp.workflow` and `@ecp.patch` documents.
 
 ## Capabilities
 
-| Capability               | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `@ecp/format-eql.encode` | Workflow, patch, environment, or describe document → EQL text |
-| `@ecp/format-eql.decode` | EQL text → workflow, patch, environment, or describe document |
+| Capability                                    | Description                                                   |
+| --------------------------------------------- | ------------------------------------------------------------- |
+| `@executioncontextprotocol/format-eql.encode` | Workflow, patch, environment, or describe document → EQL text |
+| `@executioncontextprotocol/format-eql.decode` | EQL text → workflow, patch, environment, or describe document |
 
-Input/output types use generic `EncodeCapabilityInput` / `DecodeCapabilityInput` from `@ecp/types`, with options `EcpFormatOptions & EqlFormatOptions`.
+Input/output types use generic `EncodeCapabilityInput` / `DecodeCapabilityInput` from `@executioncontextprotocol/types`, with options `EcpFormatOptions & EqlFormatOptions`.
 
 ## Options
 
@@ -36,7 +36,7 @@ Input/output types use generic `EncodeCapabilityInput` / `DecodeCapabilityInput`
 Register the extension (tests or apps only— not part of core formats):
 
 ```ts
-import { registerFormatEqlExtension } from "@ecp/format-eql"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
 
 await registerFormatEqlExtension()
 ```
@@ -44,13 +44,13 @@ await registerFormatEqlExtension()
 ```ts
 const encoded = await ecp
   .encode(manifest)
-  .uses("@ecp/format-eql")
+  .uses("@executioncontextprotocol/format-eql")
   .with({ options: { headers: false } })
   .process()
 
 const decoded = await ecp
   .decode(encoded.result)
-  .uses("@ecp/format-eql")
+  .uses("@executioncontextprotocol/format-eql")
   .to("@ecp.workflow")
   .with({ options: { headers: false } })
   .process()

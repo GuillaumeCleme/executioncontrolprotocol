@@ -2,14 +2,14 @@ import {
   ECP_ENCODING_ERROR_CODES,
   ECP_FORMATS,
   LATEST_ECP_VERSION,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import type {
   EcpFormatOptions,
   EcpSchema,
   EcpVersion,
   EncodeResult,
   WorkflowManifest,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 import { encodeFailure } from "../encoding/json-codec.js"
 import { validateWorkflow } from "../validate/workflow.js"
 import { renderWorkflowToFluent } from "./render-workflow.js"
@@ -62,9 +62,9 @@ export function encodeFluent(
   const content = renderWorkflowToFluent(manifest, {
     compact: options.compact ?? false,
     importFrom:
-      options.importFrom === "@ecp/browser" || options.target === "browser"
-        ? "@ecp/browser"
-        : "@ecp/core",
+      options.importFrom === "@executioncontextprotocol/browser" || options.target === "browser"
+        ? "@executioncontextprotocol/browser"
+        : "@executioncontextprotocol/core",
   })
 
   return {

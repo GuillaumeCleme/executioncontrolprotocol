@@ -7,33 +7,33 @@ import {
   env,
   Registry,
   globalRegistry,
-} from "@ecp/core"
-import type { Environment } from "@ecp/core"
-import { registerStandardPolicies } from "@ecp/policies"
+} from "@executioncontextprotocol/core"
+import type { Environment } from "@executioncontextprotocol/core"
+import { registerStandardPolicies } from "@executioncontextprotocol/policies"
 import { BROWSER_RUNTIME_ID, registerBrowserRuntime } from "./runtime/builtin-browser.js"
 import { registerBrowserRegistryExtension } from "./extensions/browser-registry.js"
 import { registerBrowserSessionConfigExtension } from "./extensions/browser-session-config.js"
 import { registerBrowserLocalConfigExtension } from "./extensions/browser-local-config.js"
 import { registerBrowserGuideExtension } from "./extensions/browser-guide.js"
-import { registerFormatEqlExtension } from "@ecp/format-eql"
-import { registerFormatToonExtension } from "@ecp/format-toon"
-import { registerFormatMermaidExtension } from "@ecp/format-mermaid"
-import { registerDemoExtension } from "@ecp/demo"
-import { registerChromeAiExtension } from "@ecp/chrome-ai"
-import { registerOpenaiExtension } from "@ecp/extension-openai"
-import { registerClaudeExtension } from "@ecp/claude"
+import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerFormatMermaidExtension } from "@executioncontextprotocol/format-mermaid"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import { registerChromeAiExtension } from "@executioncontextprotocol/chrome-ai"
+import { registerOpenaiExtension } from "@executioncontextprotocol/extension-openai"
+import { registerClaudeExtension } from "@executioncontextprotocol/claude"
 import {
   BROWSER_NANO_HARNESS_ID,
   HARNESS_BROWSER_NANO_DEMO_BINDING,
   registerBrowserNanoHarnesses,
-} from "@ecp/harnesses-browser-nano"
-import "@ecp/format-eql"
-import "@ecp/format-toon"
-import "@ecp/format-mermaid"
-import "@ecp/demo"
-import "@ecp/chrome-ai"
-import "@ecp/extension-openai"
-import "@ecp/claude"
+} from "@executioncontextprotocol/harnesses-browser-nano"
+import "@executioncontextprotocol/format-eql"
+import "@executioncontextprotocol/format-toon"
+import "@executioncontextprotocol/format-mermaid"
+import "@executioncontextprotocol/demo"
+import "@executioncontextprotocol/chrome-ai"
+import "@executioncontextprotocol/extension-openai"
+import "@executioncontextprotocol/claude"
 
 /** Register browser runtime and standard browser extensions. */
 export async function registerBrowserDefaults(registry: Registry = globalRegistry): Promise<void> {
@@ -65,44 +65,44 @@ export function createBrowserDemoEnvironment(
   return coreEnvironment(id, label, registry)
     .withRuntime(runtime(BROWSER_RUNTIME_ID, "Browser Runtime"))
     .withExtensions([
-      extension("@ecp/format-eql").with({}),
-      extension("@ecp/format-toon").with({}),
-      extension("@ecp/format-mermaid").with({}),
-      extension("@ecp/format-json").with({}),
-      extension("@ecp/demo").with({}),
-      extension("@ecp/chrome-ai").with({}),
-      extension("@ecp/test").with({}),
-      extension("@ecp/openai").with({
+      extension("@executioncontextprotocol/format-eql").with({}),
+      extension("@executioncontextprotocol/format-toon").with({}),
+      extension("@executioncontextprotocol/format-mermaid").with({}),
+      extension("@executioncontextprotocol/format-json").with({}),
+      extension("@executioncontextprotocol/demo").with({}),
+      extension("@executioncontextprotocol/chrome-ai").with({}),
+      extension("@executioncontextprotocol/test").with({}),
+      extension("@executioncontextprotocol/openai").with({
         apiKey: env("OPENAI_API_KEY", { optional: true }),
       }),
-      extension("@ecp/claude").with({
+      extension("@executioncontextprotocol/claude").with({
         apiKey: env("ANTHROPIC_API_KEY", { optional: true }),
       }),
-      extension("@ecp/browser-registry").with({
+      extension("@executioncontextprotocol/browser-registry").with({
         freezeOn: "environment:beforeRun",
         autoBindRegisteredExtensions: true,
         exposeGlobal: true,
         globalName: "ecp",
       }),
-      extension("@ecp/browser-session-config").with({ persist: false }),
-      extension("@ecp/browser-local-config").with({}),
-      extension("@ecp/browser").with({}),
+      extension("@executioncontextprotocol/browser-session-config").with({ persist: false }),
+      extension("@executioncontextprotocol/browser-local-config").with({}),
+      extension("@executioncontextprotocol/browser").with({}),
     ])
     .withHarnesses([
       harness(BROWSER_NANO_HARNESS_ID, "Harness")
-        .uses("@ecp/demo.generate")
+        .uses("@executioncontextprotocol/demo.generate")
         .with({ ...HARNESS_BROWSER_NANO_DEMO_BINDING }),
     ])
     .withPolicies([
-      policy("@ecp/registry-control").with({
+      policy("@executioncontextprotocol/registry-control").with({
         allowedExtensionNamespaces: [
-          "@ecp/demo",
-          "@ecp/chrome-ai",
-          "@ecp/openai",
-          "@ecp/claude",
-          "@ecp/browser",
+          "@executioncontextprotocol/demo",
+          "@executioncontextprotocol/chrome-ai",
+          "@executioncontextprotocol/openai",
+          "@executioncontextprotocol/claude",
+          "@executioncontextprotocol/browser",
           "@customer/*",
-          "@ecp/test",
+          "@executioncontextprotocol/test",
         ],
         deniedExtensionNamespaces: [],
         allowDynamicExtensionRegistration: true,
@@ -112,7 +112,7 @@ export function createBrowserDemoEnvironment(
 }
 
 /**
- * Create a browser environment with `@ecp/browser` runtime pre-bound.
+ * Create a browser environment with `@executioncontextprotocol/browser` runtime pre-bound.
  * @category Environment
  */
 export async function environment(id: string, label?: string): Promise<Environment> {

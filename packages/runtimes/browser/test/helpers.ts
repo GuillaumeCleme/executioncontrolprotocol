@@ -1,4 +1,4 @@
-import { Registry, registerTestExtension } from "@ecp/core"
+import { Registry, registerTestExtension } from "@executioncontextprotocol/core"
 import { createBrowserDemoEnvironment, registerBrowserDefaults } from "../src/environment.js"
 
 /** Demo browser environment with registry-control and browser-registry defaults. */

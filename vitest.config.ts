@@ -2,11 +2,11 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { defineConfig } from "vitest/config"
 import { playwright } from "@vitest/browser-playwright"
-import { browserPromptLoaderPlugin } from "./apps/browser-demo/vite-browser-prompts-plugin.js"
+import { browserPromptLoaderPlugin } from "./packages/runtimes/browser/test/vite-browser-prompts-plugin.js"
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url))
 const corePromptsDir = path.join(repoRoot, "packages/core/src/harness/prompts")
-const promptLoaderStubDir = path.join(repoRoot, "apps/browser-demo/src/stubs")
+const promptLoaderStubDir = path.join(repoRoot, "packages/evals/test/stubs")
 const browserPromptPlugins = [
   browserPromptLoaderPlugin({ corePromptsDir, stubDir: promptLoaderStubDir }),
 ]
@@ -14,88 +14,88 @@ const browserPromptPlugins = [
 export default defineConfig({
   resolve: {
     alias: {
-      "@ecp/types": path.resolve(repoRoot, "packages/types/src/index.ts"),
-      "@ecp/core/compile": path.resolve(repoRoot, "packages/core/src/compile/entry.ts"),
-      "@ecp/core/loaders": path.resolve(repoRoot, "packages/core/src/loaders/index.ts"),
-      "@ecp/core/browser": path.resolve(repoRoot, "packages/core/src/browser.ts"),
-      "@ecp/core/environment": path.resolve(
+      "@executioncontextprotocol/types": path.resolve(repoRoot, "packages/types/src/index.ts"),
+      "@executioncontextprotocol/core/compile": path.resolve(repoRoot, "packages/core/src/compile/entry.ts"),
+      "@executioncontextprotocol/core/loaders": path.resolve(repoRoot, "packages/core/src/loaders/index.ts"),
+      "@executioncontextprotocol/core/browser": path.resolve(repoRoot, "packages/core/src/browser.ts"),
+      "@executioncontextprotocol/core/environment": path.resolve(
         repoRoot,
         "packages/core/src/environment/environment.ts"
       ),
-      "@ecp/core/environment/config-resolver": path.resolve(
+      "@executioncontextprotocol/core/environment/config-resolver": path.resolve(
         repoRoot,
         "packages/core/src/environment/config-resolver.ts"
       ),
-      "@ecp/core/registry": path.resolve(repoRoot, "packages/core/src/registry/registry.ts"),
-      "@ecp/core/registry/errors": path.resolve(
+      "@executioncontextprotocol/core/registry": path.resolve(repoRoot, "packages/core/src/registry/registry.ts"),
+      "@executioncontextprotocol/core/registry/errors": path.resolve(
         repoRoot,
         "packages/core/src/registry/errors.ts"
       ),
-      "@ecp/core/bindings/extension": path.resolve(
+      "@executioncontextprotocol/core/bindings/extension": path.resolve(
         repoRoot,
         "packages/core/src/bindings/extension.ts"
       ),
-      "@ecp/core/bindings/runtime": path.resolve(
+      "@executioncontextprotocol/core/bindings/runtime": path.resolve(
         repoRoot,
         "packages/core/src/bindings/runtime.ts"
       ),
-      "@ecp/core/bindings/policy": path.resolve(
+      "@executioncontextprotocol/core/bindings/policy": path.resolve(
         repoRoot,
         "packages/core/src/bindings/policy.ts"
       ),
-      "@ecp/core/config-schema": path.resolve(
+      "@executioncontextprotocol/core/config-schema": path.resolve(
         repoRoot,
         "packages/core/src/config-schema/index.ts"
       ),
-      "@ecp/core/runtime/context": path.resolve(
+      "@executioncontextprotocol/core/runtime/context": path.resolve(
         repoRoot,
         "packages/core/src/runtime/context.ts"
       ),
-      "@ecp/core/runtime/in-memory-executor": path.resolve(
+      "@executioncontextprotocol/core/runtime/in-memory-executor": path.resolve(
         repoRoot,
         "packages/core/src/runtime/in-memory-executor.ts"
       ),
-      "@ecp/core/runtime/executor": path.resolve(
+      "@executioncontextprotocol/core/runtime/executor": path.resolve(
         repoRoot,
         "packages/core/src/runtime/executor.ts"
       ),
-      "@ecp/core/definitions/types": path.resolve(
+      "@executioncontextprotocol/core/definitions/types": path.resolve(
         repoRoot,
         "packages/core/src/definitions/types.ts"
       ),
-      "@ecp/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
-      "@ecp/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
-      "@ecp/node": path.resolve(repoRoot, "packages/runtimes/node/src/index.ts"),
-      "@ecp/browser": path.resolve(repoRoot, "packages/runtimes/browser/src/index.ts"),
-      "@ecp/extension-memory": path.resolve(
+      "@executioncontextprotocol/core": path.resolve(repoRoot, "packages/core/src/index.ts"),
+      "@executioncontextprotocol/policies": path.resolve(repoRoot, "packages/policies/src/index.ts"),
+      "@executioncontextprotocol/node": path.resolve(repoRoot, "packages/runtimes/node/src/index.ts"),
+      "@executioncontextprotocol/browser": path.resolve(repoRoot, "packages/runtimes/browser/src/index.ts"),
+      "@executioncontextprotocol/extension-memory": path.resolve(
         repoRoot,
         "packages/extensions/memory/src/index.ts"
       ),
-      "@ecp/extension-openai": path.resolve(
+      "@executioncontextprotocol/extension-openai": path.resolve(
         repoRoot,
         "packages/extensions/openai/src/index.ts"
       ),
-      "@ecp/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
-      "@ecp/format-toon": path.resolve(repoRoot, "packages/extensions/format-toon/src/index.ts"),
-      "@ecp/format-mermaid": path.resolve(repoRoot, "packages/extensions/format-mermaid/src/index.ts"),
-      "@ecp/format-eql": path.resolve(repoRoot, "packages/extensions/format-eql/src/index.ts"),
-      "@ecp/demo": path.resolve(repoRoot, "packages/extensions/demo/src/index.ts"),
-      "@ecp/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
-      "@ecp/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
-      "@ecp/extension-ollama": path.resolve(
+      "@executioncontextprotocol/extension-slack": path.resolve(repoRoot, "packages/extensions/slack/src/index.ts"),
+      "@executioncontextprotocol/format-toon": path.resolve(repoRoot, "packages/extensions/format-toon/src/index.ts"),
+      "@executioncontextprotocol/format-mermaid": path.resolve(repoRoot, "packages/extensions/format-mermaid/src/index.ts"),
+      "@executioncontextprotocol/format-eql": path.resolve(repoRoot, "packages/extensions/format-eql/src/index.ts"),
+      "@executioncontextprotocol/demo": path.resolve(repoRoot, "packages/extensions/demo/src/index.ts"),
+      "@executioncontextprotocol/chrome-ai": path.resolve(repoRoot, "packages/extensions/chrome-ai/src/index.ts"),
+      "@executioncontextprotocol/claude": path.resolve(repoRoot, "packages/extensions/claude/src/index.ts"),
+      "@executioncontextprotocol/extension-ollama": path.resolve(
         repoRoot,
         "packages/extensions/ollama/src/index.ts"
       ),
-      "@ecp/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
-      "@ecp/harnesses-browser-nano": path.resolve(
+      "@executioncontextprotocol/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
+      "@executioncontextprotocol/harnesses-browser-nano": path.resolve(
         repoRoot,
         "packages/harnesses/browser-nano/src/index.ts"
       ),
-      "@ecp/harnesses-browser-nano/request-capability-hints": path.resolve(
+      "@executioncontextprotocol/harnesses-browser-nano/request-capability-hints": path.resolve(
         repoRoot,
         "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"
       ),
-      "@ecp/harnesses-browser-coding": path.resolve(
+      "@executioncontextprotocol/harnesses-browser-coding": path.resolve(
         repoRoot,
         "packages/harnesses/browser-coding/src/index.ts"
       ),
@@ -128,7 +128,6 @@ export default defineConfig({
             "packages/harnesses/**/test/**/*.test.ts",
             "packages/runtimes/node/**/*.test.ts",
             "packages/runtimes/browser/test/*.test.ts",
-            "apps/browser-demo/test/**/*.test.ts",
           ],
         },
       },
@@ -138,14 +137,14 @@ export default defineConfig({
         resolve: {
           alias: [
             {
-              find: "@ecp/core",
+              find: "@executioncontextprotocol/core",
               replacement: path.resolve(
                 repoRoot,
                 "packages/core/src/browser-runtime-entry.ts"
               ),
             },
             {
-              find: "@ecp/core/browser",
+              find: "@executioncontextprotocol/core/browser",
               replacement: path.resolve(repoRoot, "packages/core/src/browser.ts"),
             },
           ],
@@ -180,8 +179,8 @@ export default defineConfig({
           server: {
             deps: {
               inline: [
-                "@ecp/harnesses-browser-coding",
-                "@ecp/harnesses-browser-nano",
+                "@executioncontextprotocol/harnesses-browser-coding",
+                "@executioncontextprotocol/harnesses-browser-nano",
               ],
             },
           },
@@ -192,17 +191,17 @@ export default defineConfig({
         plugins: browserPromptPlugins,
         resolve: {
           alias: [
-            { find: "@ecp/core", replacement: path.resolve(repoRoot, "packages/core/src/index.ts") },
+            { find: "@executioncontextprotocol/core", replacement: path.resolve(repoRoot, "packages/core/src/index.ts") },
             {
-              find: "@ecp/core/compile",
+              find: "@executioncontextprotocol/core/compile",
               replacement: path.resolve(repoRoot, "packages/core/src/compile/index.browser.ts"),
             },
             {
-              find: "@ecp/core/loaders",
+              find: "@executioncontextprotocol/core/loaders",
               replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
             },
             {
-              find: "@ecp/node",
+              find: "@executioncontextprotocol/node",
               replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-runtime-stub.ts"),
             },
             {
@@ -238,7 +237,7 @@ export default defineConfig({
               replacement: path.resolve(repoRoot, "packages/evals/test/stubs/node-empty.ts"),
             },
             {
-              find: "@ecp/harnesses-browser-nano/request-capability-hints",
+              find: "@executioncontextprotocol/harnesses-browser-nano/request-capability-hints",
               replacement: path.resolve(
                 repoRoot,
                 "packages/harnesses/browser-nano/src/_internal/request-capability-hints.ts"

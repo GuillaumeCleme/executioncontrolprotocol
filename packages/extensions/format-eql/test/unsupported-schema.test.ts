@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { ECP_ENCODING_ERROR_CODES } from "@ecp/types"
+import { ECP_ENCODING_ERROR_CODES } from "@executioncontextprotocol/types"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import { decodeFromEql } from "../src/decode/decode-eql.js"
 import { EQL_ERROR_CODES } from "../src/decode/diagnostics.js"

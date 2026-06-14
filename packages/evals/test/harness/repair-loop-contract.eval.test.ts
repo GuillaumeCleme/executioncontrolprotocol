@@ -3,8 +3,8 @@ import {
   runModelRepairLoop,
   collectModelOutputFeedback,
   type ModelRepairGenerateContext,
-} from "@ecp/core"
-import { formatFeedbackForModel } from "@ecp/core"
+} from "@executioncontextprotocol/core"
+import { formatFeedbackForModel } from "@executioncontextprotocol/core"
 
 /**
  * Deterministic contract test for the harness repair loop.

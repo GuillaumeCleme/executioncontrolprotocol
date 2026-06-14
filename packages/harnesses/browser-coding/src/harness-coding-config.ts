@@ -1,4 +1,4 @@
-import { HARNESS_OUTPUT_FORMAT_TYPESCRIPT } from "@ecp/core"
+import { HARNESS_OUTPUT_FORMAT_TYPESCRIPT } from "@executioncontextprotocol/core"
 
 /**
  * Per-task Browser Coding harness binding defaults.
@@ -19,10 +19,10 @@ export const HARNESS_CODING_REPAIR = {
 const SHARED_CONTEXT = {
   includeEnvironmentDescriptor: true,
   includeEncodedDescriptor: false,
-  descriptorFormat: "@ecp/format-json",
+  descriptorFormat: "@executioncontextprotocol/format-json",
 } as const
 
-/** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@ecp/evals`). */
+/** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@executioncontextprotocol/evals`). */
 export const HARNESS_TASKS = {
   WORKFLOW_AUTHORING: "workflow-authoring",
   INTENT_CLASSIFICATION: "intent-classification",
@@ -55,7 +55,7 @@ const CODING_WORKFLOW = {
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
-    runContextFormat: "@ecp/format-json",
+    runContextFormat: "@executioncontextprotocol/format-json",
   },
   repair: HARNESS_CODING_REPAIR,
   trace: HARNESS_CODING_TRACE,
@@ -71,7 +71,7 @@ const CODING_ASSISTANT = {
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
-    runContextFormat: "@ecp/format-json",
+    runContextFormat: "@executioncontextprotocol/format-json",
   },
   repair: { ...HARNESS_CODING_REPAIR, safeReplyFallback: true },
   trace: HARNESS_CODING_TRACE,

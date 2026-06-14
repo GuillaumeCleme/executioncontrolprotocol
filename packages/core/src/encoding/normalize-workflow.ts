@@ -6,7 +6,7 @@ import type {
   StepNode,
   WorkflowManifest,
   WorkflowNode,
-} from "@ecp/types"
+} from "@executioncontextprotocol/types"
 
 function sortKeys<T extends Record<string, unknown>>(obj: T): T {
   const sorted = Object.keys(obj)

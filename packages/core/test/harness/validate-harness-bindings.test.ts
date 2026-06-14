@@ -1,20 +1,20 @@
 import { describe, expect, it, beforeAll } from "vitest"
-import { ECP_HARNESS_ERROR_CODES, ECP_MODEL_CAPABILITY_NAME } from "@ecp/types"
+import { ECP_HARNESS_ERROR_CODES, ECP_MODEL_CAPABILITY_NAME } from "@executioncontextprotocol/types"
 import { Registry } from "../../src/registry/registry.js"
 import { validateHarnessBindings } from "../../src/validate/harness.js"
 import type { ResolvedBindings } from "../../src/environment/bindings.js"
 import { registerTestMinimalHarness } from "../../src/harness/definitions/test-minimal-harness.js"
 import { TEST_MINIMAL_HARNESS_ID } from "../../src/harness/definitions/test-minimal-harness.js"
 import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
-import { registerDemoExtension } from "@ecp/demo"
-import { registerFormatToonExtension } from "@ecp/format-toon"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
 
 function harnessBindings(
   harnesses: ResolvedBindings["harnesses"],
   extensions: ResolvedBindings["extensions"] = []
 ): ResolvedBindings {
   return {
-    runtime: { id: "@ecp/node", config: {} },
+    runtime: { id: "@executioncontextprotocol/node", config: {} },
     extensions,
     policies: [],
     harnesses,
@@ -38,16 +38,16 @@ describe("validateHarnessBindings", () => {
       [
         {
           id: TEST_MINIMAL_HARNESS_ID,
-          uses: "@ecp/demo.generate",
+          uses: "@executioncontextprotocol/demo.generate",
           config: {
-            output: { format: "@ecp/format-toon" },
-            context: { descriptorFormat: "@ecp/format-json" },
+            output: { format: "@executioncontextprotocol/format-toon" },
+            context: { descriptorFormat: "@executioncontextprotocol/format-json" },
           },
         },
       ],
       [
-        { id: "@ecp/demo", order: 0, config: {} },
-        { id: "@ecp/format-toon", order: 1, config: {} },
+        { id: "@executioncontextprotocol/demo", order: 0, config: {} },
+        { id: "@executioncontextprotocol/format-toon", order: 1, config: {} },
       ]
     )
 
@@ -58,7 +58,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports unknown harness", () => {
     const bindings = harnessBindings([
-      { id: "@ecp/unknown-harness", uses: "@ecp/demo.generate", config: {} },
+      { id: "@executioncontextprotocol/unknown-harness", uses: "@executioncontextprotocol/demo.generate", config: {} },
     ])
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -67,7 +67,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports missing provider uses", () => {
     const bindings = harnessBindings([
-      { id: TEST_MINIMAL_HARNESS_ID, uses: "" as "@ecp/demo.generate", config: {} },
+      { id: TEST_MINIMAL_HARNESS_ID, uses: "" as "@executioncontextprotocol/demo.generate", config: {} },
     ])
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -76,8 +76,8 @@ describe("validateHarnessBindings", () => {
 
   it("reports provider contract mismatch when uses is not generate", () => {
     const bindings = harnessBindings(
-      [{ id: TEST_MINIMAL_HARNESS_ID, uses: "@ecp/demo.generateText", config: {} }],
-      [{ id: "@ecp/demo", order: 0, config: {} }]
+      [{ id: TEST_MINIMAL_HARNESS_ID, uses: "@executioncontextprotocol/demo.generateText", config: {} }],
+      [{ id: "@executioncontextprotocol/demo", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -89,7 +89,7 @@ describe("validateHarnessBindings", () => {
 
   it("reports unbound provider extension", () => {
     const bindings = harnessBindings([
-      { id: TEST_MINIMAL_HARNESS_ID, uses: "@ecp/demo.generate", config: {} },
+      { id: TEST_MINIMAL_HARNESS_ID, uses: "@executioncontextprotocol/demo.generate", config: {} },
     ])
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -100,8 +100,8 @@ describe("validateHarnessBindings", () => {
 
   it("reports unregistered provider capability", () => {
     const bindings = harnessBindings(
-      [{ id: TEST_MINIMAL_HARNESS_ID, uses: "@ecp/missing.generate", config: {} }],
-      [{ id: "@ecp/missing", order: 0, config: {} }]
+      [{ id: TEST_MINIMAL_HARNESS_ID, uses: "@executioncontextprotocol/missing.generate", config: {} }],
+      [{ id: "@executioncontextprotocol/missing", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -113,11 +113,11 @@ describe("validateHarnessBindings", () => {
       [
         {
           id: TEST_MINIMAL_HARNESS_ID,
-          uses: "@ecp/demo.generate",
-          config: { output: { format: "@ecp/format-unknown" } },
+          uses: "@executioncontextprotocol/demo.generate",
+          config: { output: { format: "@executioncontextprotocol/format-unknown" } },
         },
       ],
-      [{ id: "@ecp/demo", order: 0, config: {} }]
+      [{ id: "@executioncontextprotocol/demo", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -131,11 +131,11 @@ describe("validateHarnessBindings", () => {
       [
         {
           id: TEST_MINIMAL_HARNESS_ID,
-          uses: "@ecp/demo.generate",
-          config: { output: { format: "@ecp/format-toon" } },
+          uses: "@executioncontextprotocol/demo.generate",
+          config: { output: { format: "@executioncontextprotocol/format-toon" } },
         },
       ],
-      [{ id: "@ecp/demo", order: 0, config: {} }]
+      [{ id: "@executioncontextprotocol/demo", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)
@@ -147,14 +147,14 @@ describe("validateHarnessBindings", () => {
       [
         {
           id: TEST_MINIMAL_HARNESS_ID,
-          uses: "@ecp/demo.generate",
+          uses: "@executioncontextprotocol/demo.generate",
           config: {
-            output: { format: "@ecp/format-json" },
-            context: { descriptorFormat: "@ecp/format-unknown" },
+            output: { format: "@executioncontextprotocol/format-json" },
+            context: { descriptorFormat: "@executioncontextprotocol/format-unknown" },
           },
         },
       ],
-      [{ id: "@ecp/demo", order: 0, config: {} }]
+      [{ id: "@executioncontextprotocol/demo", order: 0, config: {} }]
     )
     const result = validateHarnessBindings(registry, bindings)
     expect(result.valid).toBe(false)

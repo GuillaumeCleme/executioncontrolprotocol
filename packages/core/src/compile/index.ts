@@ -1,4 +1,4 @@
-import type { EnvironmentDescriptor } from "@ecp/types"
+import type { EnvironmentDescriptor } from "@executioncontextprotocol/types"
 import { validateWorkflow } from "../validate/workflow.js"
 import { evaluateWorkflowModule } from "./evaluate.js"
 import { bundleWorkflowSource, isTypeScriptFile } from "./transpile.js"
@@ -24,7 +24,7 @@ export async function compileWorkflowSource(
   const resolveDir =
     typeof process !== "undefined" && process.cwd ? process.cwd() : "."
   try {
-    const code = isTypeScriptFile(filename) || options.source.includes("@ecp/")
+    const code = isTypeScriptFile(filename) || options.source.includes("@executioncontextprotocol/")
       ? await bundleWorkflowSource(options.source, filename, resolveDir)
       : options.source
     const manifest = await evaluateWorkflowModule(code, filename.replace(/\.tsx?$/, ".js"))

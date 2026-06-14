@@ -1,9 +1,9 @@
-import { LATEST_ECP_VERSION } from "@ecp/types"
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@ecp/types"
+import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@executioncontextprotocol/types"
 import { validateWorkflow } from "./workflow.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
 
-const BROWSER_FORBIDDEN_EXTENSIONS = new Set(["@ecp/process-env", "@ecp/secrets"])
+const BROWSER_FORBIDDEN_EXTENSIONS = new Set(["@executioncontextprotocol/process-env", "@executioncontextprotocol/secrets"])
 
 /** Validate workflow against a live environment. */
 export function validateEnvironmentWithWorkflow(
@@ -13,22 +13,22 @@ export function validateEnvironmentWithWorkflow(
 ): ValidationResult {
   const result = validateWorkflow(workflow, descriptor)
   const rtId = String(bindings.runtime.id)
-  if (rtId === "@ecp/browser") {
+  if (rtId === "@executioncontextprotocol/browser") {
     for (const ext of bindings.extensions) {
       if (BROWSER_FORBIDDEN_EXTENSIONS.has(String(ext.id))) {
         result.valid = false
         result.errors.push({
           code: "BROWSER_FORBIDDEN_EXTENSION",
-          message: `Extension ${ext.id} cannot be used with @ecp/browser runtime.`,
+          message: `Extension ${ext.id} cannot be used with @executioncontextprotocol/browser runtime.`,
         })
       }
     }
   }
-  if (rtId === "@ecp/local") {
+  if (rtId === "@executioncontextprotocol/local") {
     result.valid = false
     result.errors.push({
       code: "DEPRECATED_RUNTIME",
-      message: "Runtime @ecp/local was replaced by @ecp/node.",
+      message: "Runtime @executioncontextprotocol/local was replaced by @executioncontextprotocol/node.",
     })
   }
   result.schema = "@ecp.validation.result"

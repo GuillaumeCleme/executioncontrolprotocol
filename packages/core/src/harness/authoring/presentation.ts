@@ -1,4 +1,4 @@
-import type { HarnessOperationFeedback, ValidationIssue } from "@ecp/types"
+import type { HarnessOperationFeedback, ValidationIssue } from "@executioncontextprotocol/types"
 
 /**
  * Format structured harness feedback for model repair prompts.

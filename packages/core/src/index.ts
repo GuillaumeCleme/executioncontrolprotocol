@@ -1,5 +1,5 @@
-export { LATEST_ECP_VERSION } from "@ecp/types"
-export * from "@ecp/types"
+export { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+export * from "@executioncontextprotocol/types"
 
 export { ref } from "./helpers/ref.js"
 export { state } from "./helpers/state.js"

@@ -33,13 +33,13 @@ The agents seem to have implemented the main foundation correctly:
 | Temporal                              | Not implemented; stub only                   |
 | Storage extension                     | Stub only                                    |
 | Semantic search                       | Not implemented                              |
-| JSON Schema artifacts in `@ecp/types` | Not implemented                              |
+| JSON Schema artifacts in `@executioncontextprotocol/types` | Not implemented                              |
 
 The biggest gaps are:
 
 1. **MCP is not fully productized yet**: no `ecp mcp serve` CLI, HTTP is only a placeholder, and resources/prompts are not confirmed.
 2. **Describe/search are basic**: substring search only, not rich fuzzy/semantic discovery.
-3. **`@ecp/types` is TS-only**: no JSON Schema artifacts or generated schema dist yet.
+3. **`@executioncontextprotocol/types` is TS-only**: no JSON Schema artifacts or generated schema dist yet.
 4. **Temporal runtime is only a stub**.
 5. **Storage capabilities are empty stubs**.
 6. **The late `state()` mutation model may be partially implemented but should be verified carefully**, because the implementation report says store types and transaction helpers exist, but we need confirm policy contexts and state-control policy behavior.
@@ -54,15 +54,15 @@ We defined a clean split:
 
 | Layer                   | Responsibility                                                             |
 | ----------------------- | -------------------------------------------------------------------------- |
-| `@ecp/types`            | Protocol types and schema constants                                        |
-| `@ecp/core`             | Fluent API, definitions, environment, local runtime, validation, lifecycle |
-| `@ecp/mcp`              | Agent-facing MCP adapter                                                   |
-| `@ecp/cli`              | Compile, validate, describe, search, run, MCP serve                        |
-| `@ecp/policies`         | Standard policies                                                          |
-| `@ecp/runtime-temporal` | Optional durable runtime                                                   |
-| `@ecp/extension-*`      | Optional first-party extensions                                            |
+| `@executioncontextprotocol/types`            | Protocol types and schema constants                                        |
+| `@executioncontextprotocol/core`             | Fluent API, definitions, environment, local runtime, validation, lifecycle |
+| `@executioncontextprotocol/mcp`              | Agent-facing MCP adapter                                                   |
+| `@executioncontextprotocol/cli`              | Compile, validate, describe, search, run, MCP serve                        |
+| `@executioncontextprotocol/policies`         | Standard policies                                                          |
+| `@executioncontextprotocol/runtime-temporal` | Optional durable runtime                                                   |
+| `@executioncontextprotocol/extension-*`      | Optional first-party extensions                                            |
 
-The source spec explicitly says `@ecp/core` should include the fluent API, definitions, environment, registry, local runtime, lifecycle engine, validation, and local execution. 
+The source spec explicitly says `@executioncontextprotocol/core` should include the fluent API, definitions, environment, registry, local runtime, lifecycle engine, validation, and local execution. 
 
 ## What was implemented
 
@@ -183,18 +183,18 @@ Final package architecture:
 
 | Package                 | Intent                                |
 | ----------------------- | ------------------------------------- |
-| `@ecp/types`            | Types, schema constants, JSON schemas |
-| `@ecp/core`             | Full local ECP engine                 |
-| `@ecp/mcp`              | MCP adapter                           |
-| `@ecp/cli`              | CLI                                   |
-| `@ecp/policies`         | Standard policies                     |
-| `@ecp/runtime-temporal` | Optional Temporal runtime             |
-| `@ecp/extension-*`      | Optional extensions                   |
-| `@ecp/extensions`       | Convenience bundle                    |
+| `@executioncontextprotocol/types`            | Types, schema constants, JSON schemas |
+| `@executioncontextprotocol/core`             | Full local ECP engine                 |
+| `@executioncontextprotocol/mcp`              | MCP adapter                           |
+| `@executioncontextprotocol/cli`              | CLI                                   |
+| `@executioncontextprotocol/policies`         | Standard policies                     |
+| `@executioncontextprotocol/runtime-temporal` | Optional Temporal runtime             |
+| `@executioncontextprotocol/extension-*`      | Optional extensions                   |
+| `@executioncontextprotocol/extensions`       | Convenience bundle                    |
 
 ## What was implemented
 
-The report lists package inventory including extensions for memory, OpenAI, Ollama, Slack, storage, telemetry, and an `@ecp/extensions` bundle. It also lists `@ecp/mcp` and `@ecp/cli`. 
+The report lists package inventory including extensions for memory, OpenAI, Ollama, Slack, storage, telemetry, and an `@executioncontextprotocol/extensions` bundle. It also lists `@executioncontextprotocol/mcp` and `@executioncontextprotocol/cli`. 
 
 ## Assessment
 
@@ -204,9 +204,9 @@ Notable differences:
 
 | Difference                             | Assessment                                                     |
 | -------------------------------------- | -------------------------------------------------------------- |
-| `@ecp/extension-ollama` implemented    | Good addition. It supports the local/hybrid model strategy.    |
-| `@ecp/storage` capabilities empty stub | Needs implementation if storage is part of near-term examples. |
-| `@ecp/runtime-temporal` stub only      | Expected if deferred, but still a major roadmap gap.           |
+| `@executioncontextprotocol/extension-ollama` implemented    | Good addition. It supports the local/hybrid model strategy.    |
+| `@executioncontextprotocol/storage` capabilities empty stub | Needs implementation if storage is part of near-term examples. |
+| `@executioncontextprotocol/runtime-temporal` stub only      | Expected if deferred, but still a major roadmap gap.           |
 
 ---
 
@@ -294,7 +294,7 @@ The Auto Fixes spec explicitly says store calls create pending mutations, policy
 The implementation report says:
 
 * `state<T>(path, options?)` exists and returns a mutable state handle. 
-* `PendingMutation`, `MutationRecord`, and `StoreStateHandle` are present in `@ecp/types`. 
+* `PendingMutation`, `MutationRecord`, and `StoreStateHandle` are present in `@executioncontextprotocol/types`. 
 * Runtime internals include `resolveStepInput`, `commitTransaction`, `createTransactionalStore`, `createMutationBuffer`, and `collectStateHandles`. 
 
 ## Assessment
@@ -328,7 +328,7 @@ The implementation report mentions `PendingMutation`, `MutationRecord`, and muta
 Policies should use:
 
 ```ts
-definePolicy("@ecp", "budget")
+definePolicy("@executioncontextprotocol", "budget")
   .withConfig(...)
   .withHooks([
     hook("policy:pre", ...),
@@ -341,16 +341,16 @@ Standard policies:
 
 | Policy               | Required                                          |
 | -------------------- | ------------------------------------------------- |
-| `@ecp/budget`        | Yes                                               |
-| `@ecp/approval`      | Yes                                               |
-| `@ecp/state-control` | Added in Auto Fixes                               |
-| `@ecp/citations`     | Planned, not required for earliest implementation |
+| `@executioncontextprotocol/budget`        | Yes                                               |
+| `@executioncontextprotocol/approval`      | Yes                                               |
+| `@executioncontextprotocol/state-control` | Added in Auto Fixes                               |
+| `@executioncontextprotocol/citations`     | Planned, not required for earliest implementation |
 
 ## What was implemented
 
-The implementation report confirms policy lifecycle types and `PolicyDecision` exist. It also says standard policies are packaged, but the gap section says `@ecp/citations` is not implemented. 
+The implementation report confirms policy lifecycle types and `PolicyDecision` exist. It also says standard policies are packaged, but the gap section says `@executioncontextprotocol/citations` is not implemented. 
 
-The Auto Fixes spec says `@ecp/state-control` should be added to `@ecp/policies`, with config for allowed mutable paths, denied paths, mutation ops, required reason, max mutations, and max payload. 
+The Auto Fixes spec says `@executioncontextprotocol/state-control` should be added to `@executioncontextprotocol/policies`, with config for allowed mutable paths, denied paths, mutation ops, required reason, max mutations, and max payload. 
 
 ## Assessment
 
@@ -369,17 +369,17 @@ Unclear or missing:
 
 | Policy area                   | Gap                                    |
 | ----------------------------- | -------------------------------------- |
-| `@ecp/state-control`          | Not confirmed in implementation report |
-| `@ecp/citations`              | Explicitly not implemented             |
+| `@executioncontextprotocol/state-control`          | Not confirmed in implementation report |
+| `@executioncontextprotocol/citations`              | Explicitly not implemented             |
 | Mutation-aware policy context | Not confirmed                          |
 | Usage reporting completeness  | Not confirmed                          |
 
 Recommended next actions:
 
-1. Add/verify `@ecp/state-control`.
+1. Add/verify `@executioncontextprotocol/state-control`.
 2. Add tests for `state()` mutation denial and approval.
 3. Add mutation summary to `policy:finally`.
-4. Keep `@ecp/citations` deferred unless needed.
+4. Keep `@executioncontextprotocol/citations` deferred unless needed.
 
 ---
 
@@ -498,7 +498,7 @@ Prompts:
 
 ## What was implemented
 
-The report says `@ecp/mcp` has `createEcpMcpServer`, `serveStdio`, and `serveHttp`, but `serveHttp` is a placeholder. It says MCP tools include describe, search, validate, run, and get_run_status. 
+The report says `@executioncontextprotocol/mcp` has `createEcpMcpServer`, `serveStdio`, and `serveHttp`, but `serveHttp` is a placeholder. It says MCP tools include describe, search, validate, run, and get_run_status. 
 
 The executive summary says MCP adapter is “Package only” and not on CLI. 
 
@@ -602,12 +602,12 @@ First-party extensions:
 
 | Extension                  | Required capability                   |
 | -------------------------- | ------------------------------------- |
-| `@ecp/extension-memory`    | `search`, `remember`, lifecycle hooks |
-| `@ecp/extension-openai`    | `generate`, `evaluate`                |
-| `@ecp/extension-slack`     | `send`                                |
-| `@ecp/extension-storage`   | `write`, `read` eventually            |
-| `@ecp/extension-telemetry` | hooks only                            |
-| `@ecp/extensions`          | convenience bundle                    |
+| `@executioncontextprotocol/extension-memory`    | `search`, `remember`, lifecycle hooks |
+| `@executioncontextprotocol/extension-openai`    | `generate`, `evaluate`                |
+| `@executioncontextprotocol/extension-slack`     | `send`                                |
+| `@executioncontextprotocol/extension-storage`   | `write`, `read` eventually            |
+| `@executioncontextprotocol/extension-telemetry` | hooks only                            |
+| `@executioncontextprotocol/extensions`          | convenience bundle                    |
 
 ## What was implemented
 
@@ -615,13 +615,13 @@ The report lists:
 
 | Package                    | Capabilities              |
 | -------------------------- | ------------------------- |
-| `@ecp/extension-memory`    | `search`, `remember`      |
-| `@ecp/extension-openai`    | `generate`                |
-| `@ecp/extension-ollama`    | `generate`                |
-| `@ecp/extension-slack`     | `send` mock               |
-| `@ecp/extension-storage`   | none                      |
-| `@ecp/extension-telemetry` | hooks only                |
-| `@ecp/extensions`          | `registerAllExtensions()` |
+| `@executioncontextprotocol/extension-memory`    | `search`, `remember`      |
+| `@executioncontextprotocol/extension-openai`    | `generate`                |
+| `@executioncontextprotocol/extension-ollama`    | `generate`                |
+| `@executioncontextprotocol/extension-slack`     | `send` mock               |
+| `@executioncontextprotocol/extension-storage`   | none                      |
+| `@executioncontextprotocol/extension-telemetry` | hooks only                |
+| `@executioncontextprotocol/extensions`          | `registerAllExtensions()` |
 
 
 
@@ -642,7 +642,7 @@ Gaps:
 
 Recommended next actions:
 
-1. Add `@ecp/openai.evaluate`.
+1. Add `@executioncontextprotocol/openai.evaluate`.
 2. Implement storage read/write.
 3. Decide whether Slack mock is enough for test/demo or needs real SDK package.
 4. Verify memory lifecycle hooks: `step:before`, `step:completed`, `run:finally`.
@@ -653,7 +653,7 @@ Recommended next actions:
 
 ## What we defined
 
-`@ecp/types` should include:
+`@executioncontextprotocol/types` should include:
 
 * protocol types
 * schema constants
@@ -664,7 +664,7 @@ Recommended next actions:
 
 ## What was implemented
 
-The report says `@ecp/types` includes protocol types such as validation, lifecycle, store, and run types. 
+The report says `@executioncontextprotocol/types` includes protocol types such as validation, lifecycle, store, and run types. 
 
 But the gaps section says:
 
@@ -708,7 +708,7 @@ Temporal should be an optional runtime adapter package with:
 
 ## What was implemented
 
-The report says `@ecp/temporal` executor is a stub constant only. 
+The report says `@executioncontextprotocol/temporal` executor is a stub constant only. 
 
 ## Assessment
 
@@ -746,7 +746,7 @@ Required tests:
 | State-control policy denies path                                        | Step fails/pauses                        |
 | Run history includes mutation record                                    | Mutation audit exists                    |
 
-## Priority 2: Add `@ecp/state-control`
+## Priority 2: Add `@executioncontextprotocol/state-control`
 
 The Auto Fixes spec explicitly calls for a first-party state-control policy. 
 

@@ -1,6 +1,6 @@
 # Harness evaluation matrix — full test report
 
-This document catalogs **every assertion and eval case** in the `@ecp/evals` harness matrix, how validation works, and what we expect from `gemma3:1b` via Ollama. It is the companion reference to [harness-eval.md](./harness-eval.md) and [packages/evals/README.md](../packages/evals/README.md).
+This document catalogs **every assertion and eval case** in the `@executioncontextprotocol/evals` harness matrix, how validation works, and what we expect from `gemma3:1b` via Ollama. It is the companion reference to [harness-eval.md](./harness-eval.md) and [packages/evals/README.md](../packages/evals/README.md).
 
 **Last aligned with:** 52 JSON matrix cases + supporting Vitest eval project tests (`npm run eval:harness`).
 
@@ -11,7 +11,7 @@ This document catalogs **every assertion and eval case** in the `@ecp/evals` har
 1. [What we are testing](#what-we-are-testing)
 2. [Validation layers](#validation-layers)
 3. [Deterministic assertion reference](#deterministic-assertion-reference)
-4. [LLM judge (`@ecp/ollama.evaluate`)](#llm-judge-ecpollamaevaluate)
+4. [LLM judge (`@executioncontextprotocol/ollama.evaluate`)](#llm-judge-executioncontextprotocolollamaevaluate)
 5. [Harness invoke success (internal gates)](#harness-invoke-success-internal-gates)
 6. [Runtime configuration](#runtime-configuration)
 7. [Matrix cases by suite](#matrix-cases-by-suite)
@@ -25,15 +25,15 @@ This document catalogs **every assertion and eval case** in the `@ecp/evals` har
 
 | Category | Suite | Cases | Harness | Primary artifact |
 | -------- | ----- | ----- | ------- | ---------------- |
-| **Workflow create** | `workflow-create` | 12 | `@ecp/evals-workflow-authoring` | `@ecp.workflow` |
-| **Workflow patch** | `workflow-patch` | 12 | `@ecp/evals-workflow-authoring` | `@ecp.patch` → patched `@ecp.workflow` |
-| **Intent routing** | `intent` | 12 | `@ecp/evals-intent-classification` | `@ecp.intent` |
-| **Run-aware Q&A** | `assistant` | 10 | `@ecp/evals-workflow-assistant` | `@ecp.harness.reply` |
+| **Workflow create** | `workflow-create` | 12 | `@executioncontextprotocol/evals-workflow-authoring` | `@ecp.workflow` |
+| **Workflow patch** | `workflow-patch` | 12 | `@executioncontextprotocol/evals-workflow-authoring` | `@ecp.patch` → patched `@ecp.workflow` |
+| **Intent routing** | `intent` | 12 | `@executioncontextprotocol/evals-intent-classification` | `@ecp.intent` |
+| **Run-aware Q&A** | `assistant` | 10 | `@executioncontextprotocol/evals-workflow-assistant` | `@ecp.harness.reply` |
 | **End-to-end flows** | `flow` | 6 | Mixed (intent → authoring → assistant) | Per step |
 
 **Model under test:** `gemma3:1b` (`OLLAMA_GEMMA_1B_EVAL`), base URL `http://localhost:11434`, `num_ctx: 8192`.
 
-**Matrix environment extensions (binding order):** `@ecp/format-toon`, `@ecp/format-json`, `@ecp/test`, `@ecp/demo`.
+**Matrix environment extensions (binding order):** `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-json`, `@executioncontextprotocol/test`, `@executioncontextprotocol/demo`.
 
 Cases are defined in [`packages/evals/fixtures/cases/*.cases.json`](../packages/evals/fixtures/cases/). Vitest loads them via `loadEvalCases()` and `runEvalCase()` — no per-case test files.
 
@@ -69,16 +69,16 @@ flowchart TD
 | Layer | Where | Fail-closed? | Notes |
 | ----- | ----- | ------------ | ----- |
 | **Harness invoke** | Eval harness handlers | Yes | `invokeSuccess` requires `ecp.invoke(...).process()` `success: true` |
-| **Decode** | `@ecp/format-json` | Yes | Invalid JSON / wrong schema → repair prompt |
+| **Decode** | `@executioncontextprotocol/format-json` | Yes | Invalid JSON / wrong schema → repair prompt |
 | **Patch apply** | `ecp.patch` | Yes | Invalid paths, missing steps |
 | **Schema validation** | `ecp.validate` | Yes | ECP workflow / intent / reply rules |
 | **Harness goal checks** | `request-capability-hints.ts` | Yes | Missing steps, wrong labels, patch goals |
 | **Deterministic assertions** | `assertions.ts` | Yes | Exact field checks in Vitest |
-| **LLM judge** | `@ecp/ollama.evaluate` | Yes on errors; lenient on judge parse failure | See [judge section](#llm-judge-ecpollamaevaluate) |
+| **LLM judge** | `@executioncontextprotocol/ollama.evaluate` | Yes on errors; lenient on judge parse failure | See [judge section](#llm-judge-executioncontextprotocolollamaevaluate) |
 
-**Repair loop:** `HARNESS_NANO_REPAIR` sets `maxAttempts: 3`, and handlers use `1 + maxAttempts` → **up to 4 model calls** per case. Failed attempts append structured repair text (`formatStructuredRepairForModel`) plus fixture `repairHint` from `@ecp/core` harness prompts.
+**Repair loop:** `HARNESS_NANO_REPAIR` sets `maxAttempts: 3`, and handlers use `1 + maxAttempts` → **up to 4 model calls** per case. Failed attempts append structured repair text (`formatStructuredRepairForModel`) plus fixture `repairHint` from `@executioncontextprotocol/core` harness prompts.
 
-**Eval-only JSON repair** (before decode): `repairWorkflowJsonSyntax` / `repairPatchJsonSyntax` in `@ecp/evals` — hoists nested `steps`, fixes floating `"as"`, strips stray `)` / `"`, etc. These are **not** production browser behavior; they measure 1B output quality under a forgiving pre-decode pass.
+**Eval-only JSON repair** (before decode): `repairWorkflowJsonSyntax` / `repairPatchJsonSyntax` in `@executioncontextprotocol/evals` — hoists nested `steps`, fixes floating `"as"`, strips stray `)` / `"`, etc. These are **not** production browser behavior; they measure 1B output quality under a forgiving pre-decode pass.
 
 ---
 
@@ -111,9 +111,9 @@ Every `deterministic` entry in case JSON maps to [`assertDeterministic()`](../pa
 
 ---
 
-## LLM judge (`@ecp/ollama.evaluate`)
+## LLM judge (`@executioncontextprotocol/ollama.evaluate`)
 
-When `judge.enabled: true` and `requireApproved: true`, after deterministic checks pass, [`assertJudge()`](../packages/evals/src/fixtures/assertions.ts) invokes `@ecp/ollama.evaluate` with:
+When `judge.enabled: true` and `requireApproved: true`, after deterministic checks pass, [`assertJudge()`](../packages/evals/src/fixtures/assertions.ts) invokes `@executioncontextprotocol/ollama.evaluate` with:
 
 | Field | Source |
 | ----- | ------ |
@@ -141,7 +141,7 @@ When `judge.enabled: true` and `requireApproved: true`, after deterministic chec
 
 ## Harness invoke success (internal gates)
 
-### Workflow authoring (`@ecp/evals-workflow-authoring`)
+### Workflow authoring (`@executioncontextprotocol/evals-workflow-authoring`)
 
 | Mode | Input | Invoke succeeds when |
 | ---- | ----- | -------------------- |
@@ -150,13 +150,13 @@ When `judge.enabled: true` and `requireApproved: true`, after deterministic chec
 
 **Prompt context (matrix):** plain-text capability list; **no** TOON-encoded descriptor (`includeEncodedDescriptor: false`). Optional capability hint lines and patch operation hints. Few-shots from `workflow-authoring-create.prompt.json` / `workflow-authoring-patch.prompt.json`.
 
-### Intent classification (`@ecp/evals-intent-classification`)
+### Intent classification (`@executioncontextprotocol/evals-intent-classification`)
 
 | Input | Invoke succeeds when |
 | ----- | -------------------- |
 | `{ message, model? }` | `@ecp.intent` JSON decodes; validates; environment descriptor included in prompt (matrix config) |
 
-### Workflow assistant (`@ecp/evals-workflow-assistant`)
+### Workflow assistant (`@executioncontextprotocol/evals-workflow-assistant`)
 
 | Input | Invoke succeeds when |
 | ----- | -------------------- |
@@ -172,7 +172,7 @@ When `judge.enabled: true` and `requireApproved: true`, after deterministic chec
 | Model | `gemma3:1b` |
 | Base URL | `http://localhost:11434` |
 | Context window | `8192` (`numCtx`) |
-| Output format | `@ecp/format-json` |
+| Output format | `@executioncontextprotocol/format-json` |
 | Repair | enabled, `maxAttempts: 3` → **4** generate attempts max |
 | Trace on failure | prompt, rawOutput, validation (when enabled in config) |
 
@@ -186,18 +186,18 @@ Harness: **workflow-authoring** (create). Model: **default** → `gemma3:1b`.
 
 | ID | Title | User request (summary) | Deterministic expectations | Judge |
 | -- | ----- | ---------------------- | -------------------------- | ----- |
-| **wf-create-01** | Minimal echo | Create minimal `@ecp.workflow` with one echo step, input `hello` | `invokeSuccess`; `artifactSchema` `@ecp.workflow`; `validationValid`; extensions `@ecp/format-toon`, `@ecp/format-json`, `@ecp/test`, `@ecp/demo`; `stepUses` `@ecp/test.echo`; `stepCount` **exact 1** | Off |
-| **wf-create-02** | Echo plus summarize | Echo then summarize, passing echo output | Same extension list; `stepCount` **min 2**; `stepUses` `@ecp/demo.summarize` | Off |
-| **wf-create-03** | Validate then echo | Build workflow: first `@ecp/demo.validate` then `@ecp/test.echo` | `stepUses` `@ecp/demo.validate` | Off |
-| **wf-create-04** | Notify step | Echo + final `@ecp/demo.notify` | `stepUses` `@ecp/demo.notify` | Off |
-| **wf-create-05** | Translate branch | Two-step echo + `@ecp/demo.translate` | `stepUses` `@ecp/demo.translate` | Off |
-| **wf-create-06** | Spanish label | Spanish: one echo step | `stepUses` `@ecp/test.echo` | Off |
-| **wf-create-07** | French label | French: one echo step | `stepUses` `@ecp/test.echo` | Off |
-| **wf-create-08** | German label | German: one echo step | `stepUses` `@ecp/test.echo` | Off |
+| **wf-create-01** | Minimal echo | Create minimal `@ecp.workflow` with one echo step, input `hello` | `invokeSuccess`; `artifactSchema` `@ecp.workflow`; `validationValid`; extensions `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-json`, `@executioncontextprotocol/test`, `@executioncontextprotocol/demo`; `stepUses` `@executioncontextprotocol/test.echo`; `stepCount` **exact 1** | Off |
+| **wf-create-02** | Echo plus summarize | Echo then summarize, passing echo output | Same extension list; `stepCount` **min 2**; `stepUses` `@executioncontextprotocol/demo.summarize` | Off |
+| **wf-create-03** | Validate then echo | Build workflow: first `@executioncontextprotocol/demo.validate` then `@executioncontextprotocol/test.echo` | `stepUses` `@executioncontextprotocol/demo.validate` | Off |
+| **wf-create-04** | Notify step | Echo + final `@executioncontextprotocol/demo.notify` | `stepUses` `@executioncontextprotocol/demo.notify` | Off |
+| **wf-create-05** | Translate branch | Two-step echo + `@executioncontextprotocol/demo.translate` | `stepUses` `@executioncontextprotocol/demo.translate` | Off |
+| **wf-create-06** | Spanish label | Spanish: one echo step | `stepUses` `@executioncontextprotocol/test.echo` | Off |
+| **wf-create-07** | French label | French: one echo step | `stepUses` `@executioncontextprotocol/test.echo` | Off |
+| **wf-create-08** | German label | German: one echo step | `stepUses` `@executioncontextprotocol/test.echo` | Off |
 | **wf-create-09** | Triple steps | 3-step: validate, echo, summarize | `stepCount` **min 3** | Off |
-| **wf-create-10** | Workflow id minimal-echo | Workflow id `minimal-echo`, one echo labeled Runner | `stepUses` `@ecp/test.echo` | Off |
+| **wf-create-10** | Workflow id minimal-echo | Workflow id `minimal-echo`, one echo labeled Runner | `stepUses` `@executioncontextprotocol/test.echo` | Off |
 | **wf-create-11** | Quality judge | Production-style echo ingestion workflow | `invokeSuccess`; schema + validation + extensions (no step-specific asserts) | **On** — Goal: *"Workflow is coherent and references echo capability"*; `requireApproved: true`; default rubric |
-| **wf-create-12** | Descriptor caps | List capabilities then echo-only workflow | `descriptorListsCapabilities` `@ecp/test.echo`, `@ecp/demo.summarize` | Off |
+| **wf-create-12** | Descriptor caps | List capabilities then echo-only workflow | `descriptorListsCapabilities` `@executioncontextprotocol/test.echo`, `@executioncontextprotocol/demo.summarize` | Off |
 
 **Implicit create expectations (harness, all rows):** Top-level `steps` array; `input` not `inputs`; `uses` must be real capability ids from environment; multi-capability requests must produce one step per required capability (enforced via repair feedback).
 
@@ -211,12 +211,12 @@ Harness: **workflow-authoring** (patch). Baseline from `baselineWorkflow` fixtur
 | -- | ----- | -------- | ---------------------- | -------------------------- | ----- |
 | **wf-patch-01** | Label change | `echo-workflow.json` | Change echo label to **Patched Echo** | `stepLabel` echo → `"Patched Echo"` | Off |
 | **wf-patch-02** | Input value | `echo-workflow.json` | Set echo input value to **world** | schema + validation only | Off |
-| **wf-patch-03** | Add summarize | `echo-workflow.json` | Add summarize after echo (`@ecp/demo.summarize`) | `stepCount` **min 2** | Off |
+| **wf-patch-03** | Add summarize | `echo-workflow.json` | Add summarize after echo (`@executioncontextprotocol/demo.summarize`) | `stepCount` **min 2** | Off |
 | **wf-patch-04** | Remove notify | `multi-cap-workflow.json` | Remove notify step | `stepRemoved` **notify** | Off |
 | **wf-patch-05** | Workflow label | `two-step-chain.json` | Change workflow label to **Updated Chain** | schema + validation | Off |
 | **wf-patch-06** | Step config | `two-step-chain.json` | Summarize label → **Short Summary** | `stepLabel` summarize → `"Short Summary"` | Off |
 | **wf-patch-07** | Ref chain | `two-step-chain.json` | Summarize input must `$ref` echo output | `inputRefPresent` **summarize** | Off |
-| **wf-patch-08** | Add validate | `echo-workflow.json` | Insert validate before echo | `stepUses` `@ecp/demo.validate` | Off |
+| **wf-patch-08** | Add validate | `echo-workflow.json` | Insert validate before echo | `stepUses` `@executioncontextprotocol/demo.validate` | Off |
 | **wf-patch-09** | Combined | `two-step-chain.json` | Add translate after echo; remove summarize if present | schema + validation | Off |
 | **wf-patch-10** | Patch judge | `echo-workflow.json` | Improve echo label (user-friendly) | schema + validation | **On** — Goal: *"Patch is minimal and correct"*; `requireApproved: true` |
 | **wf-patch-11** | Translate label | `echo-workflow.json` | Rename echo label to **Translated Output** | schema + validation | Off |
@@ -248,7 +248,7 @@ Harness: **intent-classification**. Input: `{ message }`.
 | **intent-11** | FAQ how | How does workflow patching work? | `faq` | 4 extensions | **On** — *"Intent should be faq"* |
 | **intent-12** | Build | Pipeline with echo and notify | `workflow-create` | 4 extensions | **On** — *"Intent should be workflow-create"* |
 
-**Intent values:** `faq` | `workflow-create` | `workflow-patch` | `general` (see `@ecp/types` `ECP_INTENT_VALUES`).
+**Intent values:** `faq` | `workflow-create` | `workflow-patch` | `general` (see `@executioncontextprotocol/types` `ECP_INTENT_VALUES`).
 
 ---
 
@@ -288,7 +288,7 @@ Suite: **`flow`** (6 cases). Each case is one Vitest `it` but **multiple harness
 | Step | Harness | Input | Assertions |
 | ---- | ------- | ----- | ---------- |
 | 0 | intent-classification | *"I need a new workflow with echo and summarize."* | `intent` → `workflow-create` |
-| 1 | workflow-authoring | *"Create echo then @ecp/demo.summarize workflow."* | `artifactSchema` `@ecp.workflow` |
+| 1 | workflow-authoring | *"Create echo then @executioncontextprotocol/demo.summarize workflow."* | `artifactSchema` `@ecp.workflow` |
 
 Note: step 1 does **not** list `invokeSuccess` in JSON; runner still injects it.
 
@@ -312,7 +312,7 @@ Note: step 1 does **not** list `invokeSuccess` in JSON; runner still injects it.
 | ---- | ------- | ----- | ---------- |
 | 0 | intent-classification | *"Hi!"* | `intent` → `general` |
 | 1 | intent-classification | *"Actually create an echo workflow."* | `intent` → `workflow-create` |
-| 2 | workflow-authoring | *"Create minimal @ecp/test.echo workflow."* | `stepUses` `@ecp/test.echo` |
+| 2 | workflow-authoring | *"Create minimal @executioncontextprotocol/test.echo workflow."* | `stepUses` `@executioncontextprotocol/test.echo` |
 
 ### flow-06 — Error explain and patch
 
@@ -358,7 +358,7 @@ Besides the **52** matrix `it.each` cases, `npm run eval:harness` runs additiona
 
 | File | Steps (ids / uses) | Used by |
 | ---- | ------------------ | ------- |
-| `echo-workflow.json` | echo → `@ecp/test.echo` | wf-patch-01–03, 08, 10–11; flow-01, 06 |
+| `echo-workflow.json` | echo → `@executioncontextprotocol/test.echo` | wf-patch-01–03, 08, 10–11; flow-01, 06 |
 | `two-step-chain.json` | echo → summarize (`$ref` echo output) | wf-patch-05–07, 09; flow-04 |
 | `multi-cap-workflow.json` | echo, notify, … | wf-patch-04, 12 |
 
