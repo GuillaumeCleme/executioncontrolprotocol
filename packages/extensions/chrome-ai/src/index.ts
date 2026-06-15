@@ -55,6 +55,7 @@ const InstallStateSchema = z.object({
 
 /** Chrome built-in AI provider. @category Extensions */
 export const chromeAiExtension = defineExtension("@executioncontextprotocol", "chrome-ai")
+  .withSupportedRuntimes(["@executioncontextprotocol/browser"])
   .withCapabilities([
     capabilityFor("@executioncontextprotocol/chrome-ai", "checkAvailability")
       .withInput(z.object({}))

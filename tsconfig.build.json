@@ -25,6 +25,7 @@
     { "path": "packages/extensions/chrome-ai" },
     { "path": "packages/extensions/claude" },
     { "path": "packages/extensions/fal" },
+    { "path": "packages/extensions/image-sharp" },
     { "path": "packages/extensions/index" },
     { "path": "packages/runtimes/temporal" },
     { "path": "packages/cli" },

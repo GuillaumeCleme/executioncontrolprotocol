@@ -76,6 +76,8 @@ export interface ExtensionDescription {
   order: number
   configSchema?: unknown
   capabilities: string[]
+  /** Runtimes this extension supports when restricted; omitted when universal. */
+  supportedRuntimes?: string[]
 }
 
 /** Capability metadata in descriptor. @category Environment */

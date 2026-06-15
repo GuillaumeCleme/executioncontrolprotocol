@@ -90,6 +90,10 @@ export default defineConfig({
         repoRoot,
         "packages/extensions/fal/src/index.ts"
       ),
+      "@executioncontextprotocol/extension-image-sharp": path.resolve(
+        repoRoot,
+        "packages/extensions/image-sharp/src/index.ts"
+      ),
       "@executioncontextprotocol/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
       "@executioncontextprotocol/harnesses-browser-nano": path.resolve(
         repoRoot,

@@ -88,6 +88,9 @@ export async function buildDescriptor(
           label: e.label,
           order: e.order ?? i,
           capabilities: def?.capabilities.map((c) => c.id) ?? [],
+          ...(def?.supportedRuntimes?.length
+            ? { supportedRuntimes: [...def.supportedRuntimes] }
+            : {}),
         }
         return pickFields(desc, query?.extensions?.include) as ExtensionDescription
       })

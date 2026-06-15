@@ -46,6 +46,7 @@ function attachSecretsResolver(ctx: LifecycleContext): void {
 
 /** OS secrets extension. @category Secrets */
 export const secretsExtension = defineExtension("@executioncontextprotocol", "secrets")
+  .withSupportedRuntimes(["@executioncontextprotocol/node"])
   .withConfig(z.object({}))
   .withHooks([
     hook("environment:configuring", attachSecretsResolver),

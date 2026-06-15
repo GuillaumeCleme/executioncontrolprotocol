@@ -105,6 +105,7 @@ function attachBrowserSecretsResolver(ctx: LifecycleContext): void {
 
 /** Browser encrypted secrets extension. @category BrowserSecrets */
 export const browserSecretsExtension = defineExtension("@executioncontextprotocol", "browser-secrets")
+  .withSupportedRuntimes(["@executioncontextprotocol/browser"])
   .withConfig(z.object({}))
   .withHooks([
     hook("environment:configuring", attachBrowserSecretsResolver),

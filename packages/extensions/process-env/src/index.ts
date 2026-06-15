@@ -39,6 +39,7 @@ function attachProcessEnvResolver(ctx: LifecycleContext): void {
 
 /** Process environment config extension. @category Extensions */
 export const processEnvExtension = defineExtension("@executioncontextprotocol", "process-env")
+  .withSupportedRuntimes(["@executioncontextprotocol/node"])
   .withConfig({
     allowedKeys: z.array(z.string()).default(["*"]),
     deniedKeys: z.array(z.string()).default([]),

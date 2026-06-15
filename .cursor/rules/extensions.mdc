@@ -39,6 +39,7 @@ Manifest ↔ Fluent API conversion lives in **`@executioncontextprotocol/core`**
 
 - Handlers receive typed inputs and a **utility** or **capability** context from `@executioncontextprotocol/core`; avoid reaching into `Environment` internals.
 - Use `capabilityFor("@vendor/name", "capability-id")` for stable capability IDs.
+- Host-specific extensions **must** call `.withSupportedRuntimes([...])` on `defineExtension` (omit for universal extensions).
 - Import `z` from `"zod"` for config and capability schemas (peer dependency; do not import through `@executioncontextprotocol/core`).
 
 ```ts

@@ -42,6 +42,8 @@ export interface ExtensionDefinition {
   configSchema?: ConfigSchema
   capabilities: CapabilityDefinition[]
   hooks: HookDefinition[]
+  /** When set, extension may only be bound to these runtimes. Omit = all runtimes. */
+  supportedRuntimes?: NamespacedId[]
 }
 
 /** Runtime definition. @category Definitions */

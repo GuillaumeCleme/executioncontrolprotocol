@@ -119,3 +119,11 @@ export type {
   StoreReadOptions,
   StoreWriteOptions,
 } from "./runtime/store.js"
+export {
+  isImageRef,
+  collectImageRefs,
+  collectOutputFormatHints,
+  imageRefUrlHostname,
+  isSvgHint,
+} from "./image/image-ref.js"
+export type { CollectedImageRef, CollectedFormatHint } from "./image/image-ref.js"

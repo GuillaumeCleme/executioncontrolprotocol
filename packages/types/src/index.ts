@@ -158,3 +158,18 @@ export type {
   HarnessWorkflowAuthoringInput,
   HarnessWorkflowAssistantInput,
 } from "./harness-tasks.js"
+export {
+  IMAGE_REF_KINDS,
+  IMAGE_OUTPUT_FORMATS,
+  imageRefSchema,
+} from "./image.js"
+export type {
+  ImageRefKind,
+  ImageOutputFormat,
+  ArtifactImageRef,
+  FileImageRef,
+  UrlImageRef,
+  BufferImageRef,
+  ImageRef,
+  ImageOutputInfo,
+} from "./image.js"
