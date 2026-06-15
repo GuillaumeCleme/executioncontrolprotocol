@@ -86,6 +86,10 @@ export default defineConfig({
         repoRoot,
         "packages/extensions/ollama/src/index.ts"
       ),
+      "@executioncontextprotocol/extension-fal": path.resolve(
+        repoRoot,
+        "packages/extensions/fal/src/index.ts"
+      ),
       "@executioncontextprotocol/evals": path.resolve(repoRoot, "packages/evals/src/index.ts"),
       "@executioncontextprotocol/harnesses-browser-nano": path.resolve(
         repoRoot,
