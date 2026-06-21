@@ -5,7 +5,7 @@ import {
 } from "./load-schema-example.js"
 
 function formatRepairExample(outputSchema: string, eql: boolean): string {
-  if (eql && outputSchema === "@ecp.patch") {
+  if (eql && outputSchema === "@executioncontrolprotocol.patch") {
     return "Use PATCH WORKFLOW with the workflow id from the user prompt, then only the UPDATE, DELETE, or ADD operations required by the request."
   }
   return eql ? formatSchemaExampleEql(outputSchema) : formatSchemaExampleJson(outputSchema)

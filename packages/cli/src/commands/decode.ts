@@ -59,7 +59,7 @@ export default class Decode extends EnvModuleCommand {
       }
       let op = ecp.decode(content).uses(extId)
       if (flags.strict) op = op.strict()
-      op = op.to("@ecp.workflow")
+      op = op.to("@executioncontrolprotocol.workflow")
 
       const decoded = await op.process()
       if (!decoded.success) {

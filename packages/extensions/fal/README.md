@@ -1,24 +1,24 @@
-# @executioncontextprotocol/extension-fal
+# @executioncontrolprotocol/extension-fal
 
 FAL model provider extension for ECP. Invokes any FAL endpoint from workflows with env/secrets auth and standard `$ref` chaining.
 
 ## Binding
 
 ```ts
-import "@executioncontextprotocol/extension-fal"
-import { environment, extension, env, secrets } from "@executioncontextprotocol/node"
+import "@executioncontrolprotocol/extension-fal"
+import { environment, extension, env, secrets } from "@executioncontrolprotocol/node"
 
 export default environment("fal-demo")
   .withExtensions([
-    extension("@executioncontextprotocol/secrets").with({}),
-    extension("@executioncontextprotocol/fal").with({
+    extension("@executioncontrolprotocol/secrets").with({}),
+    extension("@executioncontrolprotocol/fal").with({
       apiKey: secrets("fal/api-key"), // or env("FAL_KEY")
       defaultMode: "subscribe",
     }),
   ])
 ```
 
-## Capability: `@executioncontextprotocol/fal.generate`
+## Capability: `@executioncontrolprotocol/fal.generate`
 
 **Input:** `{ endpoint?, input, mode?, logs? }` — `endpoint` can default from extension config.
 
@@ -29,7 +29,7 @@ export default environment("fal-demo")
 Reference prior step output fields with `ref()`:
 
 ```ts
-step("@executioncontextprotocol/fal.generate", "Upscale")
+step("@executioncontrolprotocol/fal.generate", "Upscale")
   .with({
     endpoint: "fal-ai/clarity-upscaler",
     input: { image_url: ref("base.data.images.0.url") },

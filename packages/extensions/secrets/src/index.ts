@@ -6,13 +6,13 @@ import {
   SECRETS_RESOLVER_ID,
   type EnvironmentConfigResolver,
   type LifecycleContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import { createOsSecretsStore } from "./os-keychain-store.js"
 import { memorySecretsStore, setMemorySecret, clearMemorySecrets } from "./memory-store.js"
 import type { SecretsStore } from "./store.js"
 
-const EXT_ID = "@executioncontextprotocol/secrets"
+const EXT_ID = "@executioncontrolprotocol/secrets"
 
 let activeStore: SecretsStore = createOsSecretsStore()
 
@@ -45,8 +45,8 @@ function attachSecretsResolver(ctx: LifecycleContext): void {
 }
 
 /** OS secrets extension. @category Secrets */
-export const secretsExtension = defineExtension("@executioncontextprotocol", "secrets")
-  .withSupportedRuntimes(["@executioncontextprotocol/node"])
+export const secretsExtension = defineExtension("@executioncontrolprotocol", "secrets")
+  .withSupportedRuntimes(["@executioncontrolprotocol/node"])
   .withConfig(z.object({}))
   .withHooks([
     hook("environment:configuring", attachSecretsResolver),
@@ -56,7 +56,7 @@ export const secretsExtension = defineExtension("@executioncontextprotocol", "se
 
 catalogExtension(secretsExtension)
 
-/** Register `@executioncontextprotocol/secrets`. @category Secrets */
+/** Register `@executioncontrolprotocol/secrets`. @category Secrets */
 export async function registerSecretsExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(secretsExtension)

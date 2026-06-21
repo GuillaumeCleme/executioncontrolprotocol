@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION, type ValidationResult } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION, type ValidationResult } from "@executioncontrolprotocol/types"
 import { evaluateHarnessArtifactModule } from "./evaluate-harness-artifact.js"
 import {
   extractArtifactFromModule,
@@ -31,7 +31,7 @@ export interface CompileHarnessArtifactSourceOptions {
 
 function validationFromOk(valid: boolean): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],
@@ -51,7 +51,7 @@ export async function compileHarnessArtifactSource<T = unknown>(
     typeof process !== "undefined" && process.cwd ? process.cwd() : "."
   try {
     const code =
-      isTypeScriptFile(filename) || options.source.includes("@executioncontextprotocol/")
+      isTypeScriptFile(filename) || options.source.includes("@executioncontrolprotocol/")
         ? await bundleWorkflowSource(options.source, filename, resolveDir)
         : options.source
     const mod = await evaluateHarnessArtifactModule(

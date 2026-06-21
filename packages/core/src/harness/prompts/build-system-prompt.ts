@@ -81,7 +81,7 @@ export function buildSystemPrompt(fixtureId: string): string {
     ? [
         ...identityBlock,
         eqlPrimerForOutputSchema(fixture.outputSchema),
-        fixture.outputSchema === "@ecp.patch"
+        fixture.outputSchema === "@executioncontrolprotocol.patch"
           ? undefined
           : `Operation syntax sample (${fixture.outputSchema}):\n${example}`,
         ...formatFewShots(fixture),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { buildSystemPrompt, HARNESS_PROMPT_FIXTURE_IDS } from "@executioncontextprotocol/core"
+import { buildSystemPrompt, HARNESS_PROMPT_FIXTURE_IDS } from "@executioncontrolprotocol/core"
 
 /** Per-task character budget for 1B harness system prompts (identity + EQL primer + few-shots). */
 const SYSTEM_PROMPT_CHAR_BUDGET: Record<string, number> = {

@@ -1,5 +1,5 @@
 {
-  "name": "@executioncontextprotocol/node",
+  "name": "@executioncontrolprotocol/node",
   "version": "1.0.0",
   "description": "ECP Node.js runtime and environment extensions",
   "license": "Apache-2.0",
@@ -20,14 +20,14 @@
     "zod": "^3.24.0"
   },
   "dependencies": {
-    "@executioncontextprotocol/core": "1.0.0",
-    "@executioncontextprotocol/types": "1.0.0",
-    "@executioncontextprotocol/policies": "1.0.0",
-    "@executioncontextprotocol/secrets": "1.0.0",
-    "@executioncontextprotocol/process-env": "1.0.0"
+    "@executioncontrolprotocol/core": "1.0.0",
+    "@executioncontrolprotocol/types": "1.0.0",
+    "@executioncontrolprotocol/policies": "1.0.0",
+    "@executioncontrolprotocol/secrets": "1.0.0",
+    "@executioncontrolprotocol/process-env": "1.0.0"
   },
   "devDependencies": {
-    "@executioncontextprotocol/demo": "1.0.0",
+    "@executioncontrolprotocol/demo": "1.0.0",
     "typescript": "^5.7.0",
     "zod": "^3.24.0"
   }

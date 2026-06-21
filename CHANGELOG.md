@@ -2,7 +2,7 @@
 # Changelog
 
 > Note: this changelog primarily documents the historical **v0.5 “Context YAML + system config”**
-> era. The current repository architecture is the `@executioncontextprotocol/*` monorepo (workflow +
+> era. The current repository architecture is the `@executioncontrolprotocol/*` monorepo (workflow +
 > environment model) described in [`AGENTS.md`](AGENTS.md) and
 > [`ecp-overhaul.md`](ecp-overhaul.md).
 >

@@ -87,13 +87,13 @@
         {
           "harness": "workflow-authoring",
           "input": {
-            "request": "Create echo then @executioncontextprotocol/demo.summarize workflow."
+            "request": "Create echo then @executioncontrolprotocol/demo.summarize workflow."
           },
           "assertions": {
             "deterministic": [
               {
                 "kind": "artifactSchema",
-                "value": "@ecp.workflow"
+                "value": "@executioncontrolprotocol.workflow"
               }
             ],
             "judge": {
@@ -275,13 +275,13 @@
         {
           "harness": "workflow-authoring",
           "input": {
-            "request": "Create minimal @executioncontextprotocol/demo.echo workflow."
+            "request": "Create minimal @executioncontrolprotocol/demo.echo workflow."
           },
           "assertions": {
             "deterministic": [
               {
                 "kind": "stepUses",
-                "capabilityId": "@executioncontextprotocol/demo.echo"
+                "capabilityId": "@executioncontrolprotocol/demo.echo"
               }
             ],
             "judge": {

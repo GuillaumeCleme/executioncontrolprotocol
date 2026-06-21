@@ -3,8 +3,8 @@ import type {
   PolicyEvaluationScope,
   RegistryRegistrationRequest,
   WorkflowManifest,
-} from "@executioncontextprotocol/types"
-import type { PendingMutation, StoreStateHandle } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
+import type { PendingMutation, StoreStateHandle } from "@executioncontrolprotocol/types"
 import type { StoreContext } from "./store.js"
 
 /** Run-level context. @category Runtime */
@@ -37,7 +37,7 @@ export interface CapabilityContext {
 export interface EnvironmentLifecycleHost {
   registerConfigResolver(resolver: import("../environment/config-resolver.js").EnvironmentConfigResolver): void
   getRegistry(): import("../registry/registry.js").Registry
-  addExtensionBinding?(ref: import("@executioncontextprotocol/types").NamespacedId, config?: Record<string, unknown>): void
+  addExtensionBinding?(ref: import("@executioncontrolprotocol/types").NamespacedId, config?: Record<string, unknown>): void
   /** Evaluate bound policies before accepting a registry registration. */
   evaluateRegistryRegistration?(request: RegistryRegistrationRequest): Promise<void>
 }
@@ -74,7 +74,7 @@ export interface PolicyContext {
   /** Present when evaluating dynamic registry registration. */
   registryRequest?: RegistryRegistrationRequest
   /** Present when {@link PolicyEvaluationScope} is `invoke`. */
-  capabilityId?: import("@executioncontextprotocol/types").CapabilityId
+  capabilityId?: import("@executioncontrolprotocol/types").CapabilityId
 }
 
 /** Minimal logger. @category Runtime */

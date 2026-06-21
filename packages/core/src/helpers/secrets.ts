@@ -1,4 +1,4 @@
-import type { SecretValue } from "@executioncontextprotocol/types"
+import type { SecretValue } from "@executioncontrolprotocol/types"
 
 /** Options for OS secret refs. */
 export interface SecretsOptions {

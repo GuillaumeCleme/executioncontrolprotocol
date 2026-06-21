@@ -4,10 +4,10 @@ Legacy documentation note: this folder originally contained v0.5 **Context YAML*
 examples showing how to wire MCP tools alongside an Ollama model.
 
 The repository has since moved to the v1 model: portable **workflows**
-(`@ecp.workflow`) executed inside configured **environments** (runtime + extensions +
+(`@executioncontrolprotocol.workflow`) executed inside configured **environments** (runtime + extensions +
 policies). MCP integration in v1 is primarily represented by:
 
-- `@executioncontextprotocol/mcp` (package): expose an environment to agents via MCP tools/resources/prompts
+- `@executioncontrolprotocol/mcp` (package): expose an environment to agents via MCP tools/resources/prompts
 - extensions that provide capabilities backed by tool servers (host-specific)
 
 ## Prereqs

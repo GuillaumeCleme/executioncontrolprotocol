@@ -1,4 +1,4 @@
-import { ECP_ENCODING_ERROR_CODES } from "@executioncontextprotocol/types"
+import { ECP_ENCODING_ERROR_CODES } from "@executioncontrolprotocol/types"
 import type { CapabilityDefinition } from "../definitions/types.js"
 import { EcpError } from "./errors.js"
 import { ecpEncodeInputSchema } from "./schemas.js"
@@ -39,5 +39,5 @@ export function validateDecodeCapabilityContract(cap: CapabilityDefinition): voi
  */
 export function normalizeNamespacedId(extensionId: string): string {
   if (extensionId.startsWith("@")) return extensionId
-  return `@executioncontextprotocol/${extensionId}`
+  return `@executioncontrolprotocol/${extensionId}`
 }

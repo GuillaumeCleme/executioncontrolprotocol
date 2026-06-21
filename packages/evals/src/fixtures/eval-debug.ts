@@ -1,6 +1,6 @@
 import { appendFileSync, mkdirSync } from "node:fs"
 import { dirname } from "node:path"
-import type { HarnessInvokeResult, InvokeResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { HarnessInvokeResult, InvokeResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 import type { DeterministicAssertion, EvalCase } from "./eval-case-schema.js"
 import { isFlowEvalCase } from "./eval-case-schema.js"
 import { formatHarnessTrace } from "./harness-trace-format.js"
@@ -107,7 +107,7 @@ export function describeAssertionExpectation(assertion: DeterministicAssertion):
     case "intent":
       return `intent === ${assertion.value}`
     case "replySchema":
-      return "reply schema === @ecp.harness.reply"
+      return "reply schema === @executioncontrolprotocol.harness.reply"
     case "stepUses":
       return `some step USES ${assertion.capabilityId}`
     case "stepCount":

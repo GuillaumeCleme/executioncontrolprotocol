@@ -1,4 +1,4 @@
-import type { EcpFormatOptions, ExprValue, InputValue } from "@executioncontextprotocol/types"
+import type { EcpFormatOptions, ExprValue, InputValue } from "@executioncontrolprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { resolveEqlOptions } from "../schemas.js"
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import type { EnvironmentDescriptor, WorkflowManifest } from "@executioncontextprotocol/types"
-import { LATEST_ECP_VERSION, StepNode } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, WorkflowManifest } from "@executioncontrolprotocol/types"
+import { LATEST_ECP_VERSION, StepNode } from "@executioncontrolprotocol/types"
 import {
   environment,
   extension,
@@ -9,16 +9,16 @@ import {
   ref,
   normalizeWorkflowManifest,
   runtime,
-} from "@executioncontextprotocol/core"
-import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontextprotocol/node"
+} from "@executioncontrolprotocol/core"
+import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontrolprotocol/node"
 import { registerFormatToonExtension } from "../src/index.js"
-import type { Ecp } from "@executioncontextprotocol/core"
+import type { Ecp } from "@executioncontrolprotocol/core"
 
 async function initToonEcp(): Promise<Ecp> {
   await registerNodeRuntime()
   const env = environment("test")
     .withRuntime(runtime(NODE_RUNTIME_ID))
-    .withExtensions([extension("@executioncontextprotocol/format-toon").with({})])
+    .withExtensions([extension("@executioncontrolprotocol/format-toon").with({})])
   return env.init()
 }
 import { encodeDocumentToToon, decodeDocumentFromToon } from "../src/toon-codec.js"
@@ -26,15 +26,15 @@ import { encodeDocumentToToon, decodeDocumentFromToon } from "../src/toon-codec.
 /** JSON-safe describe fixture (no Zod schemas). Extension tests must not depend on live describe(). */
 function sampleDescribeFixture(): EnvironmentDescriptor {
   return {
-    schema: "@ecp.environment.describe",
+    schema: "@executioncontrolprotocol.environment.describe",
     version: LATEST_ECP_VERSION,
     environment: { id: "disc", label: "Discovery" },
-    runtime: { id: "@executioncontextprotocol/in-memory", features: {} },
+    runtime: { id: "@executioncontrolprotocol/in-memory", features: {} },
     extensions: [
-      { id: "@executioncontextprotocol/demo", order: 0, capabilities: ["@executioncontextprotocol/demo.echo"] },
+      { id: "@executioncontrolprotocol/demo", order: 0, capabilities: ["@executioncontrolprotocol/demo.echo"] },
     ],
     capabilities: [
-      { id: "@executioncontextprotocol/demo.echo", label: "Echo", extension: "@executioncontextprotocol/demo" },
+      { id: "@executioncontrolprotocol/demo.echo", label: "Echo", extension: "@executioncontrolprotocol/demo" },
     ],
     policies: [],
   }
@@ -45,7 +45,7 @@ describe("TOON round trip (@toon-format/toon)", () => {
     await registerFormatToonExtension()
     const manifest = workflow("Ref Test")
       .run([
-        step("@executioncontextprotocol/demo.echo", "S")
+        step("@executioncontrolprotocol/demo.echo", "S")
           .with({ context: ref("signals.results") })
           .as("out"),
       ])
@@ -53,8 +53,8 @@ describe("TOON round trip (@toon-format/toon)", () => {
 
     const ecp = await initToonEcp()
 
-    const toon = await ecp.encode(manifest).uses("@executioncontextprotocol/format-toon").process()
-    const decoded = await ecp.decode(toon.result).uses("@executioncontextprotocol/format-toon").process()
+    const toon = await ecp.encode(manifest).uses("@executioncontrolprotocol/format-toon").process()
+    const decoded = await ecp.decode(toon.result).uses("@executioncontrolprotocol/format-toon").process()
     await ecp.terminate()
     const step0 = (decoded.result as WorkflowManifest).steps[0] as StepNode
     expect(step0.input?.context).toEqual({ $ref: "state.signals.results" })
@@ -64,13 +64,13 @@ describe("TOON round trip (@toon-format/toon)", () => {
     await registerFormatToonExtension()
     const manifest = workflow("Echo")
       .id("echo-wf")
-      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontrolprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const ecp = await initToonEcp()
 
-    const toon = await ecp.encode(manifest).uses("@executioncontextprotocol/format-toon").process()
-    const decoded = await ecp.decode(toon.result).uses("@executioncontextprotocol/format-toon").process()
+    const toon = await ecp.encode(manifest).uses("@executioncontrolprotocol/format-toon").process()
+    const decoded = await ecp.decode(toon.result).uses("@executioncontrolprotocol/format-toon").process()
     await ecp.terminate()
 
     expect(normalizeWorkflowManifest(decoded.result as WorkflowManifest)).toEqual(
@@ -80,10 +80,10 @@ describe("TOON round trip (@toon-format/toon)", () => {
 
   it("round trips environment manifest", async () => {
     const manifest = {
-      schema: "@ecp.environment" as const,
+      schema: "@executioncontrolprotocol.environment" as const,
       version: LATEST_ECP_VERSION,
       environment: { id: "test-env", label: "Test" },
-      extensions: [{ id: "@executioncontextprotocol/demo", order: 0, config: {} }],
+      extensions: [{ id: "@executioncontrolprotocol/demo", order: 0, config: {} }],
     }
 
     const text = encodeDocumentToToon(manifest)
@@ -96,27 +96,27 @@ describe("TOON round trip (@toon-format/toon)", () => {
     const descriptor = sampleDescribeFixture()
     const ecp = await initToonEcp()
 
-    const encoded = await ecp.encode(descriptor).uses("@executioncontextprotocol/format-toon").process()
-    expect(encoded.sourceSchema).toBe("@ecp.environment.describe")
+    const encoded = await ecp.encode(descriptor).uses("@executioncontrolprotocol/format-toon").process()
+    expect(encoded.sourceSchema).toBe("@executioncontrolprotocol.environment.describe")
 
-    const decoded = await ecp.decode(encoded.result).uses("@executioncontextprotocol/format-toon").process()
+    const decoded = await ecp.decode(encoded.result).uses("@executioncontrolprotocol/format-toon").process()
     await ecp.terminate()
-    expect(decoded.targetSchema).toBe("@ecp.environment.describe")
+    expect(decoded.targetSchema).toBe("@executioncontrolprotocol.environment.describe")
     expect(decoded.result).toEqual(descriptor)
   })
 
   it("supports headerless compact TOON", async () => {
     await registerFormatToonExtension()
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontrolprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const ecp = await initToonEcp()
 
     const encoded = await ecp
       .encode(manifest)
-      .uses("@executioncontextprotocol/format-toon")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-toon")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false, compact: true })
       .process()
 
@@ -125,8 +125,8 @@ describe("TOON round trip (@toon-format/toon)", () => {
 
     const decoded = await ecp
       .decode(encoded.result)
-      .uses("@executioncontextprotocol/format-toon")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-toon")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false, compact: true })
       .process()
     expect(decoded.success).toBe(true)
@@ -136,30 +136,30 @@ describe("TOON round trip (@toon-format/toon)", () => {
     await ecp.terminate()
   })
 
-  it("round trips @ecp.patch headerless TOON via codec", async () => {
+  it("round trips @executioncontrolprotocol.patch headerless TOON via codec", async () => {
     await registerFormatToonExtension()
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontrolprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
     const stepId = (manifest.steps[0] as StepNode).id
     const patchDoc = {
-      schema: "@ecp.patch" as const,
+      schema: "@executioncontrolprotocol.patch" as const,
       version: LATEST_ECP_VERSION,
       entries: [{ path: `steps[${stepId}].input`, value: { value: "y" } }],
     }
     const toon = encodeDocumentToToon(patchDoc, { headers: false, compact: true })
     const restored = decodeDocumentFromToon(toon) as typeof patchDoc
-    expect(restored.schema).toBe("@ecp.patch")
+    expect(restored.schema).toBe("@executioncontrolprotocol.patch")
     expect(restored.entries.length).toBe(1)
   })
 
   it("encodes unknown schema without validation errors", async () => {
     await registerFormatToonExtension()
-    const doc = { schema: "@ecp.custom.future", version: "1.0", data: { ok: true } }
+    const doc = { schema: "@executioncontrolprotocol.custom.future", version: "1.0", data: { ok: true } }
     const ecp = await initToonEcp()
-    const encoded = await ecp.encode(doc).uses("@executioncontextprotocol/format-toon").process()
+    const encoded = await ecp.encode(doc).uses("@executioncontrolprotocol/format-toon").process()
     expect(encoded.diagnostics).toEqual([])
-    const decoded = await ecp.decode(encoded.result).uses("@executioncontextprotocol/format-toon").process()
+    const decoded = await ecp.decode(encoded.result).uses("@executioncontrolprotocol/format-toon").process()
     await ecp.terminate()
     expect(decoded.result).toEqual(doc)
   })

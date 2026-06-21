@@ -23,8 +23,8 @@ For architecture and the current spec, see:
 ## Install + build
 
 ```bash
-git clone https://github.com/GuillaumeCleme/executioncontextprotocol.git
-cd executioncontextprotocol
+git clone https://github.com/GuillaumeCleme/executioncontrolprotocol.git
+cd executioncontrolprotocol
 npm install
 npm run build
 ```
@@ -47,7 +47,7 @@ Now `ecp --help` should work.
 
 ## Run a workflow (Node)
 
-ECP runs **workflows** (`@ecp.workflow`) inside **environments** (runtime +
+ECP runs **workflows** (`@executioncontrolprotocol.workflow`) inside **environments** (runtime +
 extensions + policies). Examples are authored in TypeScript but compile down to
 portable JSON workflow manifests.
 

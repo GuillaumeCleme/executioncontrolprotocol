@@ -1,12 +1,12 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-import type { EcpPatchDocument, EcpPatchEntry, EcpPatchInput, EcpSchema } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+import type { EcpPatchDocument, EcpPatchEntry, EcpPatchInput, EcpSchema } from "@executioncontrolprotocol/types"
 import { ecpPatchDocumentSchema } from "./patch-document.js"
 
 function isPatchDocument(value: unknown): value is EcpPatchDocument {
   return (
     value !== null &&
     typeof value === "object" &&
-    (value as EcpPatchDocument).schema === "@ecp.patch"
+    (value as EcpPatchDocument).schema === "@executioncontrolprotocol.patch"
   )
 }
 
@@ -30,7 +30,7 @@ function isPatchEntryArray(value: unknown): value is EcpPatchEntry[] {
  */
 export function normalizePatchInput(
   input: EcpPatchInput,
-  targetSchema: EcpSchema = "@ecp.workflow"
+  targetSchema: EcpSchema = "@executioncontrolprotocol.workflow"
 ): EcpPatchDocument {
   if (isPatchDocument(input)) {
     return input
@@ -38,7 +38,7 @@ export function normalizePatchInput(
 
   if (isPatchEntryArray(input)) {
     return {
-      schema: "@ecp.patch",
+      schema: "@executioncontrolprotocol.patch",
       version: LATEST_ECP_VERSION,
       targetSchema,
       patches: input,
@@ -52,7 +52,7 @@ export function normalizePatchInput(
     isPatchEntryArray((input as { patches: unknown }).patches)
   ) {
     return {
-      schema: "@ecp.patch",
+      schema: "@executioncontrolprotocol.patch",
       version: LATEST_ECP_VERSION,
       targetSchema,
       patches: (input as { patches: EcpPatchEntry[] }).patches,
@@ -68,7 +68,7 @@ export function normalizePatchInput(
   )
 
   return {
-    schema: "@ecp.patch",
+    schema: "@executioncontrolprotocol.patch",
     version: LATEST_ECP_VERSION,
     targetSchema,
     patches,

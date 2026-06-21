@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 
 /**
  * Normalize common model JSON mistakes before workflow validation.
@@ -26,7 +26,7 @@ export function normalizeWorkflowDocumentCandidate(document: unknown): unknown {
 
   const normalized: Record<string, unknown> = {
     ...record,
-    schema: record.schema ?? "@ecp.workflow",
+    schema: record.schema ?? "@executioncontrolprotocol.workflow",
     version: record.version ?? LATEST_ECP_VERSION,
   }
 

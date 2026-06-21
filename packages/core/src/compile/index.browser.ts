@@ -1,4 +1,4 @@
-import type { EnvironmentDescriptor } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor } from "@executioncontrolprotocol/types"
 import { validateWorkflow } from "../validate/workflow.js"
 import { evaluateWorkflowModule } from "./evaluate-browser.js"
 import { bundleWorkflowSource, isTypeScriptFile } from "./transpile-browser.js"
@@ -26,7 +26,7 @@ export async function compileWorkflowSource(
   try {
     const code =
       isTypeScriptFile(filename) ||
-      options.source.includes("@executioncontextprotocol/") ||
+      options.source.includes("@executioncontrolprotocol/") ||
       options.resolveImports === "browser-global"
         ? await bundleWorkflowSource(
             options.source,

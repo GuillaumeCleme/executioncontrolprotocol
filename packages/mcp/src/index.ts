@@ -2,9 +2,9 @@ import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mc
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import { z } from "zod"
-import type { Ecp } from "@executioncontextprotocol/core"
-import type { EcpEncodeInput, RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
-import { ECP_FORMATS } from "@executioncontextprotocol/types"
+import type { Ecp } from "@executioncontrolprotocol/core"
+import type { EcpEncodeInput, RunResult, WorkflowManifest } from "@executioncontrolprotocol/types"
+import { ECP_FORMATS } from "@executioncontrolprotocol/types"
 import { createServer, type Server } from "node:http"
 
 /** Options for MCP server creation. @category MCP */
@@ -47,7 +47,7 @@ function registerEcpTools(server: McpServer, ecp: Ecp): void {
     "ecp.search",
     { query: z.string(), options: z.record(z.unknown()).optional() },
     async ({ query, options: searchOpts }) =>
-      toolText(await ecp.search(query, searchOpts as import("@executioncontextprotocol/types").SearchOptions))
+      toolText(await ecp.search(query, searchOpts as import("@executioncontrolprotocol/types").SearchOptions))
   )
 
   server.tool(
@@ -85,9 +85,9 @@ function registerEcpTools(server: McpServer, ecp: Ecp): void {
     },
     async ({ source, format, compact }) => {
       let op = ecp.encode(source as EcpEncodeInput["source"])
-      if (format === "toon") op = op.uses("@executioncontextprotocol/format-toon")
-      else if (format === "fluent") op = op.uses("@executioncontextprotocol/format-fluent")
-      else op = op.uses("@executioncontextprotocol/format-json")
+      if (format === "toon") op = op.uses("@executioncontrolprotocol/format-toon")
+      else if (format === "fluent") op = op.uses("@executioncontrolprotocol/format-fluent")
+      else op = op.uses("@executioncontrolprotocol/format-json")
       if (compact) op = op.compact()
       return toolText(await op.process())
     }
@@ -103,11 +103,11 @@ function registerEcpTools(server: McpServer, ecp: Ecp): void {
     },
     async ({ content, format, strict, targetSchema }) => {
       let op = ecp.decode(content)
-      if (format === "toon") op = op.uses("@executioncontextprotocol/format-toon")
-      else op = op.uses("@executioncontextprotocol/format-json")
+      if (format === "toon") op = op.uses("@executioncontrolprotocol/format-toon")
+      else op = op.uses("@executioncontrolprotocol/format-json")
       if (strict) op = op.strict()
-      if (targetSchema) op = op.to(targetSchema as "@ecp.workflow")
-      else if (!format || format === ECP_FORMATS.JSON) op = op.to("@ecp.workflow")
+      if (targetSchema) op = op.to(targetSchema as "@executioncontrolprotocol.workflow")
+      else if (!format || format === ECP_FORMATS.JSON) op = op.to("@executioncontrolprotocol.workflow")
       return toolText(await op.process())
     }
   )
@@ -153,7 +153,7 @@ function registerEcpResources(server: McpServer, ecp: Ecp): void {
   )
 
   // Reserved expansion `{+id}` so capability ids containing `/` and `.`
-  // (e.g. `@executioncontextprotocol/demo.echo`) match and round-trip correctly.
+  // (e.g. `@executioncontrolprotocol/demo.echo`) match and round-trip correctly.
   server.registerResource(
     "capability",
     new ResourceTemplate("ecp://capabilities/{+id}", {
@@ -221,7 +221,7 @@ function registerEcpPrompts(server: McpServer, ecp: Ecp): void {
     "ecp.author_workflow",
     {
       title: "Author an ECP workflow",
-      description: "Guide the agent to build a valid @ecp.workflow manifest for a goal.",
+      description: "Guide the agent to build a valid @executioncontrolprotocol.workflow manifest for a goal.",
       argsSchema: { goal: z.string() },
     },
     async ({ goal }) => {
@@ -233,7 +233,7 @@ function registerEcpPrompts(server: McpServer, ecp: Ecp): void {
             content: {
               type: "text",
               text: [
-                `Author an ECP workflow manifest (schema "@ecp.workflow", version "1.0") for this goal:`,
+                `Author an ECP workflow manifest (schema "@executioncontrolprotocol.workflow", version "1.0") for this goal:`,
                 "",
                 goal,
                 "",
@@ -343,7 +343,7 @@ export function createEcpMcpServer(options: CreateEcpMcpServerOptions): McpServe
 
 /** Serve MCP over stdio. @category MCP */
 export async function serveStdio(options: {
-  environment: import("@executioncontextprotocol/core").Environment
+  environment: import("@executioncontrolprotocol/core").Environment
   name?: string
   version?: string
 }): Promise<void> {
@@ -367,7 +367,7 @@ const DEFAULT_MCP_PATH = "/mcp"
  * @category MCP
  */
 export async function serveHttp(options: {
-  environment: import("@executioncontextprotocol/core").Environment
+  environment: import("@executioncontrolprotocol/core").Environment
   port?: number
   path?: string
   name?: string

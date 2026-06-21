@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontrolprotocol/core"
 import { createBrowserTestEnvironment } from "./helpers.js"
 import { registerRuntimeConformanceTests } from "../../../core/test/runtime-conformance.js"
 
-registerRuntimeConformanceTests("@executioncontextprotocol/browser", () => createBrowserTestEnvironment("browser-conformance"))
+registerRuntimeConformanceTests("@executioncontrolprotocol/browser", () => createBrowserTestEnvironment("browser-conformance"))
 
-describe("@executioncontextprotocol/browser runtime", () => {
+describe("@executioncontrolprotocol/browser runtime", () => {
   it("runs echo workflow", async () => {
     const env = await createBrowserTestEnvironment("browser-test")
     const manifest = workflow("Browser Echo")
-      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hello browser" }).as("echo")])
+      .run([step("@executioncontrolprotocol/demo.echo", "Echo").with({ value: "hello browser" }).as("echo")])
       .toManifest()
     const ecp = await env.init()
     const result = await ecp.run(manifest)

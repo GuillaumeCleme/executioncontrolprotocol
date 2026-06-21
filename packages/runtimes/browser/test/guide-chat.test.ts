@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest"
 import { createBrowserDemoEnvironment, createEcp, registerBrowserDefaults } from "../src/index.js"
 
-describe("@executioncontextprotocol/browser.guideChat", () => {
+describe("@executioncontrolprotocol/browser.guideChat", () => {
   it("returns prose guidance without TOON", async () => {
     await registerBrowserDefaults()
     const env = createBrowserDemoEnvironment("guide-chat-test")
     const ecp = await createEcp(env)
-    const result = await ecp.invoke("@executioncontextprotocol/browser.guideChat").with({ message: "What is a workflow?" }).process()
+    const result = await ecp.invoke("@executioncontrolprotocol/browser.guideChat").with({ message: "What is a workflow?" }).process()
     expect(result.success).toBe(true)
     const text = String((result.result as { text: string }).text)
     expect(text).toMatch(/workflow/i)
-    expect(text).not.toMatch(/schema: "@ecp.workflow"/)
+    expect(text).not.toMatch(/schema: "@executioncontrolprotocol.workflow"/)
     await ecp.terminate()
   })
 
@@ -19,7 +19,7 @@ describe("@executioncontextprotocol/browser.guideChat", () => {
     const env = createBrowserDemoEnvironment("guide-chat-test-2")
     const ecp = await createEcp(env)
     const result = await ecp
-      .invoke("@executioncontextprotocol/browser.guideChat")
+      .invoke("@executioncontrolprotocol/browser.guideChat")
       .with({ message: "create a workflow for me" })
       .process()
     expect(result.success).toBe(true)
@@ -33,13 +33,13 @@ describe("@executioncontextprotocol/browser.guideChat", () => {
     const env = createBrowserDemoEnvironment("guide-chat-test-3")
     const ecp = await createEcp(env)
     const result = await ecp
-      .invoke("@executioncontextprotocol/browser.guideChat")
+      .invoke("@executioncontrolprotocol/browser.guideChat")
       .with({ message: "What can you do?" })
       .process()
     expect(result.success).toBe(true)
     const text = String((result.result as { text: string }).text)
     expect(text).toMatch(/workflow/i)
-    expect(text).toMatch(/@executioncontextprotocol\/demo\.echo/)
+    expect(text).toMatch(/@executioncontrolprotocol\/demo\.echo/)
     await ecp.terminate()
   })
 })

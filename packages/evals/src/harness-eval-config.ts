@@ -1,6 +1,6 @@
 /**
- * Shared harness binding config for `@executioncontextprotocol/evals` (trace + context).
- * Matrix task configs live in `@executioncontextprotocol/harnesses-browser-nano` (via harness-bindings).
+ * Shared harness binding config for `@executioncontrolprotocol/evals` (trace + context).
+ * Matrix task configs live in `@executioncontrolprotocol/harnesses-browser-nano` (via harness-bindings).
  * @category Evals
  */
 import {
@@ -36,17 +36,17 @@ export const WORKFLOW_EVAL_HARNESS_CONFIG = getHarnessNanoConfig(
 )
 
 /** Extension ids bound in workflow eval environments. @category Evals */
-export const WORKFLOW_EVAL_EXTENSIONS = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/demo"] as const
+export const WORKFLOW_EVAL_EXTENSIONS = ["@executioncontrolprotocol/format-toon", "@executioncontrolprotocol/format-eql", "@executioncontrolprotocol/demo"] as const
 
 /** Extension ids bound in intent eval environments (same ops surface as workflow). @category Evals */
-export const INTENT_EVAL_EXTENSIONS = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/demo"] as const
+export const INTENT_EVAL_EXTENSIONS = ["@executioncontrolprotocol/format-toon", "@executioncontrolprotocol/format-eql", "@executioncontrolprotocol/demo"] as const
 
 /** Extension ids bound in Ollama matrix eval environments (binding order). @category Evals */
 export const MATRIX_EVAL_EXTENSION_IDS = [
-  "@executioncontextprotocol/format-toon",
-  "@executioncontextprotocol/format-eql",
-  "@executioncontextprotocol/format-json",
-  "@executioncontextprotocol/demo",
+  "@executioncontrolprotocol/format-toon",
+  "@executioncontrolprotocol/format-eql",
+  "@executioncontrolprotocol/format-json",
+  "@executioncontrolprotocol/demo",
 ] as const
 
 /** Intent harness config for matrix environment. @category Evals */

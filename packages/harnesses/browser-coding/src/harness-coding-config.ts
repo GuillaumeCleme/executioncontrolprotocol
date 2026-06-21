@@ -1,4 +1,4 @@
-import { HARNESS_OUTPUT_FORMAT_TYPESCRIPT } from "@executioncontextprotocol/core"
+import { HARNESS_OUTPUT_FORMAT_TYPESCRIPT } from "@executioncontrolprotocol/core"
 
 /**
  * Per-task Browser Coding harness binding defaults.
@@ -19,10 +19,10 @@ export const HARNESS_CODING_REPAIR = {
 const SHARED_CONTEXT = {
   includeEnvironmentDescriptor: true,
   includeEncodedDescriptor: false,
-  descriptorFormat: "@executioncontextprotocol/format-json",
+  descriptorFormat: "@executioncontrolprotocol/format-json",
 } as const
 
-/** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@executioncontextprotocol/evals`). */
+/** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@executioncontrolprotocol/evals`). */
 export const HARNESS_TASKS = {
   WORKFLOW_AUTHORING: "workflow-authoring",
   INTENT_CLASSIFICATION: "intent-classification",
@@ -37,7 +37,7 @@ export type HarnessCodingProfile = "coding"
 const CODING_INTENT = {
   promptFixture: "intent-classification-coding",
   output: {
-    schema: "@ecp.intent",
+    schema: "@executioncontrolprotocol.intent",
     format: HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
     validate: true,
   },
@@ -48,14 +48,14 @@ const CODING_INTENT = {
 
 const CODING_WORKFLOW = {
   output: {
-    schema: "@ecp.workflow",
+    schema: "@executioncontrolprotocol.workflow",
     format: HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
     validate: true,
   },
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
-    runContextFormat: "@executioncontextprotocol/format-json",
+    runContextFormat: "@executioncontrolprotocol/format-json",
   },
   repair: HARNESS_CODING_REPAIR,
   trace: HARNESS_CODING_TRACE,
@@ -64,14 +64,14 @@ const CODING_WORKFLOW = {
 const CODING_ASSISTANT = {
   promptFixture: "workflow-assistant-coding",
   output: {
-    schema: "@ecp.harness.reply",
+    schema: "@executioncontrolprotocol.harness.reply",
     format: HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
     validate: true,
   },
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
-    runContextFormat: "@executioncontextprotocol/format-json",
+    runContextFormat: "@executioncontrolprotocol/format-json",
   },
   repair: { ...HARNESS_CODING_REPAIR, safeReplyFallback: true },
   trace: HARNESS_CODING_TRACE,

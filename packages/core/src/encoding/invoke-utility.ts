@@ -1,5 +1,5 @@
-import { ECP_ENCODING_ERROR_CODES } from "@executioncontextprotocol/types"
-import type { EcpDecodeInput, EcpEncodeInput } from "@executioncontextprotocol/types"
+import { ECP_ENCODING_ERROR_CODES } from "@executioncontrolprotocol/types"
+import type { EcpDecodeInput, EcpEncodeInput } from "@executioncontrolprotocol/types"
 import type { CapabilityDefinition } from "../definitions/types.js"
 import { ecpDecodeInputSchema, ecpEncodeInputSchema } from "./schemas.js"
 import type { UtilityCapabilityContext } from "./utility-context.js"

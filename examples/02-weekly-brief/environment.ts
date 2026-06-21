@@ -1,7 +1,7 @@
-import { environment, extension, env } from "@executioncontextprotocol/node"
-import { registerMemoryExtension } from "@executioncontextprotocol/extension-memory"
-import { registerOpenaiExtension } from "@executioncontextprotocol/extension-openai"
-import { registerSlackExtension } from "@executioncontextprotocol/extension-slack"
+import { environment, extension, env } from "@executioncontrolprotocol/node"
+import { registerMemoryExtension } from "@executioncontrolprotocol/extension-memory"
+import { registerOpenaiExtension } from "@executioncontrolprotocol/extension-openai"
+import { registerSlackExtension } from "@executioncontrolprotocol/extension-slack"
 
 registerMemoryExtension()
 registerOpenaiExtension()
@@ -9,15 +9,15 @@ registerSlackExtension()
 
 export default environment("weekly-brief", "Weekly brief")
   .withExtensions([
-    extension("@executioncontextprotocol/memory", "Memory").with({
+    extension("@executioncontrolprotocol/memory", "Memory").with({
       hydrateModels: true,
       collections: ["leadership"],
     }),
-    extension("@executioncontextprotocol/openai", "OpenAI").with({
+    extension("@executioncontrolprotocol/openai", "OpenAI").with({
       apiKey: env("OPENAI_API_KEY", { optional: true }),
       defaultModel: "gpt-4o-mini",
     }),
-    extension("@executioncontextprotocol/slack", "Slack").with({
+    extension("@executioncontrolprotocol/slack", "Slack").with({
       botToken: env("SLACK_BOT_TOKEN", { optional: true }),
     }),
   ])

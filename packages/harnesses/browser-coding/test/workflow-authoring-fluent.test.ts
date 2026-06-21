@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest"
-import { compileWorkflowSource } from "@executioncontextprotocol/core/compile"
-import { renderWorkflowToFluent } from "@executioncontextprotocol/core"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import { compileWorkflowSource } from "@executioncontrolprotocol/core/compile"
+import { renderWorkflowToFluent } from "@executioncontrolprotocol/core"
+import { registerDemoExtension } from "@executioncontrolprotocol/demo"
 
 const SAMPLE = `
-import { workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontrolprotocol/core"
 export default workflow("Patch target")
-  .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
+  .run([step("@executioncontrolprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
 `
 
 describe("Browser Coding workflow Fluent compile", () => {
@@ -23,6 +23,6 @@ describe("Browser Coding workflow Fluent compile", () => {
     expect(compiled.manifest).toBeDefined()
     const fluent = renderWorkflowToFluent(compiled.manifest!)
     expect(fluent).toContain("export default workflow")
-    expect(fluent).toContain("@executioncontextprotocol/demo.echo")
+    expect(fluent).toContain("@executioncontrolprotocol/demo.echo")
   })
 })

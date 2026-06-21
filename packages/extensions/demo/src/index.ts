@@ -4,8 +4,8 @@ import {
   defineExtension,
   globalRegistry,
   type Registry,
-} from "@executioncontextprotocol/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 const GenerateTextInput = z.object({
@@ -55,7 +55,7 @@ function demoAssistantResponse(prompt: string): string {
     return 'REPLY\n  ANSWER "I cannot register or install extensions. I can list loaded capabilities and help you build workflows with them."'
   }
   if (/capabilit|extensions?|plugins?/.test(message)) {
-    return 'REPLY\n  ANSWER "Loaded capabilities include @executioncontextprotocol/demo.echo, @executioncontextprotocol/demo.summarize, @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.notify, and @executioncontextprotocol/demo.translate."\n  CITATION extension @executioncontextprotocol/demo "@executioncontextprotocol/demo.echo"'
+    return 'REPLY\n  ANSWER "Loaded capabilities include @executioncontrolprotocol/demo.echo, @executioncontrolprotocol/demo.summarize, @executioncontrolprotocol/demo.validate, @executioncontrolprotocol/demo.notify, and @executioncontrolprotocol/demo.translate."\n  CITATION extension @executioncontrolprotocol/demo "@executioncontrolprotocol/demo.echo"'
   }
   if (/error|fail|fix/.test(message)) {
     return 'REPLY\n  ANSWER "The echo step failed with an error; patch the echo step input to recover."\n  CITATION step echo "Failed echo step in run context."'
@@ -75,7 +75,7 @@ function demoGenerateHandler(input: { prompt?: string; system?: string }) {
   if (prompt.includes("User message:")) {
     return { text: demoIntentResponse(prompt) }
   }
-  if (prompt.includes("@ecp.patch") || /PATCH\s+WORKFLOW/i.test(prompt)) {
+  if (prompt.includes("@executioncontrolprotocol.patch") || /PATCH\s+WORKFLOW/i.test(prompt)) {
     return {
       text: [
         "PATCH WORKFLOW echo-test",
@@ -87,7 +87,7 @@ function demoGenerateHandler(input: { prompt?: string; system?: string }) {
   return {
     text: [
       'WORKFLOW demo-generated "Demo generated"',
-      "STEP echo USES @executioncontextprotocol/demo.echo",
+      "STEP echo USES @executioncontrolprotocol/demo.echo",
       '  LABEL "Demo Echo"',
       '  WITH value = "hello"',
       "  AS echo",
@@ -103,33 +103,33 @@ function demoStubHandler(input: { payload?: unknown }) {
 }
 
 /** Demo model provider for offline browser demo. @category Extensions */
-export const demoExtension = defineExtension("@executioncontextprotocol", "demo")
+export const demoExtension = defineExtension("@executioncontrolprotocol", "demo")
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/demo", "echo")
+    capabilityFor("@executioncontrolprotocol/demo", "echo")
       .withInput(EchoInput)
       .withOutput(EchoOutput)
       .withHandler(async (input) => echoHandler(input as { value?: unknown })),
-    capabilityFor("@executioncontextprotocol/demo", "generate")
+    capabilityFor("@executioncontrolprotocol/demo", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string; system?: string })),
-    capabilityFor("@executioncontextprotocol/demo", "generateText")
+    capabilityFor("@executioncontrolprotocol/demo", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(GenerateTextOutput)
       .withHandler(async (input) => demoGenerateHandler(input as { prompt?: string; system?: string })),
-    capabilityFor("@executioncontextprotocol/demo", "summarize")
+    capabilityFor("@executioncontrolprotocol/demo", "summarize")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
-    capabilityFor("@executioncontextprotocol/demo", "translate")
+    capabilityFor("@executioncontrolprotocol/demo", "translate")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
-    capabilityFor("@executioncontextprotocol/demo", "notify")
+    capabilityFor("@executioncontrolprotocol/demo", "notify")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
-    capabilityFor("@executioncontextprotocol/demo", "validate")
+    capabilityFor("@executioncontrolprotocol/demo", "validate")
       .withInput(DemoStubInput)
       .withOutput(DemoStubOutput)
       .withHandler(async (input) => demoStubHandler(input as { payload?: unknown })),
@@ -140,7 +140,7 @@ catalogExtension(demoExtension)
 
 /** Register demo extension. @category Extensions */
 export async function registerDemoExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/demo")) {
+  if (!registry.getExtension("@executioncontrolprotocol/demo")) {
     await registry.registerExtension(demoExtension)
   }
 }

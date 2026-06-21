@@ -2,7 +2,7 @@ import {
   IMAGE_REF_KINDS,
   type ImageRef,
   type ImageRefKind,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 
 /** Whether `value` is an {@link ImageRef}. @category Image */
 export function isImageRef(value: unknown): value is ImageRef {

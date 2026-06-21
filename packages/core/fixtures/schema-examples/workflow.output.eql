@@ -1,5 +1,5 @@
 WORKFLOW minimal-echo "Minimal Echo"
-STEP echo USES @executioncontextprotocol/demo.echo
+STEP echo USES @executioncontrolprotocol/demo.echo
   LABEL "Echo"
   WITH value = "hello"
   AS echo

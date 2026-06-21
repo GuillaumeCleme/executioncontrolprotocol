@@ -4,8 +4,8 @@ import {
   defineExtension,
   globalRegistry,
   type Registry,
-} from "@executioncontextprotocol/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import {
   assertModelReady,
@@ -54,10 +54,10 @@ const InstallStateSchema = z.object({
 })
 
 /** Chrome built-in AI provider. @category Extensions */
-export const chromeAiExtension = defineExtension("@executioncontextprotocol", "chrome-ai")
-  .withSupportedRuntimes(["@executioncontextprotocol/browser"])
+export const chromeAiExtension = defineExtension("@executioncontrolprotocol", "chrome-ai")
+  .withSupportedRuntimes(["@executioncontrolprotocol/browser"])
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/chrome-ai", "checkAvailability")
+    capabilityFor("@executioncontrolprotocol/chrome-ai", "checkAvailability")
       .withInput(z.object({}))
       .withOutput(
         z.object({
@@ -74,19 +74,19 @@ export const chromeAiExtension = defineExtension("@executioncontextprotocol", "c
           status: result.status,
         }
       }),
-    capabilityFor("@executioncontextprotocol/chrome-ai", "startModelDownload")
+    capabilityFor("@executioncontrolprotocol/chrome-ai", "startModelDownload")
       .withInput(z.object({}))
       .withOutput(z.object({ started: z.boolean() }))
       .withHandler(async () => startModelDownload()),
-    capabilityFor("@executioncontextprotocol/chrome-ai", "getModelInstallState")
+    capabilityFor("@executioncontrolprotocol/chrome-ai", "getModelInstallState")
       .withInput(z.object({}))
       .withOutput(InstallStateSchema)
       .withHandler(async () => getModelInstallState()),
-    capabilityFor("@executioncontextprotocol/chrome-ai", "generate")
+    capabilityFor("@executioncontrolprotocol/chrome-ai", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (raw) => runChromePrompt(raw as z.infer<typeof GenerateTextInput>)),
-    capabilityFor("@executioncontextprotocol/chrome-ai", "generateText")
+    capabilityFor("@executioncontrolprotocol/chrome-ai", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))
       .withHandler(async (raw) => runChromePrompt(raw as z.infer<typeof GenerateTextInput>)),
@@ -106,7 +106,7 @@ export {
 
 /** Register Chrome AI extension. @category Extensions */
 export async function registerChromeAiExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/chrome-ai")) {
+  if (!registry.getExtension("@executioncontrolprotocol/chrome-ai")) {
     await registry.registerExtension(chromeAiExtension)
   }
 }

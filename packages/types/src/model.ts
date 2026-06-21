@@ -2,7 +2,7 @@ import { z } from "zod"
 import type { GenerateCapabilityInput, GenerateCapabilityOutput } from "./capabilities.js"
 
 /** Interface tag for harness-compatible model providers. @category Harness */
-export const ECP_MODEL_GENERATE_INTERFACE = "@executioncontextprotocol/model.generate" as const
+export const ECP_MODEL_GENERATE_INTERFACE = "@executioncontrolprotocol/model.generate" as const
 
 /** Reserved capability name for model providers used by harnesses. @category Harness */
 export const ECP_MODEL_CAPABILITY_NAME = "generate" as const

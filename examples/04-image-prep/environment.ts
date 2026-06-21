@@ -1,14 +1,14 @@
-import "@executioncontextprotocol/extension-image-sharp"
-import { environment, extension, policy } from "@executioncontextprotocol/node"
-import { registerImageSharpExtension } from "@executioncontextprotocol/extension-image-sharp"
-import { registerImagePolicy } from "@executioncontextprotocol/policies"
+import "@executioncontrolprotocol/extension-image-sharp"
+import { environment, extension, policy } from "@executioncontrolprotocol/node"
+import { registerImageSharpExtension } from "@executioncontrolprotocol/extension-image-sharp"
+import { registerImagePolicy } from "@executioncontrolprotocol/policies"
 
 registerImageSharpExtension()
 registerImagePolicy()
 
 export default environment("image-prep", "Image prep")
   .withExtensions([
-    extension("@executioncontextprotocol/image-sharp", "Sharp").with({
+    extension("@executioncontrolprotocol/image-sharp", "Sharp").with({
       limits: {
         allowRemoteUrls: false,
       },
@@ -20,7 +20,7 @@ export default environment("image-prep", "Image prep")
     }),
   ])
   .withPolicies([
-    policy("@executioncontextprotocol/image-policy", "Image policy").with({
+    policy("@executioncontrolprotocol/image-policy", "Image policy").with({
       allowedInputKinds: ["file", "artifact", "buffer"],
       allowedOutputFormats: ["webp", "png", "jpeg"],
       maxImageRefsPerStep: 8,

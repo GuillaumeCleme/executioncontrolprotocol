@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest"
-import { ECP_INTENT_VALUES } from "@executioncontextprotocol/types"
+import { ECP_INTENT_VALUES } from "@executioncontrolprotocol/types"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
   INTENT_EVAL_EXTENSIONS,
   OLLAMA_GEMMA_1B_EVAL,
   createHarnessOllamaIntentEnvironment,
   ollamaEvalReady,
-} from "@executioncontextprotocol/evals"
-import { HARNESS_TASKS } from "@executioncontextprotocol/evals"
+} from "@executioncontrolprotocol/evals"
+import { HARNESS_TASKS } from "@executioncontrolprotocol/evals"
 import { expectHarnessIntent, harnessTraceHint } from "./assert-harness-result.js"
 
 const readiness = await ollamaEvalReady()
@@ -20,7 +20,7 @@ describe.skipIf(!readiness.ready)(
       const ecp = await env.init()
       const descriptor = await ecp.describe()
       const capabilityIds = descriptor.capabilities?.map((c) => c.id) ?? []
-      expect(capabilityIds).toContain("@executioncontextprotocol/demo.echo")
+      expect(capabilityIds).toContain("@executioncontrolprotocol/demo.echo")
       await ecp.terminate()
     })
 
@@ -39,7 +39,7 @@ describe.skipIf(!readiness.ready)(
 
       const harnessOutput = expectHarnessIntent(result, ECP_INTENT_VALUES.WORKFLOW_CREATE)
       expect(harnessOutput.trace.outputFormat, harnessTraceHint(harnessOutput)).toBe(
-        "@executioncontextprotocol/format-eql"
+        "@executioncontrolprotocol/format-eql"
       )
       expect(harnessOutput.trace.prompt, harnessTraceHint(harnessOutput)).toContain(
         "Environment capabilities"

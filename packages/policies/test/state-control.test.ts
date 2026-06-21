@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest"
-import { createUsageLedger } from "@executioncontextprotocol/core"
-import type { PolicyContext } from "@executioncontextprotocol/core"
+import { createUsageLedger } from "@executioncontrolprotocol/core"
+import type { PolicyContext } from "@executioncontrolprotocol/core"
 import type {
   PendingMutation,
   PolicyDecision,
   PolicyLifecycleEvent,
   StoreStateHandle,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { stateControlPolicy } from "../src/index.js"
 
 function handle(path: string): StoreStateHandle {
@@ -32,9 +32,9 @@ async function evalPolicy(
   const hook = stateControlPolicy.hooks.find((h) => h.event === event)
   if (!hook) throw new Error(`missing ${event}`)
   const ctx: PolicyContext & { config: Record<string, unknown> } = {
-    workflow: { schema: "@ecp.workflow", version: "1.0.0", workflow: { id: "stub" }, steps: [] },
+    workflow: { schema: "@executioncontrolprotocol.workflow", version: "1.0.0", workflow: { id: "stub" }, steps: [] },
     run: { id: "run", input: {} },
-    step: { id: "s1", capabilityId: "@executioncontextprotocol/demo.echo" },
+    step: { id: "s1", capabilityId: "@executioncontrolprotocol/demo.echo" },
     state: {},
     input: {},
     usage: createUsageLedger(),
@@ -44,7 +44,7 @@ async function evalPolicy(
   return (await hook.handler(ctx as never)) as PolicyDecision | void
 }
 
-describe("@executioncontextprotocol/state-control enforcement", () => {
+describe("@executioncontrolprotocol/state-control enforcement", () => {
   it("denies a path on the denied list (denied wins over allowed)", async () => {
     const decision = await evalPolicy(
       "policy:pre",

@@ -1,9 +1,9 @@
-import { collectModelOutputFeedback, type CompactEnvironmentSummary } from "@executioncontextprotocol/core"
+import { collectModelOutputFeedback, type CompactEnvironmentSummary } from "@executioncontrolprotocol/core"
 import {
   inferPatchTargetStepId,
   inferRequiredCapabilityIds,
-} from "@executioncontextprotocol/harnesses-browser-nano"
-import type { HarnessOperationFeedback, StepNode, WorkflowManifest } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/harnesses-browser-nano"
+import type { HarnessOperationFeedback, StepNode, WorkflowManifest } from "@executioncontrolprotocol/types"
 
 const FLUENT_ANTI_PATTERNS =
   "Do not use EQL, PATCH WORKFLOW, UPDATE STEP, DELETE STEP, MOVE STEP, ADD STEP, .remove(), .after(), or moveStep."
@@ -62,7 +62,7 @@ export function buildFluentPatchHintLines(
     FLUENT_ANTI_PATTERNS,
     `Keep workflow .id("${workflowId}") on export default workflow(...).`,
     `Preserve every existing step .id(...) for ids: ${stepIds.join(", ") || "none"}.`,
-    "Return a complete revised module: import { workflow, step, ref } from \"@executioncontextprotocol/core\" when using ref().",
+    "Return a complete revised module: import { workflow, step, ref } from \"@executioncontrolprotocol/core\" when using ref().",
     "Edit rules:",
     "- label or input on an existing step → change that step only; keep .id(\"<stepId>\") unchanged.",
     "- remove/delete a step → rebuild .run([...]) without that step.",
@@ -130,7 +130,7 @@ export function buildFluentPatchHintLines(
         : []
     if (required.length > 0) {
       lines.push(
-        `Append step("${required[0]}", ...) to .run([...])${addAfterMatch ? ` after the step with id "${addAfterMatch[1]}"` : ""}; import ref from "@executioncontextprotocol/core" when chaining outputs.`
+        `Append step("${required[0]}", ...) to .run([...])${addAfterMatch ? ` after the step with id "${addAfterMatch[1]}"` : ""}; import ref from "@executioncontrolprotocol/core" when chaining outputs.`
       )
     }
   }
@@ -385,7 +385,7 @@ export function collectFluentCompileErrorFeedback(
   ) {
     return [
       collectModelOutputFeedback(
-        "Use only @executioncontextprotocol/core Fluent API: workflow, step, ref, branch, parallel, loop. " +
+        "Use only @executioncontrolprotocol/core Fluent API: workflow, step, ref, branch, parallel, loop. " +
           "Never use identifiers named typescript, moveStep, UPDATE STEP, or chained .remove() / .after(). " +
           FLUENT_ANTI_PATTERNS
       ),

@@ -1,4 +1,4 @@
-import type { BrowserValue } from "@executioncontextprotocol/types"
+import type { BrowserValue } from "@executioncontrolprotocol/types"
 
 /** Options for browser encrypted secret refs. */
 export interface BrowserOptions {

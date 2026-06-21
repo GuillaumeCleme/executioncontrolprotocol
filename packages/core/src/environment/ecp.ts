@@ -7,7 +7,7 @@ import type {
   SearchResult,
   ValidationResult,
   WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { Registry } from "../registry/registry.js"
 import type { Environment, RunOptions } from "./environment.js"
 import {

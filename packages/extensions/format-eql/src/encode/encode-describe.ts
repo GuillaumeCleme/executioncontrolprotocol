@@ -1,5 +1,5 @@
-import type { EnvironmentDescriptor } from "@executioncontextprotocol/types"
-import type { EcpFormatOptions } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor } from "@executioncontrolprotocol/types"
+import type { EcpFormatOptions } from "@executioncontrolprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { isEqlTypesRecord } from "../validate-environment.js"
 import { EqlWriter, formatLiteral } from "./writer.js"
@@ -23,7 +23,7 @@ export function encodeDescribeToEql(
 ): string {
   const writer = new EqlWriter(options)
   if (includeHeader) {
-    writer.writeln(`ECP @ecp.environment.describe ${descriptor.version}`)
+    writer.writeln(`ECP @executioncontrolprotocol.environment.describe ${descriptor.version}`)
   }
 
   const envLine = descriptor.environment.label

@@ -3,7 +3,7 @@ import {
   type HarnessCapabilityId,
   type HarnessId,
   type NamespacedId,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { HarnessDefinition } from "./types.js"
 
 const catalog = new Map<HarnessId, HarnessDefinition>()
@@ -14,7 +14,7 @@ const catalog = new Map<HarnessId, HarnessDefinition>()
  */
 export function normalizeHarnessId(ref: string): HarnessId {
   if (ref.startsWith("@")) return ref as HarnessId
-  return `@executioncontextprotocol/${ref}` as HarnessId
+  return `@executioncontrolprotocol/${ref}` as HarnessId
 }
 
 /**
@@ -62,7 +62,7 @@ export function harnessEvaluateCapabilityId(harnessId: NamespacedId | string): H
 
 /**
  * Whether a capability id is a harness evaluate endpoint.
- * Extension capabilities such as `@executioncontextprotocol/ollama.evaluate` also end with `.evaluate` but are not harnesses.
+ * Extension capabilities such as `@executioncontrolprotocol/ollama.evaluate` also end with `.evaluate` but are not harnesses.
  * @category Harness
  */
 export function isHarnessCapabilityId(capabilityId: string): boolean {

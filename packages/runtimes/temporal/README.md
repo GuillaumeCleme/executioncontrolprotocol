@@ -1,18 +1,18 @@
-# @executioncontextprotocol/runtime-temporal
+# @executioncontrolprotocol/runtime-temporal
 
 > **Pre-release scaffold.** This package exposes a typed Temporal runtime
 > definition and executor contract, but **durable execution is not implemented
 > yet.** Binding this runtime and running a workflow throws a descriptive error.
-> Use [`@executioncontextprotocol/node`](../node/README.md) for local execution today.
+> Use [`@executioncontrolprotocol/node`](../node/README.md) for local execution today.
 
 ## What is real
 
-- `temporalRuntimeDefinition` — a real `defineRuntime("@executioncontextprotocol", "temporal")` with a
+- `temporalRuntimeDefinition` — a real `defineRuntime("@executioncontrolprotocol", "temporal")` with a
   config schema (`taskQueue`, `durablePauses`).
 - `TemporalRuntimeExecutor` — implements the `RuntimeExecutor` contract from
-  `@executioncontextprotocol/core`.
+  `@executioncontrolprotocol/core`.
 - `registerTemporalRuntime(registry?)` — idempotent registration on a registry.
-- `TEMPORAL_RUNTIME_ID` (`@executioncontextprotocol/temporal`).
+- `TEMPORAL_RUNTIME_ID` (`@executioncontrolprotocol/temporal`).
 
 ## What is not implemented
 
@@ -23,13 +23,13 @@
 ## Usage (when implemented)
 
 ```ts
-import { environment, runtime } from "@executioncontextprotocol/node"
-import { temporalRuntimeDefinition, registerTemporalRuntime } from "@executioncontextprotocol/runtime-temporal"
+import { environment, runtime } from "@executioncontrolprotocol/node"
+import { temporalRuntimeDefinition, registerTemporalRuntime } from "@executioncontrolprotocol/runtime-temporal"
 
 await registerTemporalRuntime()
 
 const env = environment("production").withRuntime(
-  runtime("@executioncontextprotocol/temporal", "Temporal Runtime").with({
+  runtime("@executioncontrolprotocol/temporal", "Temporal Runtime").with({
     taskQueue: "ecp-runtime",
     durablePauses: true,
   })

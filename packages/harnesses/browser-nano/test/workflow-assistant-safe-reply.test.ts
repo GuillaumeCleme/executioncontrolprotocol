@@ -8,25 +8,25 @@ import {
   harness,
   HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE,
   registerCoreFormats,
-} from "@executioncontextprotocol/core"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
+} from "@executioncontrolprotocol/core"
+import { registerDemoExtension } from "@executioncontrolprotocol/demo"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
   registerBrowserNanoHarnesses,
   resetBrowserNanoHarnessRegistrationForTests,
-} from "@executioncontextprotocol/harnesses-browser-nano"
-import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
-import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
+} from "@executioncontrolprotocol/harnesses-browser-nano"
+import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
+import { registerNodeRuntime, runtime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   modelGenerateInputSchema,
   modelGenerateOutputSchema,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 
-const invalidGenExtension = defineExtension("@executioncontextprotocol", "invalid-gen")
+const invalidGenExtension = defineExtension("@executioncontrolprotocol", "invalid-gen")
   .withConfig({})
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/invalid-gen", "generate")
+    capabilityFor("@executioncontrolprotocol/invalid-gen", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async () => ({ text: "NOT VALID EQL AT ALL" })),
@@ -48,13 +48,13 @@ describe("workflow-assistant safe reply fallback", () => {
     const env = environment("workflow-assistant-safe-reply-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@executioncontextprotocol/format-eql").with({}),
-        extension("@executioncontextprotocol/demo").with({}),
-        extension("@executioncontextprotocol/invalid-gen").with({}),
+        extension("@executioncontrolprotocol/format-eql").with({}),
+        extension("@executioncontrolprotocol/demo").with({}),
+        extension("@executioncontrolprotocol/invalid-gen").with({}),
       ])
       .withHarnesses([
-        harness("@executioncontextprotocol/harness-browser-nano")
-          .uses("@executioncontextprotocol/invalid-gen.generate")
+        harness("@executioncontrolprotocol/harness-browser-nano")
+          .uses("@executioncontrolprotocol/invalid-gen.generate")
           .with({ repair: { maxAttempts: 0 } }),
       ])
 

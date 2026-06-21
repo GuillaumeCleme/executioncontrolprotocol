@@ -6,10 +6,10 @@ import {
   PROCESS_ENV_RESOLVER_ID,
   type EnvironmentConfigResolver,
   type LifecycleContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
-const EXT_ID = "@executioncontextprotocol/process-env"
+const EXT_ID = "@executioncontrolprotocol/process-env"
 
 function keyAllowed(name: string, allowed: string[], denied: string[]): boolean {
   if (denied.includes(name)) return false
@@ -38,8 +38,8 @@ function attachProcessEnvResolver(ctx: LifecycleContext): void {
 }
 
 /** Process environment config extension. @category Extensions */
-export const processEnvExtension = defineExtension("@executioncontextprotocol", "process-env")
-  .withSupportedRuntimes(["@executioncontextprotocol/node"])
+export const processEnvExtension = defineExtension("@executioncontrolprotocol", "process-env")
+  .withSupportedRuntimes(["@executioncontrolprotocol/node"])
   .withConfig({
     allowedKeys: z.array(z.string()).default(["*"]),
     deniedKeys: z.array(z.string()).default([]),
@@ -50,7 +50,7 @@ export const processEnvExtension = defineExtension("@executioncontextprotocol", 
 
 catalogExtension(processEnvExtension)
 
-/** Register `@executioncontextprotocol/process-env`. @category Extensions */
+/** Register `@executioncontrolprotocol/process-env`. @category Extensions */
 export async function registerProcessEnvExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(processEnvExtension)

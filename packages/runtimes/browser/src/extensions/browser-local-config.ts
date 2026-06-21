@@ -4,10 +4,10 @@ import {
   globalRegistry,
   type EnvironmentConfigResolver,
   type LifecycleContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
-const EXT_ID = "@executioncontextprotocol/browser-local-config"
+const EXT_ID = "@executioncontrolprotocol/browser-local-config"
 
 const DEFAULT_DENIED = [
   "OPENAI_API_KEY",
@@ -53,7 +53,7 @@ function attachLocalConfigResolver(ctx: LifecycleContext): void {
 }
 
 /** Browser localStorage config extension (non-secret keys only). @category Extensions */
-export const browserLocalConfigExtension = defineExtension("@executioncontextprotocol", "browser-local-config")
+export const browserLocalConfigExtension = defineExtension("@executioncontrolprotocol", "browser-local-config")
   .withConfig({
     prefix: z.string().default("ecp:"),
     allowedKeys: z.array(z.string()).default([]),
@@ -62,7 +62,7 @@ export const browserLocalConfigExtension = defineExtension("@executioncontextpro
   .withHooks([hook("environment:configuring", attachLocalConfigResolver)])
   .build()
 
-/** Register `@executioncontextprotocol/browser-local-config`. */
+/** Register `@executioncontrolprotocol/browser-local-config`. */
 export async function registerBrowserLocalConfigExtension(
   registry = globalRegistry
 ): Promise<void> {

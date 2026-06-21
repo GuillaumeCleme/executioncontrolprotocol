@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest"
 import { z } from "zod"
-import { ECP_MODEL_GENERATE_INTERFACE } from "@executioncontextprotocol/types"
+import { ECP_MODEL_GENERATE_INTERFACE } from "@executioncontrolprotocol/types"
 import {
   defineHarness,
   isHarnessDefinition,
@@ -21,7 +21,7 @@ describe("defineHarness", () => {
 
   it("requires a handler before build()", () => {
     expect(() =>
-      defineHarness("@executioncontextprotocol", "incomplete")
+      defineHarness("@executioncontrolprotocol", "incomplete")
         .withConfig(z.object({}))
         .usesProviderInterface(ECP_MODEL_GENERATE_INTERFACE)
         .build()
@@ -29,19 +29,19 @@ describe("defineHarness", () => {
   })
 
   it("builds a harness definition with handler", () => {
-    const def = defineHarness("@executioncontextprotocol", "sample")
+    const def = defineHarness("@executioncontrolprotocol", "sample")
       .withInput(z.object({ value: z.string() }))
       .usesProviderInterface(ECP_MODEL_GENERATE_INTERFACE)
       .withHandler(async (input) => input)
       .build()
 
-    expect(def.id).toBe("@executioncontextprotocol/sample")
+    expect(def.id).toBe("@executioncontrolprotocol/sample")
     expect(isHarnessDefinition(def)).toBe(true)
-    expect(isHarnessDefinition({ id: "@executioncontextprotocol/x" })).toBe(false)
+    expect(isHarnessDefinition({ id: "@executioncontrolprotocol/x" })).toBe(false)
   })
 
   it("types handler input from withInput schema", async () => {
-    const def = defineHarness("@executioncontextprotocol", "typed-input")
+    const def = defineHarness("@executioncontrolprotocol", "typed-input")
       .withConfig(z.object({ prefix: z.string().default("p") }))
       .withInput(z.object({ value: z.string() }))
       .usesProviderInterface(ECP_MODEL_GENERATE_INTERFACE)
@@ -53,7 +53,7 @@ describe("defineHarness", () => {
 
     const result = await def.handler({ value: "hello" }, {
       harnessId: def.id,
-      uses: "@executioncontextprotocol/demo.generate" as never,
+      uses: "@executioncontrolprotocol/demo.generate" as never,
       config: { prefix: "ok" },
       capabilityContext: {} as never,
       environment: {} as never,
@@ -67,16 +67,16 @@ describe("defineHarness", () => {
   it("resolves harness refs from catalog", () => {
     registerTestMinimalHarness()
     expect(resolveHarnessRef(TEST_MINIMAL_HARNESS_ID)?.id).toBe(TEST_MINIMAL_HARNESS_ID)
-    expect(resolveHarnessRef("@executioncontextprotocol/missing")).toBeUndefined()
+    expect(resolveHarnessRef("@executioncontrolprotocol/missing")).toBeUndefined()
   })
 
   it("resolves inline harness definitions", () => {
-    const inline = defineHarness("@executioncontextprotocol", "inline")
+    const inline = defineHarness("@executioncontrolprotocol", "inline")
       .usesProviderInterface(ECP_MODEL_GENERATE_INTERFACE)
       .withHandler(async () => ({}))
       .build()
     catalogHarness(inline)
-    expect(resolveHarnessRef(inline)?.id).toBe("@executioncontextprotocol/inline")
+    expect(resolveHarnessRef(inline)?.id).toBe("@executioncontrolprotocol/inline")
   })
 
   it("allows idempotent test minimal harness registration", () => {

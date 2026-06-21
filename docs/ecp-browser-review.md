@@ -5,7 +5,7 @@ Coding-agent-ready plan split into two tracks:
 1. **Validation plan** for the implementation we just defined.
 2. **Full implementation plan** for dynamic browser extension registration.
 
-This assumes the latest decisions are source of truth: `@executioncontextprotocol/browser` includes the browser runtime; `@executioncontextprotocol/node` replaces the old local runtime; browser-specific behavior is implemented through normal ECP extensions, not a new plugin concept; and `state()` mutations remain staged and policy-validated. The existing implementation already has the core fluent API, environment model, registry, `state()`, lifecycle, policies, and runtime internals that we are building on.
+This assumes the latest decisions are source of truth: `@executioncontrolprotocol/browser` includes the browser runtime; `@executioncontrolprotocol/node` replaces the old local runtime; browser-specific behavior is implemented through normal ECP extensions, not a new plugin concept; and `state()` mutations remain staged and policy-validated. The existing implementation already has the core fluent API, environment model, registry, `state()`, lifecycle, policies, and runtime internals that we are building on.
 
 ---
 
@@ -17,7 +17,7 @@ The implementation should prove five things:
 
 | Goal                              | What we need to prove                                                                                                              |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Package split is correct          | `@executioncontextprotocol/core`, `@executioncontextprotocol/browser`, and `@executioncontextprotocol/node` have clean boundaries. |
+| Package split is correct          | `@executioncontrolprotocol/core`, `@executioncontrolprotocol/browser`, and `@executioncontrolprotocol/node` have clean boundaries. |
 | Runtime model is correct          | Browser and Node runtimes share core execution behavior but expose platform-specific defaults.                                     |
 | Environment lifecycle works       | Environment hooks fire in the right order and can be used by hook-only extensions.                                                 |
 | Dynamic registry is safe          | Extensions can register dynamically only when allowed, and freeze behavior is enforced.                                            |
@@ -27,14 +27,14 @@ The implementation should prove five things:
 
 # 2. Package boundary validation
 
-## 2.1 `@executioncontextprotocol/core`
+## 2.1 `@executioncontrolprotocol/core`
 
-Validate that `@executioncontextprotocol/core` is platform-neutral.
+Validate that `@executioncontrolprotocol/core` is platform-neutral.
 
 ### Core package must pass
 
 ```txt
-@executioncontextprotocol/core must not import:
+@executioncontrolprotocol/core must not import:
 - fs
 - path
 - os
@@ -54,7 +54,7 @@ Validate that `@executioncontextprotocol/core` is platform-neutral.
 Add a static import boundary test:
 
 ```ts
-describe("@executioncontextprotocol/core package boundary", () => {
+describe("@executioncontrolprotocol/core package boundary", () => {
   it("does not import Node, browser, CLI, MCP, or Temporal-only modules", async () => {
     const forbidden = [
       "fs",
@@ -75,9 +75,9 @@ describe("@executioncontextprotocol/core package boundary", () => {
 });
 ```
 
-## 2.2 `@executioncontextprotocol/browser`
+## 2.2 `@executioncontrolprotocol/browser`
 
-Validate that `@executioncontextprotocol/browser` imports cleanly in a real browser bundle.
+Validate that `@executioncontrolprotocol/browser` imports cleanly in a real browser bundle.
 
 ### Browser package must pass
 
@@ -86,7 +86,7 @@ Validate that `@executioncontextprotocol/browser` imports cleanly in a real brow
 - no Node polyfills required
 - environment() is exported
 - workflow(), step(), ref(), state(), extension(), runtime(), policy() are exported
-- @executioncontextprotocol/browser runtime is registered by registerBrowserDefaults()
+- @executioncontrolprotocol/browser runtime is registered by registerBrowserDefaults()
 ```
 
 ### Smoke test
@@ -98,43 +98,43 @@ import {
   step,
   runtime,
   registerBrowserDefaults,
-} from "@executioncontextprotocol/browser";
+} from "@executioncontrolprotocol/browser";
 
 registerBrowserDefaults();
 
 const wf = workflow("Browser Echo")
   .run([
-    step("@executioncontextprotocol/demo.echo", "Echo")
+    step("@executioncontrolprotocol/demo.echo", "Echo")
       .with({ message: "Hello browser" })
       .as("echo"),
   ])
   .toManifest();
 
 const result = await environment("browser-demo")
-  .withRuntime(runtime("@executioncontextprotocol/browser").with({}))
+  .withRuntime(runtime("@executioncontrolprotocol/browser").with({}))
   .run(wf);
 
 expect(result.state?.echo).toEqual({ message: "Hello browser" });
 ```
 
-## 2.3 `@executioncontextprotocol/node`
+## 2.3 `@executioncontrolprotocol/node`
 
-Validate that `@executioncontextprotocol/node` replaces the old local runtime.
+Validate that `@executioncontrolprotocol/node` replaces the old local runtime.
 
 ### Node package must pass
 
 ```txt
-- NODE_RUNTIME_ID === "@executioncontextprotocol/node"
-- registerNodeRuntime() registers @executioncontextprotocol/node
-- CLI defaults to @executioncontextprotocol/node
-- no remaining @executioncontextprotocol/local references
+- NODE_RUNTIME_ID === "@executioncontrolprotocol/node"
+- registerNodeRuntime() registers @executioncontrolprotocol/node
+- CLI defaults to @executioncontrolprotocol/node
+- no remaining @executioncontrolprotocol/local references
 - no LocalRuntimeExecutor references except deleted/migration notes
 ```
 
 ### Search checks
 
 ```bash
-rg "@executioncontextprotocol/local|LocalRuntimeExecutor|registerLocalRuntime|LOCAL_RUNTIME_ID" packages
+rg "@executioncontrolprotocol/local|LocalRuntimeExecutor|registerLocalRuntime|LOCAL_RUNTIME_ID" packages
 ```
 
 Expected result: **no source references**.
@@ -171,8 +171,8 @@ packages/core/test/runtime-conformance.ts
 Run it against:
 
 ```txt
-@executioncontextprotocol/node
-@executioncontextprotocol/browser
+@executioncontrolprotocol/node
+@executioncontrolprotocol/browser
 ```
 
 Example structure:
@@ -434,7 +434,7 @@ apps/browser-smoke-test/
 Test:
 
 ```ts
-import * as ECP from "@executioncontextprotocol/browser";
+import * as ECP from "@executioncontrolprotocol/browser";
 
 expect(ECP.environment).toBeDefined();
 expect(ECP.workflow).toBeDefined();
@@ -474,9 +474,9 @@ it("resolves env() from process.env", async () => {
   process.env.OPENAI_API_KEY = "test-key";
 
   const env = environment("node")
-    .withRuntime(runtime("@executioncontextprotocol/node").with({}))
+    .withRuntime(runtime("@executioncontrolprotocol/node").with({}))
     .withExtensions([
-      extension("@executioncontextprotocol/process-env").with({
+      extension("@executioncontrolprotocol/process-env").with({
         allowedKeys: ["OPENAI_API_KEY"],
       }),
     ]);
@@ -549,25 +549,25 @@ import {
   extension,
   policy,
   registerBrowserDefaults,
-} from "@executioncontextprotocol/browser";
+} from "@executioncontrolprotocol/browser";
 
 registerBrowserDefaults();
 
 const env = environment("browser-demo")
-  .withRuntime(runtime("@executioncontextprotocol/browser").with({}))
+  .withRuntime(runtime("@executioncontrolprotocol/browser").with({}))
   .withExtensions([
-    extension("@executioncontextprotocol/browser-registry", "Dynamic Registry").with({
+    extension("@executioncontrolprotocol/browser-registry", "Dynamic Registry").with({
       frozen: false,
       freezeOnFirstRun: true,
       allowRuntimeRegistration: true,
       autoBindRegisteredExtensions: true,
-      allowedNamespaces: ["@executioncontextprotocol/demo", "@customer/*"],
+      allowedNamespaces: ["@executioncontrolprotocol/demo", "@customer/*"],
       exposeGlobal: true,
       globalName: "ECP",
     }),
   ])
   .withPolicies([
-    policy("@executioncontextprotocol/state-control").with({
+    policy("@executioncontrolprotocol/state-control").with({
       allowedMutablePaths: ["creativeInputs"],
       allowedMutationOps: ["set", "replace", "merge", "append"],
       requireReason: true,
@@ -578,7 +578,7 @@ const env = environment("browser-demo")
 ## 2.2 Dynamic module registration
 
 ```ts
-import { defineExtension, capability } from "@executioncontextprotocol/browser";
+import { defineExtension, capability } from "@executioncontrolprotocol/browser";
 
 const customerExtension = defineExtension("@customer", "image-tools")
   .withCapabilities([
@@ -813,7 +813,7 @@ packages/runtimes/browser/src/extensions/browser-registry.ts
 ## 5.2 Extension definition
 
 ```ts
-export const browserRegistryExtension = defineExtension("@executioncontextprotocol", "browser-registry")
+export const browserRegistryExtension = defineExtension("@executioncontrolprotocol", "browser-registry")
   .withConfig({
     frozen: boolean().default(false),
     freezeOnReady: boolean().default(false),
@@ -822,7 +822,7 @@ export const browserRegistryExtension = defineExtension("@executioncontextprotoc
     autoBindRegisteredExtensions: boolean().default(false),
     exposeGlobal: boolean().default(false),
     globalName: string().default("ECP"),
-    allowedNamespaces: array(string()).default(["@executioncontextprotocol/demo", "@customer/*"]),
+    allowedNamespaces: array(string()).default(["@executioncontrolprotocol/demo", "@customer/*"]),
     deniedNamespaces: array(string()).default([]),
   })
   .withHooks([
@@ -859,7 +859,7 @@ export interface BrowserRegistryConfig {
 Support:
 
 ```txt
-@executioncontextprotocol/demo
+@executioncontrolprotocol/demo
 @customer/*
 @partner/*
 ```
@@ -1311,7 +1311,7 @@ Validate the implementation in this order:
 Then implement dynamic browser extension registration with the smallest possible surface:
 
 ```txt
-@executioncontextprotocol/browser-registry
+@executioncontrolprotocol/browser-registry
   hook-only extension
   config-driven frozen state
   dynamic registration guard

@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
-import { environment, extension, harness, runtime, registerCoreFormats } from "@executioncontextprotocol/core"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
-import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
-import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
-import type { HarnessInvokeResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import { environment, extension, harness, runtime, registerCoreFormats } from "@executioncontrolprotocol/core"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
+import { registerDemoExtension } from "@executioncontrolprotocol/demo"
+import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
+import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
+import type { HarnessInvokeResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 import {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY,
   BROWSER_NANO_HARNESS_ID,
   registerBrowserNanoHarnesses,
-} from "@executioncontextprotocol/evals"
+} from "@executioncontrolprotocol/evals"
 import { assertHarnessInvokeSuccess } from "./assert-harness-result.js"
 
 const fixtureDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../fixtures")
@@ -29,16 +29,16 @@ async function createEvalAuthoringDemoEnv() {
   return environment("evals-harness-authoring-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([
-      extension("@executioncontextprotocol/format-eql").with({}),
-      extension("@executioncontextprotocol/format-toon").with({}),
-      extension("@executioncontextprotocol/demo").with({}),
-      extension("@executioncontextprotocol/demo").with({}),
+      extension("@executioncontrolprotocol/format-eql").with({}),
+      extension("@executioncontrolprotocol/format-toon").with({}),
+      extension("@executioncontrolprotocol/demo").with({}),
+      extension("@executioncontrolprotocol/demo").with({}),
     ])
     .withHarnesses([
       harness(BROWSER_NANO_HARNESS_ID)
-        .uses("@executioncontextprotocol/demo.generate")
+        .uses("@executioncontrolprotocol/demo.generate")
         .with({
-          output: { schema: "@ecp.workflow", format: "@executioncontextprotocol/format-eql", validate: true },
+          output: { schema: "@executioncontrolprotocol.workflow", format: "@executioncontrolprotocol/format-eql", validate: true },
         }),
     ])
 }
@@ -76,7 +76,7 @@ describe("evals-workflow-authoring harness (demo provider)", () => {
 
     assertHarnessInvokeSuccess(result)
     const harnessOutput = result.result as HarnessInvokeResult<WorkflowManifest>
-    expect(harnessOutput.artifact.schema).toBe("@ecp.workflow")
+    expect(harnessOutput.artifact.schema).toBe("@executioncontrolprotocol.workflow")
     const echoStep = harnessOutput.artifact.steps?.find((s) => s.id === "echo")
     expect(echoStep?.input).toEqual({ value: "patched" })
     expect(harnessOutput.trace.decodeSucceeded).toBe(true)

@@ -1,36 +1,36 @@
-# @executioncontextprotocol/node
+# @executioncontrolprotocol/node
 
-**Node.js runtime host** for ECP: Node executor, process-env and secrets extensions, and re-exports of Node-only compile from `@executioncontextprotocol/core`.
+**Node.js runtime host** for ECP: Node executor, process-env and secrets extensions, and re-exports of Node-only compile from `@executioncontrolprotocol/core`.
 
-## vs `@executioncontextprotocol/core`
+## vs `@executioncontrolprotocol/core`
 
 | Package | Role |
 | ------- | ---- |
-| `@executioncontextprotocol/core` | Runtime-agnostic API and in-memory engine |
-| `@executioncontextprotocol/node` | Node host: `@executioncontextprotocol/node` runtime, `process.env`, secrets, `compileWorkflowSource` via `@executioncontextprotocol/core/compile` |
+| `@executioncontrolprotocol/core` | Runtime-agnostic API and in-memory engine |
+| `@executioncontrolprotocol/node` | Node host: `@executioncontrolprotocol/node` runtime, `process.env`, secrets, `compileWorkflowSource` via `@executioncontrolprotocol/core/compile` |
 
-Node apps and the CLI compose environments with `@executioncontextprotocol/node`; they import compile/loaders from `@executioncontextprotocol/core/compile` or `@executioncontextprotocol/core/node`, not from the core main barrel.
+Node apps and the CLI compose environments with `@executioncontrolprotocol/node`; they import compile/loaders from `@executioncontrolprotocol/core/compile` or `@executioncontrolprotocol/core/node`, not from the core main barrel.
 
 ## Typical usage
 
 ```ts
-import { environment, extension, workflow, step } from "@executioncontextprotocol/node"
-import "@executioncontextprotocol/demo"
+import { environment, extension, workflow, step } from "@executioncontrolprotocol/node"
+import "@executioncontrolprotocol/demo"
 
 const env = (await environment("dev")).withExtensions([
-  extension("@executioncontextprotocol/demo").with({}),
+  extension("@executioncontrolprotocol/demo").with({}),
 ])
 const ecp = await env.init()
 await ecp.run(
   workflow("Echo")
-    .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("out")])
+    .run([step("@executioncontrolprotocol/demo.echo", "Echo").with({ value: "hi" }).as("out")])
     .toManifest()
 )
 ```
 
 ## Related
 
-- [`@executioncontextprotocol/core`](../core/README.md) — core API and subpaths
-- [`@executioncontextprotocol/cli`](../cli/) — `ecp run`, `ecp compile`, etc. (uses `@executioncontextprotocol/core/loaders` + `@executioncontextprotocol/core/compile`)
+- [`@executioncontrolprotocol/core`](../core/README.md) — core API and subpaths
+- [`@executioncontrolprotocol/cli`](../cli/) — `ecp run`, `ecp compile`, etc. (uses `@executioncontrolprotocol/core/loaders` + `@executioncontrolprotocol/core/compile`)
 
 See [AGENTS.md](../../AGENTS.md) for CLI commands and extension catalog rules.

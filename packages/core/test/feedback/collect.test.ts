@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import {
   collectDecodeFeedback,
   collectPatchFeedback,
@@ -10,10 +10,10 @@ import {
 describe("harness feedback collectors", () => {
   it("collectDecodeFeedback merges diagnostics and validation issues with paths", () => {
     const feedback = collectDecodeFeedback({
-      schema: "@ecp.decode.result",
+      schema: "@executioncontrolprotocol.decode.result",
       version: LATEST_ECP_VERSION,
       success: false,
-      targetSchema: "@ecp.intent",
+      targetSchema: "@executioncontrolprotocol.intent",
       diagnostics: [
         {
           severity: "error",
@@ -22,7 +22,7 @@ describe("harness feedback collectors", () => {
         },
       ],
       validation: {
-        schema: "@ecp.validation.result",
+        schema: "@executioncontrolprotocol.validation.result",
         version: LATEST_ECP_VERSION,
         valid: false,
         errors: [
@@ -39,17 +39,17 @@ describe("harness feedback collectors", () => {
 
     expect(feedback.stage).toBe("decode")
     expect(feedback.success).toBe(false)
-    expect(feedback.targetSchema).toBe("@ecp.intent")
+    expect(feedback.targetSchema).toBe("@executioncontrolprotocol.intent")
     expect(feedback.issues.some((i) => i.path === "schema")).toBe(true)
     expect(feedback.issues.some((i) => i.code === "FORMAT_DECODE_FAILED")).toBe(true)
   })
 
   it("collectPatchFeedback includes applied entry diagnostics", () => {
     const feedback = collectPatchFeedback({
-      schema: "@ecp.patch.result",
+      schema: "@executioncontrolprotocol.patch.result",
       version: LATEST_ECP_VERSION,
       success: false,
-      targetSchema: "@ecp.workflow",
+      targetSchema: "@executioncontrolprotocol.workflow",
       applied: [
         {
           path: "steps[missing].label",
@@ -66,7 +66,7 @@ describe("harness feedback collectors", () => {
       ],
       diagnostics: [],
       validation: {
-        schema: "@ecp.validation.result",
+        schema: "@executioncontrolprotocol.validation.result",
         version: LATEST_ECP_VERSION,
         valid: false,
         errors: [{ severity: "error", code: "INVALID_TYPE", message: "Required", path: "patches" }],
@@ -82,35 +82,35 @@ describe("harness feedback collectors", () => {
 
   it("collectValidationFeedback passes through workflow validation", () => {
     const feedback = collectValidationFeedback({
-      schema: "@ecp.validation.result",
+      schema: "@executioncontrolprotocol.validation.result",
       version: LATEST_ECP_VERSION,
       valid: false,
       errors: [
         {
           severity: "error",
           code: "UNKNOWN_CAPABILITY",
-          message: "Capability @executioncontextprotocol/missing is not registered.",
+          message: "Capability @executioncontrolprotocol/missing is not registered.",
           path: "steps.echo.uses",
-          suggestions: ["@executioncontextprotocol/demo.echo"],
+          suggestions: ["@executioncontrolprotocol/demo.echo"],
         },
       ],
       warnings: [],
     })
 
     expect(feedback.stage).toBe("validate")
-    expect(feedback.issues[0]?.suggestions).toContain("@executioncontextprotocol/demo.echo")
+    expect(feedback.issues[0]?.suggestions).toContain("@executioncontrolprotocol/demo.echo")
   })
 
   it("flattenHarnessFeedbackIssues dedupes by path code and message", () => {
     const flat = flattenHarnessFeedbackIssues([
       collectDecodeFeedback({
-        schema: "@ecp.decode.result",
+        schema: "@executioncontrolprotocol.decode.result",
         version: LATEST_ECP_VERSION,
         success: false,
         diagnostics: [{ severity: "error", code: "A", message: "same", path: "x" }],
       }),
       collectValidationFeedback({
-        schema: "@ecp.validation.result",
+        schema: "@executioncontrolprotocol.validation.result",
         version: LATEST_ECP_VERSION,
         valid: false,
         errors: [{ severity: "error", code: "A", message: "same", path: "x" }],

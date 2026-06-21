@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { redactSecret, canonicalSecretKey } from "@executioncontextprotocol/secrets"
+import { redactSecret, canonicalSecretKey } from "@executioncontrolprotocol/secrets"
 
 describe("secrets helpers", () => {
   it("redacts secret values", () => {

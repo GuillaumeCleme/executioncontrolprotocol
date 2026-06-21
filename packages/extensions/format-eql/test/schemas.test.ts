@@ -19,6 +19,6 @@ describe("EQL schemas and header detection", () => {
   it("detectHeader returns undefined for empty text", () => {
     expect(detectHeader("")).toBeUndefined()
     expect(detectHeader("WORKFLOW x")).toBeUndefined()
-    expect(detectHeader("ECP @ecp.workflow 1.0").schema).toBe("@ecp.workflow")
+    expect(detectHeader("ECP @executioncontrolprotocol.workflow 1.0").schema).toBe("@executioncontrolprotocol.workflow")
   })
 })

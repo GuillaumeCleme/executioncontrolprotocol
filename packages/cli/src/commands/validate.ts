@@ -1,4 +1,4 @@
-import { loadWorkflowFile } from "@executioncontextprotocol/core/loaders"
+import { loadWorkflowFile } from "@executioncontrolprotocol/core/loaders"
 import { runWithCommandError } from "../lib/command-helpers.js"
 import { WorkflowEnvCommand } from "../lib/env-module-command.js"
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontrolprotocol/core"
 import { createBrowserDemoEnvironment, createEcp, registerBrowserDefaults, type BrowserOperationalEcp } from "../src/index.js"
 
 describe("createEcp", () => {
@@ -8,9 +8,9 @@ describe("createEcp", () => {
     const env = createBrowserDemoEnvironment("create-ecp-test")
     const ecp = await createEcp(env)
     const manifest = workflow("W")
-      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontrolprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
-    const fluent = await ecp.encode(manifest).uses("@executioncontextprotocol/format-fluent").process()
+    const fluent = await ecp.encode(manifest).uses("@executioncontrolprotocol/format-fluent").process()
     expect(fluent.success).toBe(true)
     expect(String(fluent.result)).toContain("export default workflow")
     await ecp.terminate()

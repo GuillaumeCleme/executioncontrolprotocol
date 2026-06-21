@@ -1,4 +1,4 @@
-import { catalogExtension, globalRegistry, type Registry } from "@executioncontextprotocol/core"
+import { catalogExtension, globalRegistry, type Registry } from "@executioncontrolprotocol/core"
 import { formatEqlExtension } from "./extension.js"
 
 catalogExtension(formatEqlExtension)
@@ -12,11 +12,11 @@ export { encodePatchToEql } from "./encode/encode-patch.js"
 export { encodeEnvironmentToEql } from "./encode/encode-environment.js"
 export { encodeDescribeToEql } from "./encode/encode-describe.js"
 
-/** Register `@executioncontextprotocol/format-eql` in the global or provided registry. @category Extensions */
+/** Register `@executioncontrolprotocol/format-eql` in the global or provided registry. @category Extensions */
 export async function registerFormatEqlExtension(
   registry: Registry = globalRegistry
 ): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/format-eql")) {
+  if (!registry.getExtension("@executioncontrolprotocol/format-eql")) {
     await registry.registerExtension(formatEqlExtension)
   }
 }

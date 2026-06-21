@@ -1,5 +1,5 @@
-import type { HarnessReply } from "@executioncontextprotocol/types"
-import type { EcpFormatOptions } from "@executioncontextprotocol/types"
+import type { HarnessReply } from "@executioncontrolprotocol/types"
+import type { EcpFormatOptions } from "@executioncontrolprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { EqlWriter, formatLiteral } from "./writer.js"
 
@@ -10,7 +10,7 @@ export function encodeReplyToEql(
 ): string {
   const writer = new EqlWriter(options)
   if (includeHeader) {
-    writer.writeln("ECP @ecp.harness.reply 1.0")
+    writer.writeln("ECP @executioncontrolprotocol.harness.reply 1.0")
   }
   writer.writeln("REPLY")
   writer.writeln(`ANSWER ${formatLiteral(reply.answer, writer.quote)}`, 1)

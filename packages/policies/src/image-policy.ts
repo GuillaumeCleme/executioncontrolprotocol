@@ -1,6 +1,6 @@
-import type { PolicyContext } from "@executioncontextprotocol/core"
-import type { PolicyDecision } from "@executioncontextprotocol/types"
-import { definePolicy, globalRegistry, hook } from "@executioncontextprotocol/core"
+import type { PolicyContext } from "@executioncontrolprotocol/core"
+import type { PolicyDecision } from "@executioncontrolprotocol/types"
+import { definePolicy, globalRegistry, hook } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import { evaluateImageRefsPost, evaluateImageRefsPre } from "./image-policy-eval.js"
 
@@ -9,7 +9,7 @@ type PolicyHookFn = (
 ) => PolicyDecision | void | Promise<PolicyDecision | void>
 
 function policyHook(
-  event: import("@executioncontextprotocol/types").PolicyLifecycleEvent,
+  event: import("@executioncontrolprotocol/types").PolicyLifecycleEvent,
   fn: PolicyHookFn
 ) {
   return hook(event, (lifecycleCtx) =>
@@ -17,8 +17,8 @@ function policyHook(
   )
 }
 
-/** @executioncontextprotocol/image-policy — generic ImageRef governance. @category Policies */
-export const imagePolicy = definePolicy("@executioncontextprotocol", "image-policy")
+/** @executioncontrolprotocol/image-policy — generic ImageRef governance. @category Policies */
+export const imagePolicy = definePolicy("@executioncontrolprotocol", "image-policy")
   .withConfig({
     allowedInputKinds: z
       .array(z.enum(["artifact", "file", "url", "buffer"]))
@@ -60,9 +60,9 @@ export const imagePolicy = definePolicy("@executioncontextprotocol", "image-poli
 export { evaluateImageRefsPre, evaluateImageRefsPost } from "./image-policy-eval.js"
 export type { ImagePolicyConfig } from "./image-policy-eval.js"
 
-/** Register `@executioncontextprotocol/image-policy`. @category Policies */
+/** Register `@executioncontrolprotocol/image-policy`. @category Policies */
 export async function registerImagePolicy(registry = globalRegistry): Promise<void> {
-  if (!registry.getPolicy("@executioncontextprotocol/image-policy")) {
+  if (!registry.getPolicy("@executioncontrolprotocol/image-policy")) {
     await registry.registerPolicy(imagePolicy)
   }
 }

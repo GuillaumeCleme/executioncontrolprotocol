@@ -1,4 +1,4 @@
-import type { InputValue } from "@executioncontextprotocol/types"
+import type { InputValue } from "@executioncontrolprotocol/types"
 
 /** Track which helpers are required. @category Fluent */
 export interface ImportNeeds {

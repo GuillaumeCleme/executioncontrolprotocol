@@ -6,12 +6,12 @@ import {
   ECP_INTENT_VALUES,
   type EcpIntent,
   type HarnessReply,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { decodeFromEql } from "../src/decode/decode-eql.js"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import { testCtx } from "./helpers.js"
 
-describe("EQL @ecp.intent", () => {
+describe("EQL @executioncontrolprotocol.intent", () => {
   const intent: EcpIntent = {
     schema: ECP_INTENT_SCHEMA,
     intent: ECP_INTENT_VALUES.WORKFLOW_CREATE,
@@ -23,7 +23,7 @@ describe("EQL @ecp.intent", () => {
       testCtx
     )
     expect(encoded.success).toBe(true)
-    expect(encoded.result).toContain("ECP @ecp.intent")
+    expect(encoded.result).toContain("ECP @executioncontrolprotocol.intent")
     expect(encoded.result).toContain("INTENT workflow-create")
 
     const decoded = decodeFromEql(
@@ -59,7 +59,7 @@ describe("EQL @ecp.intent", () => {
   })
 })
 
-describe("EQL @ecp.harness.reply", () => {
+describe("EQL @executioncontrolprotocol.harness.reply", () => {
   const reply: HarnessReply = {
     schema: ECP_HARNESS_REPLY_SCHEMA,
     answer: "The echo step completed successfully.",

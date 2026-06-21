@@ -1,10 +1,10 @@
-# @executioncontextprotocol/extension-image-sharp
+# @executioncontrolprotocol/extension-image-sharp
 
 Node-native Sharp image processing for ECP workflows.
 
 ## Runtime
 
-Requires `@executioncontextprotocol/node`. Declares `.withSupportedRuntimes(["@executioncontextprotocol/node"])`.
+Requires `@executioncontrolprotocol/node`. Declares `.withSupportedRuntimes(["@executioncontrolprotocol/node"])`.
 
 ## Capabilities
 
@@ -18,8 +18,8 @@ Requires `@executioncontextprotocol/node`. Declares `.withSupportedRuntimes(["@e
 
 ## Image references
 
-Uses shared `ImageRef` from `@executioncontextprotocol/types` (`artifact`, `file`, `url`, `buffer`).
+Uses shared `ImageRef` from `@executioncontrolprotocol/types` (`artifact`, `file`, `url`, `buffer`).
 
-Bind with `@executioncontextprotocol/image-policy` for cross-extension image governance.
+Bind with `@executioncontrolprotocol/image-policy` for cross-extension image governance.
 
 See `examples/04-image-prep/`.

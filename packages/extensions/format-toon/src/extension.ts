@@ -5,21 +5,21 @@ import {
   ecpDecodeResultSchema,
   ecpEncodeInputSchema,
   ecpEncodeResultSchema,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { decodeFromToon } from "./decode.js"
 import { encodeToToon } from "./encode.js"
 
 /** TOON format extension definition. @category Extensions */
-export const formatToonExtension = defineExtension("@executioncontextprotocol", "format-toon")
+export const formatToonExtension = defineExtension("@executioncontrolprotocol", "format-toon")
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/format-toon", "encode")
+    capabilityFor("@executioncontrolprotocol/format-toon", "encode")
       .withInput(ecpEncodeInputSchema)
       .withOutput(ecpEncodeResultSchema)
-      .withHandler((input, ctx) => encodeToToon(input as import("@executioncontextprotocol/types").EcpEncodeInput, ctx as never)),
+      .withHandler((input, ctx) => encodeToToon(input as import("@executioncontrolprotocol/types").EcpEncodeInput, ctx as never)),
 
-    capabilityFor("@executioncontextprotocol/format-toon", "decode")
+    capabilityFor("@executioncontrolprotocol/format-toon", "decode")
       .withInput(ecpDecodeInputSchema)
       .withOutput(ecpDecodeResultSchema)
-      .withHandler((input, ctx) => decodeFromToon(input as import("@executioncontextprotocol/types").EcpDecodeInput, ctx as never)),
+      .withHandler((input, ctx) => decodeFromToon(input as import("@executioncontrolprotocol/types").EcpDecodeInput, ctx as never)),
   ])
   .build()

@@ -1,6 +1,6 @@
-import type { EcpPatchDocument, InputValue, StepNode } from "@executioncontextprotocol/types"
+import type { EcpPatchDocument, InputValue, StepNode } from "@executioncontrolprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
-import type { EcpFormatOptions } from "@executioncontextprotocol/types"
+import type { EcpFormatOptions } from "@executioncontrolprotocol/types"
 import { EqlWriter, formatInputValue, formatLiteral } from "./writer.js"
 
 interface StepUpdateFields {
@@ -102,7 +102,7 @@ export function encodePatchToEql(
 ): string {
   const writer = new EqlWriter(options)
   if (includeHeader) {
-    writer.writeln(`ECP @ecp.patch ${patch.version}`)
+    writer.writeln(`ECP @executioncontrolprotocol.patch ${patch.version}`)
   }
   writer.writeln(`PATCH WORKFLOW ${workflowId}`)
 

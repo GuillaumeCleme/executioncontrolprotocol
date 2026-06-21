@@ -4,8 +4,8 @@ import {
   defineExtension,
   globalRegistry,
   type Registry,
-} from "@executioncontextprotocol/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 const GenerateTextInput = z.object({
@@ -42,13 +42,13 @@ async function claudeComplete(
 }
 
 /** Claude model provider. @category Extensions */
-export const claudeExtension = defineExtension("@executioncontextprotocol", "claude")
+export const claudeExtension = defineExtension("@executioncontrolprotocol", "claude")
   .withConfig({
     apiKey: z.string().optional(),
     defaultModel: z.string().optional(),
   })
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/claude", "generate")
+    capabilityFor("@executioncontrolprotocol/claude", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (raw, ctx) => {
@@ -62,7 +62,7 @@ export const claudeExtension = defineExtension("@executioncontextprotocol", "cla
         const text = await claudeComplete(apiKey, model, input.prompt, input.system)
         return { text }
       }),
-    capabilityFor("@executioncontextprotocol/claude", "generateText")
+    capabilityFor("@executioncontrolprotocol/claude", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))
       .withHandler(async (raw, ctx) => {
@@ -83,7 +83,7 @@ catalogExtension(claudeExtension)
 
 /** Register Claude extension. @category Extensions */
 export async function registerClaudeExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/claude")) {
+  if (!registry.getExtension("@executioncontrolprotocol/claude")) {
     await registry.registerExtension(claudeExtension)
   }
 }

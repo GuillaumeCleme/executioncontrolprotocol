@@ -1,6 +1,6 @@
-import { collectModelOutputFeedback } from "@executioncontextprotocol/core"
-import type { HarnessOperationFeedback, WorkflowManifest } from "@executioncontextprotocol/types"
-import type { CompactEnvironmentSummary } from "@executioncontextprotocol/core"
+import { collectModelOutputFeedback } from "@executioncontrolprotocol/core"
+import type { HarnessOperationFeedback, WorkflowManifest } from "@executioncontrolprotocol/types"
+import type { CompactEnvironmentSummary } from "@executioncontrolprotocol/core"
 
 function stepHasInputRef(step: WorkflowManifest["steps"][number]): boolean {
   if (!("input" in step) || step.input === undefined) return false
@@ -77,7 +77,7 @@ export function inferRequiredCapabilityIds(
     const cap = bySuffix("notify")
     if (cap && !isRemovalTarget && !isConfigureExisting) matched.add(cap)
   }
-  if (/\btranslate\b/i.test(request) && /\btranslate\b.*\bstep\b|\badd\b.*\btranslate\b|@executioncontextprotocol\/demo\.translate/i.test(request)) {
+  if (/\btranslate\b/i.test(request) && /\btranslate\b.*\bstep\b|\badd\b.*\btranslate\b|@executioncontrolprotocol\/demo\.translate/i.test(request)) {
     const cap = bySuffix("translate")
     if (cap) matched.add(cap)
   }
@@ -123,7 +123,7 @@ export function buildRequestCapabilityHintLines(
   const stepIdMatch = request.match(/\bstep id\s+(\w+)/i)
   if (stepIdMatch && mode === "create") {
     lines.push(
-      `Step id must be "${stepIdMatch[1]}" (short name, not a capability id). Format: STEP ${stepIdMatch[1]} USES @executioncontextprotocol/...`,
+      `Step id must be "${stepIdMatch[1]}" (short name, not a capability id). Format: STEP ${stepIdMatch[1]} USES @executioncontrolprotocol/...`,
       ""
     )
   }

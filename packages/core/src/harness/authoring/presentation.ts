@@ -1,4 +1,4 @@
-import type { HarnessOperationFeedback, ValidationIssue } from "@executioncontextprotocol/types"
+import type { HarnessOperationFeedback, ValidationIssue } from "@executioncontrolprotocol/types"
 
 /**
  * Format structured harness feedback for model repair prompts.
@@ -67,7 +67,7 @@ export function isRepairFeedbackEcho(
   const firstLine = text.split("\n")[0] ?? ""
   const documentStart =
     /^(?:WORKFLOW \S|PATCH WORKFLOW|INTENT \S|REPLY$|STEP \S+ USES)/.test(firstLine) ||
-    /^(?:```|schema:\s*@ecp\.|"schema"\s*:|workflow:\s*@ecp\.|\{\s*"schema")/i.test(firstLine)
+    /^(?:```|schema:\s*@executioncontrolprotocol\.|"schema"\s*:|workflow:\s*@executioncontrolprotocol\.|\{\s*"schema")/i.test(firstLine)
   if (feedbackProse.test(text) && !documentStart) {
     return true
   }

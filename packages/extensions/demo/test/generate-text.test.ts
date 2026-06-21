@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { environment, extension, runtime } from "@executioncontextprotocol/core"
-import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontextprotocol/node"
+import { environment, extension, runtime } from "@executioncontrolprotocol/core"
+import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontrolprotocol/node"
 import { registerDemoExtension } from "../src/index.js"
-import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
 
-describe("@executioncontextprotocol/demo generateText EQL", () => {
+describe("@executioncontrolprotocol/demo generateText EQL", () => {
   it("returns workflow EQL with USES (not capabilityId)", async () => {
     await registerNodeRuntime()
     await registerDemoExtension()
@@ -13,13 +13,13 @@ describe("@executioncontextprotocol/demo generateText EQL", () => {
     const env = environment("demo-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@executioncontextprotocol/demo").with({}),
-        extension("@executioncontextprotocol/format-eql").with({}),
+        extension("@executioncontrolprotocol/demo").with({}),
+        extension("@executioncontrolprotocol/format-eql").with({}),
       ])
     const ecp = await env.init()
 
     const generated = await ecp
-      .invoke("@executioncontextprotocol/demo.generateText")
+      .invoke("@executioncontrolprotocol/demo.generateText")
       .with({ prompt: "build me a workflow" })
       .process()
     expect(generated.success).toBe(true)
@@ -30,19 +30,19 @@ describe("@executioncontextprotocol/demo generateText EQL", () => {
       "text" in generated.result
         ? String((generated.result as { text: string }).text)
         : String(generated.result)
-    expect(text).toContain("USES @executioncontextprotocol/demo.echo")
+    expect(text).toContain("USES @executioncontrolprotocol/demo.echo")
     expect(text).not.toContain("capabilityId")
 
     const decoded = await ecp
       .decode(text)
-      .uses("@executioncontextprotocol/format-eql")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-eql")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false })
       .process()
     expect(decoded.success).toBe(true)
 
     const manifest = decoded.result as { steps: Array<{ uses?: string }> }
-    expect(manifest.steps[0]?.uses).toBe("@executioncontextprotocol/demo.echo")
+    expect(manifest.steps[0]?.uses).toBe("@executioncontrolprotocol/demo.echo")
 
     const validation = await ecp.validate(manifest as never)
     expect(validation.valid).toBe(true)

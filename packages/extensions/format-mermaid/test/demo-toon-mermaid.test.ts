@@ -5,12 +5,12 @@ import { workflowToMermaid } from "../src/workflow-to-mermaid.js"
 describe("demo TOON → manifest → mermaid", () => {
   it("renders steps from compact tabular TOON decode", () => {
     const toon = [
-      'schema: "@ecp.workflow"',
+      'schema: "@executioncontrolprotocol.workflow"',
       'version: "1.0"',
       "workflow:",
       "  id: demo-generated",
       "steps[1]{id,uses,label,as}:",
-      "  echo,@executioncontextprotocol/demo.echo,Demo Echo,echo",
+      "  echo,@executioncontrolprotocol/demo.echo,Demo Echo,echo",
     ].join("\n")
 
     const doc = decodeDocumentFromToon(toon, { strict: true, compact: true }) as {

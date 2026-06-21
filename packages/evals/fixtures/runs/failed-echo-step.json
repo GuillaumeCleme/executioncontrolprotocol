@@ -1,6 +1,6 @@
 {
   "run": {
-    "schema": "@ecp.run.result",
+    "schema": "@executioncontrolprotocol.run.result",
     "version": "1.0",
     "run": { "id": "run-failed-echo", "status": "failed" },
     "history": {
@@ -12,7 +12,7 @@
     }
   },
   "workflow": {
-    "schema": "@ecp.workflow",
+    "schema": "@executioncontrolprotocol.workflow",
     "version": "1.0",
     "workflow": { "id": "echo-test", "label": "Echo test" },
     "steps": [
@@ -20,7 +20,7 @@
         "type": "step",
         "id": "echo",
         "label": "Echo",
-        "uses": "@executioncontextprotocol/demo.echo",
+        "uses": "@executioncontrolprotocol/demo.echo",
         "input": { "value": "" },
         "as": "echo"
       }

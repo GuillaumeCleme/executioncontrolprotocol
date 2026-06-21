@@ -31,7 +31,7 @@ export async function transpileWorkflowSource(
 
 /**
  * Bundle workflow module with dependencies (Node host).
- * Resolves `@executioncontextprotocol/core` and extension imports.
+ * Resolves `@executioncontrolprotocol/core` and extension imports.
  */
 export async function bundleWorkflowSource(
   source: string,
@@ -61,19 +61,19 @@ export async function bundleWorkflowSource(
     write: false,
     packages: "bundle",
     alias: {
-      "@executioncontextprotocol/core/compile": join(repoRoot, "packages/core/dist/compile/entry.js"),
-      "@executioncontextprotocol/core/loaders": join(repoRoot, "packages/core/dist/loaders/index.js"),
-      "@executioncontextprotocol/core/browser": join(repoRoot, "packages/core/dist/browser.js"),
-      "@executioncontextprotocol/core": join(repoRoot, "packages/core/dist/index.js"),
-      "@executioncontextprotocol/node": join(repoRoot, "packages/runtimes/node/dist/index.js"),
-      "@executioncontextprotocol/browser": join(repoRoot, "packages/runtimes/browser/dist/index.js"),
-      "@executioncontextprotocol/types": join(repoRoot, "packages/types/dist/index.js"),
-      "@executioncontextprotocol/policies": join(repoRoot, "packages/policies/dist/index.js"),
-      "@executioncontextprotocol/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
-      "@executioncontextprotocol/demo": join(repoRoot, "packages/extensions/demo/dist/index.js"),
-      "@executioncontextprotocol/secrets": join(repoRoot, "packages/extensions/secrets/dist/index.js"),
-      "@executioncontextprotocol/browser-secrets": join(repoRoot, "packages/extensions/browser-secrets/dist/index.js"),
-      "@executioncontextprotocol/process-env": join(repoRoot, "packages/extensions/process-env/dist/index.js"),
+      "@executioncontrolprotocol/core/compile": join(repoRoot, "packages/core/dist/compile/entry.js"),
+      "@executioncontrolprotocol/core/loaders": join(repoRoot, "packages/core/dist/loaders/index.js"),
+      "@executioncontrolprotocol/core/browser": join(repoRoot, "packages/core/dist/browser.js"),
+      "@executioncontrolprotocol/core": join(repoRoot, "packages/core/dist/index.js"),
+      "@executioncontrolprotocol/node": join(repoRoot, "packages/runtimes/node/dist/index.js"),
+      "@executioncontrolprotocol/browser": join(repoRoot, "packages/runtimes/browser/dist/index.js"),
+      "@executioncontrolprotocol/types": join(repoRoot, "packages/types/dist/index.js"),
+      "@executioncontrolprotocol/policies": join(repoRoot, "packages/policies/dist/index.js"),
+      "@executioncontrolprotocol/format-toon": join(repoRoot, "packages/extensions/format-toon/dist/index.js"),
+      "@executioncontrolprotocol/demo": join(repoRoot, "packages/extensions/demo/dist/index.js"),
+      "@executioncontrolprotocol/secrets": join(repoRoot, "packages/extensions/secrets/dist/index.js"),
+      "@executioncontrolprotocol/browser-secrets": join(repoRoot, "packages/extensions/browser-secrets/dist/index.js"),
+      "@executioncontrolprotocol/process-env": join(repoRoot, "packages/extensions/process-env/dist/index.js"),
     },
     external: ["@napi-rs/keyring"],
     plugins: [

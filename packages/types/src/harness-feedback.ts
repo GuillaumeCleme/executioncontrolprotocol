@@ -17,7 +17,7 @@ export interface HarnessOperationFeedback {
   stage: HarnessOperationStage
   /** Whether the operation succeeded at this stage. */
   success: boolean
-  /** Target schema when known (e.g. `@ecp.workflow`, `@ecp.patch`). */
+  /** Target schema when known (e.g. `@executioncontrolprotocol.workflow`, `@executioncontrolprotocol.patch`). */
   targetSchema?: EcpSchema | string
   /** Validation and diagnostic issues with paths and codes. */
   issues: ValidationIssue[]

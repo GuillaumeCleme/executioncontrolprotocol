@@ -1,5 +1,5 @@
 import { Command } from "@oclif/core"
-import { ECP_SECRET_REF_PROTOCOL_PREFIX } from "@executioncontextprotocol/secrets"
+import { ECP_SECRET_REF_PROTOCOL_PREFIX } from "@executioncontrolprotocol/secrets"
 
 /** Manage OS keychain secrets. */
 export default class ConfigSecrets extends Command {

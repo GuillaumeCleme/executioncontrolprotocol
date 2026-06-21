@@ -1,4 +1,4 @@
-import type { NamespacedId } from "@executioncontextprotocol/types"
+import type { NamespacedId } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import type { HookDefinition, PolicyDefinition } from "./types.js"
 import type { ConfigSchema } from "../config-schema/index.js"

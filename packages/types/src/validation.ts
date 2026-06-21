@@ -14,7 +14,7 @@ export interface ValidationIssue {
 
 /** Validation result document. @category Validation */
 export interface ValidationResult {
-  schema: "@ecp.validation.result"
+  schema: "@executioncontrolprotocol.validation.result"
   version: EcpVersion
   valid: boolean
   errors: ValidationIssue[]

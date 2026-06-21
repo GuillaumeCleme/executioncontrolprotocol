@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
-import type { EnvironmentDescriptor, EnvironmentManifest } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, EnvironmentManifest } from "@executioncontrolprotocol/types"
 import { decodeFromEql } from "../src/decode/decode-eql.js"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import { testCtx } from "./helpers.js"
@@ -20,18 +20,18 @@ function loadDescribeFixture(name: string): EnvironmentDescriptor {
 }
 
 describe("EQL environment manifest", () => {
-  it("round-trips @ecp.environment", () => {
+  it("round-trips @executioncontrolprotocol.environment", () => {
     const manifest = loadEnvironmentFixture("test-env")
     const encoded = encodeToEql(
-      { source: manifest, sourceSchema: "@ecp.environment" },
+      { source: manifest, sourceSchema: "@executioncontrolprotocol.environment" },
       testCtx
     )
     expect(encoded.success).toBe(true)
     expect(encoded.result).toContain("ENVIRONMENT test-env")
-    expect(encoded.result).toContain("EXTENSION @executioncontextprotocol/demo ORDER 0")
+    expect(encoded.result).toContain("EXTENSION @executioncontrolprotocol/demo ORDER 0")
 
     const decoded = decodeFromEql(
-      { input: encoded.result, targetSchema: "@ecp.environment" },
+      { input: encoded.result, targetSchema: "@executioncontrolprotocol.environment" },
       testCtx
     )
     expect(decoded.success).toBe(true)
@@ -43,7 +43,7 @@ describe("EQL environment manifest", () => {
     const encoded = encodeToEql(
       {
         source: manifest,
-        sourceSchema: "@ecp.environment",
+        sourceSchema: "@executioncontrolprotocol.environment",
         options: { headers: false },
       },
       testCtx
@@ -53,7 +53,7 @@ describe("EQL environment manifest", () => {
     const decoded = decodeFromEql(
       {
         input: encoded.result,
-        targetSchema: "@ecp.environment",
+        targetSchema: "@executioncontrolprotocol.environment",
         options: { headers: false },
       },
       testCtx
@@ -64,19 +64,19 @@ describe("EQL environment manifest", () => {
 })
 
 describe("EQL environment describe", () => {
-  it("round-trips @ecp.environment.describe with type annotations", () => {
+  it("round-trips @executioncontrolprotocol.environment.describe with type annotations", () => {
     const descriptor = loadDescribeFixture("discovery-describe")
     const encoded = encodeToEql(
-      { source: descriptor, sourceSchema: "@ecp.environment.describe" },
+      { source: descriptor, sourceSchema: "@executioncontrolprotocol.environment.describe" },
       testCtx
     )
     expect(encoded.success).toBe(true)
-    expect(encoded.result).toContain("CAPABILITY @executioncontextprotocol/demo.echo")
+    expect(encoded.result).toContain("CAPABILITY @executioncontrolprotocol/demo.echo")
     expect(encoded.result).toMatch(/WITH value:string!/)
     expect(encoded.result).toMatch(/WITH query:string!/)
 
     const decoded = decodeFromEql(
-      { input: encoded.result, targetSchema: "@ecp.environment.describe" },
+      { input: encoded.result, targetSchema: "@executioncontrolprotocol.environment.describe" },
       testCtx
     )
     expect(decoded.success).toBe(true)
@@ -84,18 +84,18 @@ describe("EQL environment describe", () => {
   })
 
   it("parses describe document starting with CAPABILITY per spec", () => {
-    const text = `ECP @ecp.environment.describe 1.0
-CAPABILITY @executioncontextprotocol/openai.generate
+    const text = `ECP @executioncontrolprotocol.environment.describe 1.0
+CAPABILITY @executioncontrolprotocol/openai.generate
   LABEL "Generate Text"
   WITH prompt:string!
   OUT content:string`
     const decoded = decodeFromEql(
-      { input: text, targetSchema: "@ecp.environment.describe" },
+      { input: text, targetSchema: "@executioncontrolprotocol.environment.describe" },
       testCtx
     )
     expect(decoded.success).toBe(true)
     const result = decoded.result as EnvironmentDescriptor
-    expect(result.capabilities[0]?.id).toBe("@executioncontextprotocol/openai.generate")
+    expect(result.capabilities[0]?.id).toBe("@executioncontrolprotocol/openai.generate")
     expect(result.capabilities[0]?.inputSchema).toEqual({ prompt: "string!" })
     expect(result.capabilities[0]?.outputSchema).toEqual({ content: "string" })
   })

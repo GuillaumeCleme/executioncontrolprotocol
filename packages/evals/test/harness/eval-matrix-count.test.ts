@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { countOllamaEvalCases, loadEvalCases, MATRIX_EVAL_EXTENSION_IDS } from "@executioncontextprotocol/evals"
+import { countOllamaEvalCases, loadEvalCases, MATRIX_EVAL_EXTENSION_IDS } from "@executioncontrolprotocol/evals"
 
 describe("eval matrix fixtures", () => {
   it("loads at least 50 Ollama eval cases", () => {
@@ -8,10 +8,10 @@ describe("eval matrix fixtures", () => {
 
   it("matrix extension binding list has four extensions", () => {
     expect(MATRIX_EVAL_EXTENSION_IDS).toEqual([
-      "@executioncontextprotocol/format-toon",
-      "@executioncontextprotocol/format-eql",
-      "@executioncontextprotocol/format-json",
-      "@executioncontextprotocol/demo",
+      "@executioncontrolprotocol/format-toon",
+      "@executioncontrolprotocol/format-eql",
+      "@executioncontrolprotocol/format-json",
+      "@executioncontrolprotocol/demo",
     ])
   })
 

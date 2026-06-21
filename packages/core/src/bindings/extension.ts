@@ -1,4 +1,4 @@
-import type { NamespacedId } from "@executioncontextprotocol/types"
+import type { NamespacedId } from "@executioncontrolprotocol/types"
 import type { ExtensionDefinition } from "../definitions/types.js"
 
 /** Extension binding builder. @category Environment */

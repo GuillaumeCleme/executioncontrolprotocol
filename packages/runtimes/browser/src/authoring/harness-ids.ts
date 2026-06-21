@@ -4,4 +4,4 @@ export {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY as WORKFLOW_AUTHORING_CAPABILITY,
   BROWSER_NANO_HARNESS_CAPABILITY as INTENT_CLASSIFICATION_CAPABILITY,
-} from "@executioncontextprotocol/harnesses-browser-nano"
+} from "@executioncontrolprotocol/harnesses-browser-nano"

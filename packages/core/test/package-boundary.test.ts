@@ -50,7 +50,7 @@ function isNodeHostFile(relPath: string): boolean {
   )
 }
 
-describe("@executioncontextprotocol/core package boundary", () => {
+describe("@executioncontrolprotocol/core package boundary", () => {
   it("restricts Node and native esbuild imports to host subpaths only", async () => {
     const files = await listTsFiles(CORE_SRC)
     const violations: string[] = []

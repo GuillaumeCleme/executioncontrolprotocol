@@ -1,4 +1,4 @@
-import { ECP_HARNESS_REPLY_SCHEMA, type HarnessReply } from "@executioncontextprotocol/types"
+import { ECP_HARNESS_REPLY_SCHEMA, type HarnessReply } from "@executioncontrolprotocol/types"
 
 /** Shared redirect phrase for safe-reply and out-of-scope assistant answers. @category Harness */
 export const HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE =

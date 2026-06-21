@@ -1,4 +1,4 @@
-import type { ValidationIssue } from "@executioncontextprotocol/types"
+import type { ValidationIssue } from "@executioncontrolprotocol/types"
 
 export const EQL_ERROR_CODES = {
   SYNTAX: "EQL_SYNTAX",

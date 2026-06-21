@@ -1,29 +1,29 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step, extension, env, secrets } from "@executioncontextprotocol/core"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
-import "@executioncontextprotocol/demo"
+import { workflow, step, extension, env, secrets } from "@executioncontrolprotocol/core"
+import { registerDemoExtension } from "@executioncontrolprotocol/demo"
+import "@executioncontrolprotocol/demo"
 import {
   PROCESS_ENV_RESOLVER_ID,
   SECRETS_RESOLVER_ID,
   resolveEnvConfigAsync,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { environment, setMemorySecret } from "../src/index.js"
 import {
   memorySecretsStore,
   resetSecretsStore,
   setSecretsStore,
-} from "@executioncontextprotocol/secrets"
+} from "@executioncontrolprotocol/secrets"
 import { registerRuntimeConformanceTests } from "../../../core/test/runtime-conformance.js"
 import { createTestEnvironment } from "../../../core/test/helpers.js"
 
-registerRuntimeConformanceTests("@executioncontextprotocol/node", () => createTestEnvironment("node-conformance"))
+registerRuntimeConformanceTests("@executioncontrolprotocol/node", () => createTestEnvironment("node-conformance"))
 
-describe("@executioncontextprotocol/node runtime", () => {
+describe("@executioncontrolprotocol/node runtime", () => {
   it("runs echo workflow", async () => {
     await registerDemoExtension()
-    const env = (await environment("node-test")).withExtensions([extension("@executioncontextprotocol/demo").with({})])
+    const env = (await environment("node-test")).withExtensions([extension("@executioncontrolprotocol/demo").with({})])
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontrolprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
       .toManifest()
     const ecp = await env.init()
     const result = await ecp.run(manifest)
@@ -32,7 +32,7 @@ describe("@executioncontextprotocol/node runtime", () => {
   })
 })
 
-describe("@executioncontextprotocol/process-env and secrets", () => {
+describe("@executioncontrolprotocol/process-env and secrets", () => {
   it("process env resolver reads process.env", async () => {
     process.env.ECP_TEST_KEY = "from-process"
     const config = await resolveEnvConfigAsync(

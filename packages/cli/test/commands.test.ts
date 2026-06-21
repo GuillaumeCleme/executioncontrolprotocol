@@ -11,13 +11,13 @@ const cliBin = join(repoRoot, "packages/cli/bin/run.js")
 const ECHO_ENV = "examples/01-echo/environment.ts"
 const ECHO_WORKFLOW_TS = "examples/01-echo/workflow.ts"
 const ECHO_WORKFLOW_JSON = "examples/01-echo/workflow.json"
-const DEMO_ECHO = "@executioncontextprotocol/demo.echo"
+const DEMO_ECHO = "@executioncontrolprotocol/demo.echo"
 
 const BROKEN_WORKFLOW = JSON.stringify({
-  schema: "@ecp.workflow",
+  schema: "@executioncontrolprotocol.workflow",
   version: "1.0",
   workflow: { id: "broken" },
-  steps: [{ type: "step", id: "x", uses: "@executioncontextprotocol/demo.does-not-exist", input: {}, as: "x" }],
+  steps: [{ type: "step", id: "x", uses: "@executioncontrolprotocol/demo.does-not-exist", input: {}, as: "x" }],
 })
 
 interface CliResult {
@@ -66,7 +66,7 @@ describe("ecp CLI commands", () => {
       const res = await runCli(["compile", ECHO_WORKFLOW_TS])
       expect(res.code).toBe(0)
       const manifest = JSON.parse(res.stdout) as { schema: string; steps: { uses: string }[] }
-      expect(manifest.schema).toBe("@ecp.workflow")
+      expect(manifest.schema).toBe("@executioncontrolprotocol.workflow")
       expect(manifest.steps[0]?.uses).toBe(DEMO_ECHO)
     }, 30_000)
 
@@ -75,7 +75,7 @@ describe("ecp CLI commands", () => {
       const res = await runCli(["compile", ECHO_WORKFLOW_TS, "-o", out])
       expect(res.code).toBe(0)
       const manifest = JSON.parse(await readFile(out, "utf8")) as { schema: string }
-      expect(manifest.schema).toBe("@ecp.workflow")
+      expect(manifest.schema).toBe("@executioncontrolprotocol.workflow")
     }, 30_000)
 
     it("fails on a missing source file", async () => {
@@ -122,7 +122,7 @@ describe("ecp CLI commands", () => {
         extensions: { id: string }[]
       }
       expect(descriptor.capabilities.some((c) => c.id === DEMO_ECHO)).toBe(true)
-      expect(descriptor.extensions.some((e) => e.id === "@executioncontextprotocol/demo")).toBe(true)
+      expect(descriptor.extensions.some((e) => e.id === "@executioncontrolprotocol/demo")).toBe(true)
     }, 30_000)
   })
 
@@ -148,7 +148,7 @@ describe("ecp CLI commands", () => {
       ])
       expect(res.code).toBe(0)
       const manifest = JSON.parse(res.stdout) as { schema: string }
-      expect(manifest.schema).toBe("@ecp.workflow")
+      expect(manifest.schema).toBe("@executioncontrolprotocol.workflow")
     }, 30_000)
 
     it("encodes a manifest as TOON to a file", async () => {
@@ -192,7 +192,7 @@ describe("ecp CLI commands", () => {
       ])
       expect(res.code).toBe(0)
       const manifest = JSON.parse(res.stdout) as { schema: string }
-      expect(manifest.schema).toBe("@ecp.workflow")
+      expect(manifest.schema).toBe("@executioncontrolprotocol.workflow")
     }, 30_000)
 
     it("round-trips a TOON file back to a manifest", async () => {
@@ -207,7 +207,7 @@ describe("ecp CLI commands", () => {
       ])
       expect(res.code).toBe(0)
       const manifest = JSON.parse(res.stdout) as { schema: string }
-      expect(manifest.schema).toBe("@ecp.workflow")
+      expect(manifest.schema).toBe("@executioncontrolprotocol.workflow")
     }, 30_000)
   })
 })

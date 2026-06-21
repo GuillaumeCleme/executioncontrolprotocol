@@ -9,7 +9,7 @@ import {
   OLLAMA_QWEN_CODER_15B_EVAL,
   runEvalCase,
   setActiveEvalProvider,
-} from "@executioncontextprotocol/evals"
+} from "@executioncontrolprotocol/evals"
 
 setActiveEvalProvider(OLLAMA_QWEN_CODER_15B_EVAL)
 

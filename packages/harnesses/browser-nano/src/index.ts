@@ -1,6 +1,6 @@
 /**
- * Browser Nano harness (`@executioncontextprotocol/harness-browser-nano`): workflow authoring, intent, assistant.
- * Tuned for on-device and ~1B models. Used by browser demo and `@executioncontextprotocol/evals` matrix tests.
+ * Browser Nano harness (`@executioncontrolprotocol/harness-browser-nano`): workflow authoring, intent, assistant.
+ * Tuned for on-device and ~1B models. Used by browser demo and `@executioncontrolprotocol/evals` matrix tests.
  * @category Harness
  */
 export {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { ECP_ENCODING_ERROR_CODES } from "@executioncontextprotocol/types"
+import { ECP_ENCODING_ERROR_CODES } from "@executioncontrolprotocol/types"
 import { encodeToEql } from "../src/encode/encode-eql.js"
 import { decodeFromEql } from "../src/decode/decode-eql.js"
 import { EQL_ERROR_CODES } from "../src/decode/diagnostics.js"
@@ -9,7 +9,7 @@ describe("EQL unsupported schema handling", () => {
   it("encode fails for unknown sourceSchema", () => {
     expect(() =>
       encodeToEql(
-        { source: { schema: "@ecp.unknown" }, sourceSchema: "@ecp.unknown" },
+        { source: { schema: "@executioncontrolprotocol.unknown" }, sourceSchema: "@executioncontrolprotocol.unknown" },
         testCtx
       )
     ).toThrow(expect.objectContaining({
@@ -32,7 +32,7 @@ describe("EQL unsupported schema handling", () => {
     const decoded = decodeFromEql(
       {
         input: encoded.result,
-        targetSchema: "@ecp.intent",
+        targetSchema: "@executioncontrolprotocol.intent",
         options: { headers: false },
       },
       testCtx
@@ -45,7 +45,7 @@ describe("EQL unsupported schema handling", () => {
     const decoded = decodeFromEql(
       {
         input: "INTENT workflow-create",
-        targetSchema: "@ecp.unknown",
+        targetSchema: "@executioncontrolprotocol.unknown",
         options: { headers: false },
       },
       testCtx
@@ -55,14 +55,14 @@ describe("EQL unsupported schema handling", () => {
   })
 
   it("decode reports schema mismatch between header and targetSchema", () => {
-    const patchText = `ECP @ecp.patch 1.0
+    const patchText = `ECP @executioncontrolprotocol.patch 1.0
 PATCH WORKFLOW x
 UPDATE STEP s
   LABEL "x"`
     const decoded = decodeFromEql(
       {
         input: patchText,
-        targetSchema: "@ecp.workflow",
+        targetSchema: "@executioncontrolprotocol.workflow",
       },
       testCtx
     )

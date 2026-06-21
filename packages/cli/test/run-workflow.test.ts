@@ -8,7 +8,7 @@ const execFileAsync = promisify(execFile)
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..")
 const cliBin = join(repoRoot, "packages/cli/bin/run.js")
 
-const DEMO_ECHO = "@executioncontextprotocol/demo.echo"
+const DEMO_ECHO = "@executioncontrolprotocol/demo.echo"
 
 describe("ecp run workflow source", () => {
   it("runs .ts workflow without pre-compiling to json", async () => {

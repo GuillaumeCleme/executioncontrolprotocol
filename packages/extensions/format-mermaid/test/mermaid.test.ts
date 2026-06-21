@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step, parallel, branch, loop } from "@executioncontextprotocol/core"
+import { workflow, step, parallel, branch, loop } from "@executioncontrolprotocol/core"
 import { initEncodingTestEcp } from "../../../core/test/helpers.js"
-import { extension } from "@executioncontextprotocol/core"
+import { extension } from "@executioncontrolprotocol/core"
 import { workflowToMermaid } from "../src/workflow-to-mermaid.js"
 import { registerFormatMermaidExtension } from "../src/index.js"
 
-describe("@executioncontextprotocol/format-mermaid", () => {
+describe("@executioncontrolprotocol/format-mermaid", () => {
   it("encodes workflow to mermaid flowchart with workflow subgraph", async () => {
     await registerFormatMermaidExtension()
-    const ecp = await initEncodingTestEcp([extension("@executioncontextprotocol/format-mermaid").with({})])
+    const ecp = await initEncodingTestEcp([extension("@executioncontrolprotocol/format-mermaid").with({})])
     const manifest = workflow("Demo")
-      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
+      .run([step("@executioncontrolprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
       .toManifest()
-    const encoded = await ecp.encode(manifest).uses("@executioncontextprotocol/format-mermaid").process()
+    const encoded = await ecp.encode(manifest).uses("@executioncontrolprotocol/format-mermaid").process()
     expect(encoded.success).toBe(true)
     const source = String(encoded.result)
     expect(source).toContain("flowchart TD")
@@ -26,13 +26,13 @@ describe("@executioncontextprotocol/format-mermaid", () => {
 
   it("supports flowchart direction via encode with()", async () => {
     await registerFormatMermaidExtension()
-    const ecp = await initEncodingTestEcp([extension("@executioncontextprotocol/format-mermaid").with({})])
+    const ecp = await initEncodingTestEcp([extension("@executioncontrolprotocol/format-mermaid").with({})])
     const manifest = workflow("Demo")
-      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
+      .run([step("@executioncontrolprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
       .toManifest()
     const encoded = await ecp
       .encode(manifest)
-      .uses("@executioncontextprotocol/format-mermaid")
+      .uses("@executioncontrolprotocol/format-mermaid")
       .with({ direction: "LR" })
       .process()
     expect(encoded.success).toBe(true)
@@ -44,10 +44,10 @@ describe("@executioncontextprotocol/format-mermaid", () => {
 
   it("renders steps without explicit type field (compact TOON decode)", () => {
     const source = workflowToMermaid({
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "demo-generated" },
-      steps: [{ id: "echo", uses: "@executioncontextprotocol/demo.echo", label: "Demo Echo", as: "echo" }],
+      steps: [{ id: "echo", uses: "@executioncontrolprotocol/demo.echo", label: "Demo Echo", as: "echo" }],
     })
     expect(source).toContain("Demo Echo")
     expect(source).toContain("subgraph demo_generated")
@@ -58,8 +58,8 @@ describe("@executioncontextprotocol/format-mermaid", () => {
   it("renders sequential steps with edges inside workflow subgraph", () => {
     const manifest = workflow("Seq")
       .run([
-        step("@executioncontextprotocol/demo.echo", "First").with({ value: "a" }).as("first"),
-        step("@executioncontextprotocol/demo.echo", "Second").with({ value: "b" }).as("second"),
+        step("@executioncontrolprotocol/demo.echo", "First").with({ value: "a" }).as("first"),
+        step("@executioncontrolprotocol/demo.echo", "Second").with({ value: "b" }).as("second"),
       ])
       .toManifest()
     const source = workflowToMermaid(manifest)
@@ -72,12 +72,12 @@ describe("@executioncontextprotocol/format-mermaid", () => {
   it("renders parallel as nested subgraphs, not a step box", () => {
     const manifest = workflow("Parallel")
       .run([
-        step("@executioncontextprotocol/demo.echo", "Fetch").with({ value: "x" }).as("fetch"),
+        step("@executioncontrolprotocol/demo.echo", "Fetch").with({ value: "x" }).as("fetch"),
         parallel([
-          [step("@executioncontextprotocol/demo.echo", "A").with({ value: "a" }).as("a")],
-          [step("@executioncontextprotocol/demo.echo", "B").with({ value: "b" }).as("b")],
+          [step("@executioncontrolprotocol/demo.echo", "A").with({ value: "a" }).as("a")],
+          [step("@executioncontrolprotocol/demo.echo", "B").with({ value: "b" }).as("b")],
         ], { id: "parallel-1", label: "Run parallel" }),
-        step("@executioncontextprotocol/demo.echo", "Done").with({ value: "d" }).as("done"),
+        step("@executioncontrolprotocol/demo.echo", "Done").with({ value: "d" }).as("done"),
       ])
       .toManifest()
     const source = workflowToMermaid(manifest)
@@ -93,7 +93,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
   it("renders branch as nested subgraphs", () => {
     const manifest = workflow("Branch")
       .run([
-        branch([step("@executioncontextprotocol/demo.echo", "Yes").with({ value: "y" }).as("yes")], {
+        branch([step("@executioncontrolprotocol/demo.echo", "Yes").with({ value: "y" }).as("yes")], {
           id: "branch-1",
           label: "Choose",
         }),
@@ -109,7 +109,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
     const manifest = workflow("Loop")
       .run([
         loop({ id: "loop-1", label: "Retry loop" }, [
-          step("@executioncontextprotocol/demo.echo", "Try").with({ value: "t" }).as("try"),
+          step("@executioncontrolprotocol/demo.echo", "Try").with({ value: "t" }).as("try"),
         ]),
       ])
       .toManifest()
@@ -121,7 +121,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
 
   it("renders empty workflow inside subgraph", () => {
     const source = workflowToMermaid({
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "empty-wf", label: "Empty" },
       steps: [],

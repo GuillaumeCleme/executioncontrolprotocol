@@ -36,7 +36,7 @@ Those are security/authorization concerns, and they belong in policy.
 So instead of this:
 
 ```ts
-extension("@executioncontextprotocol/browser-registry").with({
+extension("@executioncontrolprotocol/browser-registry").with({
   allowedNamespaces: ["@customer/*"],
   deniedNamespaces: ["@unsafe/*"]
 })
@@ -45,15 +45,15 @@ extension("@executioncontextprotocol/browser-registry").with({
 Prefer this:
 
 ```ts
-extension("@executioncontextprotocol/browser-registry").with({
+extension("@executioncontrolprotocol/browser-registry").with({
   frozen: false,
   freezeOnFirstRun: true,
   allowRuntimeRegistration: true,
   autoBindRegisteredExtensions: true
 })
 
-policy("@executioncontextprotocol/registry-control").with({
-  allowedExtensionNamespaces: ["@customer/*", "@executioncontextprotocol/demo"],
+policy("@executioncontrolprotocol/registry-control").with({
+  allowedExtensionNamespaces: ["@customer/*", "@executioncontrolprotocol/demo"],
   deniedExtensionNamespaces: ["@unsafe/*"],
   allowAutoBind: true
 })
@@ -139,7 +139,7 @@ or:
 Add a first-party policy:
 
 ```txt
-@executioncontextprotocol/registry-control
+@executioncontrolprotocol/registry-control
 ```
 
 Config:
@@ -168,7 +168,7 @@ I would not use `policy:post` for registration because the point is to prevent t
 The extension config becomes operational only:
 
 ```ts
-extension("@executioncontextprotocol/browser-registry").with({
+extension("@executioncontrolprotocol/browser-registry").with({
   frozen: false,
   freezeOnReady: false,
   freezeOnFirstRun: true,
@@ -189,8 +189,8 @@ deniedNamespaces
 Move those to:
 
 ```ts
-policy("@executioncontextprotocol/registry-control").with({
-  allowedExtensionNamespaces: ["@executioncontextprotocol/demo", "@customer/*"],
+policy("@executioncontrolprotocol/registry-control").with({
+  allowedExtensionNamespaces: ["@executioncontrolprotocol/demo", "@customer/*"],
   deniedExtensionNamespaces: ["@customer/unsafe"],
   allowDynamicExtensionRegistration: true,
   allowAutoBind: true,
@@ -236,6 +236,6 @@ That is a correction to the earlier plan.
 
 Merge this:
 
-> `@executioncontextprotocol/browser-registry` provides the dynamic registration mechanism. It does not decide namespace authorization. Dynamic extension registration must be evaluated by frozen environment policies before registration. `@executioncontextprotocol/registry-control` governs allowed/denied extension namespaces, auto-bind permission, and whether the registry must freeze before execution. Policies and runtimes are not dynamically registered in browser environments.
+> `@executioncontrolprotocol/browser-registry` provides the dynamic registration mechanism. It does not decide namespace authorization. Dynamic extension registration must be evaluated by frozen environment policies before registration. `@executioncontrolprotocol/registry-control` governs allowed/denied extension namespaces, auto-bind permission, and whether the registry must freeze before execution. Policies and runtimes are not dynamically registered in browser environments.
 
 This is cleaner, safer, and more aligned with ECP’s policy model.
