@@ -49,7 +49,6 @@ export {
   Environment,
   Registry,
   globalRegistry,
-  registerTestExtension,
   validateWorkflow,
 } from "@executioncontextprotocol/core"
 export { compileWorkflowSource, compileAndValidateWorkflowSource } from "@executioncontextprotocol/core/compile"

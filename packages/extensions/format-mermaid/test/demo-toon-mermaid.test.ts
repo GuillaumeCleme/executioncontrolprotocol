@@ -10,7 +10,7 @@ describe("demo TOON → manifest → mermaid", () => {
       "workflow:",
       "  id: demo-generated",
       "steps[1]{id,uses,label,as}:",
-      "  echo,@executioncontextprotocol/test.echo,Demo Echo,echo",
+      "  echo,@executioncontextprotocol/demo.echo,Demo Echo,echo",
     ].join("\n")
 
     const doc = decodeDocumentFromToon(toon, { strict: true, compact: true }) as {

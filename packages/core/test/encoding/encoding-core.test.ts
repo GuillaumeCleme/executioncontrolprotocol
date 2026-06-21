@@ -4,18 +4,18 @@ import {
   extension,
   workflow,
   step,
-  registerTestExtension,
   hook,
   defineExtension,
 } from "../../src/index.js"
 import { NODE_RUNTIME_ID, registerNodeRuntime, runtime } from "@executioncontextprotocol/node"
 import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { initEncodingTestEcp } from "../helpers.js"
 
 const sampleManifest = workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@executioncontextprotocol/test.echo", "Collect")
+    step("@executioncontextprotocol/demo.echo", "Collect")
       .id("collect")
       .with({ value: "hello" })
       .as("signals"),
@@ -95,7 +95,7 @@ describe("ecp.encode/decode", () => {
 describe("encode/decode lifecycle isolation", () => {
   it("does not emit run or step lifecycle during encode/decode", async () => {
     const events: string[] = []
-    await registerTestExtension()
+    await registerDemoExtension()
     await registerFormatToonExtension()
 
     const spy = defineExtension("@executioncontextprotocol", "telemetry-spy")
@@ -110,7 +110,7 @@ describe("encode/decode lifecycle isolation", () => {
       .build()
 
     const ecp = await initEncodingTestEcp([
-      extension("@executioncontextprotocol/test").with({}),
+      extension("@executioncontextprotocol/demo").with({}),
       extension(spy).with({}),
       extension("@executioncontextprotocol/format-toon").with({}),
     ])
@@ -128,10 +128,10 @@ describe("encode/decode lifecycle isolation", () => {
 describe("env.init", () => {
   it("initializes an Ecp operational instance", async () => {
     await registerNodeRuntime()
-    await registerTestExtension()
+    await registerDemoExtension()
     const env = environment("test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
-      .withExtensions([extension("@executioncontextprotocol/test").with({})])
+      .withExtensions([extension("@executioncontextprotocol/demo").with({})])
     const ecp = await env.init()
     expect(ecp.encode).toBeTypeOf("function")
     expect(ecp.decode).toBeTypeOf("function")

@@ -4,11 +4,11 @@ import {
   extension,
   runtime,
   normalizeWorkflowManifest,
-  registerTestExtension,
-} from "../../src/index.js"
+  } from "../../src/index.js"
 import { compileWorkflowSource } from "../../src/compile/index.js"
 import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontextprotocol/node"
 import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import type { WorkflowManifest } from "@executioncontextprotocol/types"
 
 const fluentSource = `
@@ -17,7 +17,7 @@ import { workflow, step } from "@executioncontextprotocol/core";
 export default workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@executioncontextprotocol/test.echo", "Write Brief")
+    step("@executioncontextprotocol/demo.echo", "Write Brief")
       .with({ value: "Create a brief", options: { maxWords: 100 } })
       .as("brief"),
   ]);
@@ -26,13 +26,13 @@ export default workflow("Weekly Brief")
 describe("patch compaction loop", () => {
   it("Fluent → JSON → TOON → patch decode → ecp.patch → compact TOON → Fluent", async () => {
     await registerNodeRuntime()
-    await registerTestExtension()
+    await registerDemoExtension()
     await registerFormatToonExtension()
 
     const env = environment("test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@executioncontextprotocol/test").with({}),
+        extension("@executioncontextprotocol/demo").with({}),
         extension("@executioncontextprotocol/format-toon").with({}),
       ])
     const ecp = await env.init()

@@ -153,7 +153,7 @@ function registerEcpResources(server: McpServer, ecp: Ecp): void {
   )
 
   // Reserved expansion `{+id}` so capability ids containing `/` and `.`
-  // (e.g. `@executioncontextprotocol/test.echo`) match and round-trip correctly.
+  // (e.g. `@executioncontextprotocol/demo.echo`) match and round-trip correctly.
   server.registerResource(
     "capability",
     new ResourceTemplate("ecp://capabilities/{+id}", {

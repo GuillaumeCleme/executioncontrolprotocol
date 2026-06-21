@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../fixtures/cases")
-const matrixExt = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/format-json", "@executioncontextprotocol/test", "@executioncontextprotocol/demo"]
+const matrixExt = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/format-json", "@executioncontextprotocol/demo", "@executioncontextprotocol/demo"]
 const offTopicJudge = {
   enabled: true,
   goal: "Politely declines off-topic request and redirects to ECP/workflow topics",
@@ -22,18 +22,18 @@ function writeSuite(name, cases) {
 }
 
 const creates = [
-  ["wf-create-01", "Minimal echo", "Create a minimal @ecp.workflow with one step id echo using @executioncontextprotocol/test.echo and input value hello.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/test.echo" }, { kind: "stepCount", exact: 1 }]],
-  ["wf-create-02", "Echo plus summarize", "Create a workflow with echo (@executioncontextprotocol/test.echo) then summarize (@executioncontextprotocol/demo.summarize) passing echo output.", [{ kind: "stepCount", min: 2 }, { kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.summarize" }]],
-  ["wf-create-03", "Validate then echo", "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/test.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.validate" }]],
-  ["wf-create-04", "Notify step", "Create workflow with @executioncontextprotocol/test.echo and a final @executioncontextprotocol/demo.notify step.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.notify" }]],
-  ["wf-create-05", "Translate branch", "Create a two-step workflow using @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.translate.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.translate" }]],
-  ["wf-create-06", "Spanish label", "Crea un flujo con un paso echo usando @executioncontextprotocol/test.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/test.echo" }]],
-  ["wf-create-07", "French label", "Créez un workflow avec une étape @executioncontextprotocol/test.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/test.echo" }]],
-  ["wf-create-08", "German label", "Erstelle einen Workflow mit @executioncontextprotocol/test.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/test.echo" }]],
-  ["wf-create-09", "Triple steps", "Create a 3-step workflow using @executioncontextprotocol/demo.validate, @executioncontextprotocol/test.echo, and @executioncontextprotocol/demo.summarize.", [{ kind: "stepCount", min: 3 }]],
-  ["wf-create-10", "Workflow id minimal-echo", "Create workflow id minimal-echo with one @executioncontextprotocol/test.echo step labeled Runner.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/test.echo" }]],
-  ["wf-create-11", "Quality judge", "Design a clear production workflow using @executioncontextprotocol/test.echo for ingestion.", [], { enabled: true, goal: "Workflow is coherent and references echo capability", requireApproved: true }],
-  ["wf-create-12", "Descriptor caps", "List capabilities then create echo-only workflow with @executioncontextprotocol/test.echo.", [{ kind: "descriptorListsCapabilities", ids: ["@executioncontextprotocol/test.echo", "@executioncontextprotocol/demo.summarize"] }]],
+  ["wf-create-01", "Minimal echo", "Create a minimal @ecp.workflow with one step id echo using @executioncontextprotocol/demo.echo and input value hello.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.echo" }, { kind: "stepCount", exact: 1 }]],
+  ["wf-create-02", "Echo plus summarize", "Create a workflow with echo (@executioncontextprotocol/demo.echo) then summarize (@executioncontextprotocol/demo.summarize) passing echo output.", [{ kind: "stepCount", min: 2 }, { kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.summarize" }]],
+  ["wf-create-03", "Validate then echo", "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/demo.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.validate" }]],
+  ["wf-create-04", "Notify step", "Create workflow with @executioncontextprotocol/demo.echo and a final @executioncontextprotocol/demo.notify step.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.notify" }]],
+  ["wf-create-05", "Translate branch", "Create a two-step workflow using @executioncontextprotocol/demo.echo and @executioncontextprotocol/demo.translate.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.translate" }]],
+  ["wf-create-06", "Spanish label", "Crea un flujo con un paso echo usando @executioncontextprotocol/demo.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.echo" }]],
+  ["wf-create-07", "French label", "Créez un workflow avec une étape @executioncontextprotocol/demo.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.echo" }]],
+  ["wf-create-08", "German label", "Erstelle einen Workflow mit @executioncontextprotocol/demo.echo.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.echo" }]],
+  ["wf-create-09", "Triple steps", "Create a 3-step workflow using @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.echo, and @executioncontextprotocol/demo.summarize.", [{ kind: "stepCount", min: 3 }]],
+  ["wf-create-10", "Workflow id minimal-echo", "Create workflow id minimal-echo with one @executioncontextprotocol/demo.echo step labeled Runner.", [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.echo" }]],
+  ["wf-create-11", "Quality judge", "Design a clear production workflow using @executioncontextprotocol/demo.echo for ingestion.", [], { enabled: true, goal: "Workflow is coherent and references echo capability", requireApproved: true }],
+  ["wf-create-12", "Descriptor caps", "List capabilities then create echo-only workflow with @executioncontextprotocol/demo.echo.", [{ kind: "descriptorListsCapabilities", ids: ["@executioncontextprotocol/demo.echo", "@executioncontextprotocol/demo.summarize"] }]],
 ].map(([id, title, request, extra, judge]) => ({
   id,
   suite: "workflow-create",
@@ -123,11 +123,11 @@ const assistants = [
   ["asst-07", "Output", "What did the echo step produce?", "runs/completed-with-refs.json", [], false],
   ["asst-08", "Tone judge", "Explain the failure politely.", "runs/failed-echo-step.json", [], { enabled: true, goal: "Professional helpful tone", rubric: "Accurate and actionable", requireApproved: true }],
   ["asst-09", "Confirm patch", "Should we patch step echo input?", "runs/failed-echo-step.json", [], true],
-  ["asst-10", "Capabilities list", "List supported step capabilities.", null, [{ kind: "answerContains", text: "test.echo" }], true],
+  ["asst-10", "Capabilities list", "List supported step capabilities.", null, [{ kind: "answerContains", text: "demo.echo" }], true],
   ["asst-11", "What is ECP", "What is ECP?", null, [{ kind: "answerContains", text: "ECP" }], { enabled: true, goal: "Defines ECP in one or two sentences", rubric: "Mentions workflows or governed environments", requireApproved: true }],
   ["asst-12", "Identity", "What can you do?", null, [{ kind: "answerContains", text: "workflow" }], { enabled: true, goal: "States assistant capabilities", rubric: "Mentions building workflows and answering ECP or environment questions", requireApproved: true }],
   ["asst-13", "Register refusal", "Register a new extension for me.", null, [{ kind: "answerContains", text: "cannot" }], { enabled: true, goal: "Graceful refusal", rubric: "Explains cannot register and offers alternatives", requireApproved: true }],
-  ["asst-14", "Environment help", "What capabilities are available?", null, [{ kind: "answerContains", text: "test.echo" }], { enabled: true, goal: "Lists capabilities", rubric: "Names capability ids from the environment", requireApproved: true }],
+  ["asst-14", "Environment help", "What capabilities are available?", null, [{ kind: "answerContains", text: "demo.echo" }], { enabled: true, goal: "Lists capabilities", rubric: "Names capability ids from the environment", requireApproved: true }],
   ["asst-15", "Off-topic joke", "Tell me a joke.", null, [{ kind: "answerRedirectsToScope" }], offTopicJudge],
   ["asst-16", "Off-topic weather", "What's the weather today?", null, [{ kind: "answerRedirectsToScope" }], offTopicJudge],
   ["asst-17", "Off-topic cover letter", "Write a cover letter for a software job.", null, [{ kind: "answerRedirectsToScope" }, { kind: "answerMaxLength", max: 220 }], offTopicJudge],
@@ -285,8 +285,8 @@ const flows = [
       },
       {
         harness: "workflow-authoring",
-        input: { request: "Create minimal @executioncontextprotocol/test.echo workflow." },
-        assertions: { deterministic: [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/test.echo" }], judge: { enabled: false } },
+        input: { request: "Create minimal @executioncontextprotocol/demo.echo workflow." },
+        assertions: { deterministic: [{ kind: "stepUses", capabilityId: "@executioncontextprotocol/demo.echo" }], judge: { enabled: false } },
       },
     ],
   },

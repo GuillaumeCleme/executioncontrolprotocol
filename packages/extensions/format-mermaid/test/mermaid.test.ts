@@ -10,7 +10,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
     await registerFormatMermaidExtension()
     const ecp = await initEncodingTestEcp([extension("@executioncontextprotocol/format-mermaid").with({})])
     const manifest = workflow("Demo")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "x" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
       .toManifest()
     const encoded = await ecp.encode(manifest).uses("@executioncontextprotocol/format-mermaid").process()
     expect(encoded.success).toBe(true)
@@ -28,7 +28,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
     await registerFormatMermaidExtension()
     const ecp = await initEncodingTestEcp([extension("@executioncontextprotocol/format-mermaid").with({})])
     const manifest = workflow("Demo")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "x" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
       .toManifest()
     const encoded = await ecp
       .encode(manifest)
@@ -47,7 +47,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
       schema: "@ecp.workflow",
       version: "1.0",
       workflow: { id: "demo-generated" },
-      steps: [{ id: "echo", uses: "@executioncontextprotocol/test.echo", label: "Demo Echo", as: "echo" }],
+      steps: [{ id: "echo", uses: "@executioncontextprotocol/demo.echo", label: "Demo Echo", as: "echo" }],
     })
     expect(source).toContain("Demo Echo")
     expect(source).toContain("subgraph demo_generated")
@@ -58,8 +58,8 @@ describe("@executioncontextprotocol/format-mermaid", () => {
   it("renders sequential steps with edges inside workflow subgraph", () => {
     const manifest = workflow("Seq")
       .run([
-        step("@executioncontextprotocol/test.echo", "First").with({ value: "a" }).as("first"),
-        step("@executioncontextprotocol/test.echo", "Second").with({ value: "b" }).as("second"),
+        step("@executioncontextprotocol/demo.echo", "First").with({ value: "a" }).as("first"),
+        step("@executioncontextprotocol/demo.echo", "Second").with({ value: "b" }).as("second"),
       ])
       .toManifest()
     const source = workflowToMermaid(manifest)
@@ -72,12 +72,12 @@ describe("@executioncontextprotocol/format-mermaid", () => {
   it("renders parallel as nested subgraphs, not a step box", () => {
     const manifest = workflow("Parallel")
       .run([
-        step("@executioncontextprotocol/test.echo", "Fetch").with({ value: "x" }).as("fetch"),
+        step("@executioncontextprotocol/demo.echo", "Fetch").with({ value: "x" }).as("fetch"),
         parallel([
-          [step("@executioncontextprotocol/test.echo", "A").with({ value: "a" }).as("a")],
-          [step("@executioncontextprotocol/test.echo", "B").with({ value: "b" }).as("b")],
+          [step("@executioncontextprotocol/demo.echo", "A").with({ value: "a" }).as("a")],
+          [step("@executioncontextprotocol/demo.echo", "B").with({ value: "b" }).as("b")],
         ], { id: "parallel-1", label: "Run parallel" }),
-        step("@executioncontextprotocol/test.echo", "Done").with({ value: "d" }).as("done"),
+        step("@executioncontextprotocol/demo.echo", "Done").with({ value: "d" }).as("done"),
       ])
       .toManifest()
     const source = workflowToMermaid(manifest)
@@ -93,7 +93,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
   it("renders branch as nested subgraphs", () => {
     const manifest = workflow("Branch")
       .run([
-        branch([step("@executioncontextprotocol/test.echo", "Yes").with({ value: "y" }).as("yes")], {
+        branch([step("@executioncontextprotocol/demo.echo", "Yes").with({ value: "y" }).as("yes")], {
           id: "branch-1",
           label: "Choose",
         }),
@@ -109,7 +109,7 @@ describe("@executioncontextprotocol/format-mermaid", () => {
     const manifest = workflow("Loop")
       .run([
         loop({ id: "loop-1", label: "Retry loop" }, [
-          step("@executioncontextprotocol/test.echo", "Try").with({ value: "t" }).as("try"),
+          step("@executioncontextprotocol/demo.echo", "Try").with({ value: "t" }).as("try"),
         ]),
       ])
       .toManifest()

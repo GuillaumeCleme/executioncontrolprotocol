@@ -5,13 +5,13 @@ import { validateWorkflow } from "../src/validate/workflow.js"
 describe("workflow builder", () => {
   it("produces valid workflow manifest", () => {
     const manifest = workflow("Test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     expect(manifest.schema).toBe("@ecp.workflow")
     expect(manifest.version).toBe("1.0")
     expect(manifest.steps[0]).toMatchObject({
-      uses: "@executioncontextprotocol/test.echo",
+      uses: "@executioncontextprotocol/demo.echo",
       as: "echo",
     })
   })
@@ -19,8 +19,8 @@ describe("workflow builder", () => {
   it("serializes ref helper", () => {
     const manifest = workflow("Refs")
       .run([
-        step("@executioncontextprotocol/test.echo", "A").with({ value: "x" }).as("a"),
-        step("@executioncontextprotocol/test.echo", "B").with({ value: ref("a.echo") }),
+        step("@executioncontextprotocol/demo.echo", "A").with({ value: "x" }).as("a"),
+        step("@executioncontextprotocol/demo.echo", "B").with({ value: ref("a.echo") }),
       ])
       .toManifest()
 
@@ -38,8 +38,8 @@ describe("workflow builder", () => {
     const manifest = workflow("P")
       .run([
         parallel([
-          [step("@executioncontextprotocol/test.echo", "A").with({}).as("a")],
-          [step("@executioncontextprotocol/test.echo", "B").with({}).as("b")],
+          [step("@executioncontextprotocol/demo.echo", "A").with({}).as("a")],
+          [step("@executioncontextprotocol/demo.echo", "B").with({}).as("b")],
         ]),
       ])
       .toManifest()

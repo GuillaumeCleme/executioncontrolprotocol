@@ -442,7 +442,7 @@ Acceptance:
 ```eql
 WORKFLOW test "Test"
 
-STEP echo USES @executioncontextprotocol/test.echo
+STEP echo USES @executioncontextprotocol/demo.echo
   WITH value = "hi"
   AS echo
 ```

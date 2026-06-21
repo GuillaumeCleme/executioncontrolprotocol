@@ -19,7 +19,7 @@ const WORKFLOW_TEMPLATE = `import { workflow, step, ref } from "@executioncontex
 export default workflow("Example")
   .id("example-wf")
   .run([
-    step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hello" }).as("echo"),
+    step("@executioncontextprotocol/demo.echo", "Echo").id("echo").with({ value: "hello" }).as("echo"),
   ])`
 
 /**

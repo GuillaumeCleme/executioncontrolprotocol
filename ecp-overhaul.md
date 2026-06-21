@@ -1584,7 +1584,7 @@ Acceptance:
 ```ts
 workflow("Test")
   .run([
-    step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo"),
+    step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo"),
   ])
   .toManifest();
 ```

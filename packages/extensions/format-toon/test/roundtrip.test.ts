@@ -31,10 +31,10 @@ function sampleDescribeFixture(): EnvironmentDescriptor {
     environment: { id: "disc", label: "Discovery" },
     runtime: { id: "@executioncontextprotocol/in-memory", features: {} },
     extensions: [
-      { id: "@executioncontextprotocol/test", order: 0, capabilities: ["@executioncontextprotocol/test.echo"] },
+      { id: "@executioncontextprotocol/demo", order: 0, capabilities: ["@executioncontextprotocol/demo.echo"] },
     ],
     capabilities: [
-      { id: "@executioncontextprotocol/test.echo", label: "Echo", extension: "@executioncontextprotocol/test" },
+      { id: "@executioncontextprotocol/demo.echo", label: "Echo", extension: "@executioncontextprotocol/demo" },
     ],
     policies: [],
   }
@@ -45,7 +45,7 @@ describe("TOON round trip (@toon-format/toon)", () => {
     await registerFormatToonExtension()
     const manifest = workflow("Ref Test")
       .run([
-        step("@executioncontextprotocol/test.echo", "S")
+        step("@executioncontextprotocol/demo.echo", "S")
           .with({ context: ref("signals.results") })
           .as("out"),
       ])
@@ -64,7 +64,7 @@ describe("TOON round trip (@toon-format/toon)", () => {
     await registerFormatToonExtension()
     const manifest = workflow("Echo")
       .id("echo-wf")
-      .run([step("@executioncontextprotocol/test.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const ecp = await initToonEcp()
@@ -83,7 +83,7 @@ describe("TOON round trip (@toon-format/toon)", () => {
       schema: "@ecp.environment" as const,
       version: LATEST_ECP_VERSION,
       environment: { id: "test-env", label: "Test" },
-      extensions: [{ id: "@executioncontextprotocol/test", order: 0, config: {} }],
+      extensions: [{ id: "@executioncontextprotocol/demo", order: 0, config: {} }],
     }
 
     const text = encodeDocumentToToon(manifest)
@@ -108,7 +108,7 @@ describe("TOON round trip (@toon-format/toon)", () => {
   it("supports headerless compact TOON", async () => {
     await registerFormatToonExtension()
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/test.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const ecp = await initToonEcp()
@@ -139,7 +139,7 @@ describe("TOON round trip (@toon-format/toon)", () => {
   it("round trips @ecp.patch headerless TOON via codec", async () => {
     await registerFormatToonExtension()
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/test.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
     const stepId = (manifest.steps[0] as StepNode).id
     const patchDoc = {

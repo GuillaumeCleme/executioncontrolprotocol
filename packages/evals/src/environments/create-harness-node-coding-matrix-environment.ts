@@ -1,4 +1,4 @@
-import { environment, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontextprotocol/core"
+import { environment, harness, runtime, registerCoreFormats } from "@executioncontextprotocol/core"
 import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import {
   registerBrowserCodingHarnesses,
@@ -19,7 +19,6 @@ async function registerNodeCodingMatrixEval(provider: EvalProviderProfile): Prom
     await registerOllamaExtension()
   }
   await registerFormatToonExtension()
-  await registerTestExtension()
   await registerDemoExtension()
 }
 

@@ -14,7 +14,7 @@ describe("@executioncontextprotocol/memory hooks", () => {
       event: "step:completed",
       workflow: { version: "1.0.0", steps: [] },
       run: { id: "r1", input: {} },
-      step: { id: "s1", capabilityId: "@executioncontextprotocol/test" },
+      step: { id: "s1", capabilityId: "@executioncontextprotocol/demo" },
       state: {},
       output: { ok: true },
     } as never)

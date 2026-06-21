@@ -10,7 +10,7 @@
       "type": "step",
       "id": "echo",
       "label": "Echo",
-      "uses": "@executioncontextprotocol/test.echo",
+      "uses": "@executioncontextprotocol/demo.echo",
       "input": {
         "value": "hello from fluent API"
       },

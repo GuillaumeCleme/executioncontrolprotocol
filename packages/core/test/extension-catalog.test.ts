@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { environment, extension, testExtension, getCatalogedExtension } from "../src/index.js"
+import { environment, extension, getCatalogedExtension } from "../src/index.js"
+import { demoExtension } from "@executioncontextprotocol/demo"
+import "@executioncontextprotocol/demo"
 import { formatToonExtension } from "@executioncontextprotocol/format-toon"
 import "@executioncontextprotocol/format-toon"
 import { initEncodingTestEcp } from "./helpers.js"
@@ -26,10 +28,10 @@ describe("extension catalog", () => {
 
   it("registers inline extension definition binding", async () => {
     const env = environment("inline-test").withExtensions([
-      extension(testExtension).with({}),
+      extension(demoExtension).with({}),
     ])
 
     await env.ensureBoundExtensionsRegistered()
-    expect(env.getRegistry().getExtension("@executioncontextprotocol/test")).toBeDefined()
+    expect(env.getRegistry().getExtension("@executioncontextprotocol/demo")).toBeDefined()
   })
 })

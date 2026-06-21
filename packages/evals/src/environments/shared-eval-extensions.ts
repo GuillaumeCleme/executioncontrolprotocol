@@ -27,7 +27,7 @@ export function evalOperationsExtensionBindings() {
   return [
     extension("@executioncontextprotocol/format-toon").with({}),
     extension("@executioncontextprotocol/format-eql").with({}),
-    extension("@executioncontextprotocol/test").with({}),
+    extension("@executioncontextprotocol/demo").with({}),
   ]
 }
 

@@ -102,7 +102,7 @@ Workflow environment: [`packages/evals/src/environments/harness-ollama-workflow.
 
 [`examples/harness-ollama/environment.ts`](../examples/harness-ollama/environment.ts) re-exports `createHarnessOllamaEnvironment()` (combined workflow + intent).
 
-Intent eval environments bind `@executioncontextprotocol/format-toon` and `@executioncontextprotocol/test` (same as workflow) and include a **summarized** environment capability block in the user prompt (see `_internal/summarize-environment` in `@executioncontextprotocol/evals`). System prompts come from [`packages/core/fixtures/harness-prompts/`](../packages/core/fixtures/harness-prompts/) via `buildSystemPrompt()` — not from eval case JSON.
+Intent eval environments bind `@executioncontextprotocol/format-toon` and `@executioncontextprotocol/demo` (same as workflow) and include a **summarized** environment capability block in the user prompt (see `_internal/summarize-environment` in `@executioncontextprotocol/evals`). System prompts come from [`packages/core/fixtures/harness-prompts/`](../packages/core/fixtures/harness-prompts/) via `buildSystemPrompt()` — not from eval case JSON.
 
 ## Flow eval failures (step 0)
 

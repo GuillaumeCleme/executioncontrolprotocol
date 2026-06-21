@@ -15,15 +15,15 @@ Node apps and the CLI compose environments with `@executioncontextprotocol/node`
 
 ```ts
 import { environment, extension, workflow, step } from "@executioncontextprotocol/node"
-import "@executioncontextprotocol/core/testing"
+import "@executioncontextprotocol/demo"
 
 const env = (await environment("dev")).withExtensions([
-  extension("@executioncontextprotocol/test").with({}),
+  extension("@executioncontextprotocol/demo").with({}),
 ])
 const ecp = await env.init()
 await ecp.run(
   workflow("Echo")
-    .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("out")])
+    .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("out")])
     .toManifest()
 )
 ```

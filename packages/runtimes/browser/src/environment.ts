@@ -74,7 +74,6 @@ export function createBrowserDemoEnvironment(
       extension("@executioncontextprotocol/format-json").with({}),
       extension("@executioncontextprotocol/demo").with({}),
       extension("@executioncontextprotocol/chrome-ai").with({}),
-      extension("@executioncontextprotocol/test").with({}),
       extension("@executioncontextprotocol/browser-secrets").with({}),
       extension("@executioncontextprotocol/openai").with({
         apiKey: browser("OPENAI_API_KEY", { optional: true }),
@@ -106,7 +105,6 @@ export function createBrowserDemoEnvironment(
           "@executioncontextprotocol/claude",
           "@executioncontextprotocol/browser",
           "@customer/*",
-          "@executioncontextprotocol/test",
         ],
         deniedExtensionNamespaces: [],
         allowDynamicExtensionRegistration: true,

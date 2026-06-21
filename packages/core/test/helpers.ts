@@ -3,17 +3,17 @@ import { environment as nodeEnvironment, NODE_RUNTIME_ID, registerNodeRuntime, r
 import { environment as coreEnvironment } from "../src/environment/environment.js"
 import type { ExtensionBindingBuilder } from "../src/bindings/extension.js"
 import { extension } from "../src/bindings/extension.js"
-import { registerTestExtension } from "../src/testing/test-extension.js"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { registerCoreFormats } from "../src/formats/register-core-formats.js"
-/** Test environment with `@executioncontextprotocol/node` runtime and test extension registered. */
+/** Test environment with `@executioncontextprotocol/node` runtime and demo extension registered. */
 export async function createTestEnvironment(id = "test", label?: string) {
   await registerCoreFormats()
-  await registerTestExtension()
+  await registerDemoExtension()
   const env = await nodeEnvironment(id, label)
-  return env.withExtensions([extension("@executioncontextprotocol/test").with({})])
+  return env.withExtensions([extension("@executioncontextprotocol/demo").with({})])
 }
 
-/** Initialized {@link Ecp} for tests (node runtime + test extension). */
+/** Initialized {@link Ecp} for tests (node runtime + demo extension). */
 export async function initTestEcp(id = "test", label?: string): Promise<Ecp> {
   const env = await createTestEnvironment(id, label)
   return env.init()

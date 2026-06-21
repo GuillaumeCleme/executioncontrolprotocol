@@ -8,7 +8,7 @@ import {
   harness,
   registerCoreFormats,
 } from "@executioncontextprotocol/core"
-import { registerTestExtension } from "../../../core/src/testing/test-extension.js"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
   HARNESS_BROWSER_NANO_DEMO_BINDING,
@@ -41,7 +41,7 @@ describe("browser nano harness EQL parity (eval binding = demo binding)", () => 
     await registerCoreFormats()
     await registerFormatEqlExtension()
     await registerNodeRuntime()
-    await registerTestExtension()
+    await registerDemoExtension()
     catalogExtension(eqlAssistantExtension)
     resetBrowserNanoHarnessRegistrationForTests()
     registerBrowserNanoHarnesses()
@@ -56,7 +56,7 @@ describe("browser nano harness EQL parity (eval binding = demo binding)", () => 
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
         extension("@executioncontextprotocol/format-eql").with({}),
-        extension("@executioncontextprotocol/test").with({}),
+        extension("@executioncontextprotocol/demo").with({}),
         extension("@executioncontextprotocol/eql-assistant-gen").with({}),
       ])
       .withHarnesses([

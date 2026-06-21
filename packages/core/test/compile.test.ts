@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest"
 import { compileWorkflowSource, compileAndValidateWorkflowSource } from "../src/compile/index.js"
-import { registerTestExtension } from "../src/testing/test-extension.js"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { extension } from "../src/index.js"
 import { createTestEnvironment } from "./helpers.js"
 
 const SAMPLE_TS = `
 import { workflow, step } from "@executioncontextprotocol/core"
 export default workflow("Compiled")
-  .run([step("@executioncontextprotocol/test.echo", "E").with({ value: 1 }).as("out")])
+  .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: 1 }).as("out")])
 `
 
 describe("compileWorkflowSource", () => {
   it("compiles TypeScript workflow source", async () => {
-    await registerTestExtension()
+    await registerDemoExtension()
     const result = await compileWorkflowSource({
       source: SAMPLE_TS,
       filename: "workflow.ts",
@@ -23,7 +23,7 @@ describe("compileWorkflowSource", () => {
   })
 
   it("validates against environment descriptor", async () => {
-    const env = (await createTestEnvironment("t")).withExtensions([extension("@executioncontextprotocol/test").with({})])
+    const env = (await createTestEnvironment("t")).withExtensions([extension("@executioncontextprotocol/demo").with({})])
     const ecp = await env.init()
     const descriptor = await ecp.describe()
     const result = await compileAndValidateWorkflowSource({

@@ -1,4 +1,4 @@
-import { environment, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontextprotocol/core"
+import { environment, harness, runtime, registerCoreFormats } from "@executioncontextprotocol/core"
 import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { registerBrowserNanoHarnesses, BROWSER_NANO_HARNESS_ID } from "../harness-bindings.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
@@ -18,7 +18,6 @@ async function registerNodeMatrixEval(provider: EvalProviderProfile): Promise<vo
   }
   await registerFormatEqlExtension()
   await registerFormatToonExtension()
-  await registerTestExtension()
   await registerDemoExtension()
 }
 

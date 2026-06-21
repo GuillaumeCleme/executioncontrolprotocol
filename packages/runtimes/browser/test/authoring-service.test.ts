@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { registerTestExtension, workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontextprotocol/core"
 import {
   BrowserAuthoringService,
   HARNESS_TASKS,
@@ -12,9 +12,7 @@ import type { HarnessInvokeResult, WorkflowManifest } from "@executioncontextpro
 
 async function authoringEcp() {
   await registerBrowserDefaults()
-  await registerTestExtension()
   const env = createBrowserDemoEnvironment("authoring-test")
-  env.addExtensionBinding("@executioncontextprotocol/test", {})
   return createEcp(env)
 }
 
@@ -44,7 +42,7 @@ describe("BrowserAuthoringService", () => {
     const ecp = await authoringEcp()
     const service = new BrowserAuthoringService(ecp)
     const manifest = workflow("Graph test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo step").with({ value: 1 }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo step").with({ value: 1 }).as("echo")])
       .toManifest()
     const panels = await service.encodePanels(manifest)
     expect(panels.mermaid).toContain("Echo step")

@@ -55,7 +55,7 @@ export function summarizeEnvironmentDescriptor(
 export type EnvironmentSummaryFormat = "plain" | "eql-create" | "eql-patch"
 
 function isWorkflowStepCapability(capId: string): boolean {
-  return capId.startsWith("@executioncontextprotocol/test.") || capId.startsWith("@executioncontextprotocol/demo.")
+  return capId.startsWith("@executioncontextprotocol/demo.") || capId.startsWith("@executioncontextprotocol/demo.")
 }
 
 function workflowStepCapabilities(summary: CompactEnvironmentSummary): CompactCapabilityRow[] {

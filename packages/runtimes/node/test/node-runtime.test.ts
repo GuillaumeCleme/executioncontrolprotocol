@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { workflow, step, extension, env, secrets, registerTestExtension } from "@executioncontextprotocol/core"
+import { workflow, step, extension, env, secrets } from "@executioncontextprotocol/core"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import "@executioncontextprotocol/demo"
 import {
   PROCESS_ENV_RESOLVER_ID,
   SECRETS_RESOLVER_ID,
@@ -18,10 +20,10 @@ registerRuntimeConformanceTests("@executioncontextprotocol/node", () => createTe
 
 describe("@executioncontextprotocol/node runtime", () => {
   it("runs echo workflow", async () => {
-    await registerTestExtension()
-    const env = (await environment("node-test")).withExtensions([extension("@executioncontextprotocol/test").with({})])
+    await registerDemoExtension()
+    const env = (await environment("node-test")).withExtensions([extension("@executioncontextprotocol/demo").with({})])
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
       .toManifest()
     const ecp = await env.init()
     const result = await ecp.run(manifest)

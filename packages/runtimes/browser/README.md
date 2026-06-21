@@ -34,7 +34,7 @@ const env = (await environment("my-app"))
   .withExtensions([/* your bindings */])
 const ecp = await createEcp(env, { exposeGlobal: true })
 
-await ecp.run(workflow("Hello").run([step("@executioncontextprotocol/test.echo", "E").with({ value: 1 }).as("out")]).toManifest())
+await ecp.run(workflow("Hello").run([step("@executioncontextprotocol/demo.echo", "E").with({ value: 1 }).as("out")]).toManifest())
 ```
 
 ## Compile-on-edit in the browser

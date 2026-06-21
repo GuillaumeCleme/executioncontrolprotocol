@@ -20,7 +20,7 @@ describe.skipIf(!readiness.ready)(
       const ecp = await env.init()
       const descriptor = await ecp.describe()
       const capabilityIds = descriptor.capabilities?.map((c) => c.id) ?? []
-      expect(capabilityIds).toContain("@executioncontextprotocol/test.echo")
+      expect(capabilityIds).toContain("@executioncontextprotocol/demo.echo")
       await ecp.terminate()
     })
 

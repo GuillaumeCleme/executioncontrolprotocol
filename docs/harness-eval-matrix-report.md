@@ -33,7 +33,7 @@ This document catalogs **every assertion and eval case** in the `@executionconte
 
 **Model under test:** `gemma3:1b` (`OLLAMA_GEMMA_1B_EVAL`), base URL `http://localhost:11434`, `num_ctx: 8192`.
 
-**Matrix environment extensions (binding order):** `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-json`, `@executioncontextprotocol/test`, `@executioncontextprotocol/demo`.
+**Matrix environment extensions (binding order):** `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-json`, `@executioncontextprotocol/demo`.
 
 Cases are defined in [`packages/evals/fixtures/cases/*.cases.json`](../packages/evals/fixtures/cases/). Vitest loads them via `loadEvalCases()` and `runEvalCase()` — no per-case test files.
 
@@ -186,18 +186,18 @@ Harness: **workflow-authoring** (create). Model: **default** → `gemma3:1b`.
 
 | ID | Title | User request (summary) | Deterministic expectations | Judge |
 | -- | ----- | ---------------------- | -------------------------- | ----- |
-| **wf-create-01** | Minimal echo | Create minimal `@ecp.workflow` with one echo step, input `hello` | `invokeSuccess`; `artifactSchema` `@ecp.workflow`; `validationValid`; extensions `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-json`, `@executioncontextprotocol/test`, `@executioncontextprotocol/demo`; `stepUses` `@executioncontextprotocol/test.echo`; `stepCount` **exact 1** | Off |
+| **wf-create-01** | Minimal echo | Create minimal `@ecp.workflow` with one echo step, input `hello` | `invokeSuccess`; `artifactSchema` `@ecp.workflow`; `validationValid`; extensions `@executioncontextprotocol/format-toon`, `@executioncontextprotocol/format-json`, `@executioncontextprotocol/demo`; `stepUses` `@executioncontextprotocol/demo.echo`; `stepCount` **exact 1** | Off |
 | **wf-create-02** | Echo plus summarize | Echo then summarize, passing echo output | Same extension list; `stepCount` **min 2**; `stepUses` `@executioncontextprotocol/demo.summarize` | Off |
-| **wf-create-03** | Validate then echo | Build workflow: first `@executioncontextprotocol/demo.validate` then `@executioncontextprotocol/test.echo` | `stepUses` `@executioncontextprotocol/demo.validate` | Off |
+| **wf-create-03** | Validate then echo | Build workflow: first `@executioncontextprotocol/demo.validate` then `@executioncontextprotocol/demo.echo` | `stepUses` `@executioncontextprotocol/demo.validate` | Off |
 | **wf-create-04** | Notify step | Echo + final `@executioncontextprotocol/demo.notify` | `stepUses` `@executioncontextprotocol/demo.notify` | Off |
 | **wf-create-05** | Translate branch | Two-step echo + `@executioncontextprotocol/demo.translate` | `stepUses` `@executioncontextprotocol/demo.translate` | Off |
-| **wf-create-06** | Spanish label | Spanish: one echo step | `stepUses` `@executioncontextprotocol/test.echo` | Off |
-| **wf-create-07** | French label | French: one echo step | `stepUses` `@executioncontextprotocol/test.echo` | Off |
-| **wf-create-08** | German label | German: one echo step | `stepUses` `@executioncontextprotocol/test.echo` | Off |
+| **wf-create-06** | Spanish label | Spanish: one echo step | `stepUses` `@executioncontextprotocol/demo.echo` | Off |
+| **wf-create-07** | French label | French: one echo step | `stepUses` `@executioncontextprotocol/demo.echo` | Off |
+| **wf-create-08** | German label | German: one echo step | `stepUses` `@executioncontextprotocol/demo.echo` | Off |
 | **wf-create-09** | Triple steps | 3-step: validate, echo, summarize | `stepCount` **min 3** | Off |
-| **wf-create-10** | Workflow id minimal-echo | Workflow id `minimal-echo`, one echo labeled Runner | `stepUses` `@executioncontextprotocol/test.echo` | Off |
+| **wf-create-10** | Workflow id minimal-echo | Workflow id `minimal-echo`, one echo labeled Runner | `stepUses` `@executioncontextprotocol/demo.echo` | Off |
 | **wf-create-11** | Quality judge | Production-style echo ingestion workflow | `invokeSuccess`; schema + validation + extensions (no step-specific asserts) | **On** — Goal: *"Workflow is coherent and references echo capability"*; `requireApproved: true`; default rubric |
-| **wf-create-12** | Descriptor caps | List capabilities then echo-only workflow | `descriptorListsCapabilities` `@executioncontextprotocol/test.echo`, `@executioncontextprotocol/demo.summarize` | Off |
+| **wf-create-12** | Descriptor caps | List capabilities then echo-only workflow | `descriptorListsCapabilities` `@executioncontextprotocol/demo.echo`, `@executioncontextprotocol/demo.summarize` | Off |
 
 **Implicit create expectations (harness, all rows):** Top-level `steps` array; `input` not `inputs`; `uses` must be real capability ids from environment; multi-capability requests must produce one step per required capability (enforced via repair feedback).
 
@@ -267,7 +267,7 @@ Harness: **workflow-assistant**. Input: `{ message, runContextFixture? }`.
 | **asst-07** | Output | What did echo produce? | `completed-with-refs.json` | `replySchema` | Off |
 | **asst-08** | Tone judge | Explain failure politely | failed echo | `replySchema` | **On** — Goal: *"Professional helpful tone"*; Rubric: *"Accurate and actionable"* |
 | **asst-09** | Confirm patch | Patch step echo input? | failed echo | `replySchema` | **On** — Goal: *"Confirm patch"*; Rubric: *"Answer discusses patching or updating the echo step input and references the failed run or step echo."* |
-| **asst-10** | Capabilities list | List supported step capabilities | — | `answerContains` **test.echo** | **On** — *"Capabilities list"* |
+| **asst-10** | Capabilities list | List supported step capabilities | — | `answerContains` **demo.echo** | **On** — *"Capabilities list"* |
 
 ---
 
@@ -312,7 +312,7 @@ Note: step 1 does **not** list `invokeSuccess` in JSON; runner still injects it.
 | ---- | ------- | ----- | ---------- |
 | 0 | intent-classification | *"Hi!"* | `intent` → `general` |
 | 1 | intent-classification | *"Actually create an echo workflow."* | `intent` → `workflow-create` |
-| 2 | workflow-authoring | *"Create minimal @executioncontextprotocol/test.echo workflow."* | `stepUses` `@executioncontextprotocol/test.echo` |
+| 2 | workflow-authoring | *"Create minimal @executioncontextprotocol/demo.echo workflow."* | `stepUses` `@executioncontextprotocol/demo.echo` |
 
 ### flow-06 — Error explain and patch
 
@@ -358,7 +358,7 @@ Besides the **52** matrix `it.each` cases, `npm run eval:harness` runs additiona
 
 | File | Steps (ids / uses) | Used by |
 | ---- | ------------------ | ------- |
-| `echo-workflow.json` | echo → `@executioncontextprotocol/test.echo` | wf-patch-01–03, 08, 10–11; flow-01, 06 |
+| `echo-workflow.json` | echo → `@executioncontextprotocol/demo.echo` | wf-patch-01–03, 08, 10–11; flow-01, 06 |
 | `two-step-chain.json` | echo → summarize (`$ref` echo output) | wf-patch-05–07, 09; flow-04 |
 | `multi-cap-workflow.json` | echo, notify, … | wf-patch-04, 12 |
 

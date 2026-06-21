@@ -36,17 +36,16 @@ export const WORKFLOW_EVAL_HARNESS_CONFIG = getHarnessNanoConfig(
 )
 
 /** Extension ids bound in workflow eval environments. @category Evals */
-export const WORKFLOW_EVAL_EXTENSIONS = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/test"] as const
+export const WORKFLOW_EVAL_EXTENSIONS = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/demo"] as const
 
 /** Extension ids bound in intent eval environments (same ops surface as workflow). @category Evals */
-export const INTENT_EVAL_EXTENSIONS = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/test"] as const
+export const INTENT_EVAL_EXTENSIONS = ["@executioncontextprotocol/format-toon", "@executioncontextprotocol/format-eql", "@executioncontextprotocol/demo"] as const
 
 /** Extension ids bound in Ollama matrix eval environments (binding order). @category Evals */
 export const MATRIX_EVAL_EXTENSION_IDS = [
   "@executioncontextprotocol/format-toon",
   "@executioncontextprotocol/format-eql",
   "@executioncontextprotocol/format-json",
-  "@executioncontextprotocol/test",
   "@executioncontextprotocol/demo",
 ] as const
 

@@ -5,7 +5,7 @@ import { validateEcpDocument } from "../src/validate-document.js"
 describe("validateEcpDocument", () => {
   it("validates workflow manifests", () => {
     const manifest = workflow("W")
-      .run([step("@executioncontextprotocol/test.echo", "S").with({}).as("o")])
+      .run([step("@executioncontextprotocol/demo.echo", "S").with({}).as("o")])
       .toManifest()
     const result = validateEcpDocument(manifest, "@ecp.workflow")
     expect(result.valid).toBe(true)

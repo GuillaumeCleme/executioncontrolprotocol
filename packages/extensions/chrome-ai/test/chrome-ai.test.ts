@@ -105,7 +105,7 @@ describe("@executioncontextprotocol/chrome-ai", () => {
     ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
       availability: vi.fn().mockResolvedValue("available"),
       create: vi.fn().mockResolvedValue({
-        prompt: vi.fn().mockResolvedValue('WORKFLOW demo "Demo"\nSTEP echo USES @executioncontextprotocol/test.echo'),
+        prompt: vi.fn().mockResolvedValue('WORKFLOW demo "Demo"\nSTEP echo USES @executioncontextprotocol/demo.echo'),
       }),
     }
     const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontextprotocol/chrome-ai.generate")

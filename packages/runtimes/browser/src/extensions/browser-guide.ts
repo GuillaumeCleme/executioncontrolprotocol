@@ -39,7 +39,7 @@ function guideReply(message: string): string {
   if (/what can you do|what are you|who are you|help me|introduce/.test(lower)) {
     return [
       "I help you build and patch ECP workflows in this editor, explain ECP concepts,",
-      "and describe capabilities registered in this environment (for example @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.*).",
+      "and describe capabilities registered in this environment (for example @executioncontextprotocol/demo.echo and @executioncontextprotocol/demo.*).",
       "Ask about workflows, the environment panel, validation, or Chrome AI.",
       'To generate a workflow, try: "Create a demo echo workflow."',
     ].join(" ")
@@ -56,9 +56,9 @@ function guideReply(message: string): string {
 
   if (lower.includes("environment") || lower.includes("extension") || lower.includes("capabilit")) {
     return [
-      "The **Environment** tab lists extensions bound to this session (for example @executioncontextprotocol/test).",
+      "The **Environment** tab lists extensions bound to this session (for example @executioncontextprotocol/demo).",
       "Capabilities come from those bindings and appear in describe() output.",
-      "The demo binds @executioncontextprotocol/test so @executioncontextprotocol/test.echo is available for workflow steps.",
+      "The demo binds @executioncontextprotocol/demo so @executioncontextprotocol/demo.echo is available for workflow steps.",
     ].join(" ")
   }
 

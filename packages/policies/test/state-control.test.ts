@@ -34,7 +34,7 @@ async function evalPolicy(
   const ctx: PolicyContext & { config: Record<string, unknown> } = {
     workflow: { schema: "@ecp.workflow", version: "1.0.0", workflow: { id: "stub" }, steps: [] },
     run: { id: "run", input: {} },
-    step: { id: "s1", capabilityId: "@executioncontextprotocol/test.echo" },
+    step: { id: "s1", capabilityId: "@executioncontextprotocol/demo.echo" },
     state: {},
     input: {},
     usage: createUsageLedger(),

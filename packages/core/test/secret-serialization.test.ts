@@ -14,7 +14,7 @@ describe("secret serialization", () => {
     setMemorySecret("API_KEY", "super-secret-value")
     const env = (await createTestEnvironment("secret-test")).withExtensions([
       extension("@executioncontextprotocol/secrets").with({}),
-      extension("@executioncontextprotocol/test").with({ token: secrets("API_KEY") }),
+      extension("@executioncontextprotocol/demo").with({ token: secrets("API_KEY") }),
     ])
     await env.init()
     const manifest = env.compile()

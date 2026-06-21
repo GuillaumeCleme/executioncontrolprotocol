@@ -5,10 +5,10 @@
 ```ts
 import { workflow, step } from "@executioncontextprotocol/core"
 import { environment, extension } from "@executioncontextprotocol/node"
-import "@executioncontextprotocol/core/testing"
+import "@executioncontextprotocol/demo"
 
 const manifest = workflow("Demo").run([...]).toManifest()
-const env = (await environment("dev")).withExtensions([extension("@executioncontextprotocol/test").with({})])
+const env = (await environment("dev")).withExtensions([extension("@executioncontextprotocol/demo").with({})])
 await env.run(manifest)
 ```
 

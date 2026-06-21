@@ -91,14 +91,14 @@ describe("harness feedback collectors", () => {
           code: "UNKNOWN_CAPABILITY",
           message: "Capability @executioncontextprotocol/missing is not registered.",
           path: "steps.echo.uses",
-          suggestions: ["@executioncontextprotocol/test.echo"],
+          suggestions: ["@executioncontextprotocol/demo.echo"],
         },
       ],
       warnings: [],
     })
 
     expect(feedback.stage).toBe("validate")
-    expect(feedback.issues[0]?.suggestions).toContain("@executioncontextprotocol/test.echo")
+    expect(feedback.issues[0]?.suggestions).toContain("@executioncontextprotocol/demo.echo")
   })
 
   it("flattenHarnessFeedbackIssues dedupes by path code and message", () => {

@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@executioncontextprotocol/core": "1.0.0",
+    "@executioncontextprotocol/demo": "1.0.0",
     "@executioncontextprotocol/format-toon": "1.0.0",
     "@executioncontextprotocol/types": "1.0.0",
     "typescript": "^5.7.0",

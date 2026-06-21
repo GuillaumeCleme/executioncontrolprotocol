@@ -3,8 +3,9 @@ import {
   harness,
   runtime,
   registerCoreFormats,
-  registerTestExtension,
-} from "@executioncontextprotocol/core"
+  } from "@executioncontextprotocol/core"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import "@executioncontextprotocol/demo"
 import { registerBrowserNanoHarnesses, BROWSER_NANO_HARNESS_ID } from "../harness-bindings.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
 import { registerOllamaExtension } from "@executioncontextprotocol/extension-ollama"
@@ -30,7 +31,7 @@ export async function createHarnessOllamaIntentEnvironment() {
   await registerOllamaExtension()
   await registerFormatEqlExtension()
   await registerFormatToonExtension()
-  await registerTestExtension()
+  await registerDemoExtension()
 
   return environment("harness-ollama-intent-eval", "Harness Ollama Intent Eval")
     .withRuntime(runtime(NODE_RUNTIME_ID))

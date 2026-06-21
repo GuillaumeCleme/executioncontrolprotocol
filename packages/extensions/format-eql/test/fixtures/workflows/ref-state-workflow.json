@@ -10,7 +10,7 @@
       "type": "step",
       "id": "collect",
       "label": "Collect",
-      "uses": "@executioncontextprotocol/test.echo",
+      "uses": "@executioncontextprotocol/demo.echo",
       "input": {
         "context": { "$ref": "state.signals.results" },
         "brief": { "$state": "creativeInputs" }

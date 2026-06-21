@@ -35,12 +35,12 @@ describe("fluent API surface", () => {
     expect(typeof b.validate).toBe("function")
     expect(typeof b.toGraph).toBe("function")
     expect(b).toBeInstanceOf(WorkflowBuilder)
-    const m = b.run([step("@executioncontextprotocol/test.echo", "S").with({ x: 1 }).as("k")]).toManifest()
+    const m = b.run([step("@executioncontextprotocol/demo.echo", "S").with({ x: 1 }).as("k")]).toManifest()
     expect(m.schema).toBe("@ecp.workflow")
   })
 
   it("step builder chains", () => {
-    const s = step("@executioncontextprotocol/test.echo", "Label")
+    const s = step("@executioncontextprotocol/demo.echo", "Label")
     expect(typeof s.with).toBe("function")
     expect(typeof s.when).toBe("function")
     expect(typeof s.as).toBe("function")
@@ -50,7 +50,7 @@ describe("fluent API surface", () => {
   })
 
   it("binding builders chain", () => {
-    const e = extension("@executioncontextprotocol/test", "E").with({ a: 1 })
+    const e = extension("@executioncontextprotocol/demo", "E").with({ a: 1 })
     expect(typeof e.with).toBe("function")
     expect(e.getConfig()).toEqual({ a: 1 })
 
@@ -89,9 +89,9 @@ describe("fluent API surface", () => {
   })
 
   it("flow helpers produce node types", () => {
-    expect(parallel([[step("@executioncontextprotocol/test.echo", "A")]]).type).toBe("parallel")
-    expect(branch([step("@executioncontextprotocol/test.echo", "A")]).type).toBe("branch")
-    expect(loop({ label: "L" }, [step("@executioncontextprotocol/test.echo", "A")]).type).toBe("loop")
+    expect(parallel([[step("@executioncontextprotocol/demo.echo", "A")]]).type).toBe("parallel")
+    expect(branch([step("@executioncontextprotocol/demo.echo", "A")]).type).toBe("branch")
+    expect(loop({ label: "L" }, [step("@executioncontextprotocol/demo.echo", "A")]).type).toBe("loop")
   })
 
   it("environment builder chains", () => {

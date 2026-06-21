@@ -20,7 +20,7 @@ describe("EQL patch encode/decode", () => {
     const text = `ECP @ecp.patch 1.0
 PATCH WORKFLOW chain
 DELETE STEP old
-ADD STEP new USES @executioncontextprotocol/test.echo AFTER echo
+ADD STEP new USES @executioncontextprotocol/demo.echo AFTER echo
   WITH value = "added"
 MOVE STEP new AFTER summarize`
     const decoded = decodePatch(text)

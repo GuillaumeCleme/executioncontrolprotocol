@@ -19,7 +19,7 @@ describe("isRepairFeedbackEcho", () => {
   it("allows headerless EQL workflow output", () => {
     expect(
       isRepairFeedbackEcho(
-        'WORKFLOW echo-test "Echo"\nSTEP echo USES @executioncontextprotocol/test.echo\n  WITH value = "hello"'
+        'WORKFLOW echo-test "Echo"\nSTEP echo USES @executioncontextprotocol/demo.echo\n  WITH value = "hello"'
       )
     ).toBe(false)
   })

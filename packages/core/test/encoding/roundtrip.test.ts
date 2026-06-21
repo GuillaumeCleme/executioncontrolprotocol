@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest"
 import {
   extension,
   normalizeWorkflowManifest,
-  registerTestExtension,
-} from "../../src/index.js"
+  } from "../../src/index.js"
 import { compileWorkflowSource } from "../../src/compile/index.js"
 import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { initEncodingTestEcp } from "../helpers.js"
 
 const fluentSource = `
@@ -14,7 +14,7 @@ import { workflow, step, ref } from "@executioncontextprotocol/core";
 export default workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@executioncontextprotocol/test.echo", "Collect Signals")
+    step("@executioncontextprotocol/demo.echo", "Collect Signals")
       .id("collect-signals")
       .with({ value: "weekly" })
       .as("signals"),
@@ -23,7 +23,7 @@ export default workflow("Weekly Brief")
 
 describe("full format round trip", () => {
   it("round trips Fluent → JSON → TOON → JSON → Fluent", async () => {
-    await registerTestExtension()
+    await registerDemoExtension()
     await registerFormatToonExtension()
 
     const ecp = await initEncodingTestEcp([extension("@executioncontextprotocol/format-toon").with({})])

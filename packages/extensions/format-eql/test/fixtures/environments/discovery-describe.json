@@ -13,16 +13,16 @@
   },
   "extensions": [
     {
-      "id": "@executioncontextprotocol/test",
+      "id": "@executioncontextprotocol/demo",
       "order": 0,
-      "capabilities": ["@executioncontextprotocol/test.echo"]
+      "capabilities": ["@executioncontextprotocol/demo.echo"]
     }
   ],
   "capabilities": [
     {
-      "id": "@executioncontextprotocol/test.echo",
+      "id": "@executioncontextprotocol/demo.echo",
       "label": "Echo",
-      "extension": "@executioncontextprotocol/test",
+      "extension": "@executioncontextprotocol/demo",
       "inputSchema": {
         "value": "string!"
       },

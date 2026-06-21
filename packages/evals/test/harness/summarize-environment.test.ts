@@ -11,13 +11,13 @@ const minimalDescriptor: EnvironmentDescriptor = {
   environment: { id: "test" },
   runtime: { id: "local", features: {} },
   extensions: [
-    { id: "@executioncontextprotocol/test", order: 0, capabilities: ["@executioncontextprotocol/test.echo"] },
+    { id: "@executioncontextprotocol/demo", order: 0, capabilities: ["@executioncontextprotocol/demo.echo"] },
     { id: "@executioncontextprotocol/demo", order: 1, capabilities: ["@executioncontextprotocol/demo.summarize"] },
   ],
   capabilities: [
     {
-      id: "@executioncontextprotocol/test.echo",
-      extension: "@executioncontextprotocol/test",
+      id: "@executioncontextprotocol/demo.echo",
+      extension: "@executioncontextprotocol/demo",
       inputSchema: { type: "object", properties: { value: { type: "string" } } },
       outputSchema: { type: "object", properties: { text: { type: "string" } } },
     },
@@ -36,14 +36,14 @@ describe("summarizeEnvironmentDescriptor", () => {
     const summaryJson = JSON.stringify(summary)
     const fullJson = JSON.stringify(minimalDescriptor)
     expect(summaryJson.length).toBeLessThan(fullJson.length)
-    expect(summary.capabilities.map((c) => c.id)).toContain("@executioncontextprotocol/test.echo")
-    expect(summary.extensions[0]?.id).toBe("@executioncontextprotocol/test")
+    expect(summary.capabilities.map((c) => c.id)).toContain("@executioncontextprotocol/demo.echo")
+    expect(summary.extensions[0]?.id).toBe("@executioncontextprotocol/demo")
   })
 
   it("formatEnvironmentSummaryLines lists capability ids", () => {
     const summary = summarizeEnvironmentDescriptor(minimalDescriptor)
     const text = formatEnvironmentSummaryLines(summary).join("\n")
-    expect(text).toContain("@executioncontextprotocol/test.echo")
+    expect(text).toContain("@executioncontextprotocol/demo.echo")
     expect(text).toContain("@executioncontextprotocol/demo.summarize")
   })
 
@@ -51,9 +51,9 @@ describe("summarizeEnvironmentDescriptor", () => {
     const summary = summarizeEnvironmentDescriptor(minimalDescriptor)
     const text = formatEnvironmentSummaryLines(summary, {
       format: "eql-patch",
-      existingCapabilityUses: new Set(["@executioncontextprotocol/test.echo"]),
+      existingCapabilityUses: new Set(["@executioncontextprotocol/demo.echo"]),
     }).join("\n")
     expect(text).toContain("ADD STEP <newStepId> USES @executioncontextprotocol/demo.summarize")
-    expect(text).toContain("@executioncontextprotocol/test.echo (already used by an existing step")
+    expect(text).toContain("@executioncontextprotocol/demo.echo (already used by an existing step")
   })
 })

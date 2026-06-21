@@ -66,7 +66,7 @@ catalogExtension(myExtension)
 - Test the extension in isolation: fixtures for `@ecp.workflow`, `@ecp.environment`, `@ecp.environment.describe`, etc.
 - Use `environment()` from `@executioncontextprotocol/core` for `encode`/`decode` integration tests (no runtime binding required).
 - Do **not** import `@executioncontextprotocol/node` to call `describe()`, `run()`, or wire runtimes; that belongs in `@executioncontextprotocol/core` / `@executioncontextprotocol/node` tests.
-- In-repo stub: `import "@executioncontextprotocol/core/testing"` and `extension("@executioncontextprotocol/test")` only when a test must invoke a real capability handler.
+- For lifecycle conformance tests, use `import "@executioncontextprotocol/core/testing"` for `@executioncontextprotocol/lifecycle-spy`. For echo and other demo capabilities in tests, use `import "@executioncontextprotocol/demo"` and `extension("@executioncontextprotocol/demo")`.
 
 ## Environment modules (apps/examples, not extensions)
 

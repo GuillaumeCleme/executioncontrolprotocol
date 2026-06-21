@@ -7,7 +7,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a minimal @ecp.workflow with one step id echo using @executioncontextprotocol/test.echo and input value hello."
+        "request": "Create a minimal @ecp.workflow with one step id echo using @executioncontextprotocol/demo.echo and input value hello."
       },
       "assertions": {
         "deterministic": [
@@ -27,13 +27,13 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontextprotocol/demo.echo"
           },
           {
             "kind": "stepCount",
@@ -52,7 +52,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a workflow with echo (@executioncontextprotocol/test.echo) then summarize (@executioncontextprotocol/demo.summarize) passing echo output."
+        "request": "Create a workflow with echo (@executioncontextprotocol/demo.echo) then summarize (@executioncontextprotocol/demo.summarize) passing echo output."
       },
       "assertions": {
         "deterministic": [
@@ -72,7 +72,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
@@ -97,7 +97,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/test.echo."
+        "request": "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/demo.echo."
       },
       "assertions": {
         "deterministic": [
@@ -117,7 +117,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
@@ -138,7 +138,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create workflow with @executioncontextprotocol/test.echo and a final @executioncontextprotocol/demo.notify step."
+        "request": "Create workflow with @executioncontextprotocol/demo.echo and a final @executioncontextprotocol/demo.notify step."
       },
       "assertions": {
         "deterministic": [
@@ -158,7 +158,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
@@ -179,7 +179,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a two-step workflow using @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.translate."
+        "request": "Create a two-step workflow using @executioncontextprotocol/demo.echo and @executioncontextprotocol/demo.translate."
       },
       "assertions": {
         "deterministic": [
@@ -199,7 +199,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
@@ -220,7 +220,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Crea un flujo con un paso echo usando @executioncontextprotocol/test.echo."
+        "request": "Crea un flujo con un paso echo usando @executioncontextprotocol/demo.echo."
       },
       "assertions": {
         "deterministic": [
@@ -240,13 +240,13 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontextprotocol/demo.echo"
           }
         ],
         "judge": {
@@ -261,7 +261,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Créez un workflow avec une étape @executioncontextprotocol/test.echo."
+        "request": "Créez un workflow avec une étape @executioncontextprotocol/demo.echo."
       },
       "assertions": {
         "deterministic": [
@@ -281,13 +281,13 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontextprotocol/demo.echo"
           }
         ],
         "judge": {
@@ -302,7 +302,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Erstelle einen Workflow mit @executioncontextprotocol/test.echo."
+        "request": "Erstelle einen Workflow mit @executioncontextprotocol/demo.echo."
       },
       "assertions": {
         "deterministic": [
@@ -322,13 +322,13 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontextprotocol/demo.echo"
           }
         ],
         "judge": {
@@ -343,7 +343,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a 3-step workflow using @executioncontextprotocol/demo.validate, @executioncontextprotocol/test.echo, and @executioncontextprotocol/demo.summarize."
+        "request": "Create a 3-step workflow using @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.echo, and @executioncontextprotocol/demo.summarize."
       },
       "assertions": {
         "deterministic": [
@@ -363,7 +363,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
@@ -384,7 +384,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create workflow id minimal-echo with one @executioncontextprotocol/test.echo step labeled Runner."
+        "request": "Create workflow id minimal-echo with one @executioncontextprotocol/demo.echo step labeled Runner."
       },
       "assertions": {
         "deterministic": [
@@ -404,13 +404,13 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontextprotocol/demo.echo"
           }
         ],
         "judge": {
@@ -425,7 +425,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Design a clear production workflow using @executioncontextprotocol/test.echo for ingestion."
+        "request": "Design a clear production workflow using @executioncontextprotocol/demo.echo for ingestion."
       },
       "assertions": {
         "deterministic": [
@@ -445,7 +445,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -464,7 +464,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "List capabilities then create echo-only workflow with @executioncontextprotocol/test.echo."
+        "request": "List capabilities then create echo-only workflow with @executioncontextprotocol/demo.echo."
       },
       "assertions": {
         "deterministic": [
@@ -484,14 +484,14 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           },
           {
             "kind": "descriptorListsCapabilities",
             "ids": [
-              "@executioncontextprotocol/test.echo",
+              "@executioncontextprotocol/demo.echo",
               "@executioncontextprotocol/demo.summarize"
             ]
           }

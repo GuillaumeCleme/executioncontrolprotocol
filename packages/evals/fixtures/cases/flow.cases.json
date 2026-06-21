@@ -275,13 +275,13 @@
         {
           "harness": "workflow-authoring",
           "input": {
-            "request": "Create minimal @executioncontextprotocol/test.echo workflow."
+            "request": "Create minimal @executioncontextprotocol/demo.echo workflow."
           },
           "assertions": {
             "deterministic": [
               {
                 "kind": "stepUses",
-                "capabilityId": "@executioncontextprotocol/test.echo"
+                "capabilityId": "@executioncontextprotocol/demo.echo"
               }
             ],
             "judge": {

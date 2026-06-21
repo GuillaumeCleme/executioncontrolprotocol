@@ -22,9 +22,9 @@ export function registerRuntimeConformanceTests(
 
     it("runs echo and commits .as() output", async () => {
       const env = await createEnv()
-      env.addExtensionBinding("@executioncontextprotocol/test", {})
+      env.addExtensionBinding("@executioncontextprotocol/demo", {})
       const manifest = workflow("Echo")
-        .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "x" }).as("echo")])
+        .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "x" }).as("echo")])
         .toManifest()
       const ecp = await env.init()
       const result = await ecp.run(manifest)
@@ -34,12 +34,12 @@ export function registerRuntimeConformanceTests(
 
     it("policy:pre deny skips capability invocation", async () => {
       const env = await createEnv()
-      env.addExtensionBinding("@executioncontextprotocol/test", {})
+      env.addExtensionBinding("@executioncontextprotocol/demo", {})
       env.addExtensionBinding("@executioncontextprotocol/lifecycle-spy", {})
-      env.addPolicyBinding("@executioncontextprotocol/approval", { requireApprovalFor: ["@executioncontextprotocol/test.echo"] })
+      env.addPolicyBinding("@executioncontextprotocol/approval", { requireApprovalFor: ["@executioncontextprotocol/demo.echo"] })
       lifecycleSpyEvents.length = 0
       const manifest = workflow("Deny")
-        .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: 1 }).as("out")])
+        .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: 1 }).as("out")])
         .toManifest()
       const ecp = await env.init()
       const result = await ecp.run(manifest)

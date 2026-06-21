@@ -12,7 +12,7 @@ import type { WorkflowManifest } from "@executioncontextprotocol/types"
 const summary: CompactEnvironmentSummary = {
   extensions: [{ id: "@executioncontextprotocol/demo", capabilities: ["@executioncontextprotocol/demo.summarize", "@executioncontextprotocol/demo.notify"] }],
   capabilities: [
-    { id: "@executioncontextprotocol/test.echo", extension: "@executioncontextprotocol/test", inputs: ["value"], outputs: ["text"] },
+    { id: "@executioncontextprotocol/demo.echo", extension: "@executioncontextprotocol/demo", inputs: ["value"], outputs: ["text"] },
     { id: "@executioncontextprotocol/demo.summarize", extension: "@executioncontextprotocol/demo", inputs: ["text"], outputs: [] },
     { id: "@executioncontextprotocol/demo.notify", extension: "@executioncontextprotocol/demo", inputs: ["payload"], outputs: [] },
     { id: "@executioncontextprotocol/demo.validate", extension: "@executioncontextprotocol/demo", inputs: ["payload"], outputs: [] },
@@ -23,20 +23,20 @@ const summary: CompactEnvironmentSummary = {
 describe("request-capability-hints", () => {
   it("infers echo and summarize from natural language", () => {
     const ids = inferRequiredCapabilityIds(
-      "Create a workflow with echo (@executioncontextprotocol/test.echo) then summarize (@executioncontextprotocol/demo.summarize)",
+      "Create a workflow with echo (@executioncontextprotocol/demo.echo) then summarize (@executioncontextprotocol/demo.summarize)",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@executioncontextprotocol/test.echo")
+    expect(ids).toContain("@executioncontextprotocol/demo.echo")
     expect(ids).toContain("@executioncontextprotocol/demo.summarize")
   })
 
   it("infers validate when capability id appears in request", () => {
     const ids = inferRequiredCapabilityIds(
-      "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/test.echo.",
+      "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/demo.echo.",
       summary.capabilities.map((c) => c.id)
     )
     expect(ids).toContain("@executioncontextprotocol/demo.validate")
-    expect(ids).toContain("@executioncontextprotocol/test.echo")
+    expect(ids).toContain("@executioncontextprotocol/demo.echo")
   })
 
   it("does not treat Validate then echo as validate capability", () => {
@@ -44,7 +44,7 @@ describe("request-capability-hints", () => {
       "Validate then echo with hello input",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@executioncontextprotocol/test.echo")
+    expect(ids).toContain("@executioncontextprotocol/demo.echo")
     expect(ids).not.toContain("@executioncontextprotocol/demo.validate")
   })
 
@@ -56,7 +56,7 @@ describe("request-capability-hints", () => {
       steps: [
         {
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           label: "Echo",
           as: "echo",
         },
@@ -80,7 +80,7 @@ describe("request-capability-hints", () => {
           type: "step",
           id: "echo",
           label: "Echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           input: { value: "hi" },
           as: "echo",
         },
@@ -112,7 +112,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           label: "Echo",
           as: "echo",
         },
@@ -144,7 +144,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           label: "Echo",
           as: "echo",
         },
@@ -164,7 +164,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           label: "Echo",
           as: "echo",
         },
@@ -194,7 +194,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           label: "Echo",
           as: "echo",
         },
@@ -239,7 +239,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           label: "Echo",
           as: "echo",
         },
@@ -266,7 +266,7 @@ describe("request-capability-hints", () => {
           type: "step",
           id: "echo",
           label: "patched echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           input: { value: "hi" },
           as: "echo",
         },
@@ -288,7 +288,7 @@ describe("request-capability-hints", () => {
       version: "1.0.0",
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
-        { type: "step", id: "echo", uses: "@executioncontextprotocol/test.echo", label: "Echo", as: "echo" },
+        { type: "step", id: "echo", uses: "@executioncontextprotocol/demo.echo", label: "Echo", as: "echo" },
         { type: "step", id: "validate", uses: "@executioncontextprotocol/demo.validate", label: "Validate", as: "validated" },
       ],
     }
@@ -309,7 +309,7 @@ describe("request-capability-hints", () => {
       version: "1.0.0",
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
-        { type: "step", id: "echo", uses: "@executioncontextprotocol/test.echo", label: "Echo", as: "echo" },
+        { type: "step", id: "echo", uses: "@executioncontextprotocol/demo.echo", label: "Echo", as: "echo" },
         { type: "step", id: "validate", uses: "@executioncontextprotocol/demo.validate", label: "Validate", as: "validated" },
       ],
     }

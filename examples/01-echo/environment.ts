@@ -1,9 +1,9 @@
 import { environment, extension } from "@executioncontextprotocol/node"
 
-import "@executioncontextprotocol/core/testing"
+import "@executioncontextprotocol/demo"
 import "@executioncontextprotocol/format-toon"
 
 export default (await environment("echo-dev", "Echo development")).withExtensions([
-  extension("@executioncontextprotocol/test").with({}),
+  extension("@executioncontextprotocol/demo").with({}),
   extension("@executioncontextprotocol/format-toon").with({}),
 ])

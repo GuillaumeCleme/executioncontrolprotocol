@@ -16,7 +16,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
     const result = normalizeWorkflowDocumentCandidate({
       workflow: {
         id: "w",
-        steps: [{ uses: "@executioncontextprotocol/test.echo", id: "a", input: {} }],
+        steps: [{ uses: "@executioncontextprotocol/demo.echo", id: "a", input: {} }],
       },
     }) as { steps: unknown[]; workflow: { steps?: unknown[] } }
     expect(result.steps).toHaveLength(1)
@@ -26,7 +26,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
   it("renames step `inputs` to `input` and adds type:step", () => {
     const result = normalizeWorkflowDocumentCandidate({
       workflow: { id: "w" },
-      steps: [{ id: "a", uses: "@executioncontextprotocol/test.echo", inputs: { value: "x" } }],
+      steps: [{ id: "a", uses: "@executioncontextprotocol/demo.echo", inputs: { value: "x" } }],
     }) as { steps: { type: string; input: { value: string }; inputs?: unknown }[] }
     const step = result.steps[0]!
     expect(step.type).toBe("step")

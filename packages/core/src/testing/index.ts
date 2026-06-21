@@ -1,7 +1,13 @@
 /**
- * Side-effect entry: catalogs {@link testExtension} for `extension("@executioncontextprotocol/test")` bindings.
+ * Lifecycle spy extension for runtime conformance tests.
  * @category Testing
  */
-import "./test-extension.js"
+import "./test-lifecycle-extension.js"
 
-export { registerTestExtension, testExtension } from "./test-extension.js"
+export {
+  capabilityInvokeCount,
+  lifecycleSpyEvents,
+  lifecycleSpyExtension,
+  registerLifecycleSpyExtension,
+  resetLifecycleSpy,
+} from "./test-lifecycle-extension.js"

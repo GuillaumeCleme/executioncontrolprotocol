@@ -20,7 +20,7 @@ describe("browser secret serialization", () => {
     await setBrowserSecret("API_KEY", "super-browser-secret")
     const env = (await createTestEnvironment("browser-secret-test")).withExtensions([
       extension("@executioncontextprotocol/browser-secrets").with({}),
-      extension("@executioncontextprotocol/test").with({ token: browser("API_KEY") }),
+      extension("@executioncontextprotocol/demo").with({ token: browser("API_KEY") }),
     ])
     await env.init()
     const manifest = env.compile()

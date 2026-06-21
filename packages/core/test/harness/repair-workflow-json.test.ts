@@ -15,7 +15,7 @@ describe("repairWorkflowJsonSyntax", () => {
       schema: "@ecp.workflow",
       version: "1.0",
       workflow: { id: "w" },
-      steps: [{ type: "step", id: "a", uses: "@executioncontextprotocol/test.echo", input: {}, as: "a" }],
+      steps: [{ type: "step", id: "a", uses: "@executioncontextprotocol/demo.echo", input: {}, as: "a" }],
     })
     expect(() => parse(repairWorkflowJsonSyntax(valid))).not.toThrow()
   })
@@ -35,7 +35,7 @@ describe("repairWorkflowJsonSyntax", () => {
 
   it("moves a floating 'as' back inside the preceding step", () => {
     const raw =
-      '{"schema":"@ecp.workflow","version":"1.0","workflow":{"id":"w"},"steps":[{"type":"step","id":"echo","uses":"@executioncontextprotocol/test.echo","input":{"value":"hi"}},"as":"echo"},{"type":"step","id":"two","uses":"@executioncontextprotocol/test.echo","input":{}}]}'
+      '{"schema":"@ecp.workflow","version":"1.0","workflow":{"id":"w"},"steps":[{"type":"step","id":"echo","uses":"@executioncontextprotocol/demo.echo","input":{"value":"hi"}},"as":"echo"},{"type":"step","id":"two","uses":"@executioncontextprotocol/demo.echo","input":{}}]}'
     const repaired = repairWorkflowJsonSyntax(raw)
     const parsed = parse(repaired) as { steps: { id: string; as?: string }[] }
     const echo = parsed.steps.find((s) => s.id === "echo")
@@ -48,7 +48,7 @@ describe("repairWorkflowJsonSyntax", () => {
       version: "1.0",
       workflow: { id: "w" },
       steps: [
-        { type: "step", id: "a", uses: "@executioncontextprotocol/test.echo", input: { x: { $ref: "state.y" } }, as: "a" },
+        { type: "step", id: "a", uses: "@executioncontextprotocol/demo.echo", input: { x: { $ref: "state.y" } }, as: "a" },
       ],
     })
     const repaired = repairWorkflowJsonSyntax(raw)
@@ -66,7 +66,7 @@ describe("hoistWorkflowStepsInRawJson", () => {
       version: "1.0",
       workflow: {
         id: "w",
-        steps: [{ type: "step", id: "a", uses: "@executioncontextprotocol/test.echo", input: {}, as: "a" }],
+        steps: [{ type: "step", id: "a", uses: "@executioncontextprotocol/demo.echo", input: {}, as: "a" }],
       },
     })
     const hoisted = hoistWorkflowStepsInRawJson(raw)

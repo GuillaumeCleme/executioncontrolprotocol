@@ -9,7 +9,7 @@ import {
   HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE,
   registerCoreFormats,
 } from "@executioncontextprotocol/core"
-import { registerTestExtension } from "../../../core/src/testing/test-extension.js"
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
   registerBrowserNanoHarnesses,
@@ -38,7 +38,7 @@ describe("workflow-assistant safe reply fallback", () => {
     await registerCoreFormats()
     await registerFormatEqlExtension()
     await registerNodeRuntime()
-    await registerTestExtension()
+    await registerDemoExtension()
     catalogExtension(invalidGenExtension)
     resetBrowserNanoHarnessRegistrationForTests()
     registerBrowserNanoHarnesses()
@@ -49,7 +49,7 @@ describe("workflow-assistant safe reply fallback", () => {
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
         extension("@executioncontextprotocol/format-eql").with({}),
-        extension("@executioncontextprotocol/test").with({}),
+        extension("@executioncontextprotocol/demo").with({}),
         extension("@executioncontextprotocol/invalid-gen").with({}),
       ])
       .withHarnesses([

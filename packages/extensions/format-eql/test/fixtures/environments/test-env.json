@@ -11,7 +11,7 @@
   },
   "extensions": [
     {
-      "id": "@executioncontextprotocol/test",
+      "id": "@executioncontextprotocol/demo",
       "order": 0,
       "label": "Test extension",
       "config": { "enabled": true }

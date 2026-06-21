@@ -19,7 +19,6 @@ import {
 } from "../../src/harness/definitions/test-minimal-harness.js"
 import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
-import { registerTestExtension } from "../../src/testing/test-extension.js"
 import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
 
@@ -65,7 +64,6 @@ describe("executeHarnessInvoke", () => {
         .build()
     )
     await registerNodeRuntime()
-    await registerTestExtension()
     await registerDemoExtension()
     await registerFormatToonExtension()
   })
@@ -75,7 +73,6 @@ describe("executeHarnessInvoke", () => {
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
         extension("@executioncontextprotocol/format-toon").with({}),
-        extension("@executioncontextprotocol/test").with({}),
         extension("@executioncontextprotocol/demo").with({}),
       ])
     if (withHarness) {

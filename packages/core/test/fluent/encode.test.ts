@@ -48,7 +48,7 @@ describe("renderWorkflowToFluent", () => {
   it("generated Fluent source compiles back to manifest", async () => {
     const manifest = workflow("W")
       .run([
-        step("@executioncontextprotocol/test.echo", "E")
+        step("@executioncontextprotocol/demo.echo", "E")
           .with({ value: ref("signals.results") })
           .as("o"),
       ])
@@ -70,7 +70,7 @@ describe("renderWorkflowToFluent", () => {
 
   it("toFluentSource on builder matches renderWorkflowToFluent", () => {
     const builder = workflow("Echo").run([
-      step("@executioncontextprotocol/test.echo", "E").with({ value: "x" }).as("o"),
+      step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o"),
     ])
     expect(builder.toFluentSource()).toBe(renderWorkflowToFluent(builder.toManifest()))
   })
@@ -79,7 +79,7 @@ describe("renderWorkflowToFluent", () => {
 describe("encodeFluent", () => {
   it("returns EncodeResult with fluent format", () => {
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/test.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const encoded = encodeFluent(manifest)
@@ -92,7 +92,7 @@ describe("encodeFluent", () => {
 describe("env.encode built-in fluent", () => {
   it("encodes via @executioncontextprotocol/format-fluent", async () => {
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/test.echo", "E").with({ value: "x" }).as("o")])
+      .run([step("@executioncontextprotocol/demo.echo", "E").with({ value: "x" }).as("o")])
       .toManifest()
 
     const ecp = await initEncodingTestEcp()

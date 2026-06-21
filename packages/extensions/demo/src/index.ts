@@ -17,6 +17,18 @@ const GenerateTextOutput = z.object({
   text: z.string(),
 })
 
+const EchoInput = z.object({
+  value: z.unknown().optional(),
+})
+
+const EchoOutput = z.object({
+  echo: z.unknown(),
+})
+
+function echoHandler(input: { value?: unknown }) {
+  return { echo: input.value ?? "hi" }
+}
+
 function demoIntentResponse(prompt: string): string {
   const lower = prompt.toLowerCase()
   let intent = "general"
@@ -43,7 +55,7 @@ function demoAssistantResponse(prompt: string): string {
     return 'REPLY\n  ANSWER "I cannot register or install extensions. I can list loaded capabilities and help you build workflows with them."'
   }
   if (/capabilit|extensions?|plugins?/.test(message)) {
-    return 'REPLY\n  ANSWER "Loaded capabilities include @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.summarize, @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.notify, @executioncontextprotocol/demo.translate."\n  CITATION extension @executioncontextprotocol/test "@executioncontextprotocol/test.echo"'
+    return 'REPLY\n  ANSWER "Loaded capabilities include @executioncontextprotocol/demo.echo, @executioncontextprotocol/demo.summarize, @executioncontextprotocol/demo.validate, @executioncontextprotocol/demo.notify, and @executioncontextprotocol/demo.translate."\n  CITATION extension @executioncontextprotocol/demo "@executioncontextprotocol/demo.echo"'
   }
   if (/error|fail|fix/.test(message)) {
     return 'REPLY\n  ANSWER "The echo step failed with an error; patch the echo step input to recover."\n  CITATION step echo "Failed echo step in run context."'
@@ -75,7 +87,7 @@ function demoGenerateHandler(input: { prompt?: string; system?: string }) {
   return {
     text: [
       'WORKFLOW demo-generated "Demo generated"',
-      "STEP echo USES @executioncontextprotocol/test.echo",
+      "STEP echo USES @executioncontextprotocol/demo.echo",
       '  LABEL "Demo Echo"',
       '  WITH value = "hello"',
       "  AS echo",
@@ -93,6 +105,10 @@ function demoStubHandler(input: { payload?: unknown }) {
 /** Demo model provider for offline browser demo. @category Extensions */
 export const demoExtension = defineExtension("@executioncontextprotocol", "demo")
   .withCapabilities([
+    capabilityFor("@executioncontextprotocol/demo", "echo")
+      .withInput(EchoInput)
+      .withOutput(EchoOutput)
+      .withHandler(async (input) => echoHandler(input as { value?: unknown })),
     capabilityFor("@executioncontextprotocol/demo", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)

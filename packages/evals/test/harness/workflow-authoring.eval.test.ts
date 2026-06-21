@@ -28,7 +28,7 @@ describe.skipIf(!readiness.ready)(
         .with({
           task: HARNESS_TASKS.WORKFLOW_AUTHORING,
           request:
-            "Create a minimal echo workflow with one step using @executioncontextprotocol/test.echo and input value hello.",
+            "Create a minimal echo workflow with one step using @executioncontextprotocol/demo.echo and input value hello.",
           model: OLLAMA_GEMMA_1B_EVAL.model,
         })
         .process()

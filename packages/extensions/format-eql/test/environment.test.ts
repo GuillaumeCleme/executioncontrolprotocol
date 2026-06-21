@@ -28,7 +28,7 @@ describe("EQL environment manifest", () => {
     )
     expect(encoded.success).toBe(true)
     expect(encoded.result).toContain("ENVIRONMENT test-env")
-    expect(encoded.result).toContain("EXTENSION @executioncontextprotocol/test ORDER 0")
+    expect(encoded.result).toContain("EXTENSION @executioncontextprotocol/demo ORDER 0")
 
     const decoded = decodeFromEql(
       { input: encoded.result, targetSchema: "@ecp.environment" },
@@ -71,7 +71,7 @@ describe("EQL environment describe", () => {
       testCtx
     )
     expect(encoded.success).toBe(true)
-    expect(encoded.result).toContain("CAPABILITY @executioncontextprotocol/test.echo")
+    expect(encoded.result).toContain("CAPABILITY @executioncontextprotocol/demo.echo")
     expect(encoded.result).toMatch(/WITH value:string!/)
     expect(encoded.result).toMatch(/WITH query:string!/)
 

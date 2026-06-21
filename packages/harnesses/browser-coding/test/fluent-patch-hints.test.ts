@@ -32,7 +32,7 @@ describe("buildFluentPatchHintLines", () => {
 
   it("wf-patch-03 steers append step and ref after echo", () => {
     const wf = loadWorkflow("echo-workflow.json")
-    const caps = ["@executioncontextprotocol/test.echo", "@executioncontextprotocol/demo.summarize"]
+    const caps = ["@executioncontextprotocol/demo.echo", "@executioncontextprotocol/demo.summarize"]
     const lines = buildFluentPatchHintLines(
       "Add a summarize step after echo using @executioncontextprotocol/demo.summarize.",
       wf,
@@ -65,7 +65,7 @@ describe("collectFluentPatchGoalFeedback", () => {
           type: "step",
           id: "patched-echo",
           label: "Patched Echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           input: { value: "hello from fluent API" },
           as: "echo",
         },

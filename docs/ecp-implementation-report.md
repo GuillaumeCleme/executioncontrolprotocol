@@ -66,8 +66,9 @@ All symbols below are exported from `@executioncontextprotocol/core` unless note
 | `ref(path: string, options?: RefOptions)` | `RefValue` | Read-only reference to committed state (`state.*`). |
 | `state<T>(path: string, options?: StateOptions)` | `StoreStateHandle<T> & StateValue` | Mutable state handle for workflows / store. |
 | `env(name: string, options?: EnvOptions)` | `EnvValue` | Reference to environment config key (`$env`). |
-| `registerTestExtension()` | `void` | Register `@executioncontextprotocol/test` + `@executioncontextprotocol/test.echo` on `globalRegistry`. |
 | `registerLocalRuntime()` | `void` | Register `@executioncontextprotocol/local` on `globalRegistry`. |
+
+For demo step capabilities (`@executioncontextprotocol/demo.echo`, etc.), use `registerDemoExtension()` from `@executioncontextprotocol/demo` (not exported from core).
 
 `NodeInput` = `StepBuilder | WorkflowNode`.
 
@@ -610,7 +611,7 @@ Lib: `commandErrorMessage`, `runWithCommandError`, `EnvModuleCommand`, `Workflow
 
 | Path | Status |
 | ---- | ------ |
-| `examples/01-echo/` | Runnable (`@executioncontextprotocol/test.echo`) |
+| `examples/01-echo/` | Runnable (`@executioncontextprotocol/demo.echo`) |
 | `examples/02-weekly-brief/` | Multi-step; needs extensions in env |
 | `examples/04-compile-and-run/` | README |
 | Legacy README folders | Not migrated |
@@ -712,7 +713,6 @@ import {
   // Registry & builtins
   Registry,
   globalRegistry,
-  registerTestExtension,
   registerLocalRuntime,
   LOCAL_RUNTIME_ID,
   // Compile & load
@@ -722,6 +722,9 @@ import {
   loadEnvironmentModule,
   validateWorkflow,
 } from "@executioncontextprotocol/core"
+
+import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import "@executioncontextprotocol/demo"
 ```
 
 ```bash

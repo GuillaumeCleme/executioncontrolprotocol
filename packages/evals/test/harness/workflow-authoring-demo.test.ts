@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
-import { environment, extension, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontextprotocol/core"
+import { environment, extension, harness, runtime, registerCoreFormats } from "@executioncontextprotocol/core"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
 import { registerDemoExtension } from "@executioncontextprotocol/demo"
 import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
@@ -22,7 +22,6 @@ async function createEvalAuthoringDemoEnv() {
   await registerCoreFormats()
   registerBrowserNanoHarnesses()
   await registerNodeRuntime()
-  await registerTestExtension()
   await registerDemoExtension()
   await registerFormatEqlExtension()
   await registerFormatToonExtension()
@@ -32,7 +31,7 @@ async function createEvalAuthoringDemoEnv() {
     .withExtensions([
       extension("@executioncontextprotocol/format-eql").with({}),
       extension("@executioncontextprotocol/format-toon").with({}),
-      extension("@executioncontextprotocol/test").with({}),
+      extension("@executioncontextprotocol/demo").with({}),
       extension("@executioncontextprotocol/demo").with({}),
     ])
     .withHarnesses([

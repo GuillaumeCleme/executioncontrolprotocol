@@ -24,7 +24,7 @@ describe("decode workflow from EQL", () => {
     const text = `ECP @ecp.workflow 1.0
 WORKFLOW flow
 PARALLEL p
-  STEP a USES @executioncontextprotocol/test.echo
+  STEP a USES @executioncontextprotocol/demo.echo
 END`
     const decoded = decodeWorkflow(text)
     expect(decoded.success).toBe(false)

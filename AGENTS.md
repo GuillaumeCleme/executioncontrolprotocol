@@ -96,7 +96,7 @@ Utility operations do not emit run/step lifecycle hooks.
 
 ### Extension catalog and binding
 
-Extension packages call `catalogExtension(def)` at module load. **Examples use string bindings:** `extension("@executioncontextprotocol/format-toon").with({})` after `import "@executioncontextprotocol/format-toon"` (catalog lookup). For the in-repo stub, `import "@executioncontextprotocol/core/testing"` then `extension("@executioncontextprotocol/test").with({})`.
+Extension packages call `catalogExtension(def)` at module load. **Examples use string bindings:** `extension("@executioncontextprotocol/format-toon").with({})` after `import "@executioncontextprotocol/format-toon"` (catalog lookup). For echo workflows, `import "@executioncontextprotocol/demo"` then `extension("@executioncontextprotocol/demo").with({})`.
 
 `ensureBoundExtensionsRegistered()` runs automatically before `encode`, `decode`, `describe`, and `run` — no separate `await register*()` in environment modules when the package catalogs on import.
 
@@ -119,14 +119,14 @@ Local dev: `npm start -w @executioncontextprotocol/cli` (runs `bin/dev.js` after
 ```ts
 import { workflow, step } from "@executioncontextprotocol/core"
 import { environment, extension } from "@executioncontextprotocol/node"
-import "@executioncontextprotocol/core/testing"
+import "@executioncontextprotocol/demo"
 
 const manifest = workflow("My flow")
-  .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo")])
+  .run([step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "hi" }).as("echo")])
   .toManifest()
 // Manifest steps use the same verbs as the fluent API: `.as("echo")` → `as: "echo"`; optional `{ mode }` → `mode: "create" | ...`
 
-const env = (await environment("dev")).withExtensions([extension("@executioncontextprotocol/test").with({})])
+const env = (await environment("dev")).withExtensions([extension("@executioncontextprotocol/demo").with({})])
 const ecp = await env.init()
 await ecp.run(manifest)
 ```

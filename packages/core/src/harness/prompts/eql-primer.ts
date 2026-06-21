@@ -8,7 +8,7 @@ export const EQL_ZERO_KNOWLEDGE_INTRO = [
   "- Output EQL text only. No markdown fences, no JSON, no prose before or after.",
   "- No ECP header line (no @ecp.patch / @ecp.workflow header in model output).",
   "- One keyword per line; indent child fields with two spaces under STEP / UPDATE / ADD / REPLY.",
-  "- Capability ids are exact strings from the environment list (e.g. @executioncontextprotocol/test.echo). Never invent ids.",
+  "- Capability ids are exact strings from the environment list (e.g. @executioncontextprotocol/demo.echo). Never invent ids.",
   "- Literals: \"strings\", numbers, true/false, {\"json\": \"objects\"}.",
   "- REF path reads a prior step output (e.g. REF echo.output). Use only step ids that exist in the workflow.",
   "- Examples teach syntax only. Output only what the current user request asks for.",

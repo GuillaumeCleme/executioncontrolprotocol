@@ -77,7 +77,7 @@ describe("ecp.invoke", () => {
       policy("@executioncontextprotocol/invoke-scope-deny").with({}),
     ])
     const ecp = await env.init()
-    const result = await ecp.invoke("@executioncontextprotocol/test.echo").with({ value: "x" }).process()
+    const result = await ecp.invoke("@executioncontextprotocol/demo.echo").with({ value: "x" }).process()
     expect(result.success).toBe(false)
     expect(result.diagnostics[0]?.code).toBe("INVOKE_DENIED")
     await ecp.terminate()

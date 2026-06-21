@@ -39,7 +39,7 @@ describe("@executioncontextprotocol/browser.guideChat", () => {
     expect(result.success).toBe(true)
     const text = String((result.result as { text: string }).text)
     expect(text).toMatch(/workflow/i)
-    expect(text).toMatch(/@executioncontextprotocol\/test\.echo/)
+    expect(text).toMatch(/@executioncontextprotocol\/demo\.echo/)
     await ecp.terminate()
   })
 })

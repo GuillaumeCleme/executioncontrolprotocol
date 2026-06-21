@@ -89,10 +89,9 @@ Matrix evals bind **formatters, test, and demo stubs** only (no memory/storage/t
 | `@executioncontextprotocol/format-toon` | Legacy descriptor encoding (optional; matrix uses plain-text + EQL grammar in prompts) |
 | `@executioncontextprotocol/format-eql` | Harness model output (workflow, patch, intent, reply) — headerless |
 | `@executioncontextprotocol/format-json` | Run context encoding (core formatter, explicit binding) |
-| `@executioncontextprotocol/test` | `@executioncontextprotocol/test.echo` in workflow prompts |
-| `@executioncontextprotocol/demo` | Stub ops: `summarize`, `translate`, `notify`, `validate` (not the LLM provider) |
+| `@executioncontextprotocol/demo` | Demo ops: `echo`, `summarize`, `translate`, `notify`, `validate` (not the LLM provider) |
 
-Legacy smoke environments use `@executioncontextprotocol/format-toon` + `@executioncontextprotocol/test` only.
+Legacy smoke environments use `@executioncontextprotocol/format-toon` + `@executioncontextprotocol/demo` only.
 
 Harness config lives in [`src/harness-eval-config.ts`](src/harness-eval-config.ts). Intent evals set `includeEnvironmentDescriptor: true` so the model sees available capabilities before classifying.
 

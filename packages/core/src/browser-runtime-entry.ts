@@ -56,7 +56,6 @@ export type {
   CapabilityDefinition,
   HookDefinition,
 } from "./definitions/types.js"
-export { registerTestExtension, testExtension } from "./testing/test-extension.js"
 export { validateWorkflow } from "./validate/workflow.js"
 export {
   capabilityIdSchema,
@@ -93,6 +92,14 @@ export {
   ecpPatchEntrySchema,
 } from "./patch/index.js"
 export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
+export {
+  isImageRef,
+  collectImageRefs,
+  collectOutputFormatHints,
+  imageRefUrlHostname,
+  isSvgHint,
+} from "./image/image-ref.js"
+export type { CollectedImageRef, CollectedFormatHint } from "./image/image-ref.js"
 export { defineHarness, HarnessDefinitionBuilder, isHarnessDefinition } from "./harness/define-harness.js"
 export {
   catalogHarness,

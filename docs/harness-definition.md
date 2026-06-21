@@ -312,7 +312,7 @@ export const localHarnessEnvironment = environment(
 
     extension("@executioncontextprotocol/format-toon", "TOON Formatter").with({}),
 
-    extension("@executioncontextprotocol/test", "Test Capabilities").with({}),
+    extension("@executioncontextprotocol/demo", "Test Capabilities").with({}),
   ])
 
   .withPolicies([

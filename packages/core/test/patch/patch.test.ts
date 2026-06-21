@@ -41,7 +41,7 @@ describe("applyPatch", () => {
   it("replaces the steps array when path is steps", () => {
     const manifest = workflow("Echo")
       .id("echo-test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     const patched = applyPatch(manifest, [
@@ -53,7 +53,7 @@ describe("applyPatch", () => {
             type: "step",
             id: "echo",
             label: "Echo",
-            uses: "@executioncontextprotocol/test.echo",
+            uses: "@executioncontextprotocol/demo.echo",
             input: { value: "hi" },
             as: "echo",
           },
@@ -77,7 +77,7 @@ describe("applyPatch", () => {
   it("inserts a step via eql:add-step without removing existing steps", () => {
     const manifest = workflow("Echo")
       .id("echo-test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     const patched = applyPatch(manifest, [
@@ -109,7 +109,7 @@ describe("applyPatch", () => {
     const manifest = workflow("Echo notify")
       .id("echo-notify")
       .run([
-        step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
+        step("@executioncontextprotocol/demo.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
         step("@executioncontextprotocol/demo.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
       ])
       .toManifest()
@@ -131,7 +131,7 @@ describe("applyPatch", () => {
   it("replaces scalar step fields without corrupting the step", () => {
     const manifest = workflow("Echo")
       .id("echo-test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontextprotocol/demo.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     const patched = applyPatch(manifest, {
@@ -141,7 +141,7 @@ describe("applyPatch", () => {
     expect(patched.success).toBe(true)
     const echoStep = patched.result!.steps.find((s) => s.id === "echo")
     expect(echoStep?.label).toBe("Patched Echo")
-    expect(echoStep?.uses).toBe("@executioncontextprotocol/test.echo")
+    expect(echoStep?.uses).toBe("@executioncontextprotocol/demo.echo")
   })
 
   it("deep merges by default", () => {
@@ -184,8 +184,8 @@ describe("applyPatch", () => {
       version: "1.0",
       workflow: { id: "dup" },
       steps: [
-        { type: "step", id: "write-brief", uses: "@executioncontextprotocol/test.echo", input: {} },
-        { type: "step", id: "write-brief", uses: "@executioncontextprotocol/test.echo", input: {} },
+        { type: "step", id: "write-brief", uses: "@executioncontextprotocol/demo.echo", input: {} },
+        { type: "step", id: "write-brief", uses: "@executioncontextprotocol/demo.echo", input: {} },
       ],
     }
 
@@ -210,7 +210,7 @@ describe("applyPatch", () => {
     const manifest = workflow("Nested")
       .run([
         parallel([
-          [step("@executioncontextprotocol/test.echo", "Inner").with({ value: "a" }).as("inner")],
+          [step("@executioncontextprotocol/demo.echo", "Inner").with({ value: "a" }).as("inner")],
         ]),
       ])
       .toManifest()
@@ -230,8 +230,8 @@ describe("assignUniqueStepIds via toManifest", () => {
   it("assigns unique ids for duplicate labels", () => {
     const manifest = workflow("Dup labels")
       .run([
-        step("@executioncontextprotocol/test.echo", "Echo").with({ value: "a" }).as("o"),
-        step("@executioncontextprotocol/test.echo", "Echo").with({ value: "b" }).as("o2"),
+        step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "a" }).as("o"),
+        step("@executioncontextprotocol/demo.echo", "Echo").with({ value: "b" }).as("o2"),
       ])
       .toManifest()
 

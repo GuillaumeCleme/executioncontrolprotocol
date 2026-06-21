@@ -24,7 +24,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -58,7 +58,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -92,7 +92,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -128,7 +128,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -162,7 +162,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -198,7 +198,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -234,7 +234,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -268,7 +268,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -304,7 +304,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -340,7 +340,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -374,7 +374,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -410,7 +410,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -446,7 +446,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -482,7 +482,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -518,7 +518,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -554,7 +554,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }
@@ -588,7 +588,7 @@
               "@executioncontextprotocol/format-toon",
               "@executioncontextprotocol/format-eql",
               "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
+              "@executioncontextprotocol/demo",
               "@executioncontextprotocol/demo"
             ]
           }

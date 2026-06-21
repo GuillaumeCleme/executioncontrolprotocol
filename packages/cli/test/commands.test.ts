@@ -11,12 +11,13 @@ const cliBin = join(repoRoot, "packages/cli/bin/run.js")
 const ECHO_ENV = "examples/01-echo/environment.ts"
 const ECHO_WORKFLOW_TS = "examples/01-echo/workflow.ts"
 const ECHO_WORKFLOW_JSON = "examples/01-echo/workflow.json"
+const DEMO_ECHO = "@executioncontextprotocol/demo.echo"
 
 const BROKEN_WORKFLOW = JSON.stringify({
   schema: "@ecp.workflow",
   version: "1.0",
   workflow: { id: "broken" },
-  steps: [{ type: "step", id: "x", uses: "@executioncontextprotocol/test.does-not-exist", input: {}, as: "x" }],
+  steps: [{ type: "step", id: "x", uses: "@executioncontextprotocol/demo.does-not-exist", input: {}, as: "x" }],
 })
 
 interface CliResult {
@@ -64,8 +65,9 @@ describe("ecp CLI commands", () => {
     it("compiles a .ts workflow to a JSON manifest on stdout", async () => {
       const res = await runCli(["compile", ECHO_WORKFLOW_TS])
       expect(res.code).toBe(0)
-      const manifest = JSON.parse(res.stdout) as { schema: string }
+      const manifest = JSON.parse(res.stdout) as { schema: string; steps: { uses: string }[] }
       expect(manifest.schema).toBe("@ecp.workflow")
+      expect(manifest.steps[0]?.uses).toBe(DEMO_ECHO)
     }, 30_000)
 
     it("writes the manifest to -o output file", async () => {
@@ -97,6 +99,14 @@ describe("ecp CLI commands", () => {
   })
 
   describe("run", () => {
+    it("runs the demo echo workflow successfully", async () => {
+      const res = await runCli(["run", ECHO_WORKFLOW_TS, "--env", ECHO_ENV])
+      expect(res.code).toBe(0)
+      const result = JSON.parse(res.stdout) as { run: { status: string }; state?: { echo: unknown } }
+      expect(result.run.status).toBe("completed")
+      expect(result.state?.echo).toEqual({ echo: "hello from fluent API" })
+    }, 30_000)
+
     it("exits non-zero when the workflow cannot run", async () => {
       const res = await runCli(["run", brokenWorkflowPath, "--env", ECHO_ENV])
       expect(res.code).not.toBe(0)
@@ -104,20 +114,25 @@ describe("ecp CLI commands", () => {
   })
 
   describe("describe", () => {
-    it("returns a descriptor including the echo capability", async () => {
+    it("returns a descriptor including the demo echo capability", async () => {
       const res = await runCli(["describe", "--env", ECHO_ENV])
       expect(res.code).toBe(0)
-      const descriptor = JSON.parse(res.stdout) as { capabilities: { id: string }[] }
-      expect(descriptor.capabilities.some((c) => c.id.includes("echo"))).toBe(true)
+      const descriptor = JSON.parse(res.stdout) as {
+        capabilities: { id: string }[]
+        extensions: { id: string }[]
+      }
+      expect(descriptor.capabilities.some((c) => c.id === DEMO_ECHO)).toBe(true)
+      expect(descriptor.extensions.some((e) => e.id === "@executioncontextprotocol/demo")).toBe(true)
     }, 30_000)
   })
 
   describe("search", () => {
-    it("returns search results for a query", async () => {
+    it("returns search results for demo echo", async () => {
       const res = await runCli(["search", "echo", "--env", ECHO_ENV])
       expect(res.code).toBe(0)
-      const result = JSON.parse(res.stdout) as { results: unknown[] }
+      const result = JSON.parse(res.stdout) as { results: { id?: string }[] }
       expect(Array.isArray(result.results)).toBe(true)
+      expect(result.results.some((r) => r.id === DEMO_ECHO)).toBe(true)
     }, 30_000)
   })
 

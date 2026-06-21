@@ -7,7 +7,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
       workflow: {
         id: "minimal-echo",
         label: "Minimal Echo",
-        steps: [{ type: "step", id: "echo", uses: "@executioncontextprotocol/test.echo" }],
+        steps: [{ type: "step", id: "echo", uses: "@executioncontextprotocol/demo.echo" }],
       },
     }) as Record<string, unknown>
 
@@ -27,7 +27,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
         {
           type: "step",
           id: "echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontextprotocol/demo.echo",
           inputs: { value: "hello" },
           as: "echo",
         },
@@ -43,7 +43,7 @@ describe("normalizeWorkflowDocumentCandidate", () => {
       schema: "@ecp.workflow",
       version: "1.0.0",
       workflow: { id: "w", label: "W" },
-      steps: [{ id: "echo", uses: "@executioncontextprotocol/test.echo", as: "echo" }],
+      steps: [{ id: "echo", uses: "@executioncontextprotocol/demo.echo", as: "echo" }],
     }) as Record<string, unknown>
     const step = (normalized.steps as Record<string, unknown>[])[0]
     expect(step.type).toBe("step")

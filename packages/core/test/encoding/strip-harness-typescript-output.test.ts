@@ -18,7 +18,7 @@ export default workflow("Echo").run([])`
 
   it("fixes trailing ]);): typo", () => {
     const raw = `import { workflow, step } from "@executioncontextprotocol/core"
-export default workflow("W").run([step("@executioncontextprotocol/test.echo", "E").as("e")]);):`
+export default workflow("W").run([step("@executioncontextprotocol/demo.echo", "E").as("e")]);):`
     expect(stripHarnessTypeScriptOutput(raw).endsWith("]);")).toBe(true)
   })
 })
