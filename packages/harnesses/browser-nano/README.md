@@ -12,8 +12,8 @@ For stronger cloud models, add a separate harness package (e.g. `@executioncontr
 import { BROWSER_NANO_HARNESS_CAPABILITY, HARNESS_TASKS } from "@executioncontrolprotocol/harnesses-browser-nano"
 
 await ecp.invoke(BROWSER_NANO_HARNESS_CAPABILITY).with({
-  task: HARNESS_TASKS.WORKFLOW_ASSISTANT,
-  message: "What is ECP?",
+  task: HARNESS_TASKS.CHAT,
+  message: "Create an echo workflow",
 })
 ```
 
@@ -21,8 +21,11 @@ Tasks (all model outputs are **EQL** via `@executioncontrolprotocol/format-eql`)
 
 | Task | Role |
 | ---- | ---- |
+| **`chat`** | **Default** multi-shot orchestrator: unfiltered intent, then contextualized authoring or assistant |
 | `workflow-authoring` | Create or patch `@executioncontrolprotocol.workflow` via EQL |
 | `intent-classification` | Route user messages (`faq`, `general`, `workflow-create`, `workflow-patch`) |
 | `workflow-assistant` | Unified assistant: ECP FAQ, identity, environment/capability help, run-aware Q&A (`@executioncontrolprotocol.harness.reply`) |
+
+**1B model policy:** normalize garbled EQL, deterministic assistant/patch recovery, then repair loop (`HARNESS_NANO_REPAIR`). Eval matrix and browser demo share this binding.
 
 Reusable harness authoring helpers live in **`@executioncontrolprotocol/core`**. This package adds product routing and workflow-specific capability hints.

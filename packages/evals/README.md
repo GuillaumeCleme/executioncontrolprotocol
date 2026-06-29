@@ -53,25 +53,27 @@ ollama pull gemma3:1b
 npm run eval:matrix
 ```
 
-Smoke subset (legacy + fixture count, no matrix Ollama cases):
+Quick smoke (chat orchestrator + fixture count):
 
 ```sh
 npm run test:eval:smoke
 ```
+
+`npm run eval` and `npm run test:eval` both run the full matrix (81 cases, including **chat** multi-shot orchestrator).
 
 From the repo root. Tests **skip** when Ollama is down or the model is not pulled; when Ollama is up, failures are real regressions.
 
 Run one eval file:
 
 ```sh
-npx vitest run --project eval packages/evals/test/harness/workflow-authoring.eval.test.ts
+npx vitest run --project eval packages/evals/test/harness/matrix-chat.eval.test.ts
 ```
 
 ## Eval sets
 
 | Eval set | Environment factory | Harness | Encoding |
 | -------- | ------------------- | ------- | -------- |
-| **Matrix (72 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@executioncontrolprotocol/harness-browser-nano` (workflow, intent, assistant) | EQL output (headerless) + EQL/TOON descriptor |
+| **Matrix (81 cases)** | `createHarnessOllamaMatrixEnvironment()` | `@executioncontrolprotocol/harness-browser-nano` — **chat** orchestrator + workflow, intent, assistant | EQL output (headerless) + EQL/TOON descriptor |
 | **Matrix Coding (72 cases)** | `createHarnessOllamaCodingMatrixEnvironment()` | `@executioncontrolprotocol/harness-browser-coding` | TypeScript (Fluent workflows + typed intent/reply) |
 | **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | same harness | same encoding |
 | Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@executioncontrolprotocol/harness-browser-nano` workflow task | `@executioncontrolprotocol/format-eql` |

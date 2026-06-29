@@ -122,6 +122,8 @@ export type {
   HarnessId,
   HarnessCapabilityId,
   HarnessTrace,
+  HarnessShotTrace,
+  HarnessPromptPhase,
   HarnessInvokeResult,
   HarnessEvaluateOutput,
 } from "./harness.js"
@@ -148,12 +150,14 @@ export {
 export type { HarnessReply } from "./harness-reply.js"
 export {
   HARNESS_TASK_IDS,
+  harnessChatInputSchema,
   harnessIntentClassificationInputSchema,
   harnessWorkflowAuthoringInputSchema,
   harnessWorkflowAssistantInputSchema,
 } from "./harness-tasks.js"
 export type {
   HarnessTaskId,
+  HarnessChatInput,
   HarnessIntentClassificationInput,
   HarnessWorkflowAuthoringInput,
   HarnessWorkflowAssistantInput,

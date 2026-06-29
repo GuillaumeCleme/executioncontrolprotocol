@@ -57,6 +57,33 @@ describe("EQL @executioncontrolprotocol.intent", () => {
     expect(decoded.success).toBe(true)
     expect(decoded.result).toEqual(intent)
   })
+
+  it("round-trips optional topic and summary", () => {
+    const richIntent: EcpIntent = {
+      schema: ECP_INTENT_SCHEMA,
+      intent: ECP_INTENT_VALUES.FAQ,
+      topic: "patching",
+      summary: "User asks how patching works",
+    }
+    const encoded = encodeToEql(
+      {
+        source: richIntent,
+        sourceSchema: ECP_INTENT_SCHEMA,
+        options: { headers: false },
+      },
+      testCtx
+    )
+    const decoded = decodeFromEql(
+      {
+        input: encoded.result,
+        targetSchema: ECP_INTENT_SCHEMA,
+        options: { headers: false },
+      },
+      testCtx
+    )
+    expect(decoded.success).toBe(true)
+    expect(decoded.result).toEqual(richIntent)
+  })
 })
 
 describe("EQL @executioncontrolprotocol.harness.reply", () => {

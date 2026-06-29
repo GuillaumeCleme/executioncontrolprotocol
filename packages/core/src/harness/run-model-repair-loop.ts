@@ -13,6 +13,8 @@ export interface ModelRepairGenerateContext {
   attempt: number
   /** Structured feedback from all prior failed evaluations. */
   priorFeedback: HarnessOperationFeedback[]
+  /** Raw text from the immediately preceding failed attempt (when retrying). */
+  priorRaw?: string
 }
 
 /** Result of evaluating raw model output. @category Harness */
@@ -57,17 +59,18 @@ export async function runModelRepairLoop<TArtifact = unknown>(
 ): Promise<ModelRepairLoopResult<TArtifact>> {
   const attempts: HarnessRepairAttempt[] = []
   let priorFeedback: HarnessOperationFeedback[] = []
+  let priorRaw: string | undefined
   let lastRaw = ""
   const recordTiming = isHarnessTimingDebugEnabled()
   const loopStarted = recordTiming ? performance.now() : 0
 
   for (let attempt = 0; attempt < options.maxAttempts; attempt++) {
     const genStart = recordTiming ? performance.now() : 0
-    const { raw } = await options.generate({ attempt, priorFeedback })
+    const { raw } = await options.generate({ attempt, priorFeedback, priorRaw })
     const generateMs = recordTiming ? performance.now() - genStart : undefined
     lastRaw = typeof raw === "string" ? raw : JSON.stringify(raw, null, 2)
     const evalStart = recordTiming ? performance.now() : 0
-    const evaluated = await options.evaluate(raw, { attempt, priorFeedback })
+    const evaluated = await options.evaluate(raw, { attempt, priorFeedback, priorRaw })
     const evaluateMs = recordTiming ? performance.now() - evalStart : undefined
     attempts.push({
       attempt,
@@ -91,6 +94,7 @@ export async function runModelRepairLoop<TArtifact = unknown>(
     }
 
     priorFeedback = [...priorFeedback, ...evaluated.feedback]
+    priorRaw = lastRaw
   }
 
   if (recordTiming) {

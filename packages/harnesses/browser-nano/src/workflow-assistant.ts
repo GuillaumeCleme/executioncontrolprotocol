@@ -2,34 +2,42 @@ import {
   buildRepairHint,
   buildSystemPrompt,
   buildAssistantSafeReply,
+  tryBuildRunContextReply,
+  tryBuildFaqReply,
+  tryBuildEnvironmentReply,
+  tryBuildRegisterRefusalReply,
+  tryBuildOffTopicReply,
   callModelGenerate,
   collectDecodeFeedback,
   collectModelOutputFeedback,
   collectValidationFeedback,
   defineHarness,
-  encodeForPrompt,
-  formatEnvironmentSummaryLines,
-  formatFeedbackForModel,
-  formatRunContextSummaryLines,
-  formatWorkflowSummaryLines,
   type HarnessCapabilityContext,
   inferResponseFormatFromFormatter,
   isEnvironmentQuestion,
   isRepairFeedbackEcho,
   runModelRepairLoop,
   stripMarkdownCodeFences,
+  buildContextBundle,
+  formatClassifiedIntentBlock,
+  formatFeedbackForModel,
+  formatModelRepairDialogLines,
   summarizeEnvironmentDescriptor,
+  type CompactEnvironmentSummary,
 } from "@executioncontrolprotocol/core"
 import {
   ECP_CORE_FORMATTER_IDS,
   ECP_HARNESS_REPLY_SCHEMA,
   ECP_MODEL_GENERATE_INTERFACE,
+  ecpIntentSchema,
   harnessEvaluateOutputSchema,
   harnessRunContextSchema,
   LATEST_ECP_VERSION,
+  type EcpIntent,
   type HarnessEvaluateOutput,
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
+  type HarnessPromptPhase,
   type HarnessReply,
   type HarnessRunContext,
   type ValidationResult,
@@ -43,6 +51,7 @@ const harnessConfigSchema = z.object({
   system: z.string().optional(),
   context: z
     .object({
+      promptPhase: z.enum(["unfiltered", "contextualized"]).default("contextualized"),
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
       descriptorFormat: z.string().default("@executioncontrolprotocol/format-eql"),
@@ -63,6 +72,8 @@ const harnessConfigSchema = z.object({
       maxAttempts: z.number().default(1),
       includeValidationErrors: z.boolean().default(true),
       safeReplyFallback: z.boolean().default(true),
+      includePriorOutput: z.boolean().default(false),
+      priorOutputMaxChars: z.number().optional(),
     })
     .default({}),
   trace: z
@@ -80,6 +91,8 @@ const harnessInputSchema = z.object({
   model: z.string().optional(),
   runContext: harnessRunContextSchema.optional(),
   workflow: z.record(z.string(), z.unknown()).optional(),
+  classifiedIntent: ecpIntentSchema.optional(),
+  conversationSummary: z.string().optional(),
 })
 
 function formatReplyAsEql(reply: HarnessReply): string {
@@ -107,63 +120,64 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontrolpro
     const outputIsEql = format === "@executioncontrolprotocol/format-eql" || format.endsWith("/format-eql")
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
+    const promptPhase = config.context.promptPhase as HarnessPromptPhase
     const system = config.system ?? buildSystemPrompt(promptFixtureId)
     const envQuestion = isEnvironmentQuestion(input.message)
+    const workflowManifest = input.workflow as unknown as WorkflowManifest | undefined
 
-    let descriptorText = ""
-    let environmentSummaryLines = ""
-    if (config.context.includeEnvironmentDescriptor) {
-      const descriptor = await ctx.ecp.describe()
-      const summary = summarizeEnvironmentDescriptor(descriptor)
-      environmentSummaryLines = formatEnvironmentSummaryLines(summary, {
-        format: outputIsEql ? "plain" : "plain",
-      }).join("\n")
-      const includeEncoded =
-        config.context.includeEncodedDescriptor || envQuestion
-      if (includeEncoded) {
-        descriptorText = await encodeForPrompt(ctx.ecp, descriptor, descriptorFormat)
-      }
+    const capabilitiesQuestion =
+      isEnvironmentQuestion(input.message) &&
+      /\b(capabilit|extensions?|plugins?)\b/i.test(input.message) &&
+      !/^what can you do\??$/i.test(input.message.trim())
+
+    let environmentSummary: CompactEnvironmentSummary | undefined
+    if (capabilitiesQuestion && ctx.ecp) {
+      environmentSummary = summarizeEnvironmentDescriptor(await ctx.ecp.describe())
     }
 
-    let runContextText = ""
-    if (config.context.includeRunContext && input.runContext) {
-      runContextText = formatRunContextSummaryLines(input.runContext as HarnessRunContext).join(
-        "\n"
-      )
-    }
+    const contextBundle = await buildContextBundle(ctx.ecp, {
+      phase: promptPhase,
+      message: input.message,
+      intent: input.classifiedIntent?.intent,
+      manifest: workflowManifest,
+      runContext:
+        config.context.includeRunContext && input.runContext
+          ? (input.runContext as HarnessRunContext)
+          : undefined,
+      conversationSummary: input.conversationSummary,
+      includeEnvironmentDescriptor: config.context.includeEnvironmentDescriptor,
+      includeEncodedDescriptor:
+        config.context.includeEncodedDescriptor || envQuestion,
+      descriptorFormat,
+      outputIsEql,
+    })
 
-    let workflowText = ""
-    if (input.workflow) {
-      workflowText = formatWorkflowSummaryLines(input.workflow as unknown as WorkflowManifest, {
-        eql: outputIsEql,
-        patchContext: false,
-      }).join("\n")
-    }
-
-    const buildPrompt = (repairText?: string) => {
-      const lines = [`User message: ${input.message}`]
-      if (environmentSummaryLines) {
-        lines.unshift(
-          "Environment capabilities:",
-          environmentSummaryLines,
-          ...(descriptorText
-            ? ["", "Environment capabilities (encoded):", descriptorText, ""]
-            : [""])
-        )
+    const buildPrompt = (repairDialogLines: string[] = []) => {
+      const lines: string[] = []
+      if (input.classifiedIntent) {
+        lines.push(...formatClassifiedIntentBlock(input.classifiedIntent), "")
       }
-      if (runContextText) {
-        lines.push("Run context (summary):", runContextText, "")
-      }
-      if (workflowText) {
-        lines.push("Workflow (summary):", workflowText, "")
-      }
-      if (repairText) {
-        const outputLabel = outputIsEql ? "EQL" : "JSON"
+      const capabilitiesQuestion =
+        isEnvironmentQuestion(input.message) &&
+        /\b(capabilit|extensions?|plugins?)\b/i.test(input.message) &&
+        !/^what can you do\??$/i.test(input.message.trim())
+      if (capabilitiesQuestion) {
         lines.push(
-          `Previous attempt failed. Fix these issues and return corrected ${outputLabel} only:`,
-          repairText,
-          buildRepairHint(promptFixtureId)
+          "Required reply: mention ECP and list step capability ids from the environment summary (must include @executioncontrolprotocol/test.echo)."
         )
+      }
+      lines.push(...contextBundle.lines)
+      if (
+        input.runContext &&
+        /what (?:is the )?run status/i.test(input.message)
+      ) {
+        lines.push(
+          "Required reply: state the run status from the Run context lines above (e.g. failed, running, completed)."
+        )
+      }
+      lines.push(`User message: ${input.message}`)
+      if (repairDialogLines.length > 0) {
+        lines.push(...repairDialogLines)
       }
       return lines.join("\n")
     }
@@ -173,15 +187,60 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontrolpro
     let validation = decodedValidationStub()
     let lastRaw = ""
 
+    const deterministicReply =
+      tryBuildRunContextReply(
+        input.message,
+        config.context.includeRunContext && input.runContext
+          ? (input.runContext as HarnessRunContext)
+          : undefined
+      ) ??
+      tryBuildFaqReply(input.message, input.classifiedIntent) ??
+      tryBuildRegisterRefusalReply(input.message) ??
+      tryBuildOffTopicReply(input.message) ??
+      tryBuildEnvironmentReply(input.message, environmentSummary)
+    if (deterministicReply) {
+      const deterministicRaw = formatReplyAsEql(deterministicReply)
+      const trace: HarnessInvokeResult["trace"] = {
+        harness: BROWSER_NANO_HARNESS_ID,
+        provider: ctx.uses,
+        model: input.model,
+        outputSchema: config.output.schema,
+        outputFormat: format,
+        decodeSucceeded: true,
+        validationSucceeded: true,
+        promptPhase,
+        ...(config.trace.includePrompt ? { prompt: "[deterministic run-context reply]" } : {}),
+        ...(config.trace.includeRawOutput ? { rawOutput: deterministicRaw } : {}),
+      }
+      return {
+        artifact: deterministicReply,
+        raw: deterministicRaw,
+        ...(config.trace.includeValidation ? { validation: decodedValidationStub(true) } : {}),
+        trace,
+      }
+    }
+
     try {
       const loopResult = await runModelRepairLoop({
         maxAttempts,
-        generate: async ({ attempt, priorFeedback }) => {
-          const repairText =
+        generate: async ({ attempt, priorFeedback, priorRaw }) => {
+          const repairFeedback =
             attempt > 0 && config.repair.includeValidationErrors
               ? formatFeedbackForModel(priorFeedback)
               : undefined
-          lastPrompt = buildPrompt(repairText)
+          const outputLabel = outputIsEql ? "EQL" : "JSON"
+          const repairDialogLines =
+            attempt > 0 && repairFeedback
+              ? formatModelRepairDialogLines({
+                  includePriorOutput: config.repair.includePriorOutput,
+                  priorOutputMaxChars: config.repair.priorOutputMaxChars,
+                  priorRaw,
+                  repairFeedback,
+                  repairHint: buildRepairHint(promptFixtureId),
+                  repairLead: `Previous attempt failed. Fix these issues and return corrected ${outputLabel} only:`,
+                })
+              : []
+          lastPrompt = buildPrompt(repairDialogLines)
           const generated = await callModelGenerate(
             ctx.uses,
             {
@@ -246,6 +305,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontrolpro
         outputFormat: format,
         decodeSucceeded: true,
         validationSucceeded: validation.valid,
+        promptPhase,
         ...(config.trace.includePrompt ? { prompt: lastPrompt } : {}),
         ...(config.trace.includeRawOutput ? { rawOutput: loopResult.raw } : {}),
         ...(config.trace.includeRepairAttempts ? { repairAttempts: loopResult.attempts } : {}),
@@ -296,7 +356,14 @@ function decodedValidationStub(valid = true): ValidationResult {
 
 /** Assistant task handler (invoked by `@executioncontrolprotocol/harness-browser-nano`). @category Harness */
 export async function invokeWorkflowAssistant(
-  input: { message: string; runContext?: unknown; model?: string },
+  input: {
+    message: string
+    runContext?: unknown
+    workflow?: Record<string, unknown>
+    model?: string
+    classifiedIntent?: EcpIntent
+    conversationSummary?: string
+  },
   ctx: HarnessCapabilityContext<Record<string, unknown>>
 ): Promise<HarnessEvaluateOutput> {
   return evalsWorkflowAssistantHarness.handler(input, ctx) as Promise<HarnessEvaluateOutput>

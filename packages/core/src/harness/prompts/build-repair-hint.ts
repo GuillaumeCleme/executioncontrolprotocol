@@ -1,12 +1,9 @@
 import { loadHarnessPromptFixture } from "./load-harness-prompt.js"
-import {
-  formatSchemaExampleEql,
-  formatSchemaExampleJson,
-} from "./load-schema-example.js"
+import { formatSchemaExampleEql, formatSchemaExampleJson } from "./load-schema-example.js"
 
 function formatRepairExample(outputSchema: string, eql: boolean): string {
   if (eql && outputSchema === "@executioncontrolprotocol.patch") {
-    return "Use PATCH WORKFLOW with the workflow id from the user prompt, then only the UPDATE, DELETE, or ADD operations required by the request."
+    return "PATCH WORKFLOW <workflow-id> then only required UPDATE/ADD/DELETE/MOVE lines with real step ids."
   }
   return eql ? formatSchemaExampleEql(outputSchema) : formatSchemaExampleJson(outputSchema)
 }
@@ -18,16 +15,13 @@ function formatRepairExample(outputSchema: string, eql: boolean): string {
 export function buildRepairHint(fixtureId: string): string {
   const fixture = loadHarnessPromptFixture(fixtureId)
   const eql = fixture.promptFormat !== "json"
-  const example = formatRepairExample(fixture.outputSchema, eql)
   const parts = [
     fixture.repairHint ??
       (eql ? "Return corrected EQL only." : "Return corrected JSON only."),
-    eql ? `Example shape:\n${example}` : `Example shape: ${example}`,
   ]
-  if (fixture.allowedValues) {
-    for (const [field, values] of Object.entries(fixture.allowedValues)) {
-      parts.push(`${field} must be one of: ${values.join(", ")}`)
-    }
+  if (eql && fixture.outputSchema !== "@executioncontrolprotocol.patch") {
+    const example = formatRepairExample(fixture.outputSchema, eql)
+    parts.push(`Example shape:\n${example}`)
   }
   return parts.join(" ")
 }

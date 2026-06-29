@@ -9,16 +9,24 @@ export const HARNESS_NANO_TRACE = {
   includeValidation: true,
 } as const
 
+/** Repair loop defaults for Browser Nano (1B model policy: normalize + deterministic recovery + repair). @category Harness */
 export const HARNESS_NANO_REPAIR = {
   enabled: true,
   maxAttempts: 3,
   includeValidationErrors: true,
 } as const
 
+/** Repair loop experiment for multi-shot chat: reinject prior assistant output on retries. @category Harness */
+export const HARNESS_NANO_CHAT_REPAIR = {
+  ...HARNESS_NANO_REPAIR,
+  includePriorOutput: true,
+} as const
+
 const SHARED_CONTEXT = {
   includeEnvironmentDescriptor: true,
   includeEncodedDescriptor: false,
   descriptorFormat: "@executioncontrolprotocol/format-eql",
+  promptPhase: "contextualized",
 } as const
 
 /** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@executioncontrolprotocol/evals`). */
@@ -26,6 +34,7 @@ export const HARNESS_TASKS = {
   WORKFLOW_AUTHORING: "workflow-authoring",
   INTENT_CLASSIFICATION: "intent-classification",
   WORKFLOW_ASSISTANT: "workflow-assistant",
+  CHAT: "chat",
 } as const
 
 export type HarnessTask = (typeof HARNESS_TASKS)[keyof typeof HARNESS_TASKS]
@@ -33,7 +42,12 @@ export type HarnessTask = (typeof HARNESS_TASKS)[keyof typeof HARNESS_TASKS]
 const NANO_INTENT = {
   promptFixture: "intent-classification",
   output: { schema: "@executioncontrolprotocol.intent", format: "@executioncontrolprotocol/format-eql", validate: true },
-  context: { ...SHARED_CONTEXT },
+  context: {
+    promptPhase: "unfiltered",
+    includeEnvironmentDescriptor: false,
+    includeEncodedDescriptor: false,
+    descriptorFormat: "@executioncontrolprotocol/format-eql",
+  },
   repair: HARNESS_NANO_REPAIR,
   trace: HARNESS_NANO_TRACE,
 } as const
@@ -61,6 +75,12 @@ const NANO_ASSISTANT = {
   trace: HARNESS_NANO_TRACE,
 } as const
 
+const NANO_CHAT = {
+  repair: HARNESS_NANO_REPAIR,
+  trace: HARNESS_NANO_TRACE,
+  context: { ...SHARED_CONTEXT },
+} as const
+
 /** Full harness binding config for a task (EQL outputs for all nano tasks). */
 export function getHarnessNanoConfig(task: HarnessTask): Record<string, unknown> {
   switch (task) {
@@ -70,6 +90,8 @@ export function getHarnessNanoConfig(task: HarnessTask): Record<string, unknown>
       return { ...NANO_WORKFLOW }
     case HARNESS_TASKS.WORKFLOW_ASSISTANT:
       return { ...NANO_ASSISTANT }
+    case HARNESS_TASKS.CHAT:
+      return { ...NANO_CHAT }
     default:
       return { ...NANO_WORKFLOW }
   }

@@ -127,6 +127,10 @@ export interface EqlIntentDoc {
   kind: "intent"
   header?: EqlHeader
   intent: string
+  /** Optional topic bucket. */
+  topic?: string
+  /** Optional request summary. */
+  summary?: string
 }
 
 export interface EqlReplyCitation {

@@ -185,12 +185,7 @@ export function parseEql(text: string): ParseResult {
   }
 
   if (header?.schema === "@executioncontrolprotocol.intent") {
-    const row = lines[index]
-    if (!row) {
-      issues.push(eqlSyntaxIssue(1, "Expected INTENT statement"))
-      return { issues, header }
-    }
-    const doc = parseIntentDocument(row, header, issues)
+    const doc = parseIntentDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 
@@ -203,7 +198,7 @@ export function parseEql(text: string): ParseResult {
   const ft = upper(first.tokens)
 
   if (ft[0] === "INTENT") {
-    const doc = parseIntentDocument(first, header, issues)
+    const doc = parseIntentDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 

@@ -4,6 +4,7 @@ import {
   buildRequestCapabilityHintLines,
   collectCreateCapabilityFeedback,
   collectPatchGoalFeedback,
+  inferPatchTargetStepId,
   inferRequiredCapabilityIds,
 } from "../../../harnesses/browser-nano/src/_internal/request-capability-hints.js"
 import type { CompactEnvironmentSummary } from "@executioncontrolprotocol/core"
@@ -301,6 +302,39 @@ describe("request-capability-hints", () => {
     expect(text).toContain("Current step order: echo, validate")
     expect(text).toContain("do not ADD STEP validate")
     expect(text).not.toContain("UPDATE STEP echo")
+  })
+
+  it("infers echo step id from rename label request", () => {
+    expect(
+      inferPatchTargetStepId("Rename echo label to Translated Output.", ["echo", "summarize"])
+    ).toBe("echo")
+  })
+
+  it("collectPatchGoalFeedback flags delete instead of move", () => {
+    const baseline: WorkflowManifest = {
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "echo-validate", label: "Echo validate reorder" },
+      steps: [
+        { type: "step", id: "echo", uses: "@executioncontrolprotocol/test.echo", label: "Echo", as: "echo" },
+        { type: "step", id: "validate", uses: "@executioncontrolprotocol/demo.validate", label: "Validate", as: "validated" },
+      ],
+    }
+    const patched: WorkflowManifest = {
+      ...baseline,
+      steps: [
+        { type: "step", id: "validate", uses: "@executioncontrolprotocol/demo.validate", label: "Validate", as: "validated" },
+      ],
+    }
+    const feedback = collectPatchGoalFeedback(
+      "Move the echo step to run after validate.",
+      patched,
+      summary,
+      baseline
+    )
+    expect(
+      feedback?.some((f) => f.issues.some((i) => i.message.includes("Do not DELETE STEP echo")))
+    ).toBe(true)
   })
 
   it("collectPatchGoalFeedback flags wrong step order after move request", () => {

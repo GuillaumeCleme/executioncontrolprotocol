@@ -21,11 +21,16 @@
           {
             "kind": "answerContains",
             "text": "echo"
+          },
+          {
+            "kind": "answerContains",
+            "text": "error"
           }
         ],
         "judge": {
           "enabled": true,
-          "goal": "Failed echo",
+          "goal": "Explains echo failure",
+          "rubric": "Mentions echo step and describes the error from run context",
           "requireApproved": true
         }
       }
@@ -111,6 +116,7 @@
         "judge": {
           "enabled": true,
           "goal": "Extensions",
+          "rubric": "Lists ECP extensions or plugins loaded in this environment",
           "requireApproved": true
         }
       }
@@ -210,12 +216,16 @@
           },
           {
             "kind": "replySchema"
+          },
+          {
+            "kind": "answerContains",
+            "text": "error"
           }
         ],
         "judge": {
           "enabled": true,
           "goal": "Professional helpful tone",
-          "rubric": "Accurate and actionable",
+          "rubric": "Polite explanation of the echo error with actionable guidance",
           "requireApproved": true
         }
       }
@@ -242,6 +252,7 @@
         "judge": {
           "enabled": true,
           "goal": "Confirm patch",
+          "rubric": "Affirms patching echo step input when appropriate",
           "requireApproved": true
         }
       }
@@ -271,6 +282,7 @@
         "judge": {
           "enabled": true,
           "goal": "Capabilities list",
+          "rubric": "Names concrete step capability ids such as test.echo",
           "requireApproved": true
         }
       }

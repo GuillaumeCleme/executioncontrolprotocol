@@ -15,26 +15,42 @@ import {
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
-  formatEnvironmentSummaryLines,
-  summarizeEnvironmentDescriptor,
-  encodeForPrompt,
+  buildContextBundle,
+  formatClassifiedIntentBlock,
+  formatWorkflowSummaryLines,
   normalizePatchEqlRawOutput,
   substitutePatchRepairTemplate,
-  formatWorkflowSummaryLines,
+  normalizeMalformedPatchStepLabel,
+  sanitizePatchEqlRawOutput,
+  recoverPatchFromRepairHintProse,
+  recoverMinimalLabelPatch,
+  recoverTroubleshootStepPatch,
+  recoverStructuredPatchFromRequest,
+  selectBestWorkflowEqlBlock,
+  normalizeCreateEqlRawOutput,
+  filterWorkflowEqlToRequiredCapabilities,
+  synthesizeCreateEqlFromRequiredCapabilities,
+  createEqlIncludesRequiredCapabilities,
   normalizeWorkflowDocumentCandidate,
   formatStructuredRepairForModel,
+  formatModelRepairDialogLines,
   isRepairFeedbackEcho,
+  isRepairTemplateEcho,
+  summarizeEnvironmentDescriptor,
   type CompactEnvironmentSummary,
 } from "@executioncontrolprotocol/core"
 import {
   ECP_CORE_FORMATTER_IDS,
   ECP_MODEL_GENERATE_INTERFACE,
+  ecpIntentSchema,
   harnessEvaluateOutputSchema,
   type EcpPatchInput,
   type EcpPatchDocument,
+  type EcpIntent,
   type HarnessEvaluateOutput,
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
+  type HarnessPromptPhase,
   type WorkflowManifest,
 } from "@executioncontrolprotocol/types"
 import { z } from "zod"
@@ -46,6 +62,7 @@ import {
   collectCreateStepCountFeedback,
   inferPatchTargetStepId,
   inferRequestedLabel,
+  inferRequiredCapabilityIds,
 } from "./_internal/request-capability-hints.js"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
@@ -85,6 +102,7 @@ const harnessConfigSchema = z.object({
   system: z.string().optional(),
   context: z
     .object({
+      promptPhase: z.enum(["unfiltered", "contextualized"]).default("contextualized"),
       includeEnvironmentDescriptor: z.boolean().default(true),
       /** When false, only plain-text capability lines are sent (smaller prompts for 1B models). */
       includeEncodedDescriptor: z.boolean().default(true),
@@ -97,6 +115,8 @@ const harnessConfigSchema = z.object({
       enabled: z.boolean().default(true),
       maxAttempts: z.number().default(1),
       includeValidationErrors: z.boolean().default(true),
+      includePriorOutput: z.boolean().default(false),
+      priorOutputMaxChars: z.number().optional(),
     })
     .default({}),
   trace: z
@@ -113,6 +133,8 @@ const harnessInputSchema = z.object({
   request: z.string(),
   manifest: z.unknown().optional(),
   model: z.string().optional(),
+  classifiedIntent: ecpIntentSchema.optional(),
+  conversationSummary: z.string().optional(),
 })
 
 /**
@@ -144,12 +166,32 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
       config.system ??
       (isPatch ? buildWorkflowPatchSystemPrompt() : buildWorkflowCreateSystemPrompt())
 
-    let descriptorText = ""
-    let environmentSummaryLines = ""
+    const promptPhase = config.context.promptPhase as HarnessPromptPhase
+
     let environmentSummary: CompactEnvironmentSummary | undefined
     const baselineManifest = isPatch
       ? (input.manifest as WorkflowManifest | undefined)
       : undefined
+
+    if (config.context.includeEnvironmentDescriptor) {
+      environmentSummary = summarizeEnvironmentDescriptor(await ctx.ecp.describe())
+    }
+
+    const contextBundle = await buildContextBundle(ctx.ecp, {
+      phase: promptPhase,
+      message: input.request,
+      intent: input.classifiedIntent?.intent ?? (isPatch ? "workflow-patch" : "workflow-create"),
+      manifest: baselineManifest,
+      conversationSummary: input.conversationSummary,
+      includeEnvironmentDescriptor: config.context.includeEnvironmentDescriptor,
+      includeEncodedDescriptor: config.context.includeEncodedDescriptor,
+      descriptorFormat,
+      outputIsEql,
+      isPatch,
+      existingCapabilityUses: isPatch
+        ? existingCapabilityUses(baselineManifest)
+        : undefined,
+    })
 
     let workflowSummaryText = ""
     if (isPatch && baselineManifest) {
@@ -159,21 +201,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
       }).join("\n")
     }
 
-    if (config.context.includeEnvironmentDescriptor) {
-      const descriptor = await ctx.ecp.describe()
-      environmentSummary = summarizeEnvironmentDescriptor(descriptor)
-      environmentSummaryLines = formatEnvironmentSummaryLines(environmentSummary, {
-        format: outputIsEql ? (isPatch ? "eql-patch" : "eql-create") : "plain",
-        existingCapabilityUses: isPatch
-          ? existingCapabilityUses(baselineManifest)
-          : undefined,
-      }).join("\n")
-      if (config.context.includeEncodedDescriptor) {
-        descriptorText = await encodeForPrompt(ctx.ecp, environmentSummary, descriptorFormat)
-      }
-    }
-
-    const buildPrompt = (repairText?: string) => {
+    const buildPrompt = (repairDialogLines: string[] = []) => {
       const requestHints =
         environmentSummary !== undefined
           ? buildRequestCapabilityHintLines(input.request, environmentSummary, {
@@ -188,16 +216,9 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
               environmentSummary?.capabilities.map((c) => c.id)
             )
           : []
-      const envBlock = environmentSummaryLines
-        ? [
-            outputIsEql
-              ? "Environment capabilities (EQL reference):"
-              : "Environment capabilities:",
-            environmentSummaryLines,
-            ...(descriptorText
-              ? ["", "Environment capabilities (encoded):", descriptorText, ""]
-              : [""]),
-          ]
+      const envBlock = contextBundle.lines.length > 0 ? [...contextBundle.lines, ""] : []
+      const classifiedBlock = input.classifiedIntent
+        ? [...formatClassifiedIntentBlock(input.classifiedIntent), ""]
         : []
       const createOutputLine = outputIsEql
         ? /\bminimal\b/i.test(input.request) || /\bone step\b/i.test(input.request)
@@ -213,6 +234,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
           : `Return only a compact @executioncontrolprotocol.patch document encoded as ${format}.`
       const lines = isPatch
         ? [
+            ...classifiedBlock,
             patchOutputLine,
             `User request: ${input.request}`,
             ...patchHints,
@@ -222,7 +244,9 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
             ...envBlock,
           ]
         : [
+            ...classifiedBlock,
             createOutputLine,
+            "Output only STEP lines for capabilities explicitly named in the user request. Do not invent steps from the environment inventory.",
             `User request: ${input.request}`,
             ...requestHints,
             ...envBlock,
@@ -238,12 +262,8 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
                 ]
               : []),
           ]
-      if (repairText) {
-        lines.push(
-          "Previous attempt failed. Do not repeat error text. Output only the corrected document:",
-          repairText,
-          buildRepairHint(promptFixtureId)
-        )
+      if (repairDialogLines.length > 0) {
+        lines.push(...repairDialogLines)
       }
       return lines.join("\n")
     }
@@ -254,12 +274,23 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
 
     const loopResult = await runModelRepairLoop({
       maxAttempts,
-      generate: async ({ attempt, priorFeedback }) => {
-        const repairText =
+      generate: async ({ attempt, priorFeedback, priorRaw }) => {
+        const repairFeedback =
           attempt > 0 && config.repair.includeValidationErrors
             ? formatStructuredRepairForModel(priorFeedback)
             : undefined
-        lastPrompt = buildPrompt(repairText)
+        const repairDialogLines =
+          attempt > 0 && repairFeedback
+            ? formatModelRepairDialogLines({
+                includePriorOutput: config.repair.includePriorOutput,
+                priorOutputMaxChars: config.repair.priorOutputMaxChars,
+                priorRaw,
+                repairFeedback,
+                repairHint: buildRepairHint(promptFixtureId),
+                repairLead: "Previous attempt failed. Do not repeat error text. Output only the corrected document:",
+              })
+            : []
+        lastPrompt = buildPrompt(repairDialogLines)
         const generated = await callModelGenerate(
           ctx.uses,
           { prompt: lastPrompt, system, model: input.model, responseFormat },
@@ -275,13 +306,106 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
             ?.filter((s) => "uses" in s && typeof s.uses === "string")
             .map((s) => s.id) ?? []
         const workflowId = baseline?.workflow?.id
+        if (
+          !isPatch &&
+          outputIsEql
+        ) {
+          const requiredCaps =
+            environmentSummary !== undefined
+              ? inferRequiredCapabilityIds(
+                  input.request,
+                  environmentSummary.capabilities.map((c) => c.id)
+                )
+              : []
+          if ((raw.match(/^WORKFLOW /gm)?.length ?? 0) > 1) {
+            raw = selectBestWorkflowEqlBlock(raw, requiredCaps)
+          }
+          raw = raw
+            .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/demo.summarize")
+          raw = normalizeCreateEqlRawOutput(raw)
+          if (requiredCaps.length > 0) {
+            if (!createEqlIncludesRequiredCapabilities(raw, requiredCaps)) {
+              const synthesized = synthesizeCreateEqlFromRequiredCapabilities(
+                input.request,
+                requiredCaps
+              )
+              if (synthesized) {
+                raw = synthesized
+              }
+            } else {
+              raw = filterWorkflowEqlToRequiredCapabilities(raw, requiredCaps)
+            }
+          }
+        }
+
+        const targetStepId = inferPatchTargetStepId(input.request, stepIds)
+        const requestedLabel = inferRequestedLabel(input.request)
+        const patchCapabilityIds =
+          environmentSummary !== undefined
+            ? inferRequiredCapabilityIds(
+                input.request,
+                environmentSummary.capabilities.map((c) => c.id)
+              )
+            : []
+        let patchRaw = isPatch ? sanitizePatchEqlRawOutput(raw) : raw
+        if (isPatch && workflowId) {
+          const recovered =
+            recoverPatchFromRepairHintProse(
+              patchRaw,
+              workflowId,
+              targetStepId,
+              requestedLabel
+            ) ??
+            recoverMinimalLabelPatch(patchRaw, workflowId, targetStepId, requestedLabel) ??
+            recoverStructuredPatchFromRequest(patchRaw, {
+              request: input.request,
+              workflowId: workflowId!,
+              stepIds,
+              capabilityIds: patchCapabilityIds,
+              targetStepId,
+              requestedLabel,
+            }) ??
+            recoverTroubleshootStepPatch(input.request, patchRaw, workflowId, targetStepId)
+          if (recovered) {
+            patchRaw = recovered
+          }
+        }
+
+        const patchNormalized = isPatch
+          ? normalizeMalformedPatchStepLabel(
+              normalizePatchEqlRawOutput(patchRaw, workflowId),
+              targetStepId,
+              requestedLabel
+            )
+          : undefined
+        if (isPatch && patchNormalized && isRepairTemplateEcho(patchNormalized)) {
+          return {
+            success: false,
+            feedback: [
+              collectModelOutputFeedback(
+                "Use real workflow and step ids from the current workflow. Do not output example-wf, example-step, or repair placeholders."
+              ),
+            ],
+          }
+        }
+        if (isPatch && outputIsEql && /^\s*[\[{]/.test(raw.trim())) {
+          return {
+            success: false,
+            feedback: [
+              collectModelOutputFeedback(
+                "Output @executioncontrolprotocol.patch EQL only (PATCH WORKFLOW ...). Do not output JSON."
+              ),
+            ],
+          }
+        }
+
         const normalizedRaw =
           isPatch && outputIsEql
             ? substitutePatchRepairTemplate(
-                normalizePatchEqlRawOutput(raw, workflowId),
+                patchNormalized!,
                 workflowId,
-                inferPatchTargetStepId(input.request, stepIds),
-                inferRequestedLabel(input.request)
+                targetStepId,
+                requestedLabel
               )
             : raw
         const feedback: HarnessOperationFeedback[] = []
@@ -336,6 +460,13 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
         feedback.push(collectDecodeFeedback(decoded))
 
         if (!decoded.success || document === undefined) {
+          if (isPatch && outputIsEql && /^\s*[\[{]/.test(raw.trim())) {
+            feedback.push(
+              collectModelOutputFeedback(
+                "Output @executioncontrolprotocol.patch EQL only (PATCH WORKFLOW ...). Do not output JSON."
+              )
+            )
+          }
           if (!isPatch && outputIsJson && !outputIsEql && document !== undefined) {
             const validation = await ctx.ecp.validate(document as WorkflowManifest)
             feedback.push(collectValidationFeedback(validation))
@@ -413,7 +544,18 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
           if (capFeedback) {
             return { success: false, feedback: [...feedback, ...capFeedback] }
           }
-          const stepCountFeedback = collectCreateStepCountFeedback(input.request, wfArtifact)
+          const requiredCaps =
+            environmentSummary !== undefined
+              ? inferRequiredCapabilityIds(
+                  input.request,
+                  environmentSummary.capabilities.map((c) => c.id)
+                )
+              : []
+          const stepCountFeedback = collectCreateStepCountFeedback(
+            input.request,
+            wfArtifact,
+            requiredCaps
+          )
           if (stepCountFeedback) {
             return { success: false, feedback: [...feedback, ...stepCountFeedback] }
           }
@@ -449,8 +591,9 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
       model: input.model,
       outputSchema,
       outputFormat: format,
-      decodeSucceeded: true,
-      validationSucceeded: validation.valid,
+        decodeSucceeded: true,
+        validationSucceeded: validation.valid,
+        promptPhase,
       ...(config.trace.includePrompt ? { prompt: lastPrompt } : {}),
       ...(config.trace.includeRawOutput ? { rawOutput: loopResult.raw } : {}),
       ...(config.trace.includeRepairAttempts ? { repairAttempts: loopResult.attempts } : {}),
@@ -468,7 +611,13 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
 
 /** Workflow authoring task handler (invoked by unified `@executioncontrolprotocol/harness-evals`). @category Evals */
 export async function invokeWorkflowAuthoring(
-  input: { request: string; manifest?: unknown; model?: string },
+  input: {
+    request: string
+    manifest?: unknown
+    model?: string
+    classifiedIntent?: EcpIntent
+    conversationSummary?: string
+  },
   ctx: HarnessCapabilityContext<Record<string, unknown>>
 ): Promise<HarnessEvaluateOutput> {
   return evalsWorkflowAuthoringHarness.handler(input, ctx) as Promise<HarnessEvaluateOutput>

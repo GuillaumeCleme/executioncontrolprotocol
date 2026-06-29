@@ -2,16 +2,19 @@ import { describe, expect, it } from "vitest"
 import {
   HARNESS_BROWSER_NANO_DEMO_BINDING,
   HARNESS_NANO_BINDING,
+  HARNESS_NANO_CHAT_REPAIR,
+  HARNESS_NANO_REPAIR,
   HARNESS_TASKS,
   getHarnessNanoConfig,
 } from "../src/harness-nano-config.js"
 
 describe("HARNESS_TASKS", () => {
-  it("exposes the three harness task ids", () => {
+  it("exposes harness task ids including chat orchestrator", () => {
     expect(HARNESS_TASKS).toEqual({
       WORKFLOW_AUTHORING: "workflow-authoring",
       INTENT_CLASSIFICATION: "intent-classification",
       WORKFLOW_ASSISTANT: "workflow-assistant",
+      CHAT: "chat",
     })
   })
 })
@@ -32,11 +35,30 @@ describe("getHarnessNanoConfig", () => {
     expect((config.output as { schema: string }).schema).toBe("@executioncontrolprotocol.harness.reply")
   })
 
-  it("uses EQL output format for every task", () => {
-    for (const task of Object.values(HARNESS_TASKS)) {
+  it("uses EQL output format for model tasks", () => {
+    const modelTasks = [
+      HARNESS_TASKS.WORKFLOW_AUTHORING,
+      HARNESS_TASKS.INTENT_CLASSIFICATION,
+      HARNESS_TASKS.WORKFLOW_ASSISTANT,
+    ]
+    for (const task of modelTasks) {
       const config = getHarnessNanoConfig(task)
       expect((config.output as { format: string }).format).toBe("@executioncontrolprotocol/format-eql")
     }
+  })
+
+  it("intent classification uses unfiltered prompt phase", () => {
+    const config = getHarnessNanoConfig(HARNESS_TASKS.INTENT_CLASSIFICATION)
+    expect((config.context as { promptPhase: string }).promptPhase).toBe("unfiltered")
+    expect((config.context as { includeEnvironmentDescriptor: boolean }).includeEnvironmentDescriptor).toBe(
+      false
+    )
+  })
+
+  it("chat task exposes orchestration binding", () => {
+    const config = getHarnessNanoConfig(HARNESS_TASKS.CHAT)
+    expect(config.repair).toBeDefined()
+    expect((config.context as { promptPhase: string }).promptPhase).toBe("contextualized")
   })
 
   it("enables the repair loop with multiple attempts", () => {
@@ -47,5 +69,10 @@ describe("getHarnessNanoConfig", () => {
 
   it("browser demo binding matches eval matrix binding", () => {
     expect(HARNESS_BROWSER_NANO_DEMO_BINDING).toBe(HARNESS_NANO_BINDING)
+  })
+
+  it("chat repair experiment enables prior output reinjection", () => {
+    expect(HARNESS_NANO_CHAT_REPAIR.includePriorOutput).toBe(true)
+    expect(HARNESS_NANO_CHAT_REPAIR.maxAttempts).toBe(HARNESS_NANO_REPAIR.maxAttempts)
   })
 })

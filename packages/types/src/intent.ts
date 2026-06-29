@@ -24,6 +24,10 @@ export const ecpIntentSchema = z.object({
     ECP_INTENT_VALUES.WORKFLOW_PATCH,
     ECP_INTENT_VALUES.GENERAL,
   ]),
+  /** Optional topic bucket for contextualized reinjection (e.g. patching, echo-failure). */
+  topic: z.string().max(80).optional(),
+  /** Optional one-line paraphrase of the user request. */
+  summary: z.string().max(200).optional(),
 })
 
 /** Classified user intent type. @category Harness */

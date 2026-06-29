@@ -145,8 +145,10 @@ export const EQL_INTENT_PRIMER = [
   EQL_ZERO_KNOWLEDGE_INTRO,
   "",
   "Intent (@executioncontrolprotocol.intent) grammar:",
-  "- Single line: INTENT <value>",
+  "- INTENT <value> [TOPIC <topic>] [SUMMARY \"one-line paraphrase\"]",
+  "- Or multi-line: INTENT <value> then indented TOPIC and SUMMARY lines",
   "- <value> must be one of the allowed intent strings from the fixture.",
+  "- TOPIC and SUMMARY are optional but help downstream contextualized shots.",
 ].join("\n")
 
 export const EQL_REPLY_PRIMER = [

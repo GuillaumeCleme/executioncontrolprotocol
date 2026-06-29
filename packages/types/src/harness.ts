@@ -39,6 +39,25 @@ export function harnessCapabilityId(harnessId: HarnessId | string): HarnessCapab
   return `${id}.${ECP_HARNESS_CAPABILITY_NAME}` as HarnessCapabilityId
 }
 
+/** Prompt assembly phase for multi-shot harness orchestration. @category Harness */
+export type HarnessPromptPhase = "unfiltered" | "contextualized"
+
+/** Per-shot trace for multi-shot harness runs. @category Harness */
+export interface HarnessShotTrace {
+  /** Task id executed in this shot. */
+  task: string
+  /** Prompt phase for this shot. */
+  promptPhase: HarnessPromptPhase
+  /** Prompt sent to model when traced. */
+  prompt?: string
+  /** Raw model output when traced. */
+  rawOutput?: string
+  /** Per-attempt structured feedback when repair tracing is enabled. */
+  repairAttempts?: HarnessRepairAttempt[]
+  /** Target output schema for this shot. */
+  outputSchema?: string
+}
+
 /** Trace metadata from a harness run. @category Harness */
 export interface HarnessTrace {
   /** Harness id. */
@@ -61,6 +80,18 @@ export interface HarnessTrace {
   rawOutput?: string
   /** Per-attempt structured feedback when repair tracing is enabled. */
   repairAttempts?: HarnessRepairAttempt[]
+  /** Multi-shot orchestration mode when applicable. */
+  orchestration?: "multi-shot"
+  /** Classified intent from shot 1 when orchestration is multi-shot. */
+  classifiedIntent?: {
+    intent: string
+    topic?: string
+    summary?: string
+  }
+  /** Prompt phase for single-shot traces. */
+  promptPhase?: HarnessPromptPhase
+  /** Ordered shot traces for multi-shot runs. */
+  shots?: HarnessShotTrace[]
 }
 
 /** Zod schema for standard harness evaluate handler return value. @category Harness */

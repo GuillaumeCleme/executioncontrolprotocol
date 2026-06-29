@@ -313,6 +313,7 @@
             "judge": {
               "enabled": true,
               "goal": "Describes echo failure",
+              "rubric": "Mentions echo and the error from the run context",
               "requireApproved": true
             }
           }
@@ -350,6 +351,7 @@
             "judge": {
               "enabled": true,
               "goal": "Points to echo step",
+              "rubric": "Identifies step echo as where to apply the fix",
               "requireApproved": true
             }
           }

@@ -150,9 +150,13 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol"
         ? ["Environment capabilities:", environmentSummaryLines, ""]
         : []
 
+      const importHint =
+        'Required import: import { workflow, step, ref } from "@executioncontrolprotocol/core" (include ref when any step uses ref()).'
+
       const lines = isPatch
         ? [
             `User request: ${input.request}`,
+            importHint,
             ...(patchHints.length > 0 ? ["Fluent edit rules:", ...patchHints, ""] : []),
             "Current workflow:",
             baselineManifest ? renderWorkflowToFluent(baselineManifest) : "",
@@ -161,7 +165,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol"
           ]
         : [
             `User request: ${input.request}`,
-            'Required import: import { workflow, step, ref } from "@executioncontrolprotocol/core" (include ref even for single-step workflows).',
+            importHint,
             ...requestHints,
             ...envBlock,
           ]

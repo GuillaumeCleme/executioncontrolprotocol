@@ -16,6 +16,7 @@ export {
 export {
   HARNESS_TASKS,
   HARNESS_NANO_REPAIR,
+  HARNESS_NANO_CHAT_REPAIR,
   HARNESS_NANO_TRACE,
   HARNESS_NANO_BINDING,
   HARNESS_BROWSER_NANO_DEMO_BINDING,
@@ -24,6 +25,13 @@ export {
 } from "./harness-nano-config.js"
 
 export type { BrowserNanoHarnessInput } from "./browser-nano-harness.js"
+
+export {
+  chatResultAnswer,
+  chatResultWorkflow,
+  intentRoutesToAuthoring,
+  invokeMultiShotChat,
+} from "./multi-shot-chat.js"
 
 export {
   buildPatchOperationHintLines,

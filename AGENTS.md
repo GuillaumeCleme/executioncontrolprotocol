@@ -55,8 +55,8 @@ npm run build
 npm run generate:schema   # writes packages/types/dist/schemas/*.json
 npm run check    # build + generate:schema + lint + test:unit + test:integration + test:e2e
 npm run test:unit
-npm run test:eval      # harness evals (Ollama gemma3:1b; skips when unavailable)
-npm run eval:harness   # alias for test:eval
+npm run test:eval      # full harness matrix (Ollama gemma3:1b; chat + legacy cases; skips when unavailable)
+npm run eval:harness   # alias for test:eval:matrix
 ```
 
 Harness eval profile is baked in `packages/evals/src/profiles/ollama-gemma.ts` (not `OLLAMA_MODEL` env).
@@ -169,7 +169,7 @@ Reusable harness helpers are exported from `@executioncontrolprotocol/core`: `de
 
 | Harness | Package | Id | Model surface | Eval profile |
 | ------- | ------- | -- | ------------- | ------------ |
-| Browser Nano | `@executioncontrolprotocol/harnesses-browser-nano` | `@executioncontrolprotocol/harness-browser-nano` | EQL | `ollama-gemma-1b` (`gemma3:1b`) — demo + `npm run eval:matrix` |
+| Browser Nano | `@executioncontrolprotocol/harnesses-browser-nano` | `@executioncontrolprotocol/harness-browser-nano` | EQL multi-shot **chat** orchestrator | `ollama-gemma-1b` (`gemma3:1b`) — demo + `npm run eval:matrix` |
 | Browser Coding | `@executioncontrolprotocol/harnesses-browser-coding` | `@executioncontrolprotocol/harness-browser-coding` | TypeScript (Fluent + typed intent/reply) | `ollama-qwen-coder-1.5b` (`qwen2.5-coder:1.5b`) — `npm run eval:matrix:coding` only |
 
 `compileHarnessArtifactSource` in `@executioncontrolprotocol/core/compile` evaluates intent/reply TS modules. Workflow create/patch use `compileWorkflowSource`. The **`workflow-assistant`** task is the unified assistant (ECP FAQ, identity, environment help, run Q&A). Optional `identity: true` on prompt fixtures prepends `ECP_ASSISTANT_IDENTITY_PRIMER`.

@@ -11,6 +11,7 @@ import {
 import { z } from "zod"
 import { getHarnessNanoConfig, HARNESS_TASKS, type HarnessTask } from "./harness-nano-config.js"
 import { invokeIntentClassification } from "./intent-classification.js"
+import { invokeMultiShotChat } from "./multi-shot-chat.js"
 import { invokeWorkflowAssistant } from "./workflow-assistant.js"
 import { invokeWorkflowAuthoring } from "./workflow-authoring.js"
 
@@ -30,6 +31,14 @@ const harnessInputSchema = z.discriminatedUnion("task", [
     task: z.literal(HARNESS_TASKS.WORKFLOW_ASSISTANT),
     message: z.string(),
     runContext: z.unknown().optional(),
+    model: z.string().optional(),
+  }),
+  z.object({
+    task: z.literal(HARNESS_TASKS.CHAT),
+    message: z.string(),
+    manifest: z.unknown().optional(),
+    runContext: z.unknown().optional(),
+    conversationSummary: z.string().optional(),
     model: z.string().optional(),
   }),
 ])
@@ -56,9 +65,9 @@ function handlerContextForTask(
     config: {
       ...taskConfig,
       ...ctx.config,
-      repair: { ...taskConfig.repair, ...envConfig.repair },
-      trace: { ...taskConfig.trace, ...envConfig.trace },
-      context: { ...taskConfig.context, ...envConfig.context },
+      repair: { ...envConfig.repair, ...taskConfig.repair },
+      trace: { ...envConfig.trace, ...taskConfig.trace },
+      context: { ...envConfig.context, ...taskConfig.context },
     },
   }
 }
@@ -84,6 +93,17 @@ const browserNanoHarnessDefinition = defineHarness("@executioncontrolprotocol", 
       case HARNESS_TASKS.WORKFLOW_ASSISTANT:
         return invokeWorkflowAssistant(
           { message: input.message, runContext: input.runContext, model: input.model },
+          taskCtx
+        )
+      case HARNESS_TASKS.CHAT:
+        return invokeMultiShotChat(
+          {
+            message: input.message,
+            manifest: input.manifest,
+            runContext: input.runContext,
+            conversationSummary: input.conversationSummary,
+            model: input.model,
+          },
           taskCtx
         )
       default: {

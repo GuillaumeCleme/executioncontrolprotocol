@@ -144,4 +144,5 @@ export const EVAL_SUITE_FILE_NAMES: Record<EvalSuite, string> = {
   [EVAL_SUITE_VALUES.INTENT]: "intent.cases.json",
   [EVAL_SUITE_VALUES.ASSISTANT]: "assistant.cases.json",
   [EVAL_SUITE_VALUES.FLOW]: "flow.cases.json",
+  [EVAL_SUITE_VALUES.CHAT]: "chat.cases.json",
 }

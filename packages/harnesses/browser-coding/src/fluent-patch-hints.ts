@@ -378,6 +378,13 @@ export function collectFluentCompileErrorFeedback(
   compileMessage: string
 ): HarnessOperationFeedback[] | undefined {
   const lower = compileMessage.toLowerCase()
+  if (lower.includes("ref is not defined")) {
+    return [
+      collectModelOutputFeedback(
+        'Add ref to the import: import { workflow, step, ref } from "@executioncontrolprotocol/core".'
+      ),
+    ]
+  }
   if (
     lower.includes("is not a function") ||
     lower.includes("is not defined") ||

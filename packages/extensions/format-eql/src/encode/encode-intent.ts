@@ -13,5 +13,11 @@ export function encodeIntentToEql(
     writer.writeln("ECP @executioncontrolprotocol.intent 1.0")
   }
   writer.writeln(`INTENT ${intent.intent}`)
+  if (intent.topic) {
+    writer.writeln(`  TOPIC ${intent.topic}`)
+  }
+  if (intent.summary) {
+    writer.writeln(`  SUMMARY "${intent.summary.replace(/"/g, '\\"')}"`)
+  }
   return writer.toString()
 }

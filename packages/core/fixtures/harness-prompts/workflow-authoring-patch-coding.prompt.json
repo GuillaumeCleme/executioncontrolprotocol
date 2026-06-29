@@ -38,6 +38,10 @@
       "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Minimal Echo\")\n  .run([step(\"@executioncontrolprotocol/test.echo\", \"Hello Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\")])"
     },
     {
+      "message": "Rename echo label to Translated Output.",
+      "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo test\")\n  .id(\"echo-test\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Translated Output\")\n      .id(\"echo\")\n      .with({ value: \"hello from fluent API\" })\n      .as(\"echo\"),\n  ])"
+    },
+    {
       "message": "Remove the notify step.",
       "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo and notify\")\n  .run([step(\"@executioncontrolprotocol/test.echo\", \"Echo\").id(\"echo\").with({ value: \"hello\" }).as(\"echo\")])"
     }
