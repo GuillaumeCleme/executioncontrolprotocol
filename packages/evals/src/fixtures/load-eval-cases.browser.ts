@@ -1,10 +1,10 @@
-import type { RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { RunResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 import {
   harnessRunContextSchema,
   runResultSchema,
   toHarnessRunContext,
   type HarnessRunContext,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import {
   evalCaseSchema,
   type EvalCase,
@@ -125,7 +125,7 @@ function loadHarnessRunFixtureBrowser(relativePath: string): HarnessRunContext {
   if (asRun.success) {
     return toHarnessRunContext(asRun.data as RunResult)
   }
-  throw new Error(`${key}: expected HarnessRunContext or @ecp.run.result document`)
+  throw new Error(`${key}: expected HarnessRunContext or @executioncontrolprotocol.run.result document`)
 }
 
 /** Resolve manifest/run fixture refs for browser eval invokes. @category Evals */

@@ -4,7 +4,7 @@ import {
   defineExtension,
   globalRegistry,
   type Registry,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
 const GuideChatInput = z.object({
@@ -39,7 +39,7 @@ function guideReply(message: string): string {
   if (/what can you do|what are you|who are you|help me|introduce/.test(lower)) {
     return [
       "I help you build and patch ECP workflows in this editor, explain ECP concepts,",
-      "and describe capabilities registered in this environment (for example @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.*).",
+      "and describe capabilities registered in this environment (for example @executioncontrolprotocol/test.echo and @executioncontrolprotocol/demo.*).",
       "Ask about workflows, the environment panel, validation, or Chrome AI.",
       'To generate a workflow, try: "Create a demo echo workflow."',
     ].join(" ")
@@ -56,15 +56,15 @@ function guideReply(message: string): string {
 
   if (lower.includes("environment") || lower.includes("extension") || lower.includes("capabilit")) {
     return [
-      "The **Environment** tab lists extensions bound to this session (for example @executioncontextprotocol/test).",
+      "The **Environment** tab lists extensions bound to this session (for example @executioncontrolprotocol/test).",
       "Capabilities come from those bindings and appear in describe() output.",
-      "The demo binds @executioncontextprotocol/test so @executioncontextprotocol/test.echo is available for workflow steps.",
+      "The demo binds @executioncontrolprotocol/test so @executioncontrolprotocol/test.echo is available for workflow steps.",
     ].join(" ")
   }
 
   if (lower.includes("mermaid") || lower.includes("graph") || lower.includes("diagram")) {
     return [
-      "The graph panel renders Mermaid from your workflow manifest via @executioncontextprotocol/format-mermaid.",
+      "The graph panel renders Mermaid from your workflow manifest via @executioncontrolprotocol/format-mermaid.",
       "It updates when you chat-generate a workflow or edit Fluent source.",
     ].join(" ")
   }
@@ -100,9 +100,9 @@ function guideReply(message: string): string {
 }
 
 /** Browser guided onboarding chat (no external model). @category Extensions */
-export const browserGuideExtension = defineExtension("@executioncontextprotocol", "browser")
+export const browserGuideExtension = defineExtension("@executioncontrolprotocol", "browser")
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/browser", "guideChat")
+    capabilityFor("@executioncontrolprotocol/browser", "guideChat")
       .withInput(GuideChatInput)
       .withOutput(GuideChatOutput)
       .withHandler(async (raw) => {
@@ -116,7 +116,7 @@ catalogExtension(browserGuideExtension)
 
 /** Register browser guide extension. @category Extensions */
 export async function registerBrowserGuideExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/browser")) {
+  if (!registry.getExtension("@executioncontrolprotocol/browser")) {
     await registry.registerExtension(browserGuideExtension)
   }
 }

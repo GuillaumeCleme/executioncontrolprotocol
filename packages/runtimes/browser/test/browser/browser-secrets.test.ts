@@ -9,11 +9,11 @@ import {
   setBrowserSecret,
   setupBrowserVault,
   unlockBrowserVault,
-} from "@executioncontextprotocol/browser-secrets"
-import { browser } from "@executioncontextprotocol/browser"
-import { BROWSER_SECRETS_RESOLVER_ID, resolveEnvConfigAsync } from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/browser-secrets"
+import { browser } from "@executioncontrolprotocol/browser"
+import { BROWSER_SECRETS_RESOLVER_ID, resolveEnvConfigAsync } from "@executioncontrolprotocol/core"
 
-describe("@executioncontextprotocol/browser-secrets in browser", () => {
+describe("@executioncontrolprotocol/browser-secrets in browser", () => {
   beforeEach(() => {
     localStorage.clear()
     resetBrowserSecretsVault()
@@ -39,6 +39,6 @@ describe("@executioncontextprotocol/browser-secrets in browser", () => {
     const env = createBrowserDemoEnvironment("secrets-browser")
     const ecp = await env.init()
     const desc = await ecp.describe({ extensions: { match: "browser-secrets" } })
-    expect(desc.extensions.some((e) => e.id === "@executioncontextprotocol/browser-secrets")).toBe(true)
+    expect(desc.extensions.some((e) => e.id === "@executioncontrolprotocol/browser-secrets")).toBe(true)
   })
 })

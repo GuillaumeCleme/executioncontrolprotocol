@@ -1,4 +1,4 @@
-import type { ExprValue, InputValue } from "@executioncontextprotocol/types"
+import type { ExprValue, InputValue } from "@executioncontrolprotocol/types"
 
 export interface EqlHeader {
   schema: string

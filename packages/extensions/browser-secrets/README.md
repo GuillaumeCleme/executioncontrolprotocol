@@ -1,4 +1,4 @@
-# @executioncontextprotocol/browser-secrets
+# @executioncontrolprotocol/browser-secrets
 
 Passphrase-protected encrypted secrets for browser ECP environments.
 
@@ -7,12 +7,12 @@ Passphrase-protected encrypted secrets for browser ECP environments.
 Environment bindings use `browser("KEY")`, which serializes to `{ "$browser": "KEY" }` in manifests:
 
 ```ts
-import { browser, extension } from "@executioncontextprotocol/browser"
+import { browser, extension } from "@executioncontrolprotocol/browser"
 
-extension("@executioncontextprotocol/openai").with({
+extension("@executioncontrolprotocol/openai").with({
   apiKey: browser("OPENAI_API_KEY", { optional: true }),
 })
-extension("@executioncontextprotocol/browser-secrets").with({})
+extension("@executioncontrolprotocol/browser-secrets").with({})
 ```
 
 ## Storage model
@@ -40,10 +40,10 @@ import {
   getBrowserSecret,
   deleteBrowserSecret,
   listBrowserSecretKeys,
-} from "@executioncontextprotocol/browser-secrets"
+} from "@executioncontrolprotocol/browser-secrets"
 ```
 
-The browser runtime re-exports these helpers from `@executioncontextprotocol/browser`.
+The browser runtime re-exports these helpers from `@executioncontrolprotocol/browser`.
 
 ## Tests
 

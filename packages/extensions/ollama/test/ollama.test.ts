@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest"
-import { globalRegistry } from "@executioncontextprotocol/core"
+import { globalRegistry } from "@executioncontrolprotocol/core"
 import { registerOllamaExtension, ollamaExtension } from "../src/index.js"
 
 type Handler = (input: unknown, ctx: unknown) => Promise<unknown>
@@ -28,7 +28,7 @@ const ctx = {
   usage: { increment: vi.fn() },
 }
 
-describe("@executioncontextprotocol/ollama", () => {
+describe("@executioncontrolprotocol/ollama", () => {
   beforeEach(async () => {
     await registerOllamaExtension()
   })
@@ -39,16 +39,16 @@ describe("@executioncontextprotocol/ollama", () => {
   })
 
   it("registers the extension and exposes generate + evaluate", () => {
-    const ext = globalRegistry.getExtension("@executioncontextprotocol/ollama")
+    const ext = globalRegistry.getExtension("@executioncontrolprotocol/ollama")
     expect(ext).toBe(ollamaExtension)
     expect(ext?.capabilities.map((c) => c.id)).toEqual(
-      expect.arrayContaining(["@executioncontextprotocol/ollama.generate", "@executioncontextprotocol/ollama.evaluate"])
+      expect.arrayContaining(["@executioncontrolprotocol/ollama.generate", "@executioncontrolprotocol/ollama.evaluate"])
     )
   })
 
   it("generate returns model text and records a model call", async () => {
     const fetchMock = mockFetch(() => ({ ok: true, body: { message: { content: "hi there" } } }))
-    const out = (await capability("@executioncontextprotocol/ollama.generate")(
+    const out = (await capability("@executioncontrolprotocol/ollama.generate")(
       { prompt: "say hi", model: "test-model" },
       ctx
     )) as { text: string }
@@ -60,7 +60,7 @@ describe("@executioncontextprotocol/ollama", () => {
   it("generate throws on a non-ok API response", async () => {
     mockFetch(() => ({ ok: false, status: 503 }))
     await expect(
-      capability("@executioncontextprotocol/ollama.generate")({ prompt: "x" }, ctx)
+      capability("@executioncontrolprotocol/ollama.generate")({ prompt: "x" }, ctx)
     ).rejects.toThrow(/Ollama API error: 503/)
   })
 
@@ -69,7 +69,7 @@ describe("@executioncontextprotocol/ollama", () => {
       ok: true,
       body: { message: { content: '{"approved":false,"feedback":"off-topic"}' } },
     }))
-    const out = (await capability("@executioncontextprotocol/ollama.evaluate")(
+    const out = (await capability("@executioncontrolprotocol/ollama.evaluate")(
       { artifact: { answer: "nope" }, goal: "be on topic" },
       ctx
     )) as { approved: boolean; feedback?: string }
@@ -79,7 +79,7 @@ describe("@executioncontextprotocol/ollama", () => {
 
   it("evaluate fails open with a skip note when output has no JSON", async () => {
     mockFetch(() => ({ ok: true, body: { message: { content: "no json here" } } }))
-    const out = (await capability("@executioncontextprotocol/ollama.evaluate")(
+    const out = (await capability("@executioncontrolprotocol/ollama.evaluate")(
       { artifact: { answer: "x" } },
       ctx
     )) as { approved: boolean; feedback?: string }

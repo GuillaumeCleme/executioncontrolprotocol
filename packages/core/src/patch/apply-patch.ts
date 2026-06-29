@@ -9,13 +9,13 @@ import {
   type ValidationIssue,
   type WorkflowManifest,
   type WorkflowNode,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { validateWorkflow } from "../validate/workflow.js"
 import { deepMerge, getAtPath, setAtPath } from "../util/path.js"
 import { buildStepIndex } from "./step-index.js"
 import { normalizePatchInput, validatePatchDocument } from "./normalize-input.js"
 import { resolveEcpPatchPath } from "./resolve-path.js"
-import type { EcpPatchInput } from "@executioncontextprotocol/types"
+import type { EcpPatchInput } from "@executioncontrolprotocol/types"
 
 function emptyDiagnostics(): ValidationIssue[] {
   return []
@@ -212,7 +212,7 @@ function resolvePatchValue(
 export function applyPatch<T extends WorkflowManifest>(
   document: T,
   input: EcpPatchInput,
-  targetSchema: EcpSchema = "@ecp.workflow"
+  targetSchema: EcpSchema = "@executioncontrolprotocol.workflow"
 ): PatchResult<T> {
   const diagnostics = emptyDiagnostics()
   const patch = normalizePatchInput(input, targetSchema)
@@ -220,7 +220,7 @@ export function applyPatch<T extends WorkflowManifest>(
   const patchValidation = validatePatchDocument(patch)
   if (!patchValidation.valid) {
     return {
-      schema: "@ecp.patch.result",
+      schema: "@executioncontrolprotocol.patch.result",
       version: LATEST_ECP_VERSION,
       success: false,
       targetSchema,
@@ -237,7 +237,7 @@ export function applyPatch<T extends WorkflowManifest>(
   const index = buildStepIndex(document)
   if (index.duplicates.length > 0) {
     return {
-      schema: "@ecp.patch.result",
+      schema: "@executioncontrolprotocol.patch.result",
       version: LATEST_ECP_VERSION,
       success: false,
       targetSchema,
@@ -340,7 +340,7 @@ export function applyPatch<T extends WorkflowManifest>(
   const success = diagnostics.length === 0 && validation.valid
 
   return {
-    schema: "@ecp.patch.result",
+    schema: "@executioncontrolprotocol.patch.result",
     version: LATEST_ECP_VERSION,
     success,
     targetSchema,

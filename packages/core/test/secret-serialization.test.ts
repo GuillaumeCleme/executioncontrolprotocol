@@ -6,15 +6,15 @@ import {
   setSecretsStore,
   memorySecretsStore,
   resetSecretsStore,
-} from "@executioncontextprotocol/secrets"
+} from "@executioncontrolprotocol/secrets"
 
 describe("secret serialization", () => {
   it("does not embed resolved secrets in environment manifest", async () => {
     setSecretsStore(memorySecretsStore)
     setMemorySecret("API_KEY", "super-secret-value")
     const env = (await createTestEnvironment("secret-test")).withExtensions([
-      extension("@executioncontextprotocol/secrets").with({}),
-      extension("@executioncontextprotocol/test").with({ token: secrets("API_KEY") }),
+      extension("@executioncontrolprotocol/secrets").with({}),
+      extension("@executioncontrolprotocol/test").with({ token: secrets("API_KEY") }),
     ])
     await env.init()
     const manifest = env.compile()

@@ -13,9 +13,9 @@ import {
   setupBrowserVault,
   unlockBrowserVault,
 } from "../src/index.js"
-import { catalogExtension, getCatalogedExtension, browser, BROWSER_SECRETS_RESOLVER_ID, resolveEnvConfigAsync } from "@executioncontextprotocol/core"
+import { catalogExtension, getCatalogedExtension, browser, BROWSER_SECRETS_RESOLVER_ID, resolveEnvConfigAsync } from "@executioncontrolprotocol/core"
 
-describe("@executioncontextprotocol/browser-secrets extension", () => {
+describe("@executioncontrolprotocol/browser-secrets extension", () => {
   beforeEach(() => {
     resetBrowserSecretsVault()
     setBrowserSecretsStorage(createMemoryVaultStorage())
@@ -23,7 +23,7 @@ describe("@executioncontextprotocol/browser-secrets extension", () => {
 
   it("catalogs on load", () => {
     catalogExtension(browserSecretsExtension)
-    expect(getCatalogedExtension("@executioncontextprotocol/browser-secrets")).toBeDefined()
+    expect(getCatalogedExtension("@executioncontrolprotocol/browser-secrets")).toBeDefined()
   })
 
   it("setup, unlock, and round-trip secrets", async () => {

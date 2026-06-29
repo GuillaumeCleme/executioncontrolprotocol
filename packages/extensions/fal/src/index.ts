@@ -4,22 +4,22 @@ import {
   globalRegistry,
   catalogExtension,
   type Registry,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import { falGenerateInputSchema, falGenerateOutputSchema, FAL_INFERENCE_MODES } from "./schemas.js"
 import { resolveFalApiKey } from "./resolve-api-key.js"
 import { runFalInference } from "./run-inference.js"
 import type { FalInferenceMode } from "./schemas.js"
 
-/** @executioncontextprotocol/fal extension. @category Extensions */
-export const falExtension = defineExtension("@executioncontextprotocol", "fal")
+/** @executioncontrolprotocol/fal extension. @category Extensions */
+export const falExtension = defineExtension("@executioncontrolprotocol", "fal")
   .withConfig({
     apiKey: z.string().optional(),
     defaultEndpoint: z.string().optional(),
     defaultMode: z.enum([FAL_INFERENCE_MODES.RUN, FAL_INFERENCE_MODES.SUBSCRIBE]).optional(),
   })
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/fal", "generate")
+    capabilityFor("@executioncontrolprotocol/fal", "generate")
       .withInput(falGenerateInputSchema)
       .withOutput(falGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -51,9 +51,9 @@ export const falExtension = defineExtension("@executioncontextprotocol", "fal")
 
 catalogExtension(falExtension)
 
-/** Register @executioncontextprotocol/fal. */
+/** Register @executioncontrolprotocol/fal. */
 export async function registerFalExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/fal")) {
+  if (!registry.getExtension("@executioncontrolprotocol/fal")) {
     await registry.registerExtension(falExtension)
   }
 }

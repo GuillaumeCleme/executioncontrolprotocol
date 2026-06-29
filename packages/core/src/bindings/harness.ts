@@ -1,4 +1,4 @@
-import type { CapabilityId, HarnessId } from "@executioncontextprotocol/types"
+import type { CapabilityId, HarnessId } from "@executioncontrolprotocol/types"
 import type { HarnessDefinition } from "../harness/types.js"
 import { normalizeHarnessId } from "../harness/harness-catalog.js"
 
@@ -12,7 +12,7 @@ export class HarnessBindingBuilder {
     private readonly label?: string
   ) {}
 
-  /** Default model provider capability (`@executioncontextprotocol/ollama.generate`). */
+  /** Default model provider capability (`@executioncontrolprotocol/ollama.generate`). */
   uses(capabilityId: CapabilityId | string): this {
     this.providerCapabilityId = capabilityId as CapabilityId
     return this

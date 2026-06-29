@@ -26,26 +26,26 @@ packages/extensions/image-sharp/
 Extension ID:
 
 ```txt
-@ecp/image-sharp
+@executioncontrolprotocol/image-sharp
 ```
 
 Capability namespace:
 
 ```txt
-@ecp/image-sharp.inspect
-@ecp/image-sharp.metadata
-@ecp/image-sharp.stats
-@ecp/image-sharp.transform
-@ecp/image-sharp.derive
-@ecp/image-sharp.normalize
-@ecp/image-sharp.convert
-@ecp/image-sharp.thumbnail
-@ecp/image-sharp.crop
-@ecp/image-sharp.resize
-@ecp/image-sharp.composite
+@executioncontrolprotocol/image-sharp.inspect
+@executioncontrolprotocol/image-sharp.metadata
+@executioncontrolprotocol/image-sharp.stats
+@executioncontrolprotocol/image-sharp.transform
+@executioncontrolprotocol/image-sharp.derive
+@executioncontrolprotocol/image-sharp.normalize
+@executioncontrolprotocol/image-sharp.convert
+@executioncontrolprotocol/image-sharp.thumbnail
+@executioncontrolprotocol/image-sharp.crop
+@executioncontrolprotocol/image-sharp.resize
+@executioncontrolprotocol/image-sharp.composite
 ```
 
-The extension should be intrinsic: bind it with `extension("@ecp/image-sharp").with(...)`, then invoke capabilities from steps. That matches the current ECP model where extensions provide capabilities, workflows invoke `step(capability).with(input).as(...)`, and environments hold extension config outside portable workflow manifests.
+The extension should be intrinsic: bind it with `extension("@executioncontrolprotocol/image-sharp").with(...)`, then invoke capabilities from steps. That matches the current ECP model where extensions provide capabilities, workflows invoke `step(capability).with(input).as(...)`, and environments hold extension config outside portable workflow manifests.
 
 ---
 
@@ -89,7 +89,7 @@ or a storage extension reference:
 # Extension config
 
 ```ts
-export const imageSharpExtension = defineExtension("@ecp", "image-sharp")
+export const imageSharpExtension = defineExtension("@executioncontrolprotocol", "image-sharp")
   .withConfig({
     storage: {
       defaultStore: string().optional(),
@@ -140,12 +140,12 @@ Sharp can remove metadata by default on output, with explicit metadata control a
 
 # Capability model
 
-## 1. `@ecp/image-sharp.inspect`
+## 1. `@executioncontrolprotocol/image-sharp.inspect`
 
 Use this to make decisions before transforming.
 
 ```ts
-step("@ecp/image-sharp.inspect", "Inspect source image")
+step("@executioncontrolprotocol/image-sharp.inspect", "Inspect source image")
   .with({
     image: ref("inputImage"),
     include: ["metadata", "stats", "dominantColor", "hash"],
@@ -205,7 +205,7 @@ Why this matters: workflow branches can use the output:
 
 ```ts
 branch([
-  step("@ecp/image-sharp.transform", "Downsample huge image")
+  step("@executioncontrolprotocol/image-sharp.transform", "Downsample huge image")
     .when(expr.gt("imageInfo.derived.megapixels", 24))
     .with({
       image: ref("inputImage"),
@@ -222,12 +222,12 @@ You may need to add `expr.gt`, `expr.lt`, etc., but conceptually this fits ECPâ
 
 ---
 
-## 2. `@ecp/image-sharp.transform`
+## 2. `@executioncontrolprotocol/image-sharp.transform`
 
 This is the main reusable capability. It accepts an ordered pipeline of operations.
 
 ```ts
-step("@ecp/image-sharp.transform", "Prepare campaign image")
+step("@executioncontrolprotocol/image-sharp.transform", "Prepare campaign image")
   .with({
     image: ref("sourceImage"),
     pipeline: [
@@ -593,7 +593,7 @@ The pipeline is the main power tool, but these convenience capabilities make aut
 ## `resize`
 
 ```ts
-step("@ecp/image-sharp.resize", "Resize to social square")
+step("@executioncontrolprotocol/image-sharp.resize", "Resize to social square")
   .with({
     image: ref("sourceImage"),
     width: 1080,
@@ -608,7 +608,7 @@ step("@ecp/image-sharp.resize", "Resize to social square")
 ## `crop`
 
 ```ts
-step("@ecp/image-sharp.crop", "Crop face area")
+step("@executioncontrolprotocol/image-sharp.crop", "Crop face area")
   .with({
     image: ref("sourceImage"),
     box: { left: 240, top: 120, width: 800, height: 800 },
@@ -620,7 +620,7 @@ step("@ecp/image-sharp.crop", "Crop face area")
 ## `thumbnail`
 
 ```ts
-step("@ecp/image-sharp.thumbnail", "Generate thumbnails")
+step("@executioncontrolprotocol/image-sharp.thumbnail", "Generate thumbnails")
   .with({
     image: ref("sourceImage"),
     sizes: [
@@ -639,7 +639,7 @@ step("@ecp/image-sharp.thumbnail", "Generate thumbnails")
 Creates multiple outputs from one source in one capability.
 
 ```ts
-step("@ecp/image-sharp.derive", "Create responsive assets")
+step("@executioncontrolprotocol/image-sharp.derive", "Create responsive assets")
   .with({
     image: ref("sourceImage"),
     variants: [
@@ -674,14 +674,14 @@ This is the shape Iâ€™d want for your use case: inspect first, then branch 
 ```ts
 const imagePrepWorkflow = workflow("Prepare uploaded image")
   .run([
-    step("@ecp/image-sharp.inspect", "Inspect Image")
+    step("@executioncontrolprotocol/image-sharp.inspect", "Inspect Image")
       .with({
         image: ref("input.image"),
         include: ["metadata", "stats"],
       })
       .as("imageInfo"),
 
-    step("@ecp/image-sharp.transform", "Normalize Orientation")
+    step("@executioncontrolprotocol/image-sharp.transform", "Normalize Orientation")
       .with({
         image: ref("input.image"),
         pipeline: [
@@ -696,7 +696,7 @@ const imagePrepWorkflow = workflow("Prepare uploaded image")
       .as("normalized"),
 
     branch([
-      step("@ecp/image-sharp.transform", "Downsample Large Image")
+      step("@executioncontrolprotocol/image-sharp.transform", "Downsample Large Image")
         .when(expr.gt("imageInfo.derived.megapixels", 12))
         .with({
           image: ref("normalized.image"),
@@ -707,7 +707,7 @@ const imagePrepWorkflow = workflow("Prepare uploaded image")
         })
         .as("processedImage", { mode: "replace" }),
 
-      step("@ecp/image-sharp.transform", "Keep Size But Convert")
+      step("@executioncontrolprotocol/image-sharp.transform", "Keep Size But Convert")
         .when(expr.lte("imageInfo.derived.megapixels", 12))
         .with({
           image: ref("normalized.image"),
@@ -717,7 +717,7 @@ const imagePrepWorkflow = workflow("Prepare uploaded image")
         .as("processedImage", { mode: "replace" }),
     ]),
 
-    step("@ecp/image-sharp.derive", "Generate Delivery Variants")
+    step("@executioncontrolprotocol/image-sharp.derive", "Generate Delivery Variants")
       .with({
         image: ref("processedImage.image"),
         variants: [
@@ -750,11 +750,11 @@ Example:
 ```ts
 workflow("Build image asset manifest")
   .run([
-    step("@ecp/image-sharp.inspect", "Inspect Original")
+    step("@executioncontrolprotocol/image-sharp.inspect", "Inspect Original")
       .with({ image: ref("input.image") })
       .as("originalInfo"),
 
-    step("@ecp/image-sharp.derive", "Create Variants")
+    step("@executioncontrolprotocol/image-sharp.derive", "Create Variants")
       .with({
         image: ref("input.image"),
         manifest: state("assetManifest"),
@@ -796,7 +796,7 @@ That is exactly where the state-control policy matters. The runtime can stage mu
 Image processing can be expensive and risky if you allow remote URLs, huge SVGs, large pixel counts, or uncontrolled output formats. Iâ€™d add a first-party image policy.
 
 ```txt
-@ecp/image-policy
+@executioncontrolprotocol/image-policy
 ```
 
 Config:
@@ -824,7 +824,7 @@ interface ImagePolicyConfig {
 }
 ```
 
-This should work alongside `@ecp/state-control`, which already gives you allowed mutable paths, allowed mutation operations, mutation-size limits, and audit behavior.
+This should work alongside `@executioncontrolprotocol/state-control`, which already gives you allowed mutable paths, allowed mutation operations, mutation-size limits, and audit behavior.
 
 ---
 
@@ -832,7 +832,7 @@ This should work alongside `@ecp/state-control`, which already gives you allowed
 
 ```ts
 import sharp from "sharp";
-import { defineExtension, capabilityFor } from "@ecp/core";
+import { defineExtension, capabilityFor } from "@executioncontrolprotocol/core";
 import {
   TransformInput,
   TransformOutput,
@@ -842,10 +842,10 @@ import {
 import { readImageToBuffer, writeArtifact } from "./artifact";
 import { applyOperation } from "./operations";
 
-export const imageSharpExtension = defineExtension("@ecp", "image-sharp")
+export const imageSharpExtension = defineExtension("@executioncontrolprotocol", "image-sharp")
   .withConfig(ImageSharpConfigSchema)
   .withCapabilities([
-    capabilityFor("@ecp/image-sharp", "inspect")
+    capabilityFor("@executioncontrolprotocol/image-sharp", "inspect")
       .withInput(InspectInput)
       .withOutput(InspectOutput)
       .withHandler(async (input, ctx) => {
@@ -870,7 +870,7 @@ export const imageSharpExtension = defineExtension("@ecp", "image-sharp")
         };
       }),
 
-    capabilityFor("@ecp/image-sharp", "transform")
+    capabilityFor("@executioncontrolprotocol/image-sharp", "transform")
       .withInput(TransformInput)
       .withOutput(TransformOutput)
       .withHandler(async (input, ctx) => {
@@ -1046,7 +1046,7 @@ export async function applyOperation(
 
 # Storage and references
 
-I would not bake S3, local files, or R2 directly into `@ecp/image-sharp`. Instead, define a tiny artifact adapter interface and let `@ecp/storage` or runtime config provide it.
+I would not bake S3, local files, or R2 directly into `@executioncontrolprotocol/image-sharp`. Instead, define a tiny artifact adapter interface and let `@executioncontrolprotocol/storage` or runtime config provide it.
 
 ```ts
 interface ArtifactStore {
@@ -1070,7 +1070,7 @@ interface ArtifactStore {
 Then the extension config can select the default store:
 
 ```ts
-extension("@ecp/image-sharp", "Sharp Image Processing").with({
+extension("@executioncontrolprotocol/image-sharp", "Sharp Image Processing").with({
   storage: {
     defaultStore: "s3-assets",
     outputPrefix: "generated/images",
@@ -1085,7 +1085,7 @@ extension("@ecp/image-sharp", "Sharp Image Processing").with({
 ```ts
 const imageEnv = environment("image-processing")
   .withExtensions([
-    extension("@ecp/storage").with({
+    extension("@executioncontrolprotocol/storage").with({
       stores: {
         "s3-assets": {
           type: "s3",
@@ -1095,7 +1095,7 @@ const imageEnv = environment("image-processing")
       },
     }),
 
-    extension("@ecp/image-sharp").with({
+    extension("@executioncontrolprotocol/image-sharp").with({
       storage: {
         defaultStore: "s3-assets",
         outputPrefix: "images",
@@ -1114,7 +1114,7 @@ const imageEnv = environment("image-processing")
     }),
   ])
   .withPolicies([
-    policy("@ecp/image-policy").with({
+    policy("@executioncontrolprotocol/image-policy").with({
       allowedInputKinds: ["artifact", "file"],
       allowedOutputFormats: ["jpeg", "png", "webp", "avif"],
       maxPixels: 80_000_000,
@@ -1123,7 +1123,7 @@ const imageEnv = environment("image-processing")
       denyRawOutput: true,
     }),
 
-    policy("@ecp/state-control").with({
+    policy("@executioncontrolprotocol/state-control").with({
       allowedMutablePaths: ["assetManifest", "imageQueue"],
       allowedMutationOps: ["set", "replace", "merge", "append"],
       requireReason: true,
@@ -1150,7 +1150,7 @@ The capability search/describe system should expose all of these, since ECP envi
 
 # Final recommendation
 
-Build `@ecp/image-sharp` around **one declarative `transform` pipeline** plus **human/agent-friendly convenience capabilities**. Keep images as artifact refs, inspect before transform, return rich output info, and enforce limits through `@ecp/image-policy`.
+Build `@executioncontrolprotocol/image-sharp` around **one declarative `transform` pipeline** plus **human/agent-friendly convenience capabilities**. Keep images as artifact refs, inspect before transform, return rich output info, and enforce limits through `@executioncontrolprotocol/image-policy`.
 
 That gives you:
 

@@ -4,9 +4,9 @@ Yes. Here is the full implementation spec for the complete round trip:
 
 ```txt
 Fluent API source
-→ @ecp.workflow JSON manifest
+→ @executioncontrolprotocol.workflow JSON manifest
 → TOON
-→ @ecp.workflow JSON manifest
+→ @executioncontrolprotocol.workflow JSON manifest
 → Fluent API source
 ```
 
@@ -22,12 +22,12 @@ Implement an environment-aware format system that allows ECP workflows to move b
 
 ```txt
 Fluent API TypeScript
-@ecp.workflow JSON manifest
+@executioncontrolprotocol.workflow JSON manifest
 TOON compact representation
 Fluent API TypeScript
 ```
 
-The canonical source of truth remains the `@ecp.workflow` manifest. The current spec already defines workflow manifests as portable execution graphs that do not contain runtime, extension, policy, secret, or environment details.  The implementation report also confirms the current forward path: `workflow().toManifest()` builds a workflow manifest, and `compileWorkflowSource` compiles TypeScript/JavaScript workflow source into a manifest.
+The canonical source of truth remains the `@executioncontrolprotocol.workflow` manifest. The current spec already defines workflow manifests as portable execution graphs that do not contain runtime, extension, policy, secret, or environment details.  The implementation report also confirms the current forward path: `workflow().toManifest()` builds a workflow manifest, and `compileWorkflowSource` compiles TypeScript/JavaScript workflow source into a manifest.
 
 ---
 
@@ -38,7 +38,7 @@ The canonical source of truth remains the `@ecp.workflow` manifest. The current 
 The canonical IR is always:
 
 ```txt
-@ecp.workflow
+@executioncontrolprotocol.workflow
 ```
 
 Format conversions do not replace this. They produce views, compressed representations, or authoring aids.
@@ -50,12 +50,12 @@ Encoding and decoding are environment operations:
 ```ts
 const encoded = await env
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 
 const decoded = await env
   .decode(encoded.content)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 ```
 
@@ -64,9 +64,9 @@ const decoded = await env
 Format extensions register normal ECP capabilities:
 
 ```txt
-@executioncontextprotocol/format-toon.encode
-@executioncontextprotocol/format-toon.decode
-@executioncontextprotocol/format-fluent.encode
+@executioncontrolprotocol/format-toon.encode
+@executioncontrolprotocol/format-toon.decode
+@executioncontrolprotocol/format-fluent.encode
 ```
 
 The existing ECP model already uses definitions, bindings, and invocations where extensions define capabilities and environments bind extensions.
@@ -120,32 +120,32 @@ import {
   workflow,
   step,
   ref,
-} from "@executioncontextprotocol/core";
+} from "@executioncontrolprotocol/core";
 
 import {
   registerFormatToonExtension,
-} from "@executioncontextprotocol/format-toon";
+} from "@executioncontrolprotocol/format-toon";
 
 import {
   registerFormatFluentExtension,
-} from "@executioncontextprotocol/format-fluent";
+} from "@executioncontrolprotocol/format-fluent";
 
 registerFormatToonExtension();
 registerFormatFluentExtension();
 
 const env = environment("demo", "Demo Environment")
   .withExtensions([
-    extension("@executioncontextprotocol/format-toon").with({}),
-    extension("@executioncontextprotocol/format-fluent").with({}),
+    extension("@executioncontrolprotocol/format-toon").with({}),
+    extension("@executioncontrolprotocol/format-fluent").with({}),
   ]);
 
 const source = `
-  import { workflow, step, ref } from "@executioncontextprotocol/core";
+  import { workflow, step, ref } from "@executioncontrolprotocol/core";
 
   export default workflow("Weekly Brief")
     .id("weekly-brief")
     .run([
-      step("@executioncontextprotocol/memory.search", "Collect Signals")
+      step("@executioncontrolprotocol/memory.search", "Collect Signals")
         .id("collect-signals")
         .with({
           query: "weekly risks and decisions",
@@ -153,7 +153,7 @@ const source = `
         })
         .as("signals"),
 
-      step("@executioncontextprotocol/openai.generate", "Write Brief")
+      step("@executioncontrolprotocol/openai.generate", "Write Brief")
         .id("write-brief")
         .with({
           prompt: "Create a concise brief",
@@ -174,13 +174,13 @@ const manifest = compiled.manifest;
 // JSON manifest → TOON
 const toon = await env
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 
 // TOON → JSON manifest
 const decoded = await env
   .decode(toon.content)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 
 const decodedManifest = decoded.document;
@@ -188,7 +188,7 @@ const decodedManifest = decoded.document;
 // JSON manifest → Fluent API source
 const fluent = await env
   .encode(decodedManifest)
-  .uses("@executioncontextprotocol/format-fluent")
+  .uses("@executioncontrolprotocol/format-fluent")
   .process();
 
 console.log(fluent.content);
@@ -259,36 +259,36 @@ packages/
 Published packages:
 
 ```txt
-@executioncontextprotocol/format-toon
-@executioncontextprotocol/format-fluent
+@executioncontrolprotocol/format-toon
+@executioncontrolprotocol/format-fluent
 ```
 
 Optional convenience re-export:
 
 ```txt
-@executioncontextprotocol/extensions
+@executioncontrolprotocol/extensions
 ```
 
 ---
 
 # 5. Type additions
 
-Add to `@executioncontextprotocol/types`.
+Add to `@executioncontrolprotocol/types`.
 
 ## 5.1 New schemas
 
 ```ts
 export type EcpSchema =
-  | "@ecp.workflow"
-  | "@ecp.environment"
-  | "@ecp.environment.describe"
-  | "@ecp.environment.search"
-  | "@ecp.run.request"
-  | "@ecp.run.result"
-  | "@ecp.run.event"
-  | "@ecp.validation.result"
-  | "@ecp.encoded"
-  | "@ecp.decoded";
+  | "@executioncontrolprotocol.workflow"
+  | "@executioncontrolprotocol.environment"
+  | "@executioncontrolprotocol.environment.describe"
+  | "@executioncontrolprotocol.environment.search"
+  | "@executioncontrolprotocol.run.request"
+  | "@executioncontrolprotocol.run.result"
+  | "@executioncontrolprotocol.run.event"
+  | "@executioncontrolprotocol.validation.result"
+  | "@executioncontrolprotocol.encoded"
+  | "@executioncontrolprotocol.decoded";
 ```
 
 ## 5.2 Encoding constants
@@ -326,7 +326,7 @@ export const ECP_ENCODING_ERROR_CODES = {
 
 ```ts
 export interface EncodedArtifact<T = unknown> {
-  schema: "@ecp.encoded";
+  schema: "@executioncontrolprotocol.encoded";
   version: EcpVersion;
   format: string;
   mediaType?: string;
@@ -340,7 +340,7 @@ export interface EncodedArtifact<T = unknown> {
 
 ```ts
 export interface DecodeResult<T = unknown> {
-  schema: "@ecp.decoded";
+  schema: "@executioncontrolprotocol.decoded";
   version: EcpVersion;
   targetSchema?: EcpSchema;
   document: T;
@@ -420,15 +420,15 @@ export interface EncodeOperationBuilder {
 ```ts
 const encoded = await env
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 ```
 
 Resolution:
 
 ```txt
-@executioncontextprotocol/format-toon
-→ @executioncontextprotocol/format-toon.encode
+@executioncontrolprotocol/format-toon
+→ @executioncontrolprotocol/format-toon.encode
 ```
 
 If no `.uses(...)` is provided:
@@ -443,11 +443,11 @@ Use core JSON encoder.
 
 Default format inference:
 
-| Input                  | Default format |
-| ---------------------- | -------------- |
-| `@ecp.workflow` object | `json`         |
-| Unknown object         | `json`         |
-| String                 | `json` string  |
+| Input                                       | Default format |
+| ------------------------------------------- | -------------- |
+| `@executioncontrolprotocol.workflow` object | `json`         |
+| Unknown object                              | `json`         |
+| String                                      | `json` string  |
 
 ---
 
@@ -470,21 +470,21 @@ export interface DecodeOperationBuilder {
 ```ts
 const decoded = await env
   .decode(toon.content)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 ```
 
 Resolution:
 
 ```txt
-@executioncontextprotocol/format-toon
-→ @executioncontextprotocol/format-toon.decode
+@executioncontrolprotocol/format-toon
+→ @executioncontrolprotocol/format-toon.decode
 ```
 
 Target inference:
 
 1. Try to infer from encoded content header.
-2. If no header exists, default to `@ecp.workflow` for v1.
+2. If no header exists, default to `@executioncontrolprotocol.workflow` for v1.
 3. If `.to(...)` is provided, treat it as a validation constraint.
 
 So this is optional:
@@ -492,8 +492,8 @@ So this is optional:
 ```ts
 const decoded = await env
   .decode(toon.content)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.workflow")
   .strict()
   .process();
 ```
@@ -510,7 +510,7 @@ function encodeJson(input: unknown, options: EncodeJsonOptions): EncodedArtifact
 
   if (options.as === "string") {
     return {
-      schema: "@ecp.encoded",
+      schema: "@executioncontrolprotocol.encoded",
       version: LATEST_ECP_VERSION,
       format: "json",
       mediaType: "application/ecp+json",
@@ -520,7 +520,7 @@ function encodeJson(input: unknown, options: EncodeJsonOptions): EncodedArtifact
   }
 
   return {
-    schema: "@ecp.encoded",
+    schema: "@executioncontrolprotocol.encoded",
     version: LATEST_ECP_VERSION,
     format: "json",
     mediaType: "application/ecp+json",
@@ -541,7 +541,7 @@ function decodeJson<T = unknown>(
     typeof input === "string" ? JSON.parse(input) : input;
 
   return {
-    schema: "@ecp.decoded",
+    schema: "@executioncontrolprotocol.decoded",
     version: LATEST_ECP_VERSION,
     targetSchema: options.targetSchema ?? getEcpSchema(document),
     document: document as T,
@@ -699,7 +699,7 @@ Required when used by `env.encode()`:
 ## 13.1 Package
 
 ```txt
-@executioncontextprotocol/format-toon
+@executioncontrolprotocol/format-toon
 ```
 
 ## 13.2 Exports
@@ -725,7 +725,7 @@ export function decodeToonToWorkflow(
 ## 13.3 Definition
 
 ```ts
-export const formatToonExtension = defineExtension("@executioncontextprotocol", "format-toon")
+export const formatToonExtension = defineExtension("@executioncontrolprotocol", "format-toon")
   .withCapabilities([
     capability("encode")
       .withInput(EcpEncodeInputSchema)
@@ -747,17 +747,17 @@ registerFormatToonExtension();
 
 const env = environment("demo")
   .withExtensions([
-    extension("@executioncontextprotocol/format-toon").with({}),
+    extension("@executioncontrolprotocol/format-toon").with({}),
   ]);
 
 const toon = await env
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 
 const decoded = await env
   .decode(toon.content)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 ```
 
@@ -768,7 +768,7 @@ const decoded = await env
 ## 14.1 Header
 
 ```txt
-schema: @ecp.workflow
+schema: @executioncontrolprotocol.workflow
 version: 1.0
 workflow: weekly-brief "Weekly Brief"
 ```
@@ -777,7 +777,7 @@ workflow: weekly-brief "Weekly Brief"
 
 ```txt
 step collect-signals "Collect Signals"
-  uses: @executioncontextprotocol/memory.search
+  uses: @executioncontrolprotocol/memory.search
   in:
     query: weekly risks and decisions
     since: 7d
@@ -851,14 +851,14 @@ loop create-validate-fix "Create, Validate, Fix"
   max: 3
 
   step generate-image "Generate Image"
-    uses: @executioncontextprotocol/firefly.generateImage
+    uses: @executioncontrolprotocol/firefly.generateImage
     in:
       prompt: $creativeInputs.generationPrompt
       controls: $creativeInputs.generationControls
     out: image replace
 
   step validate-image "Validate Image"
-    uses: @executioncontextprotocol/openai.evaluate
+    uses: @executioncontrolprotocol/openai.evaluate
     in:
       artifact: $image
     out: brandReview replace
@@ -872,7 +872,7 @@ parallel generate-assets "Generate Assets"
 
   branch copy
     step generate-copy "Generate Copy"
-      uses: @executioncontextprotocol/openai.generate
+      uses: @executioncontrolprotocol/openai.generate
       in:
         prompt: Write campaign copy
       out: copy
@@ -880,7 +880,7 @@ parallel generate-assets "Generate Assets"
 
   branch image
     step generate-image "Generate Image"
-      uses: @executioncontextprotocol/firefly.generateImage
+      uses: @executioncontrolprotocol/firefly.generateImage
       in:
         prompt: Create campaign image
       out: image
@@ -895,14 +895,14 @@ branch notify-review "Notify Review Result"
 
   case approved when brandReview.approved == true
     step send-approved "Send Approved"
-      uses: @executioncontextprotocol/slack.send
+      uses: @executioncontrolprotocol/slack.send
       in:
         message: Approved
   end
 
   case rejected when brandReview.approved == false
     step send-rejected "Send Rejected"
-      uses: @executioncontextprotocol/slack.send
+      uses: @executioncontrolprotocol/slack.send
       in:
         message: Rejected
   end
@@ -920,9 +920,9 @@ export function encodeWorkflowToToon(
   input: EcpEncodeInput,
   ctx: UtilityCapabilityContext
 ): EncodedArtifact<string> {
-  if (input.sourceSchema && input.sourceSchema !== "@ecp.workflow") {
+  if (input.sourceSchema && input.sourceSchema !== "@executioncontrolprotocol.workflow") {
     throw new EcpError("FORMAT_UNSUPPORTED_SOURCE_SCHEMA", {
-      message: `TOON encoder only supports @ecp.workflow.`,
+      message: `TOON encoder only supports @executioncontrolprotocol.workflow.`,
     });
   }
 
@@ -933,11 +933,11 @@ export function encodeWorkflowToToon(
   });
 
   return {
-    schema: "@ecp.encoded",
+    schema: "@executioncontrolprotocol.encoded",
     version: LATEST_ECP_VERSION,
     format: "toon",
     mediaType: "text/ecp-toon",
-    sourceSchema: "@ecp.workflow",
+    sourceSchema: "@executioncontrolprotocol.workflow",
     content,
     diagnostics: [],
   };
@@ -981,11 +981,11 @@ export function decodeToonToWorkflow(
   input: EcpDecodeInput,
   ctx: UtilityCapabilityContext
 ): DecodeResult<WorkflowManifest> {
-  const target = input.targetSchema ?? "@ecp.workflow";
+  const target = input.targetSchema ?? "@executioncontrolprotocol.workflow";
 
-  if (target !== "@ecp.workflow") {
+  if (target !== "@executioncontrolprotocol.workflow") {
     throw new EcpError("FORMAT_UNSUPPORTED_TARGET_SCHEMA", {
-      message: `TOON decoder only supports @ecp.workflow.`,
+      message: `TOON decoder only supports @executioncontrolprotocol.workflow.`,
     });
   }
 
@@ -1002,9 +1002,9 @@ export function decodeToonToWorkflow(
   }
 
   return {
-    schema: "@ecp.decoded",
+    schema: "@executioncontrolprotocol.decoded",
     version: LATEST_ECP_VERSION,
-    targetSchema: "@ecp.workflow",
+    targetSchema: "@executioncontrolprotocol.workflow",
     document,
     diagnostics: [...validation.errors, ...validation.warnings],
   };
@@ -1047,17 +1047,17 @@ parseExpr(expr)
 ## 17.1 Package
 
 ```txt
-@executioncontextprotocol/format-fluent
+@executioncontrolprotocol/format-fluent
 ```
 
 ## 17.2 Purpose
 
-Convert `@ecp.workflow` manifests back into TypeScript Fluent API source code.
+Convert `@executioncontrolprotocol.workflow` manifests back into TypeScript Fluent API source code.
 
 This fills the missing reverse path:
 
 ```txt
-@ecp.workflow JSON manifest
+@executioncontrolprotocol.workflow JSON manifest
 → Fluent API TypeScript
 ```
 
@@ -1079,7 +1079,7 @@ export function encodeWorkflowToFluent(
 ## 17.4 Definition
 
 ```ts
-export const formatFluentExtension = defineExtension("@executioncontextprotocol", "format-fluent")
+export const formatFluentExtension = defineExtension("@executioncontrolprotocol", "format-fluent")
   .withCapabilities([
     capability("encode")
       .withInput(EcpEncodeInputSchema)
@@ -1100,12 +1100,12 @@ registerFormatFluentExtension();
 
 const env = environment("demo")
   .withExtensions([
-    extension("@executioncontextprotocol/format-fluent").with({}),
+    extension("@executioncontrolprotocol/format-fluent").with({}),
   ]);
 
 const fluent = await env
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-fluent")
+  .uses("@executioncontrolprotocol/format-fluent")
   .process();
 
 console.log(fluent.content);
@@ -1118,12 +1118,12 @@ import {
   workflow,
   step,
   ref,
-} from "@executioncontextprotocol/core";
+} from "@executioncontrolprotocol/core";
 
 export default workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@executioncontextprotocol/memory.search", "Collect Signals")
+    step("@executioncontrolprotocol/memory.search", "Collect Signals")
       .id("collect-signals")
       .with({
         query: "weekly risks and decisions",
@@ -1131,7 +1131,7 @@ export default workflow("Weekly Brief")
       })
       .as("signals"),
 
-    step("@executioncontextprotocol/openai.generate", "Write Brief")
+    step("@executioncontrolprotocol/openai.generate", "Write Brief")
       .id("write-brief")
       .with({
         prompt: "Create a concise brief",
@@ -1152,9 +1152,9 @@ export function encodeWorkflowToFluent(
   input: EcpEncodeInput,
   ctx: UtilityCapabilityContext
 ): EncodedArtifact<string> {
-  if (input.sourceSchema && input.sourceSchema !== "@ecp.workflow") {
+  if (input.sourceSchema && input.sourceSchema !== "@executioncontrolprotocol.workflow") {
     throw new EcpError("FORMAT_UNSUPPORTED_SOURCE_SCHEMA", {
-      message: `Fluent encoder only supports @ecp.workflow.`,
+      message: `Fluent encoder only supports @executioncontrolprotocol.workflow.`,
     });
   }
 
@@ -1165,11 +1165,11 @@ export function encodeWorkflowToFluent(
   });
 
   return {
-    schema: "@ecp.encoded",
+    schema: "@executioncontrolprotocol.encoded",
     version: LATEST_ECP_VERSION,
     format: "fluent",
     mediaType: "text/typescript",
-    sourceSchema: "@ecp.workflow",
+    sourceSchema: "@executioncontrolprotocol.workflow",
     content,
     diagnostics: [],
   };
@@ -1218,7 +1218,7 @@ import {
   loop,
   parallel,
   branch,
-} from "@executioncontextprotocol/core";
+} from "@executioncontrolprotocol/core";
 ```
 
 ## 19.4 Render step
@@ -1229,7 +1229,7 @@ Manifest:
 {
   "id": "write-brief",
   "label": "Write Brief",
-  "uses": "@executioncontextprotocol/openai.generate",
+  "uses": "@executioncontrolprotocol/openai.generate",
   "input": {
     "prompt": "Create a concise brief",
     "context": { "$ref": "state.signals.results" }
@@ -1242,7 +1242,7 @@ Manifest:
 Fluent:
 
 ```ts
-step("@executioncontextprotocol/openai.generate", "Write Brief")
+step("@executioncontrolprotocol/openai.generate", "Write Brief")
   .id("write-brief")
   .with({
     prompt: "Create a concise brief",
@@ -1301,7 +1301,7 @@ loop(
     id: "create-validate-fix",
   },
   [
-    step("@executioncontextprotocol/firefly.generateImage", "Generate Image")
+    step("@executioncontrolprotocol/firefly.generateImage", "Generate Image")
       .id("generate-image")
       .with({
         prompt: ref("creativeInputs.generationPrompt"),
@@ -1317,13 +1317,13 @@ loop(
 parallel(
   [
     [
-      step("@executioncontextprotocol/openai.generate", "Generate Copy")
+      step("@executioncontrolprotocol/openai.generate", "Generate Copy")
         .id("generate-copy")
         .with({ prompt: "Write copy" })
         .as("copy"),
     ],
     [
-      step("@executioncontextprotocol/firefly.generateImage", "Generate Image")
+      step("@executioncontrolprotocol/firefly.generateImage", "Generate Image")
         .id("generate-image")
         .with({ prompt: "Create image" })
         .as("image"),
@@ -1341,12 +1341,12 @@ parallel(
 ```ts
 branch(
   [
-    step("@executioncontextprotocol/slack.send", "Send Approved")
+    step("@executioncontrolprotocol/slack.send", "Send Approved")
       .id("send-approved")
       .when(expr.eq("brandReview.approved", true))
       .with({ message: "Approved" }),
 
-    step("@executioncontextprotocol/slack.send", "Send Rejected")
+    step("@executioncontrolprotocol/slack.send", "Send Rejected")
       .id("send-rejected")
       .when(expr.eq("brandReview.approved", false))
       .with({ message: "Rejected" }),
@@ -1370,8 +1370,8 @@ registerFormatFluentExtension();
 
 const env = environment("roundtrip")
   .withExtensions([
-    extension("@executioncontextprotocol/format-toon").with({}),
-    extension("@executioncontextprotocol/format-fluent").with({}),
+    extension("@executioncontrolprotocol/format-toon").with({}),
+    extension("@executioncontrolprotocol/format-fluent").with({}),
   ]);
 
 const compiled = await compileWorkflowSource({
@@ -1383,19 +1383,19 @@ const manifestA = compiled.manifest;
 
 const toon = await env
   .encode(manifestA)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 
 const decoded = await env
   .decode(toon.content)
-  .uses("@executioncontextprotocol/format-toon")
+  .uses("@executioncontrolprotocol/format-toon")
   .process();
 
 const manifestB = decoded.document;
 
 const fluent = await env
   .encode(manifestB)
-  .uses("@executioncontextprotocol/format-fluent")
+  .uses("@executioncontrolprotocol/format-fluent")
   .process();
 
 const compiledAgain = await compileWorkflowSource({
@@ -1475,7 +1475,7 @@ it("encodes JSON by default when no extension is used", async () => {
     .encode(manifest)
     .process();
 
-  expect(encoded.schema).toBe("@ecp.encoded");
+  expect(encoded.schema).toBe("@executioncontrolprotocol.encoded");
   expect(encoded.format).toBe("json");
   expect(encoded.content).toEqual(manifest);
 });
@@ -1491,7 +1491,7 @@ it("decodes JSON by default when no extension is used", async () => {
     .decode(JSON.stringify(manifest))
     .process();
 
-  expect(decoded.schema).toBe("@ecp.decoded");
+  expect(decoded.schema).toBe("@executioncontrolprotocol.decoded");
   expect(decoded.document).toEqual(manifest);
 });
 ```
@@ -1505,7 +1505,7 @@ it("fails when encoder extension is not registered", async () => {
   await expect(
     env
       .encode(manifest)
-      .uses("@executioncontextprotocol/format-toon")
+      .uses("@executioncontrolprotocol/format-toon")
       .process()
   ).rejects.toMatchObject({
     code: "FORMAT_EXTENSION_NOT_FOUND",
@@ -1569,16 +1569,16 @@ it("encodes workflow manifest to TOON", async () => {
 
   const env = environment("test")
     .withExtensions([
-      extension("@executioncontextprotocol/format-toon").with({}),
+      extension("@executioncontrolprotocol/format-toon").with({}),
     ]);
 
   const encoded = await env
     .encode(manifest)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   expect(encoded.format).toBe("toon");
-  expect(encoded.content).toContain("schema: @ecp.workflow");
+  expect(encoded.content).toContain("schema: @executioncontrolprotocol.workflow");
   expect(encoded.content).toContain("workflow:");
   expect(encoded.content).toContain("step");
 });
@@ -1590,11 +1590,11 @@ it("encodes workflow manifest to TOON", async () => {
 it("decodes TOON to workflow manifest", async () => {
   const decoded = await env
     .decode(toonText)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
-  expect(decoded.targetSchema).toBe("@ecp.workflow");
-  expect(decoded.document.schema).toBe("@ecp.workflow");
+  expect(decoded.targetSchema).toBe("@executioncontrolprotocol.workflow");
+  expect(decoded.document.schema).toBe("@executioncontrolprotocol.workflow");
 });
 ```
 
@@ -1604,14 +1604,14 @@ it("decodes TOON to workflow manifest", async () => {
 it("round trips refs", async () => {
   const toon = await env
     .encode(refManifest)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   expect(toon.content).toContain("$signals.results");
 
   const decoded = await env
     .decode(toon.content)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   expect(decoded.document.steps[0].input.context).toEqual({
@@ -1626,14 +1626,14 @@ it("round trips refs", async () => {
 it("round trips state handles", async () => {
   const toon = await env
     .encode(stateManifest)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   expect(toon.content).toContain("~creativeInputs");
 
   const decoded = await env
     .decode(toon.content)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   expect(decoded.document.steps[0].input.target).toEqual({
@@ -1676,12 +1676,12 @@ it("encodes workflow manifest to Fluent API source", async () => {
 
   const env = environment("test")
     .withExtensions([
-      extension("@executioncontextprotocol/format-fluent").with({}),
+      extension("@executioncontrolprotocol/format-fluent").with({}),
     ]);
 
   const encoded = await env
     .encode(manifest)
-    .uses("@executioncontextprotocol/format-fluent")
+    .uses("@executioncontrolprotocol/format-fluent")
     .process();
 
   expect(encoded.format).toBe("fluent");
@@ -1696,7 +1696,7 @@ it("encodes workflow manifest to Fluent API source", async () => {
 it("generated Fluent API source compiles back to manifest", async () => {
   const encoded = await env
     .encode(manifest)
-    .uses("@executioncontextprotocol/format-fluent")
+    .uses("@executioncontrolprotocol/format-fluent")
     .process();
 
   const compiled = await compileWorkflowSource({
@@ -1738,8 +1738,8 @@ it("round trips Fluent → JSON → TOON → JSON → Fluent", async () => {
 
   const env = environment("test")
     .withExtensions([
-      extension("@executioncontextprotocol/format-toon").with({}),
-      extension("@executioncontextprotocol/format-fluent").with({}),
+      extension("@executioncontrolprotocol/format-toon").with({}),
+      extension("@executioncontrolprotocol/format-fluent").with({}),
     ]);
 
   const compiledA = await compileWorkflowSource({
@@ -1751,19 +1751,19 @@ it("round trips Fluent → JSON → TOON → JSON → Fluent", async () => {
 
   const toon = await env
     .encode(manifestA)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   const decoded = await env
     .decode(toon.content)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   const manifestB = decoded.document;
 
   const fluent = await env
     .encode(manifestB)
-    .uses("@executioncontextprotocol/format-fluent")
+    .uses("@executioncontrolprotocol/format-fluent")
     .process();
 
   const compiledB = await compileWorkflowSource({
@@ -1792,17 +1792,17 @@ it("does not emit run or step lifecycle during encode/decode", async () => {
   const env = environment("test")
     .withExtensions([
       extension("@test/telemetry").with({}),
-      extension("@executioncontextprotocol/format-toon").with({}),
+      extension("@executioncontrolprotocol/format-toon").with({}),
     ]);
 
   await env
     .encode(manifest)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   await env
     .decode(toonText)
-    .uses("@executioncontextprotocol/format-toon")
+    .uses("@executioncontrolprotocol/format-toon")
     .process();
 
   expect(events).toEqual([]);
@@ -1830,17 +1830,17 @@ Implementation is complete when all are true:
 
 ## TOON
 
-* `@executioncontextprotocol/format-toon` registers `encode` and `decode`.
+* `@executioncontrolprotocol/format-toon` registers `encode` and `decode`.
 * Manifest → TOON works.
 * TOON → manifest works.
-* TOON infers `@ecp.workflow` from the header.
-* TOON defaults to `@ecp.workflow` if no schema header exists.
+* TOON infers `@executioncontrolprotocol.workflow` from the header.
+* TOON defaults to `@executioncontrolprotocol.workflow` if no schema header exists.
 * Steps, refs, state handles, commit modes, conditions, loops, branches, and parallel nodes round trip.
 * Invalid TOON returns diagnostics and strict mode fails.
 
 ## Fluent
 
-* `@executioncontextprotocol/format-fluent` registers `encode`.
+* `@executioncontrolprotocol/format-fluent` registers `encode`.
 * Manifest → Fluent API source works.
 * Generated source imports required helpers only.
 * Generated source compiles with `compileWorkflowSource`.
@@ -1858,11 +1858,11 @@ This passes:
 Fluent source
 → compileWorkflowSource
 → manifest A
-→ env.encode().uses("@executioncontextprotocol/format-toon").process()
+→ env.encode().uses("@executioncontrolprotocol/format-toon").process()
 → TOON
-→ env.decode().uses("@executioncontextprotocol/format-toon").process()
+→ env.decode().uses("@executioncontrolprotocol/format-toon").process()
 → manifest B
-→ env.encode().uses("@executioncontextprotocol/format-fluent").process()
+→ env.encode().uses("@executioncontrolprotocol/format-fluent").process()
 → Fluent generated source
 → compileWorkflowSource
 → manifest C
@@ -1910,7 +1910,7 @@ Format extensions are normal ECP extensions that provide standard `encode` and/o
 
 Encoding and decoding are explicit utility operations. They are not workflow runs, they do not emit workflow lifecycle events, and they must not mutate workflow state.
 
-The canonical executable source of truth remains the `@ecp.workflow` JSON manifest. Encoded formats such as TOON and Fluent API source are views, compressed representations, transport formats, or authoring aids.
+The canonical executable source of truth remains the `@executioncontrolprotocol.workflow` JSON manifest. Encoded formats such as TOON and Fluent API source are views, compressed representations, transport formats, or authoring aids.
 ```
 
 ```md
@@ -1918,19 +1918,19 @@ The canonical executable source of truth remains the `@ecp.workflow` JSON manife
 
 The first two format extensions are:
 
-- `@executioncontextprotocol/format-toon`
-- `@executioncontextprotocol/format-fluent`
+- `@executioncontrolprotocol/format-toon`
+- `@executioncontrolprotocol/format-fluent`
 
-`@executioncontextprotocol/format-toon` provides:
+`@executioncontrolprotocol/format-toon` provides:
 
-- `@executioncontextprotocol/format-toon.encode`
-- `@executioncontextprotocol/format-toon.decode`
+- `@executioncontrolprotocol/format-toon.encode`
+- `@executioncontrolprotocol/format-toon.decode`
 
-`@executioncontextprotocol/format-fluent` provides:
+`@executioncontrolprotocol/format-fluent` provides:
 
-- `@executioncontextprotocol/format-fluent.encode`
+- `@executioncontrolprotocol/format-fluent.encode`
 
 Together they support the round trip:
 
-Fluent API source → @ecp.workflow manifest → TOON → @ecp.workflow manifest → Fluent API source.
+Fluent API source → @executioncontrolprotocol.workflow manifest → TOON → @executioncontrolprotocol.workflow manifest → Fluent API source.
 ```

@@ -1,13 +1,13 @@
-import type { EnvValue, SecretValue, BrowserValue } from "@executioncontextprotocol/types"
+import type { EnvValue, SecretValue, BrowserValue } from "@executioncontrolprotocol/types"
 
 /** Extension id for process environment resolution. @category Environment */
-export const PROCESS_ENV_RESOLVER_ID = "@executioncontextprotocol/process-env"
+export const PROCESS_ENV_RESOLVER_ID = "@executioncontrolprotocol/process-env"
 
 /** Extension id for OS secrets resolution. @category Environment */
-export const SECRETS_RESOLVER_ID = "@executioncontextprotocol/secrets"
+export const SECRETS_RESOLVER_ID = "@executioncontrolprotocol/secrets"
 
 /** Extension id for browser encrypted secrets resolution. @category Environment */
-export const BROWSER_SECRETS_RESOLVER_ID = "@executioncontextprotocol/browser-secrets"
+export const BROWSER_SECRETS_RESOLVER_ID = "@executioncontrolprotocol/browser-secrets"
 
 /** Resolvers excluded from the `$env` fallback chain. @category Environment */
 const ENV_CHAIN_EXCLUDED_RESOLVER_IDS = new Set([

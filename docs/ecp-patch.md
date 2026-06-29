@@ -8,11 +8,11 @@
 | Termination                | Use `ecp.terminate()`, not `ecp.shutdown()` or `env.shutdown()`.                                                                             |
 | Workflow execution         | Do **not** add `ecp.run()` in this pass. Keep this spec focused on initialization, encoding, decoding, patching, validation, and compaction. |
 | Encode/decode result shape | Avoid nested access like `toon.content` and `decoded.document`. Use a consistent `.result` property.                                         |
-| TOON compaction            | Compaction is `ecp.encode(...).uses("@executioncontextprotocol/format-toon").with({ headers: false, compact: true }).process()`.             |
+| TOON compaction            | Compaction is `ecp.encode(...).uses("@executioncontrolprotocol/format-toon").with({ headers: false, compact: true }).process()`.             |
 | Patch semantics            | Patching is JSON-only and canonical. TOON can encode/decode patch objects, but patch application always operates on canonical JSON.          |
 | Patch paths                | Use ECP dot/bracket notation with `steps[<id>]`, not labels.                                                                                 |
 | Fluent output              | Keep Fluent API clean. Do **not** render IDs in Fluent API output. IDs belong in JSON serializable objects.                                  |
-| Format extension           | `@executioncontextprotocol/format-toon` already exists and must be extended for header config and patch decoding.                            |
+| Format extension           | `@executioncontrolprotocol/format-toon` already exists and must be extended for header config and patch decoding.                            |
 | Header config              | Encoders receive a standard options interface with required header config support, plus extensibility via `Record<string, unknown>`.         |
 | Lodash                     | Use lodash for lookup, set, and deep merge where appropriate.                                                                                |
 | Validation                 | Encode/decode/patch must validate and return validation results on failure.                                                                  |
@@ -25,15 +25,15 @@
 
 ```ts
 const env = environment("browser-demo", "Browser Demo")
-  .withRuntime(runtime("@executioncontextprotocol/browser").with({}))
+  .withRuntime(runtime("@executioncontrolprotocol/browser").with({}))
   .withExtensions([
-    extension("@executioncontextprotocol/format-toon").with({}),
-    extension("@executioncontextprotocol/format-fluent").with({}),
-    extension("@executioncontextprotocol/demo").with({}),
+    extension("@executioncontrolprotocol/format-toon").with({}),
+    extension("@executioncontrolprotocol/format-fluent").with({}),
+    extension("@executioncontrolprotocol/demo").with({}),
   ])
   .withPolicies([
-    policy("@executioncontextprotocol/registry-control").with({
-      allowedExtensionNamespaces: ["@executioncontextprotocol/*", "@customer/*"],
+    policy("@executioncontrolprotocol/registry-control").with({
+      allowedExtensionNamespaces: ["@executioncontrolprotocol/*", "@customer/*"],
       allowDynamicExtensionRegistration: true,
       allowAutoBind: true,
       freezeOn: "environment:beforeRun",
@@ -112,7 +112,7 @@ ecp.terminate()
 Instead of many booleans, simplify freeze timing with a lifecycle hook name.
 
 ```ts
-extension("@executioncontextprotocol/browser-registry").with({
+extension("@executioncontrolprotocol/browser-registry").with({
   exposeGlobal: true,
   globalName: "ecp",
   allowRuntimeRegistration: true,
@@ -173,7 +173,7 @@ Use a common result envelope with `.result`.
 
 ```ts
 export interface EncodeResult<T = unknown> {
-  schema: "@ecp.encode.result";
+  schema: "@executioncontrolprotocol.encode.result";
   version: EcpVersion;
 
   success: boolean;
@@ -193,7 +193,7 @@ export interface EncodeResult<T = unknown> {
 
 ```ts
 export interface DecodeResult<T = unknown> {
-  schema: "@ecp.decode.result";
+  schema: "@executioncontrolprotocol.decode.result";
   version: EcpVersion;
 
   success: boolean;
@@ -213,15 +213,15 @@ export interface DecodeResult<T = unknown> {
 ```ts
 const toon = await ecp
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.workflow")
   .with({ headers: false, compact: true })
   .process();
 
 const patch = await ecp
   .decode(agentPatchToon)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.patch")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.patch")
   .process();
 
 if (!patch.success) {
@@ -235,8 +235,8 @@ const patched = await ecp
 
 const compact = await ecp
   .encode(patched.result)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.workflow")
   .with({ headers: false, compact: true })
   .process();
 ```
@@ -363,11 +363,11 @@ Encode/decode should not silently fail.
 
 ```ts
 {
-  schema: "@ecp.encode.result",
+  schema: "@executioncontrolprotocol.encode.result",
   version: "1.0",
   success: true,
   format: "toon",
-  sourceSchema: "@ecp.workflow",
+  sourceSchema: "@executioncontrolprotocol.workflow",
   result: "workflow: ...",
   diagnostics: []
 }
@@ -377,11 +377,11 @@ Encode/decode should not silently fail.
 
 ```ts
 {
-  schema: "@ecp.encode.result",
+  schema: "@executioncontrolprotocol.encode.result",
   version: "1.0",
   success: false,
   format: "toon",
-  sourceSchema: "@ecp.workflow",
+  sourceSchema: "@executioncontrolprotocol.workflow",
   validation: {
     valid: false,
     diagnostics: [...]
@@ -394,10 +394,10 @@ Encode/decode should not silently fail.
 
 ```ts
 {
-  schema: "@ecp.decode.result",
+  schema: "@executioncontrolprotocol.decode.result",
   version: "1.0",
   success: false,
-  targetSchema: "@ecp.patch",
+  targetSchema: "@executioncontrolprotocol.patch",
   validation: {
     valid: false,
     diagnostics: [...]
@@ -433,51 +433,51 @@ These are not globally banned. But if an extension is used through `ecp.encode()
 Resolution:
 
 ```txt
-ecp.encode(...).uses("@executioncontextprotocol/format-toon")
-  → @executioncontextprotocol/format-toon.encode
+ecp.encode(...).uses("@executioncontrolprotocol/format-toon")
+  → @executioncontrolprotocol/format-toon.encode
 
-ecp.decode(...).uses("@executioncontextprotocol/format-toon")
-  → @executioncontextprotocol/format-toon.decode
+ecp.decode(...).uses("@executioncontrolprotocol/format-toon")
+  → @executioncontrolprotocol/format-toon.decode
 ```
 
 ## 7.2 Capability contract
 
 ```ts
-@executioncontextprotocol/format-toon.encode
+@executioncontrolprotocol/format-toon.encode
 input: EcpEncodeInput
 output: EncodeResult
 
-@executioncontextprotocol/format-toon.decode
+@executioncontrolprotocol/format-toon.decode
 input: EcpDecodeInput
 output: DecodeResult
 ```
 
 ---
 
-# 8. `@executioncontextprotocol/format-toon`
+# 8. `@executioncontrolprotocol/format-toon`
 
-`@executioncontextprotocol/format-toon` already exists. Extend it.
+`@executioncontrolprotocol/format-toon` already exists. Extend it.
 
 ## 8.1 Must support
 
-| Document                    |           Encode |           Decode |
-| --------------------------- | ---------------: | ---------------: |
-| `@ecp.workflow`             |              Yes |              Yes |
-| `@ecp.patch`                |              Yes |              Yes |
-| `@ecp.environment.describe` | Later / optional | Later / optional |
-| `@ecp.validation.result`    | Later / optional | Later / optional |
+| Document                                         | Encode             | Decode             |
+| ------------------------------------------------ | ------------------ | ------------------ |
+| `@executioncontrolprotocol.workflow`             | Yes                | Yes                |
+| `@executioncontrolprotocol.patch`                | Yes                | Yes                |
+| `@executioncontrolprotocol.environment.describe` | Later / optional   | Later / optional   |
+| `@executioncontrolprotocol.validation.result`    | Later / optional   | Later / optional   |
 
 ## 8.2 Header config
 
 Headered output:
 
 ```txt
-schema: @ecp.workflow
+schema: @executioncontrolprotocol.workflow
 version: 1.0
 workflow: weekly-brief "Weekly Brief"
 
 step "Collect Signals"
-  uses: @executioncontextprotocol/memory.search
+  uses: @executioncontrolprotocol/memory.search
   in:
     query: weekly risks and decisions
   out: signals
@@ -489,7 +489,7 @@ Headerless output:
 workflow: weekly-brief "Weekly Brief"
 
 step "Collect Signals"
-  uses: @executioncontextprotocol/memory.search
+  uses: @executioncontrolprotocol/memory.search
   in:
     query: weekly risks and decisions
   out: signals
@@ -500,8 +500,8 @@ Usage:
 ```ts
 const toon = await ecp
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.workflow")
   .with({ headers: false, compact: true })
   .process();
 ```
@@ -511,12 +511,12 @@ const toon = await ecp
 ```ts
 const patch = await ecp
   .decode(headerlessPatchToon)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.patch")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.patch")
   .process();
 ```
 
-Because headerless content is not self-describing, `.to("@ecp.patch")` should be used.
+Because headerless content is not self-describing, `.to("@executioncontrolprotocol.patch")` should be used.
 
 ---
 
@@ -529,14 +529,14 @@ Do **not** render IDs in generated Fluent API.
 Avoid:
 
 ```ts
-step("@executioncontextprotocol/openai.generate", "Write Brief")
+step("@executioncontrolprotocol/openai.generate", "Write Brief")
   .id("write-brief")
 ```
 
 Prefer:
 
 ```ts
-step("@executioncontextprotocol/openai.generate", "Write Brief")
+step("@executioncontrolprotocol/openai.generate", "Write Brief")
   .with({
     prompt: "Create a concise brief",
     context: ref("signals.results"),
@@ -552,7 +552,7 @@ When Fluent compiles to JSON manifest, the manifest can include IDs:
 {
   "id": "write-brief",
   "label": "Write Brief",
-  "uses": "@executioncontextprotocol/openai.generate",
+  "uses": "@executioncontrolprotocol/openai.generate",
   "input": {
     "prompt": "Create a concise brief"
   },
@@ -577,11 +577,11 @@ If an LLM patches JSON, it uses stable JSON node IDs.
 
 These are separate editing modes:
 
-| Editing mode               | Target                          |
-| -------------------------- | ------------------------------- |
-| Developer / code agent     | Fluent API source               |
-| Browser compact patch loop | JSON manifest + `@ecp.patch`    |
-| Small LLM repair           | TOON-encoded patch → JSON patch |
+| Editing mode               | Target                                              |
+| -------------------------- | --------------------------------------------------- |
+| Developer / code agent     | Fluent API source                                   |
+| Browser compact patch loop | JSON manifest + `@executioncontrolprotocol.patch`   |
+| Small LLM repair           | TOON-encoded patch → JSON patch                     |
 
 ---
 
@@ -593,7 +593,7 @@ Keep patch lightweight.
 
 ```ts
 export interface EcpPatchDocument {
-  schema: "@ecp.patch";
+  schema: "@executioncontrolprotocol.patch";
   version: EcpVersion;
   targetSchema: EcpSchema;
   patches: EcpPatchEntry[];
@@ -652,9 +652,9 @@ Equivalent canonical patch:
 
 ```json
 {
-  "schema": "@ecp.patch",
+  "schema": "@executioncontrolprotocol.patch",
   "version": "1.0",
-  "targetSchema": "@ecp.workflow",
+  "targetSchema": "@executioncontrolprotocol.workflow",
   "patches": [
     {
       "path": "steps[write-brief].input",
@@ -870,7 +870,7 @@ Use `.result` consistently.
 
 ```ts
 export interface PatchResult<T = unknown> {
-  schema: "@ecp.patch.result";
+  schema: "@executioncontrolprotocol.patch.result";
   version: EcpVersion;
 
   success: boolean;
@@ -943,8 +943,8 @@ Correct flow:
 ```ts
 const patch = await ecp
   .decode(agentPatchToon)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.patch")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.patch")
   .process();
 
 const patched = await ecp
@@ -954,8 +954,8 @@ const patched = await ecp
 
 const compact = await ecp
   .encode(patched.result)
-  .uses("@executioncontextprotocol/format-toon")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-toon")
+  .to("@executioncontrolprotocol.workflow")
   .with({ headers: false, compact: true })
   .process();
 ```
@@ -1077,7 +1077,7 @@ Acceptance criteria:
 
 ---
 
-## Task 7: Update `@executioncontextprotocol/format-toon`
+## Task 7: Update `@executioncontrolprotocol/format-toon`
 
 Extend existing package.
 
@@ -1095,13 +1095,13 @@ Acceptance criteria:
 
 * Headered TOON works.
 * Headerless TOON works.
-* Headerless workflow decode works when `.to("@ecp.workflow")` is supplied.
-* Headerless patch decode works when `.to("@ecp.patch")` is supplied.
+* Headerless workflow decode works when `.to("@executioncontrolprotocol.workflow")` is supplied.
+* Headerless patch decode works when `.to("@executioncontrolprotocol.patch")` is supplied.
 * Decode failures include diagnostics.
 
 ---
 
-## Task 8: Add `@executioncontextprotocol/format-fluent`
+## Task 8: Add `@executioncontrolprotocol/format-fluent`
 
 Implement manifest → Fluent source.
 
@@ -1255,8 +1255,8 @@ it("initializes an Ecp operational instance", async () => {
 it("encodes TOON and returns result directly", async () => {
   const encoded = await ecp
     .encode(manifest)
-    .uses("@executioncontextprotocol/format-toon")
-    .to("@ecp.workflow")
+    .uses("@executioncontrolprotocol/format-toon")
+    .to("@executioncontrolprotocol.workflow")
     .with({ headers: false, compact: true })
     .process();
 
@@ -1271,12 +1271,12 @@ it("encodes TOON and returns result directly", async () => {
 it("decodes TOON and returns result directly", async () => {
   const decoded = await ecp
     .decode(toon)
-    .uses("@executioncontextprotocol/format-toon")
-    .to("@ecp.workflow")
+    .uses("@executioncontrolprotocol/format-toon")
+    .to("@executioncontrolprotocol.workflow")
     .process();
 
   expect(decoded.success).toBe(true);
-  expect(decoded.result.schema).toBe("@ecp.workflow");
+  expect(decoded.result.schema).toBe("@executioncontrolprotocol.workflow");
 });
 ```
 
@@ -1286,8 +1286,8 @@ it("decodes TOON and returns result directly", async () => {
 it("supports headerless compact TOON", async () => {
   const encoded = await ecp
     .encode(manifest)
-    .uses("@executioncontextprotocol/format-toon")
-    .to("@ecp.workflow")
+    .uses("@executioncontrolprotocol/format-toon")
+    .to("@executioncontrolprotocol.workflow")
     .with({ headers: false, compact: true })
     .process();
 
@@ -1382,8 +1382,8 @@ it("fails patching when duplicate step ids exist", async () => {
 it("returns validation diagnostics when decode fails", async () => {
   const decoded = await ecp
     .decode(invalidToon)
-    .uses("@executioncontextprotocol/format-toon")
-    .to("@ecp.workflow")
+    .uses("@executioncontrolprotocol/format-toon")
+    .to("@executioncontrolprotocol.workflow")
     .process();
 
   expect(decoded.success).toBe(false);
@@ -1423,7 +1423,7 @@ Compaction is encoding with:
 
 Patching is canonical JSON only.
 
-TOON can represent a patch, but must be decoded into @ecp.patch before application.
+TOON can represent a patch, but must be decoded into @executioncontrolprotocol.patch before application.
 
 Patch entries have:
 path

@@ -1,5 +1,5 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@executioncontrolprotocol/types"
 import { slugify } from "../util/slug.js"
 import type { StepBuilder } from "../bindings/step.js"
 import { validateWorkflow } from "../validate/workflow.js"
@@ -42,7 +42,7 @@ export class WorkflowBuilder {
   /** Alias for compile(). */
   toManifest(): WorkflowManifest {
     return assignUniqueStepIds({
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: LATEST_ECP_VERSION,
       workflow: {
         id: this.workflowId ?? slugify(this.label),

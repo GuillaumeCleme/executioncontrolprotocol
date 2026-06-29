@@ -2,7 +2,7 @@ import type {
   CapabilityId,
   LifecycleEvent,
   NamespacedId,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { z } from "zod"
 import type { ConfigSchema } from "../config-schema/index.js"
 

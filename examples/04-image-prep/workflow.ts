@@ -1,8 +1,8 @@
-import { workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontrolprotocol/core"
 
 export default workflow("Image prep")
   .run([
-    step("@executioncontextprotocol/image-sharp.inspect", "Inspect source")
+    step("@executioncontrolprotocol/image-sharp.inspect", "Inspect source")
       .with({
         image: {
           kind: "file",
@@ -12,7 +12,7 @@ export default workflow("Image prep")
       })
       .as("imageInfo"),
 
-    step("@executioncontextprotocol/image-sharp.normalize", "Normalize orientation")
+    step("@executioncontrolprotocol/image-sharp.normalize", "Normalize orientation")
       .with({
         image: {
           kind: "file",
@@ -22,7 +22,7 @@ export default workflow("Image prep")
       })
       .as("normalized"),
 
-    step("@executioncontextprotocol/image-sharp.derive", "Create delivery variants")
+    step("@executioncontrolprotocol/image-sharp.derive", "Create delivery variants")
       .with({
         image: { kind: "artifact", uri: "ecp://artifacts/images/normalized.webp" },
         variants: [

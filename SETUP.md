@@ -47,7 +47,7 @@ Now `ecp --help` should work.
 
 ## Run a workflow (Node)
 
-ECP runs **workflows** (`@ecp.workflow`) inside **environments** (runtime +
+ECP runs **workflows** (`@executioncontrolprotocol.workflow`) inside **environments** (runtime +
 extensions + policies). Examples are authored in TypeScript but compile down to
 portable JSON workflow manifests.
 

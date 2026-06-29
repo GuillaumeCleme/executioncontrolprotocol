@@ -1,4 +1,4 @@
-import { ECP_INTENT_VALUES } from "@executioncontextprotocol/types"
+import { ECP_INTENT_VALUES } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 /** Eval suite identifiers. @category Evals */

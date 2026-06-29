@@ -1,5 +1,5 @@
-import type { EcpEncodingErrorCode } from "@executioncontextprotocol/types"
-import type { ValidationIssue } from "@executioncontextprotocol/types"
+import type { EcpEncodingErrorCode } from "@executioncontrolprotocol/types"
+import type { ValidationIssue } from "@executioncontrolprotocol/types"
 
 /** Options for {@link EcpError}. @category Encoding */
 export interface EcpErrorOptions {

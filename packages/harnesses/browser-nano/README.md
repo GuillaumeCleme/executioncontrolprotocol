@@ -1,15 +1,15 @@
-# @executioncontextprotocol/harnesses-browser-nano
+# @executioncontrolprotocol/harnesses-browser-nano
 
-**Browser Nano** harness — catalog id **`@executioncontextprotocol/harness-browser-nano`**. Tuned for on-device and small (~1B) models: short EQL replies, compact context, repair loop, identity primer.
+**Browser Nano** harness — catalog id **`@executioncontrolprotocol/harness-browser-nano`**. Tuned for on-device and small (~1B) models: short EQL replies, compact context, repair loop, identity primer.
 
-Used by the browser demo and `@executioncontextprotocol/evals` matrix tests (Ollama gemma3:1b, Chrome Nano). **Same harness binding** (`HARNESS_NANO_BINDING`); the demo hot-swaps the model provider at invoke.
+Used by the browser demo and `@executioncontrolprotocol/evals` matrix tests (Ollama gemma3:1b, Chrome Nano). **Same harness binding** (`HARNESS_NANO_BINDING`); the demo hot-swaps the model provider at invoke.
 
-For stronger cloud models, add a separate harness package (e.g. `@executioncontextprotocol/harnesses-browser-nano-standard`) with its own prompts and output shaping.
+For stronger cloud models, add a separate harness package (e.g. `@executioncontrolprotocol/harnesses-browser-nano-standard`) with its own prompts and output shaping.
 
 ## Invoke
 
 ```ts
-import { BROWSER_NANO_HARNESS_CAPABILITY, HARNESS_TASKS } from "@executioncontextprotocol/harnesses-browser-nano"
+import { BROWSER_NANO_HARNESS_CAPABILITY, HARNESS_TASKS } from "@executioncontrolprotocol/harnesses-browser-nano"
 
 await ecp.invoke(BROWSER_NANO_HARNESS_CAPABILITY).with({
   task: HARNESS_TASKS.WORKFLOW_ASSISTANT,
@@ -17,12 +17,12 @@ await ecp.invoke(BROWSER_NANO_HARNESS_CAPABILITY).with({
 })
 ```
 
-Tasks (all model outputs are **EQL** via `@executioncontextprotocol/format-eql`):
+Tasks (all model outputs are **EQL** via `@executioncontrolprotocol/format-eql`):
 
 | Task | Role |
 | ---- | ---- |
-| `workflow-authoring` | Create or patch `@ecp.workflow` via EQL |
+| `workflow-authoring` | Create or patch `@executioncontrolprotocol.workflow` via EQL |
 | `intent-classification` | Route user messages (`faq`, `general`, `workflow-create`, `workflow-patch`) |
-| `workflow-assistant` | Unified assistant: ECP FAQ, identity, environment/capability help, run-aware Q&A (`@ecp.harness.reply`) |
+| `workflow-assistant` | Unified assistant: ECP FAQ, identity, environment/capability help, run-aware Q&A (`@executioncontrolprotocol.harness.reply`) |
 
-Reusable harness authoring helpers live in **`@executioncontextprotocol/core`**. This package adds product routing and workflow-specific capability hints.
+Reusable harness authoring helpers live in **`@executioncontrolprotocol/core`**. This package adds product routing and workflow-specific capability hints.

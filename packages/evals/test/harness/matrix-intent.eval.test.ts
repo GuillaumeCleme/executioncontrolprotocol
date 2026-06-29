@@ -5,7 +5,7 @@ import {
   loadEvalCases,
   ollamaEvalReady,
   runEvalCase,
-} from "@executioncontextprotocol/evals"
+} from "@executioncontrolprotocol/evals"
 
 const readiness = await ollamaEvalReady()
 const cases = loadEvalCases({ suite: EVAL_SUITE_VALUES.INTENT })

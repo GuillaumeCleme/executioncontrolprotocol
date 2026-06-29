@@ -2,9 +2,9 @@ import {
   ecpPatchDocumentSchema,
   validateWorkflow,
   zodIssuesToValidationIssues,
-} from "@executioncontextprotocol/core"
-import type { EcpSchema, ValidationIssue, ValidationResult } from "@executioncontextprotocol/types"
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/core"
+import type { EcpSchema, ValidationIssue, ValidationResult } from "@executioncontrolprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 const bindingSchema = z.object({
@@ -14,9 +14,9 @@ const bindingSchema = z.object({
   config: z.record(z.unknown()).optional(),
 })
 
-/** Zod schema for `@ecp.environment` manifests. @category Encoding */
+/** Zod schema for `@executioncontrolprotocol.environment` manifests. @category Encoding */
 export const environmentManifestSchema = z.object({
-  schema: z.literal("@ecp.environment"),
+  schema: z.literal("@executioncontrolprotocol.environment"),
   version: z.string(),
   environment: z.object({
     id: z.string().min(1),
@@ -43,9 +43,9 @@ const runtimeFeaturesSchema = z.object({
   longRunningWorkflows: z.boolean().optional(),
 })
 
-/** Zod schema for `@ecp.environment.describe` documents. @category Encoding */
+/** Zod schema for `@executioncontrolprotocol.environment.describe` documents. @category Encoding */
 export const environmentDescribeSchema = z.object({
-  schema: z.literal("@ecp.environment.describe"),
+  schema: z.literal("@executioncontrolprotocol.environment.describe"),
   version: z.string(),
   environment: z.object({
     id: z.string().min(1),
@@ -86,9 +86,9 @@ export const environmentDescribeSchema = z.object({
   ),
 })
 
-/** Zod schema for `@ecp.environment.search` documents. @category Encoding */
+/** Zod schema for `@executioncontrolprotocol.environment.search` documents. @category Encoding */
 export const environmentSearchSchema = z.object({
-  schema: z.literal("@ecp.environment.search"),
+  schema: z.literal("@executioncontrolprotocol.environment.search"),
   version: z.string(),
   results: z.array(
     z.object({
@@ -105,11 +105,11 @@ export const environmentSearchSchema = z.object({
 
 /** Schemas that receive optional structural validation after TOON decode. @category Encoding */
 export const TOON_VALIDATED_ECP_SCHEMAS = [
-  "@ecp.workflow",
-  "@ecp.environment",
-  "@ecp.environment.describe",
-  "@ecp.environment.search",
-  "@ecp.patch",
+  "@executioncontrolprotocol.workflow",
+  "@executioncontrolprotocol.environment",
+  "@executioncontrolprotocol.environment.describe",
+  "@executioncontrolprotocol.environment.search",
+  "@executioncontrolprotocol.patch",
 ] as const satisfies readonly EcpSchema[]
 
 /** Union of schemas with built-in TOON validation. @category Encoding */
@@ -117,7 +117,7 @@ export type ToonValidatedEcpSchema = (typeof TOON_VALIDATED_ECP_SCHEMAS)[number]
 
 function emptyValidation(valid: boolean): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],
@@ -155,15 +155,15 @@ export function validateEcpDocument(
   }
 
   switch (resolved) {
-    case "@ecp.workflow":
-      return validateWorkflow(document as import("@executioncontextprotocol/types").WorkflowManifest)
-    case "@ecp.environment":
+    case "@executioncontrolprotocol.workflow":
+      return validateWorkflow(document as import("@executioncontrolprotocol/types").WorkflowManifest)
+    case "@executioncontrolprotocol.environment":
       return zodToResult(environmentManifestSchema.safeParse(document))
-    case "@ecp.environment.describe":
+    case "@executioncontrolprotocol.environment.describe":
       return zodToResult(environmentDescribeSchema.safeParse(document))
-    case "@ecp.environment.search":
+    case "@executioncontrolprotocol.environment.search":
       return zodToResult(environmentSearchSchema.safeParse(document))
-    case "@ecp.patch":
+    case "@executioncontrolprotocol.patch":
       return zodToResult(ecpPatchDocumentSchema.safeParse(document))
     default:
       return emptyValidation(true)

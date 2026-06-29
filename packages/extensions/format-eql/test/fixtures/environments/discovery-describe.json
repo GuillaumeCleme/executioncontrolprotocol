@@ -1,28 +1,28 @@
 {
-  "schema": "@ecp.environment.describe",
+  "schema": "@executioncontrolprotocol.environment.describe",
   "version": "1.0",
   "environment": {
     "id": "disc",
     "label": "Discovery"
   },
   "runtime": {
-    "id": "@executioncontextprotocol/in-memory",
+    "id": "@executioncontrolprotocol/in-memory",
     "features": {
       "loops": true
     }
   },
   "extensions": [
     {
-      "id": "@executioncontextprotocol/test",
+      "id": "@executioncontrolprotocol/test",
       "order": 0,
-      "capabilities": ["@executioncontextprotocol/test.echo"]
+      "capabilities": ["@executioncontrolprotocol/test.echo"]
     }
   ],
   "capabilities": [
     {
-      "id": "@executioncontextprotocol/test.echo",
+      "id": "@executioncontrolprotocol/test.echo",
       "label": "Echo",
-      "extension": "@executioncontextprotocol/test",
+      "extension": "@executioncontrolprotocol/test",
       "inputSchema": {
         "value": "string!"
       },
@@ -31,9 +31,9 @@
       }
     },
     {
-      "id": "@executioncontextprotocol/memory.search",
+      "id": "@executioncontrolprotocol/memory.search",
       "label": "Search Memory",
-      "extension": "@executioncontextprotocol/memory",
+      "extension": "@executioncontrolprotocol/memory",
       "inputSchema": {
         "query": "string!",
         "since": "string"
@@ -45,7 +45,7 @@
   ],
   "policies": [
     {
-      "id": "@executioncontextprotocol/budget",
+      "id": "@executioncontrolprotocol/budget",
       "label": "Budget Guardrails",
       "summary": "Spend limits"
     }

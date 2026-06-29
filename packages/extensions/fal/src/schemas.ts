@@ -9,7 +9,7 @@ export const FAL_INFERENCE_MODES = {
 /** FAL inference mode union. @category Extensions */
 export type FalInferenceMode = (typeof FAL_INFERENCE_MODES)[keyof typeof FAL_INFERENCE_MODES]
 
-/** Input for {@link "@executioncontextprotocol/fal.generate"}. @category Extensions */
+/** Input for {@link "@executioncontrolprotocol/fal.generate"}. @category Extensions */
 export const falGenerateInputSchema = z.object({
   /** FAL model endpoint id (e.g. `fal-ai/flux/schnell`). */
   endpoint: z.string().optional(),
@@ -21,7 +21,7 @@ export const falGenerateInputSchema = z.object({
   logs: z.boolean().optional(),
 })
 
-/** Output from {@link "@executioncontextprotocol/fal.generate"}. @category Extensions */
+/** Output from {@link "@executioncontrolprotocol/fal.generate"}. @category Extensions */
 export const falGenerateOutputSchema = z.object({
   /** Primary result payload from FAL (images, video urls, metadata, etc.). */
   data: z.unknown(),

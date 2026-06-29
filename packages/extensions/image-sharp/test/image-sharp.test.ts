@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import { globalRegistry } from "@executioncontextprotocol/core"
+import { globalRegistry } from "@executioncontrolprotocol/core"
 import {
   registerImageSharpExtension,
   imageSharpExtension,
@@ -25,7 +25,7 @@ const ctx = {
   store: { merge: async () => undefined, set: async () => undefined, replace: async () => undefined, append: async () => undefined },
   state: {},
   run: { id: "r1", input: {} },
-  step: { id: "s1", capabilityId: "@executioncontextprotocol/image-sharp.transform" },
+  step: { id: "s1", capabilityId: "@executioncontrolprotocol/image-sharp.transform" },
   logger: { info: () => undefined, warn: () => undefined, error: () => undefined },
 }
 
@@ -35,20 +35,20 @@ const bufferImage = {
   mediaType: "image/png",
 }
 
-describe("@executioncontextprotocol/image-sharp", () => {
+describe("@executioncontrolprotocol/image-sharp", () => {
   beforeEach(async () => {
     clearImageArtifactStore()
     await registerImageSharpExtension()
   })
 
   it("registers extension with supported runtimes", () => {
-    const ext = globalRegistry.getExtension("@executioncontextprotocol/image-sharp")
-    expect(ext?.supportedRuntimes).toEqual(["@executioncontextprotocol/node"])
+    const ext = globalRegistry.getExtension("@executioncontrolprotocol/image-sharp")
+    expect(ext?.supportedRuntimes).toEqual(["@executioncontrolprotocol/node"])
     expect(ext?.capabilities.length).toBeGreaterThanOrEqual(10)
   })
 
   it("inspect returns metadata and derived facts", async () => {
-    const out = (await capability("@executioncontextprotocol/image-sharp.inspect")(
+    const out = (await capability("@executioncontrolprotocol/image-sharp.inspect")(
       { image: bufferImage, include: ["metadata"] },
       ctx
     )) as { metadata: { width?: number }; derived: { orientation: string } }
@@ -57,7 +57,7 @@ describe("@executioncontextprotocol/image-sharp", () => {
   })
 
   it("transform resizes and returns artifact ref", async () => {
-    const out = (await capability("@executioncontextprotocol/image-sharp.transform")(
+    const out = (await capability("@executioncontrolprotocol/image-sharp.transform")(
       {
         image: bufferImage,
         pipeline: [{ op: "resize", width: 2, height: 2, fit: "fill" }],
@@ -71,7 +71,7 @@ describe("@executioncontextprotocol/image-sharp", () => {
   })
 
   it("derive produces named variants", async () => {
-    const out = (await capability("@executioncontextprotocol/image-sharp.derive")(
+    const out = (await capability("@executioncontrolprotocol/image-sharp.derive")(
       {
         image: bufferImage,
         variants: [
@@ -86,7 +86,7 @@ describe("@executioncontextprotocol/image-sharp", () => {
 
   it("denies remote URL when allowRemoteUrls is false", async () => {
     await expect(
-      capability("@executioncontextprotocol/image-sharp.transform")(
+      capability("@executioncontrolprotocol/image-sharp.transform")(
         {
           image: { kind: "url", url: "https://example.com/x.png" },
           pipeline: [],

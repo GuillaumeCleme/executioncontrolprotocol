@@ -1,12 +1,12 @@
 import { readFileSync, readdirSync } from "node:fs"
 import path from "node:path"
-import type { RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { RunResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 import {
   harnessRunContextSchema,
   runResultSchema,
   toHarnessRunContext,
   type HarnessRunContext,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import {
   evalCaseSchema,
   EVAL_SUITE_VALUES,
@@ -98,7 +98,7 @@ export function loadHarnessRunFixture(relativePath: string): HarnessRunContext {
   if (asRun.success) {
     return toHarnessRunContext(asRun.data as RunResult)
   }
-  throw new Error(`${full}: expected HarnessRunContext or @ecp.run.result document`)
+  throw new Error(`${full}: expected HarnessRunContext or @executioncontrolprotocol.run.result document`)
 }
 
 /**

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { clearMemorySecrets, memorySecretsStore, secretsExtension, setMemorySecret, setSecretsStore, resetSecretsStore, } from "../src/index.js";
-import { catalogExtension, getCatalogedExtension } from "@executioncontextprotocol/core";
-describe("@executioncontextprotocol/secrets extension", () => {
+import { catalogExtension, getCatalogedExtension } from "@executioncontrolprotocol/core";
+describe("@executioncontrolprotocol/secrets extension", () => {
     it("catalogs on load", () => {
         catalogExtension(secretsExtension);
-        expect(getCatalogedExtension("@executioncontextprotocol/secrets")).toBeDefined();
+        expect(getCatalogedExtension("@executioncontrolprotocol/secrets")).toBeDefined();
     });
     it("memory store round-trips", async () => {
         clearMemorySecrets();

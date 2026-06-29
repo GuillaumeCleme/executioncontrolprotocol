@@ -18,10 +18,10 @@ export const HARNESS_NANO_REPAIR = {
 const SHARED_CONTEXT = {
   includeEnvironmentDescriptor: true,
   includeEncodedDescriptor: false,
-  descriptorFormat: "@executioncontextprotocol/format-eql",
+  descriptorFormat: "@executioncontrolprotocol/format-eql",
 } as const
 
-/** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@executioncontextprotocol/evals`). */
+/** Harness task ids (match {@link EVAL_HARNESS_NAMES} in `@executioncontrolprotocol/evals`). */
 export const HARNESS_TASKS = {
   WORKFLOW_AUTHORING: "workflow-authoring",
   INTENT_CLASSIFICATION: "intent-classification",
@@ -32,18 +32,18 @@ export type HarnessTask = (typeof HARNESS_TASKS)[keyof typeof HARNESS_TASKS]
 
 const NANO_INTENT = {
   promptFixture: "intent-classification",
-  output: { schema: "@ecp.intent", format: "@executioncontextprotocol/format-eql", validate: true },
+  output: { schema: "@executioncontrolprotocol.intent", format: "@executioncontrolprotocol/format-eql", validate: true },
   context: { ...SHARED_CONTEXT },
   repair: HARNESS_NANO_REPAIR,
   trace: HARNESS_NANO_TRACE,
 } as const
 
 const NANO_WORKFLOW = {
-  output: { schema: "@ecp.workflow", format: "@executioncontextprotocol/format-eql", validate: true },
+  output: { schema: "@executioncontrolprotocol.workflow", format: "@executioncontrolprotocol/format-eql", validate: true },
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
-    runContextFormat: "@executioncontextprotocol/format-json",
+    runContextFormat: "@executioncontrolprotocol/format-json",
   },
   repair: HARNESS_NANO_REPAIR,
   trace: HARNESS_NANO_TRACE,
@@ -51,11 +51,11 @@ const NANO_WORKFLOW = {
 
 const NANO_ASSISTANT = {
   promptFixture: "workflow-assistant",
-  output: { schema: "@ecp.harness.reply", format: "@executioncontextprotocol/format-eql", validate: true },
+  output: { schema: "@executioncontrolprotocol.harness.reply", format: "@executioncontrolprotocol/format-eql", validate: true },
   context: {
     ...SHARED_CONTEXT,
     includeRunContext: true,
-    runContextFormat: "@executioncontextprotocol/format-json",
+    runContextFormat: "@executioncontrolprotocol/format-json",
   },
   repair: { ...HARNESS_NANO_REPAIR, safeReplyFallback: true },
   trace: HARNESS_NANO_TRACE,

@@ -2,7 +2,7 @@
 
 Legacy documentation note: this folder previously documented a v0.5 **Context YAML**
 example (“controller-specialist”). The repository has since moved to the v1 model:
-portable **workflows** (`@ecp.workflow`) executed inside configured **environments**.
+portable **workflows** (`@executioncontrolprotocol.workflow`) executed inside configured **environments**.
 
 If you are looking for current runnable examples, start here instead:
 

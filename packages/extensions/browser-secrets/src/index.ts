@@ -6,7 +6,7 @@ import {
   BROWSER_SECRETS_RESOLVER_ID,
   type EnvironmentConfigResolver,
   type LifecycleContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import {
   BrowserSecretsVault,
@@ -16,7 +16,7 @@ import {
 } from "./crypto/vault.js"
 import { BrowserSecretStore } from "./store.js"
 
-const EXT_ID = "@executioncontextprotocol/browser-secrets"
+const EXT_ID = "@executioncontrolprotocol/browser-secrets"
 
 let storage: VaultStorage = typeof localStorage !== "undefined" ? createLocalVaultStorage() : createMemoryVaultStorage()
 let vault = new BrowserSecretsVault(storage)
@@ -104,8 +104,8 @@ function attachBrowserSecretsResolver(ctx: LifecycleContext): void {
 }
 
 /** Browser encrypted secrets extension. @category BrowserSecrets */
-export const browserSecretsExtension = defineExtension("@executioncontextprotocol", "browser-secrets")
-  .withSupportedRuntimes(["@executioncontextprotocol/browser"])
+export const browserSecretsExtension = defineExtension("@executioncontrolprotocol", "browser-secrets")
+  .withSupportedRuntimes(["@executioncontrolprotocol/browser"])
   .withConfig(z.object({}))
   .withHooks([
     hook("environment:configuring", attachBrowserSecretsResolver),
@@ -117,7 +117,7 @@ export const browserSecretsExtension = defineExtension("@executioncontextprotoco
 
 catalogExtension(browserSecretsExtension)
 
-/** Register `@executioncontextprotocol/browser-secrets`. @category BrowserSecrets */
+/** Register `@executioncontrolprotocol/browser-secrets`. @category BrowserSecrets */
 export async function registerBrowserSecretsExtension(registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(browserSecretsExtension)

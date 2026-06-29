@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION, type StepNode, type WorkflowManifest } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION, type StepNode, type WorkflowManifest } from "@executioncontrolprotocol/types"
 import type { EqlWorkflowDoc } from "./ast.js"
 
 export function workflowFromEql(doc: EqlWorkflowDoc): WorkflowManifest {
@@ -17,7 +17,7 @@ export function workflowFromEql(doc: EqlWorkflowDoc): WorkflowManifest {
   })
 
   return {
-    schema: "@ecp.workflow",
+    schema: "@executioncontrolprotocol.workflow",
     version: LATEST_ECP_VERSION,
     workflow: {
       id: doc.workflowId,

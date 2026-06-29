@@ -1,8 +1,8 @@
 # ECP Overhaul — Implementation Report
 
-This document records what was built in the `@executioncontextprotocol/*` monorepo against [ecp-overhaul.md](../ecp-overhaul.md) (v1.0). It includes a **complete Fluent API reference**: every core builder class, runtime object, and public function with signatures and behavior.
+This document records what was built in the `@executioncontrolprotocol/*` monorepo against [ecp-overhaul.md](../ecp-overhaul.md) (v1.0). It includes a **complete Fluent API reference**: every core builder class, runtime object, and public function with signatures and behavior.
 
-**Last aligned with:** `@executioncontextprotocol/cli` Oclif migration (five commands: `compile`, `validate`, `describe`, `search`, `run`).
+**Last aligned with:** `@executioncontrolprotocol/cli` Oclif migration (five commands: `compile`, `validate`, `describe`, `search`, `run`).
 
 ---
 
@@ -11,8 +11,8 @@ This document records what was built in the `@executioncontextprotocol/*` monore
 1. [Executive summary](#1-executive-summary)
 2. [Fluent API — complete reference](#2-fluent-api--complete-reference)
 3. [Package inventory](#3-package-inventory)
-4. [`@executioncontextprotocol/types` — protocol types](#4-executioncontextprotocoltypes--protocol-types)
-5. [`@executioncontextprotocol/core` — non-fluent modules](#5-executioncontextprotocolcore--non-fluent-modules)
+4. [`@executioncontrolprotocol/types` — protocol types](#4-executioncontrolprotocoltypes--protocol-types)
+5. [`@executioncontrolprotocol/core` — non-fluent modules](#5-executioncontrolprotocolcore--non-fluent-modules)
 6. [Extensions, policies, MCP, CLI](#6-extensions-policies-mcp-cli)
 7. [Examples, tests, gaps](#7-examples-tests-gaps)
 8. [Architecture diagram](#8-architecture-diagram)
@@ -23,16 +23,16 @@ This document records what was built in the `@executioncontextprotocol/*` monore
 
 | Layer | Status | Package / path |
 | ----- | ------ | -------------- |
-| Definitions | Done | `@executioncontextprotocol/core` — `defineExtension`, `defineRuntime`, `definePolicy`, `capability`, `hook` |
+| Definitions | Done | `@executioncontrolprotocol/core` — `defineExtension`, `defineRuntime`, `definePolicy`, `capability`, `hook` |
 | Bindings (authoring) | Done | `workflow`, `step`, `extension`, `runtime`, `policy` |
 | Value helpers | Done | `ref`, `state`, `env`, `expr` |
 | Flow control | Done | `parallel`, `branch`, `loop` |
 | Environment | Done | `Environment`, `environment()` |
-| Workflow manifests | Done | Portable `@ecp.workflow` JSON |
-| Local execution | Done | `@executioncontextprotocol/local` / `LocalRuntimeExecutor` |
+| Workflow manifests | Done | Portable `@executioncontrolprotocol.workflow` JSON |
+| Local execution | Done | `@executioncontrolprotocol/local` / `LocalRuntimeExecutor` |
 | Compile TS/JS | Done | `compileWorkflowSource`, esbuild |
 | Describe / search | Done (basic) | Environment catalog + substring search |
-| MCP adapter | Package only | `@executioncontextprotocol/mcp` — not on CLI |
+| MCP adapter | Package only | `@executioncontrolprotocol/mcp` — not on CLI |
 | CLI | Partial vs spec §14 | Oclif; no `mcp serve`, no `config` |
 | Legacy v0.5 | Archived | `archive/legacy-v0.5/` |
 
@@ -42,7 +42,7 @@ This document records what was built in the `@executioncontextprotocol/*` monore
 
 ## 2. Fluent API — complete reference
 
-All symbols below are exported from `@executioncontextprotocol/core` unless noted. Browser entry [`packages/core/src/browser.ts`](../packages/core/src/browser.ts) exports a subset (no `Environment`, `Registry`, loaders, or `environment()`).
+All symbols below are exported from `@executioncontrolprotocol/core` unless noted. Browser entry [`packages/core/src/browser.ts`](../packages/core/src/browser.ts) exports a subset (no `Environment`, `Registry`, loaders, or `environment()`).
 
 ### 2.1 Module-level factory functions
 
@@ -53,7 +53,7 @@ All symbols below are exported from `@executioncontextprotocol/core` unless note
 | `extension(ref: NamespacedId \| ExtensionDefinition \| string, label?: string)` | `ExtensionBindingBuilder` | Bind an extension in an environment. |
 | `runtime(ref: NamespacedId \| RuntimeDefinition \| string, label?: string)` | `RuntimeBindingBuilder` | Bind a runtime in an environment. |
 | `policy(ref: NamespacedId \| PolicyDefinition \| string, label?: string)` | `PolicyBindingBuilder` | Bind a policy in an environment. |
-| `environment(id: string, label?: string)` | `Environment` | Create an environment (defaults to `@executioncontextprotocol/local`). |
+| `environment(id: string, label?: string)` | `Environment` | Create an environment (defaults to `@executioncontrolprotocol/local`). |
 | `defineExtension(namespace: string, name: string)` | `ExtensionDefinitionBuilder` | Register-time extension definition. |
 | `defineRuntime(namespace: string, name: string)` | `RuntimeDefinitionBuilder` | Register-time runtime definition. |
 | `definePolicy(namespace: string, name: string)` | `PolicyDefinitionBuilder` | Register-time policy definition. |
@@ -66,8 +66,8 @@ All symbols below are exported from `@executioncontextprotocol/core` unless note
 | `ref(path: string, options?: RefOptions)` | `RefValue` | Read-only reference to committed state (`state.*`). |
 | `state<T>(path: string, options?: StateOptions)` | `StoreStateHandle<T> & StateValue` | Mutable state handle for workflows / store. |
 | `env(name: string, options?: EnvOptions)` | `EnvValue` | Reference to environment config key (`$env`). |
-| `registerTestExtension()` | `void` | Register `@executioncontextprotocol/test` + `@executioncontextprotocol/test.echo` on `globalRegistry`. |
-| `registerLocalRuntime()` | `void` | Register `@executioncontextprotocol/local` on `globalRegistry`. |
+| `registerTestExtension()` | `void` | Register `@executioncontrolprotocol/test` + `@executioncontrolprotocol/test.echo` on `globalRegistry`. |
+| `registerLocalRuntime()` | `void` | Register `@executioncontrolprotocol/local` on `globalRegistry`. |
 
 `NodeInput` = `StepBuilder | WorkflowNode`.
 
@@ -81,7 +81,7 @@ All symbols below are exported from `@executioncontextprotocol/core` unless note
 | `run` | `(nodes: NodeInput[])` | `this` | Append sequential steps or flow nodes. |
 | `id` | `(id: string)` | `this` | Override workflow id in manifest (default: slug of label). |
 | `compile` | `()` | `WorkflowManifest` | Alias for `toManifest()`. |
-| `toManifest` | `()` | `WorkflowManifest` | Build `@ecp.workflow` document (no validation). |
+| `toManifest` | `()` | `WorkflowManifest` | Build `@executioncontrolprotocol.workflow` document (no validation). |
 | `validate` | `(descriptor?: EnvironmentDescriptor)` | `ValidationResult` | Validate manifest; optional environment descriptor. |
 | `toGraph` | `()` | `{ nodes: WorkflowNode[]; label: string }` | Lightweight graph view for visualization. |
 
@@ -266,7 +266,7 @@ Returns object with `path`, `$state`, and optional `__brand` for TypeScript.
 | `withRuntime` | `(binding: RuntimeBindingBuilder)` | `this` | Set runtime binding. |
 | `withExtensions` | `(bindings: ExtensionBindingBuilder[])` | `this` | Set extension bindings (order = array index). |
 | `withPolicies` | `(bindings: PolicyBindingBuilder[])` | `this` | Set policy bindings. |
-| `compile` | `()` | `EnvironmentManifest` | Serialize `@ecp.environment` manifest. |
+| `compile` | `()` | `EnvironmentManifest` | Serialize `@executioncontrolprotocol.environment` manifest. |
 | `validate` | `(workflow?: WorkflowManifest)` | `ValidationResult` | Validate workflow vs environment; empty ok if no workflow. |
 | `describe` | `(query?: DescribeQuery)` | `Promise<EnvironmentDescriptor>` | Catalog capabilities, extensions, policies, runtime features. |
 | `search` | `(query: string, options?: SearchOptions)` | `Promise<SearchResult>` | Fuzzy/substring search over capabilities. |
@@ -390,30 +390,30 @@ Type alias: `ConfigSchema` = `z.ZodType<Record<string, unknown>>`.
 
 | Export | Value | Description |
 | ------ | ----- | ----------- |
-| `LOCAL_RUNTIME_ID` | `@executioncontextprotocol/local` | Default local runtime id. |
+| `LOCAL_RUNTIME_ID` | `@executioncontrolprotocol/local` | Default local runtime id. |
 | `localRuntimeDefinition` | `RuntimeDefinition` | Pre-built local runtime with `LocalRuntimeExecutor`. |
-| `LATEST_ECP_VERSION` | `"1.0"` | Re-exported from `@executioncontextprotocol/types`. |
+| `LATEST_ECP_VERSION` | `"1.0"` | Re-exported from `@executioncontrolprotocol/types`. |
 
 ---
 
 ## 3. Package inventory
 
 ```text
-packages/types/           @executioncontextprotocol/types
-packages/core/            @executioncontextprotocol/core (+ browser.ts)
-packages/mcp/             @executioncontextprotocol/mcp
-packages/cli/             @executioncontextprotocol/cli (Oclif)
-packages/policies/        @executioncontextprotocol/policies
+packages/types/           @executioncontrolprotocol/types
+packages/core/            @executioncontrolprotocol/core (+ browser.ts)
+packages/mcp/             @executioncontrolprotocol/mcp
+packages/cli/             @executioncontrolprotocol/cli (Oclif)
+packages/policies/        @executioncontrolprotocol/policies
 packages/extensions/
   memory/ openai/ ollama/ slack/ storage/ telemetry/ index/
-packages/runtimes/temporal/ @executioncontextprotocol/runtime-temporal (stub)
+packages/runtimes/temporal/ @executioncontrolprotocol/runtime-temporal (stub)
 examples/01-echo, 02-weekly-brief, 04-compile-and-run
 archive/legacy-v0.5/      v0.5 Oclif Context CLI
 ```
 
 ---
 
-## 4. `@executioncontextprotocol/types` — protocol types
+## 4. `@executioncontrolprotocol/types` — protocol types
 
 **Entry:** [`packages/types/src/index.ts`](../packages/types/src/index.ts)
 
@@ -488,7 +488,7 @@ archive/legacy-v0.5/      v0.5 Oclif Context CLI
 
 ---
 
-## 5. `@executioncontextprotocol/core` — non-fluent modules
+## 5. `@executioncontrolprotocol/core` — non-fluent modules
 
 ### Compile
 
@@ -561,28 +561,28 @@ Types: `CompileWorkflowResult`, `CompileWorkflowSourceOptions`, `CompileDiagnost
 
 ## 6. Extensions, policies, MCP, CLI
 
-### `@executioncontextprotocol/policies`
+### `@executioncontrolprotocol/policies`
 
 | Export | ID |
 | ------ | -- |
-| `budgetPolicy` | `@executioncontextprotocol/budget` |
-| `approvalPolicy` | `@executioncontextprotocol/approval` |
-| `stateControlPolicy` | `@executioncontextprotocol/state-control` |
+| `budgetPolicy` | `@executioncontrolprotocol/budget` |
+| `approvalPolicy` | `@executioncontrolprotocol/approval` |
+| `stateControlPolicy` | `@executioncontrolprotocol/state-control` |
 | `registerStandardPolicies()` | Registers all on `globalRegistry` |
 
 ### Extensions
 
 | Package | Capabilities | `register*Extension()` |
 | ------- | ------------ | ---------------------- |
-| `@executioncontextprotocol/extension-memory` | `search`, `remember` | `registerMemoryExtension` |
-| `@executioncontextprotocol/extension-openai` | `generate` | `registerOpenaiExtension` |
-| `@executioncontextprotocol/extension-ollama` | `generate` | `registerOllamaExtension` |
-| `@executioncontextprotocol/extension-slack` | `send` (mock) | `registerSlackExtension` |
-| `@executioncontextprotocol/extension-storage` | (none) | `registerStorageExtension` |
-| `@executioncontextprotocol/extension-telemetry` | hooks only | `registerTelemetryExtension` |
-| `@executioncontextprotocol/extensions` | — | `registerAllExtensions()` |
+| `@executioncontrolprotocol/extension-memory` | `search`, `remember` | `registerMemoryExtension` |
+| `@executioncontrolprotocol/extension-openai` | `generate` | `registerOpenaiExtension` |
+| `@executioncontrolprotocol/extension-ollama` | `generate` | `registerOllamaExtension` |
+| `@executioncontrolprotocol/extension-slack` | `send` (mock) | `registerSlackExtension` |
+| `@executioncontrolprotocol/extension-storage` | (none) | `registerStorageExtension` |
+| `@executioncontrolprotocol/extension-telemetry` | hooks only | `registerTelemetryExtension` |
+| `@executioncontrolprotocol/extensions` | — | `registerAllExtensions()` |
 
-### `@executioncontextprotocol/mcp`
+### `@executioncontrolprotocol/mcp`
 
 | Function | Description |
 | -------- | ----------- |
@@ -590,7 +590,7 @@ Types: `CompileWorkflowResult`, `CompileWorkflowSourceOptions`, `CompileDiagnost
 | `serveStdio(options)` | Stdio transport |
 | `serveHttp(options)` | HTTP placeholder |
 
-### `@executioncontextprotocol/cli` (Oclif)
+### `@executioncontrolprotocol/cli` (Oclif)
 
 | Command | Class | Key flags / args |
 | ------- | ----- | ---------------- |
@@ -610,7 +610,7 @@ Lib: `commandErrorMessage`, `runWithCommandError`, `EnvModuleCommand`, `Workflow
 
 | Path | Status |
 | ---- | ------ |
-| `examples/01-echo/` | Runnable (`@executioncontextprotocol/test.echo`) |
+| `examples/01-echo/` | Runnable (`@executioncontrolprotocol/test.echo`) |
 | `examples/02-weekly-brief/` | Multi-step; needs extensions in env |
 | `examples/04-compile-and-run/` | README |
 | Legacy README folders | Not migrated |
@@ -632,9 +632,9 @@ See [ecp-assessment-verification.md](ecp-assessment-verification.md) for sprint 
 | ---- | ------ |
 | `ecp mcp serve` CLI | Deferred |
 | `ecp config` / trace / graph | Archived only |
-| `@executioncontextprotocol/citations` policy | Not implemented |
-| `@executioncontextprotocol/temporal` executor | Stub constant only |
-| `@executioncontextprotocol/storage` capabilities | `read` / `write` in-memory stub |
+| `@executioncontrolprotocol/citations` policy | Not implemented |
+| `@executioncontrolprotocol/temporal` executor | Stub constant only |
+| `@executioncontrolprotocol/storage` capabilities | `read` / `write` in-memory stub |
 | Semantic search | Fuzzy token scoring only |
 | `ecp.config.yaml` requirement | Not in core |
 | JSON Schema artifacts in types | Generated via `npm run generate:schema` → `packages/types/dist/schemas/` |
@@ -721,7 +721,7 @@ import {
   loadWorkflowFile,
   loadEnvironmentModule,
   validateWorkflow,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 ```
 
 ```bash

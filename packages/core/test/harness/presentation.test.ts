@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { HarnessOperationFeedback } from "@executioncontextprotocol/types"
+import type { HarnessOperationFeedback } from "@executioncontrolprotocol/types"
 import {
   formatFeedbackForModel,
   formatStructuredRepairForModel,
@@ -47,7 +47,7 @@ describe("isRepairTemplateEcho", () => {
   })
 
   it("passes real documents", () => {
-    expect(isRepairTemplateEcho('{"schema":"@ecp.workflow"}')).toBe(false)
+    expect(isRepairTemplateEcho('{"schema":"@executioncontrolprotocol.workflow"}')).toBe(false)
   })
 })
 
@@ -58,6 +58,6 @@ describe("isRepairFeedbackEcho", () => {
   })
 
   it("does not flag a genuine JSON document", () => {
-    expect(isRepairFeedbackEcho('{"schema":"@ecp.workflow","version":"1.0"}')).toBe(false)
+    expect(isRepairFeedbackEcho('{"schema":"@executioncontrolprotocol.workflow","version":"1.0"}')).toBe(false)
   })
 })

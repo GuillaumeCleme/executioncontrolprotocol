@@ -1,5 +1,5 @@
-import type { EnvironmentManifest } from "@executioncontextprotocol/types"
-import type { EcpFormatOptions } from "@executioncontextprotocol/types"
+import type { EnvironmentManifest } from "@executioncontrolprotocol/types"
+import type { EcpFormatOptions } from "@executioncontrolprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
 import { EqlWriter, formatLiteral } from "./writer.js"
 
@@ -21,7 +21,7 @@ export function encodeEnvironmentToEql(
 ): string {
   const writer = new EqlWriter(options)
   if (includeHeader) {
-    writer.writeln(`ECP @ecp.environment ${manifest.version}`)
+    writer.writeln(`ECP @executioncontrolprotocol.environment ${manifest.version}`)
   }
   const envLine = manifest.environment.label
     ? `ENVIRONMENT ${manifest.environment.id} ${formatLiteral(manifest.environment.label, writer.quote)}`

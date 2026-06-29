@@ -7,7 +7,7 @@ import {
   setBrowserSecret,
   setBrowserSecretsStorage,
   setupBrowserVault,
-} from "@executioncontextprotocol/browser-secrets"
+} from "@executioncontrolprotocol/browser-secrets"
 
 describe("browser secret serialization", () => {
   beforeEach(() => {
@@ -19,8 +19,8 @@ describe("browser secret serialization", () => {
     await setupBrowserVault("test-passphrase")
     await setBrowserSecret("API_KEY", "super-browser-secret")
     const env = (await createTestEnvironment("browser-secret-test")).withExtensions([
-      extension("@executioncontextprotocol/browser-secrets").with({}),
-      extension("@executioncontextprotocol/test").with({ token: browser("API_KEY") }),
+      extension("@executioncontrolprotocol/browser-secrets").with({}),
+      extension("@executioncontrolprotocol/test").with({ token: browser("API_KEY") }),
     ])
     await env.init()
     const manifest = env.compile()

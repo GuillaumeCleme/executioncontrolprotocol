@@ -12,7 +12,7 @@ export const ECP_INTENT_VALUES = {
 export type EcpIntentValue = (typeof ECP_INTENT_VALUES)[keyof typeof ECP_INTENT_VALUES]
 
 /** Intent classification document schema id. @category Harness */
-export const ECP_INTENT_SCHEMA = "@ecp.intent" as const
+export const ECP_INTENT_SCHEMA = "@executioncontrolprotocol.intent" as const
 
 /** Classified user intent. @category Harness */
 export const ecpIntentSchema = z.object({

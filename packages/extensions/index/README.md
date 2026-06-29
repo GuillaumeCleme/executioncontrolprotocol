@@ -1,10 +1,10 @@
-# @executioncontextprotocol/extensions
+# @executioncontrolprotocol/extensions
 
 Optional convenience bundle that registers the **host-agnostic, dependency-light**
 first-party extensions in one call.
 
 ```ts
-import { registerAllExtensions } from "@executioncontextprotocol/extensions"
+import { registerAllExtensions } from "@executioncontrolprotocol/extensions"
 
 await registerAllExtensions()
 ```
@@ -13,16 +13,16 @@ await registerAllExtensions()
 
 | Extension | Purpose |
 | --------- | ------- |
-| `@executioncontextprotocol/memory` | Memory capabilities + lifecycle hooks |
-| `@executioncontextprotocol/storage` | Key/value storage capabilities |
-| `@executioncontextprotocol/slack` | Slack send capability |
-| `@executioncontextprotocol/telemetry` | Lifecycle telemetry hooks |
-| `@executioncontextprotocol/openai` | OpenAI model provider |
-| `@executioncontextprotocol/ollama` | Local Ollama model provider |
-| `@executioncontextprotocol/format-toon` | TOON encode/decode |
-| `@executioncontextprotocol/format-eql` | EQL encode/decode (harness output) |
-| `@executioncontextprotocol/format-mermaid` | Mermaid encode (workflow graph) |
-| `@executioncontextprotocol/demo` | Offline deterministic demo provider/ops |
+| `@executioncontrolprotocol/memory` | Memory capabilities + lifecycle hooks |
+| `@executioncontrolprotocol/storage` | Key/value storage capabilities |
+| `@executioncontrolprotocol/slack` | Slack send capability |
+| `@executioncontrolprotocol/telemetry` | Lifecycle telemetry hooks |
+| `@executioncontrolprotocol/openai` | OpenAI model provider |
+| `@executioncontrolprotocol/ollama` | Local Ollama model provider |
+| `@executioncontrolprotocol/format-toon` | TOON encode/decode |
+| `@executioncontrolprotocol/format-eql` | EQL encode/decode (harness output) |
+| `@executioncontrolprotocol/format-mermaid` | Mermaid encode (workflow graph) |
+| `@executioncontrolprotocol/demo` | Offline deterministic demo provider/ops |
 
 The exact set is exported as `BUNDLED_EXTENSION_IDS`.
 
@@ -33,11 +33,11 @@ host-specific or require credentials. Register them explicitly when needed:
 
 | Extension | Why excluded |
 | --------- | ------------ |
-| `@executioncontextprotocol/chrome-ai` | Browser-only (Chrome on-device `LanguageModel` API) |
-| `@executioncontextprotocol/claude` | Requires Anthropic provider configuration/credentials |
+| `@executioncontrolprotocol/chrome-ai` | Browser-only (Chrome on-device `LanguageModel` API) |
+| `@executioncontrolprotocol/claude` | Requires Anthropic provider configuration/credentials |
 
 ```ts
-import { registerChromeAiExtension } from "@executioncontextprotocol/chrome-ai"
+import { registerChromeAiExtension } from "@executioncontrolprotocol/chrome-ai"
 await registerChromeAiExtension()
 ```
 

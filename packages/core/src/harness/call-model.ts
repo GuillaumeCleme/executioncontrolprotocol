@@ -4,7 +4,7 @@ import {
   modelGenerateOutputSchema,
   type CapabilityId,
   type ModelGenerateInput,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { CapabilityContext } from "../runtime/context.js"
 import { inferResponseFormatFromFormatter } from "./format-resolve.js"
 

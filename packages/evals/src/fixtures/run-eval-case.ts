@@ -1,6 +1,6 @@
-import type { Ecp, Environment } from "@executioncontextprotocol/core"
-import { formatRepairLoopTimingReport } from "@executioncontextprotocol/core"
-import type { HarnessCapabilityId, HarnessInvokeResult } from "@executioncontextprotocol/types"
+import type { Ecp, Environment } from "@executioncontrolprotocol/core"
+import { formatRepairLoopTimingReport } from "@executioncontrolprotocol/core"
+import type { HarnessCapabilityId, HarnessInvokeResult } from "@executioncontrolprotocol/types"
 import {
   EVAL_HARNESS_NAMES,
   isFlowEvalCase,

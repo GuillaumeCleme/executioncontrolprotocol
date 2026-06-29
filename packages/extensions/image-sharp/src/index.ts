@@ -5,7 +5,7 @@ import {
   catalogExtension,
   type Registry,
   type CapabilityDefinition,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import {
   transformInputSchema,
@@ -23,8 +23,8 @@ import {
 } from "./schemas.js"
 import { runPipeline, runInspect } from "./sharp-runner.js"
 
-const EXT_ID = "@executioncontextprotocol/image-sharp"
-const NODE_RUNTIME_ID = "@executioncontextprotocol/node" as const
+const EXT_ID = "@executioncontrolprotocol/image-sharp"
+const NODE_RUNTIME_ID = "@executioncontrolprotocol/node" as const
 
 function caps(): CapabilityDefinition[] {
   return [
@@ -211,8 +211,8 @@ function caps(): CapabilityDefinition[] {
   ]
 }
 
-/** @executioncontextprotocol/image-sharp extension. @category Extensions */
-export const imageSharpExtension = defineExtension("@executioncontextprotocol", "image-sharp")
+/** @executioncontrolprotocol/image-sharp extension. @category Extensions */
+export const imageSharpExtension = defineExtension("@executioncontrolprotocol", "image-sharp")
   .withSupportedRuntimes([NODE_RUNTIME_ID])
   .withConfig({
     storage: z
@@ -254,7 +254,7 @@ export const imageSharpExtension = defineExtension("@executioncontextprotocol", 
 
 catalogExtension(imageSharpExtension)
 
-/** Register @executioncontextprotocol/image-sharp. */
+/** Register @executioncontrolprotocol/image-sharp. */
 export async function registerImageSharpExtension(registry: Registry = globalRegistry): Promise<void> {
   if (!registry.getExtension(EXT_ID)) {
     await registry.registerExtension(imageSharpExtension)

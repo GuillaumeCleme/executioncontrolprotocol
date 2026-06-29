@@ -58,7 +58,7 @@ export interface EcpDecodeOptions extends Record<string, unknown> {
 
 /** Encode operation result. @category Encoding */
 export interface EncodeResult<T = unknown> {
-  schema: "@ecp.encode.result"
+  schema: "@executioncontrolprotocol.encode.result"
   version: EcpVersion
   success: boolean
   format: string
@@ -72,7 +72,7 @@ export interface EncodeResult<T = unknown> {
 
 /** Decode operation result. @category Encoding */
 export interface DecodeResult<T = unknown> {
-  schema: "@ecp.decode.result"
+  schema: "@executioncontrolprotocol.decode.result"
   version: EcpVersion
   success: boolean
   targetSchema?: EcpSchema

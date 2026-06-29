@@ -1,13 +1,13 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontextprotocol/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import { validateEnvironmentWithWorkflow } from "../src/validate/environment.js"
-import type { EnvironmentDescriptor, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, WorkflowManifest } from "@executioncontrolprotocol/types"
 
-const nodeOnlyExtension = defineExtension("@executioncontextprotocol", "test-node-only")
-  .withSupportedRuntimes(["@executioncontextprotocol/node"])
+const nodeOnlyExtension = defineExtension("@executioncontrolprotocol", "test-node-only")
+  .withSupportedRuntimes(["@executioncontrolprotocol/node"])
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/test-node-only", "echo")
+    capabilityFor("@executioncontrolprotocol/test-node-only", "echo")
       .withInput(z.object({}))
       .withOutput(z.object({}))
       .withHandler(async () => ({})),
@@ -17,36 +17,36 @@ const nodeOnlyExtension = defineExtension("@executioncontextprotocol", "test-nod
 catalogExtension(nodeOnlyExtension)
 
 const workflow: WorkflowManifest = {
-  schema: "@ecp.workflow",
+  schema: "@executioncontrolprotocol.workflow",
   version: "1.0",
   workflow: { id: "t", label: "t" },
   run: [
     {
       type: "step",
       id: "s1",
-      capability: "@executioncontextprotocol/test-node-only.echo",
+      capability: "@executioncontrolprotocol/test-node-only.echo",
       as: "out",
     },
   ],
 }
 
 const descriptor = (runtimeId: string): EnvironmentDescriptor => ({
-  schema: "@ecp.environment.describe",
+  schema: "@executioncontrolprotocol.environment.describe",
   version: "1.0",
   environment: { id: "test" },
   runtime: { id: runtimeId, features: {} },
   extensions: [
     {
-      id: "@executioncontextprotocol/test-node-only",
+      id: "@executioncontrolprotocol/test-node-only",
       order: 0,
-      capabilities: ["@executioncontextprotocol/test-node-only.echo"],
-      supportedRuntimes: ["@executioncontextprotocol/node"],
+      capabilities: ["@executioncontrolprotocol/test-node-only.echo"],
+      supportedRuntimes: ["@executioncontrolprotocol/node"],
     },
   ],
   capabilities: [
     {
-      id: "@executioncontextprotocol/test-node-only.echo",
-      extension: "@executioncontextprotocol/test-node-only",
+      id: "@executioncontrolprotocol/test-node-only.echo",
+      extension: "@executioncontrolprotocol/test-node-only",
     },
   ],
   policies: [],
@@ -54,15 +54,15 @@ const descriptor = (runtimeId: string): EnvironmentDescriptor => ({
 
 describe("runtime compatibility", () => {
   beforeEach(async () => {
-    if (!globalRegistry.getExtension("@executioncontextprotocol/test-node-only")) {
+    if (!globalRegistry.getExtension("@executioncontrolprotocol/test-node-only")) {
       await globalRegistry.registerExtension(nodeOnlyExtension)
     }
   })
 
   it("denies node-only extension on browser runtime", () => {
-    const result = validateEnvironmentWithWorkflow(workflow, descriptor("@executioncontextprotocol/browser"), {
-      runtime: { id: "@executioncontextprotocol/browser", config: {} },
-      extensions: [{ id: "@executioncontextprotocol/test-node-only", config: {}, order: 0 }],
+    const result = validateEnvironmentWithWorkflow(workflow, descriptor("@executioncontrolprotocol/browser"), {
+      runtime: { id: "@executioncontrolprotocol/browser", config: {} },
+      extensions: [{ id: "@executioncontrolprotocol/test-node-only", config: {}, order: 0 }],
       policies: [],
       harnesses: [],
     })
@@ -71,9 +71,9 @@ describe("runtime compatibility", () => {
   })
 
   it("allows node-only extension on node runtime", () => {
-    const result = validateEnvironmentWithWorkflow(workflow, descriptor("@executioncontextprotocol/node"), {
-      runtime: { id: "@executioncontextprotocol/node", config: {} },
-      extensions: [{ id: "@executioncontextprotocol/test-node-only", config: {}, order: 0 }],
+    const result = validateEnvironmentWithWorkflow(workflow, descriptor("@executioncontrolprotocol/node"), {
+      runtime: { id: "@executioncontrolprotocol/node", config: {} },
+      extensions: [{ id: "@executioncontrolprotocol/test-node-only", config: {}, order: 0 }],
       policies: [],
       harnesses: [],
     })

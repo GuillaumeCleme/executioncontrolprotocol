@@ -19,7 +19,7 @@ import {
   runModelRepairLoop,
   stripMarkdownCodeFences,
   summarizeEnvironmentDescriptor,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_CORE_FORMATTER_IDS,
   ECP_HARNESS_REPLY_SCHEMA,
@@ -34,7 +34,7 @@ import {
   type HarnessRunContext,
   type ValidationResult,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
@@ -45,7 +45,7 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-eql"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-eql"),
       includeRunContext: z.boolean().default(true),
       runContextFormat: z.string().default(ECP_CORE_FORMATTER_IDS.JSON),
     })
@@ -53,7 +53,7 @@ const harnessConfigSchema = z.object({
   output: z
     .object({
       schema: z.string().default(ECP_HARNESS_REPLY_SCHEMA),
-      format: z.string().default("@executioncontextprotocol/format-eql"),
+      format: z.string().default("@executioncontrolprotocol/format-eql"),
       validate: z.boolean().default(true),
     })
     .default({}),
@@ -96,7 +96,7 @@ function formatReplyAsEql(reply: HarnessReply): string {
  * Unified ECP assistant harness (workflow Q&A, FAQ, environment help).
  * @category Harness
  */
-export const evalsWorkflowAssistantHarness = defineHarness("@executioncontextprotocol", "evals-workflow-assistant")
+export const evalsWorkflowAssistantHarness = defineHarness("@executioncontrolprotocol", "evals-workflow-assistant")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -104,7 +104,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontextpro
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
-    const outputIsEql = format === "@executioncontextprotocol/format-eql" || format.endsWith("/format-eql")
+    const outputIsEql = format === "@executioncontrolprotocol/format-eql" || format.endsWith("/format-eql")
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
     const system = config.system ?? buildSystemPrompt(promptFixtureId)
@@ -286,7 +286,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontextpro
 
 function decodedValidationStub(valid = true): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],
@@ -294,7 +294,7 @@ function decodedValidationStub(valid = true): ValidationResult {
   }
 }
 
-/** Assistant task handler (invoked by `@executioncontextprotocol/harness-browser-nano`). @category Harness */
+/** Assistant task handler (invoked by `@executioncontrolprotocol/harness-browser-nano`). @category Harness */
 export async function invokeWorkflowAssistant(
   input: { message: string; runContext?: unknown; model?: string },
   ctx: HarnessCapabilityContext<Record<string, unknown>>

@@ -1,4 +1,4 @@
-import { catalogExtension, globalRegistry } from "@executioncontextprotocol/core"
+import { catalogExtension, globalRegistry } from "@executioncontrolprotocol/core"
 import { formatToonExtension } from "./extension.js"
 
 catalogExtension(formatToonExtension)
@@ -27,7 +27,7 @@ export { getEcpSchema } from "./schema.js"
 export async function registerFormatToonExtension(
   registry = globalRegistry
 ): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/format-toon")) {
+  if (!registry.getExtension("@executioncontrolprotocol/format-toon")) {
     await registry.registerExtension(formatToonExtension)
   }
 }

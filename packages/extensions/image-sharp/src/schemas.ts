@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { imageRefSchema, IMAGE_OUTPUT_FORMATS } from "@executioncontextprotocol/types"
+import { imageRefSchema, IMAGE_OUTPUT_FORMATS } from "@executioncontrolprotocol/types"
 
 /** Color input for Sharp operations. @category Extensions */
 export const colorInputSchema = z.union([

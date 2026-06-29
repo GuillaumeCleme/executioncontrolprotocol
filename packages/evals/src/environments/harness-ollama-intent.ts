@@ -4,12 +4,12 @@ import {
   runtime,
   registerCoreFormats,
   registerTestExtension,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import { registerBrowserNanoHarnesses, BROWSER_NANO_HARNESS_ID } from "../harness-bindings.js"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
-import { registerOllamaExtension } from "@executioncontextprotocol/extension-ollama"
-import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
-import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
+import { registerOllamaExtension } from "@executioncontrolprotocol/extension-ollama"
+import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
+import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
 import { INTENT_EVAL_HARNESS_CONFIG } from "../harness-eval-config.js"
 import {
   evalOperationsExtensionBindings,

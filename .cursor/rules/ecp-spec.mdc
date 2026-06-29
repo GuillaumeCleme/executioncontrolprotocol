@@ -7,9 +7,9 @@ alwaysApply: true
 # ECP Specification Rules
 
 - [ecp-overhaul.md](ecp-overhaul.md) is the implementation source of truth.
-- Types live in `packages/types/src` (`@executioncontextprotocol/types`).
-- Fluent API and runtime live in `packages/core/src` (`@executioncontextprotocol/core`).
-- Workflow manifests use `schema: "@ecp.workflow"` and `version: "1.0"`.
+- Types live in `packages/types/src` (`@executioncontrolprotocol/types`).
+- Fluent API and runtime live in `packages/core/src` (`@executioncontrolprotocol/core`).
+- Workflow manifests use `schema: "@executioncontrolprotocol.workflow"` and `version: "1.0"`.
 - Workflows are portable; environments hold runtime/extension/policy bindings.
 - Use Zod for config schemas and manifest validation where applicable.
 - Do not reintroduce YAML `ECPContext` / `spec.yaml` without an explicit migration request.

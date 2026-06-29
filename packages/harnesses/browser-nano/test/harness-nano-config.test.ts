@@ -17,25 +17,25 @@ describe("HARNESS_TASKS", () => {
 })
 
 describe("getHarnessNanoConfig", () => {
-  it("maps workflow authoring to the @ecp.workflow output schema", () => {
+  it("maps workflow authoring to the @executioncontrolprotocol.workflow output schema", () => {
     const config = getHarnessNanoConfig(HARNESS_TASKS.WORKFLOW_AUTHORING)
-    expect((config.output as { schema: string }).schema).toBe("@ecp.workflow")
+    expect((config.output as { schema: string }).schema).toBe("@executioncontrolprotocol.workflow")
   })
 
-  it("maps intent classification to the @ecp.intent output schema", () => {
+  it("maps intent classification to the @executioncontrolprotocol.intent output schema", () => {
     const config = getHarnessNanoConfig(HARNESS_TASKS.INTENT_CLASSIFICATION)
-    expect((config.output as { schema: string }).schema).toBe("@ecp.intent")
+    expect((config.output as { schema: string }).schema).toBe("@executioncontrolprotocol.intent")
   })
 
-  it("maps the assistant task to the @ecp.harness.reply output schema", () => {
+  it("maps the assistant task to the @executioncontrolprotocol.harness.reply output schema", () => {
     const config = getHarnessNanoConfig(HARNESS_TASKS.WORKFLOW_ASSISTANT)
-    expect((config.output as { schema: string }).schema).toBe("@ecp.harness.reply")
+    expect((config.output as { schema: string }).schema).toBe("@executioncontrolprotocol.harness.reply")
   })
 
   it("uses EQL output format for every task", () => {
     for (const task of Object.values(HARNESS_TASKS)) {
       const config = getHarnessNanoConfig(task)
-      expect((config.output as { format: string }).format).toBe("@executioncontextprotocol/format-eql")
+      expect((config.output as { format: string }).format).toBe("@executioncontrolprotocol/format-eql")
     }
   })
 

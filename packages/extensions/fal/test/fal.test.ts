@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest"
-import { globalRegistry } from "@executioncontextprotocol/core"
+import { globalRegistry } from "@executioncontrolprotocol/core"
 import { registerFalExtension, falExtension } from "../src/index.js"
 import { resolveFalApiKey } from "../src/resolve-api-key.js"
 
@@ -28,7 +28,7 @@ const ctx = {
   usage: { increment: vi.fn() },
 }
 
-describe("@executioncontextprotocol/fal", () => {
+describe("@executioncontrolprotocol/fal", () => {
   beforeEach(async () => {
     await registerFalExtension()
     mockRun.mockReset()
@@ -41,10 +41,10 @@ describe("@executioncontextprotocol/fal", () => {
   })
 
   it("registers the extension and exposes generate", () => {
-    const ext = globalRegistry.getExtension("@executioncontextprotocol/fal")
+    const ext = globalRegistry.getExtension("@executioncontrolprotocol/fal")
     expect(ext).toBe(falExtension)
     expect(ext?.capabilities.map((c) => c.id)).toEqual(
-      expect.arrayContaining(["@executioncontextprotocol/fal.generate"])
+      expect.arrayContaining(["@executioncontrolprotocol/fal.generate"])
     )
   })
 
@@ -62,7 +62,7 @@ describe("@executioncontextprotocol/fal", () => {
       data: { images: [{ url: "https://fal.media/img.png" }] },
       requestId: "req-1",
     })
-    const out = (await capability("@executioncontextprotocol/fal.generate")(
+    const out = (await capability("@executioncontrolprotocol/fal.generate")(
       {
         endpoint: "fal-ai/flux/schnell",
         input: { prompt: "sunset" },
@@ -84,7 +84,7 @@ describe("@executioncontextprotocol/fal", () => {
       data: { images: [{ url: "https://fal.media/run.png" }] },
       requestId: "req-run",
     })
-    const out = (await capability("@executioncontextprotocol/fal.generate")(
+    const out = (await capability("@executioncontrolprotocol/fal.generate")(
       {
         endpoint: "fal-ai/flux/schnell",
         input: { prompt: "city" },
@@ -101,7 +101,7 @@ describe("@executioncontextprotocol/fal", () => {
 
   it("generate uses defaultEndpoint from config", async () => {
     mockSubscribe.mockResolvedValue({ data: {}, requestId: "req-2" })
-    await capability("@executioncontextprotocol/fal.generate")(
+    await capability("@executioncontrolprotocol/fal.generate")(
       { input: { prompt: "test" } },
       { ...ctx, extensionConfig: { apiKey: "test-key", defaultEndpoint: "fal-ai/default" } }
     )
@@ -113,7 +113,7 @@ describe("@executioncontextprotocol/fal", () => {
 
   it("generate throws when api key is missing", async () => {
     await expect(
-      capability("@executioncontextprotocol/fal.generate")(
+      capability("@executioncontrolprotocol/fal.generate")(
         { endpoint: "fal-ai/flux/schnell", input: { prompt: "x" } },
         { ...ctx, extensionConfig: {} }
       )
@@ -122,7 +122,7 @@ describe("@executioncontextprotocol/fal", () => {
 
   it("generate throws when endpoint is missing", async () => {
     await expect(
-      capability("@executioncontextprotocol/fal.generate")(
+      capability("@executioncontrolprotocol/fal.generate")(
         { input: { prompt: "x" } },
         { ...ctx, extensionConfig: { apiKey: "k" } }
       )
@@ -132,7 +132,7 @@ describe("@executioncontextprotocol/fal", () => {
   it("generate surfaces API errors", async () => {
     mockSubscribe.mockRejectedValue(new Error("401 Unauthorized"))
     await expect(
-      capability("@executioncontextprotocol/fal.generate")(
+      capability("@executioncontrolprotocol/fal.generate")(
         { endpoint: "fal-ai/flux/schnell", input: { prompt: "x" } },
         ctx
       )

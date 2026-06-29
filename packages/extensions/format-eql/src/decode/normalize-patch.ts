@@ -4,7 +4,7 @@ import {
   type EcpPatchDocument,
   type EcpPatchEntry,
   type StepNode,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { EqlPatchDoc, EqlStepAdd } from "./ast.js"
 
 function stepNodeFromAdd(add: EqlStepAdd): StepNode {
@@ -114,9 +114,9 @@ export function patchFromEql(doc: EqlPatchDoc): EcpPatchDocument {
   const withoutWorkflowId = patches.filter((p) => p.path !== "workflow.id")
 
   return {
-    schema: "@ecp.patch",
+    schema: "@executioncontrolprotocol.patch",
     version: LATEST_ECP_VERSION,
-    targetSchema: "@ecp.workflow",
+    targetSchema: "@executioncontrolprotocol.workflow",
     patches: [
       {
         path: "workflow.id",

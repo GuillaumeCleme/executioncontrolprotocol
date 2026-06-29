@@ -1,13 +1,13 @@
-import { environment, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontextprotocol/core"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
+import { environment, harness, runtime, registerCoreFormats, registerTestExtension } from "@executioncontrolprotocol/core"
+import { registerDemoExtension } from "@executioncontrolprotocol/demo"
 import {
   registerBrowserCodingHarnesses,
   BROWSER_CODING_HARNESS_ID,
   HARNESS_CODING_BINDING,
 } from "../harness-coding-bindings.js"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
-import { registerOllamaExtension } from "@executioncontextprotocol/extension-ollama"
-import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
+import { registerOllamaExtension } from "@executioncontrolprotocol/extension-ollama"
+import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
 import type { EvalProviderProfile } from "../profiles/eval-provider.js"
 import { matrixExtensionBindings, providerExtensionBinding } from "./shared-eval-extensions.js"
 
@@ -15,7 +15,7 @@ async function registerNodeCodingMatrixEval(provider: EvalProviderProfile): Prom
   await registerCoreFormats()
   registerBrowserCodingHarnesses()
   await registerNodeRuntime()
-  if (provider.providerId === "@executioncontextprotocol/ollama") {
+  if (provider.providerId === "@executioncontrolprotocol/ollama") {
     await registerOllamaExtension()
   }
   await registerFormatToonExtension()

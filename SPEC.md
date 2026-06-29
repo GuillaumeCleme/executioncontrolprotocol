@@ -5,7 +5,7 @@ and execution protocol**.
 
 **Source of truth:** [`ecp-overhaul.md`](ecp-overhaul.md) (implementation spec)  
 **Monorepo guide:** [`AGENTS.md`](AGENTS.md)  
-**Types:** [`packages/types`](packages/types) (`@executioncontextprotocol/types`)
+**Types:** [`packages/types`](packages/types) (`@executioncontrolprotocol/types`)
 
 > **Rule 1:** Workflows are portable execution graphs. Environments execute workflows.
 
@@ -29,15 +29,15 @@ ECP v1 separates **definitions** from **bindings**, and **environments** from
 
 - **Definitions**: runtimes, extensions, policies, capabilities, hooks
 - **Bindings**: configured instances of definitions inside an environment
-- **Workflow**: portable execution graph (`@ecp.workflow`, version `"1.0"`)
-- **Environment**: configured container that executes workflows (`@ecp.environment`, version `"1.0"`)
-- **Run**: execution of a workflow inside an environment (`@ecp.run.*`)
+- **Workflow**: portable execution graph (`@executioncontrolprotocol.workflow`, version `"1.0"`)
+- **Environment**: configured container that executes workflows (`@executioncontrolprotocol.environment`, version `"1.0"`)
+- **Run**: execution of a workflow inside an environment (`@executioncontrolprotocol.run.*`)
 
 In the fluent API:
 
 - **Definition**: `defineExtension(...)`, `defineRuntime(...)`, `definePolicy(...)`
-- **Binding**: `extension("@executioncontextprotocol/x").with({ ... })`, `runtime(...)`, `policy(...)`
-- **Invocation**: `step("@executioncontextprotocol/x.do").with(input).as("key")`
+- **Binding**: `extension("@executioncontrolprotocol/x").with({ ... })`, `runtime(...)`, `policy(...)`
+- **Invocation**: `step("@executioncontrolprotocol/x.do").with(input).as("key")`
 
 ------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ In the fluent API:
 
 A workflow manifest is the canonical serialized artifact.
 
-- **Schema**: `@ecp.workflow`
+- **Schema**: `@executioncontrolprotocol.workflow`
 - **Version**: `"1.0"`
 - **Content**: steps (including `parallel` / `branch` / `loop`) and optional flow conditions
 
@@ -57,7 +57,7 @@ Workflows do **not** contain:
 - secrets
 - host wiring
 
-Workflows are authored in TypeScript via `@executioncontextprotocol/core` but compile to JSON for
+Workflows are authored in TypeScript via `@executioncontrolprotocol/core` but compile to JSON for
 portability and deterministic review.
 
 ------------------------------------------------------------------------
@@ -89,7 +89,7 @@ Policies are **first-class** and govern execution:
 - `policy:post`: validate outputs + staged mutations
 - `policy:finally`: cleanup, usage reporting, audit finalization
 
-This repository includes `@executioncontextprotocol/policies` for standard budget/approval/state-control
+This repository includes `@executioncontrolprotocol/policies` for standard budget/approval/state-control
 policies.
 
 ------------------------------------------------------------------------
@@ -100,8 +100,8 @@ Extensions are the primary way to add capabilities and hooks.
 
 Key rules:
 
-- extensions depend on `@executioncontextprotocol/types` + `@executioncontextprotocol/core` only
-- extensions must not import host runtimes (`@executioncontextprotocol/node`, `@executioncontextprotocol/browser`, CLI, MCP)
+- extensions depend on `@executioncontrolprotocol/types` + `@executioncontrolprotocol/core` only
+- extensions must not import host runtimes (`@executioncontrolprotocol/node`, `@executioncontrolprotocol/browser`, CLI, MCP)
 - first-party extensions under `packages/extensions/*` follow the same rules as
   third-party extensions (“dogfooding”)
 
@@ -111,9 +111,9 @@ Key rules:
 
 Runtimes are host-specific adapters that wrap core:
 
-- `@executioncontextprotocol/node`: Node runtime host (file I/O via `@executioncontextprotocol/core/loaders`, compile via `@executioncontextprotocol/core/compile`)
-- `@executioncontextprotocol/browser`: Browser runtime host (registry/session config; not the demo UI)
-- `@executioncontextprotocol/runtime-temporal`: Temporal adapter stub
+- `@executioncontrolprotocol/node`: Node runtime host (file I/O via `@executioncontrolprotocol/core/loaders`, compile via `@executioncontrolprotocol/core/compile`)
+- `@executioncontrolprotocol/browser`: Browser runtime host (registry/session config; not the demo UI)
+- `@executioncontrolprotocol/runtime-temporal`: Temporal adapter stub
 
 Core remains runtime-agnostic; host code lives on subpaths or host packages.
 
@@ -130,8 +130,8 @@ Core remains runtime-agnostic; host code lives on subpaths or host packages.
 
 ## CLI and MCP adapter
 
-- **CLI** (`@executioncontextprotocol/cli`): compile, validate, describe, search, run, serve MCP.
-- **MCP adapter** (`@executioncontextprotocol/mcp`): exposes environment APIs as MCP tools/resources/prompts
+- **CLI** (`@executioncontrolprotocol/cli`): compile, validate, describe, search, run, serve MCP.
+- **MCP adapter** (`@executioncontrolprotocol/mcp`): exposes environment APIs as MCP tools/resources/prompts
   for agent integration.
 
 ------------------------------------------------------------------------

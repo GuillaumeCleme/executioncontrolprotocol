@@ -1,15 +1,15 @@
 import { describe, it } from "vitest"
-import { environment, extension, harness, runtime, registerCoreFormats } from "@executioncontextprotocol/core"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
-import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
-import { ECP_INTENT_VALUES } from "@executioncontextprotocol/types"
+import { environment, extension, harness, runtime, registerCoreFormats } from "@executioncontrolprotocol/core"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
+import { registerDemoExtension } from "@executioncontrolprotocol/demo"
+import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
+import { ECP_INTENT_VALUES } from "@executioncontrolprotocol/types"
 import {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY,
   BROWSER_NANO_HARNESS_ID,
   registerBrowserNanoHarnesses,
-} from "@executioncontextprotocol/evals"
+} from "@executioncontrolprotocol/evals"
 import { expectHarnessIntent } from "./assert-harness-result.js"
 
 async function createEvalIntentDemoEnv() {
@@ -22,14 +22,14 @@ async function createEvalIntentDemoEnv() {
   return environment("evals-harness-intent-demo")
     .withRuntime(runtime(NODE_RUNTIME_ID))
     .withExtensions([
-      extension("@executioncontextprotocol/format-eql").with({}),
-      extension("@executioncontextprotocol/demo").with({}),
+      extension("@executioncontrolprotocol/format-eql").with({}),
+      extension("@executioncontrolprotocol/demo").with({}),
     ])
     .withHarnesses([
       harness(BROWSER_NANO_HARNESS_ID)
-        .uses("@executioncontextprotocol/demo.generate")
+        .uses("@executioncontrolprotocol/demo.generate")
         .with({
-          output: { schema: "@ecp.intent", format: "@executioncontextprotocol/format-eql", validate: true },
+          output: { schema: "@executioncontrolprotocol.intent", format: "@executioncontrolprotocol/format-eql", validate: true },
         }),
     ])
 }

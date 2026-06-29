@@ -1,5 +1,5 @@
-import type { ImageRef } from "@executioncontextprotocol/types"
-import { IMAGE_REF_KINDS } from "@executioncontextprotocol/types"
+import type { ImageRef } from "@executioncontrolprotocol/types"
+import { IMAGE_REF_KINDS } from "@executioncontrolprotocol/types"
 import type { OutputOptions } from "./schemas.js"
 
 /** Resolved extension limits. @category Extensions */

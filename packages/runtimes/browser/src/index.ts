@@ -46,9 +46,9 @@ export {
   HARNESS_TASKS,
   BROWSER_NANO_HARNESS_CAPABILITY as WORKFLOW_AUTHORING_CAPABILITY,
   BROWSER_NANO_HARNESS_CAPABILITY as INTENT_CLASSIFICATION_CAPABILITY,
-} from "@executioncontextprotocol/harnesses-browser-nano"
+} from "@executioncontrolprotocol/harnesses-browser-nano"
 export type { BrowserEcpGlobal } from "./extensions/browser-registry.js"
-export type { Ecp } from "@executioncontextprotocol/core"
+export type { Ecp } from "@executioncontrolprotocol/core"
 
 export {
   hasBrowserVault,
@@ -60,7 +60,7 @@ export {
   getBrowserSecret,
   deleteBrowserSecret,
   listBrowserSecretKeys,
-} from "@executioncontextprotocol/browser-secrets"
+} from "@executioncontrolprotocol/browser-secrets"
 
 export {
   workflow,
@@ -86,4 +86,4 @@ export {
   Environment,
   Registry,
   globalRegistry,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"

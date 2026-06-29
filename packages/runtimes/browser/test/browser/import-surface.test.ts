@@ -6,7 +6,7 @@ import {
   registerBrowserDefaults,
   extension,
   runtime,
-} from "@executioncontextprotocol/browser"
+} from "@executioncontrolprotocol/browser"
 
 describe("browser import surface", () => {
   it("imports core builders and browser environment", async () => {
@@ -17,7 +17,7 @@ describe("browser import surface", () => {
     const env = await environment("import-test")
     expect(env).toBeDefined()
     expect(typeof env.init).toBe("function")
-    expect(runtime("@executioncontextprotocol/browser")).toBeDefined()
-    expect(extension("@executioncontextprotocol/browser-registry")).toBeDefined()
+    expect(runtime("@executioncontrolprotocol/browser")).toBeDefined()
+    expect(extension("@executioncontrolprotocol/browser-registry")).toBeDefined()
   })
 })

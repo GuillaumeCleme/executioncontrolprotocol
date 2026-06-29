@@ -1,16 +1,16 @@
-# @executioncontextprotocol/secrets
+# @executioncontrolprotocol/secrets
 
 OS secrets extension for ECP. Resolves `secrets("key")` / `{ "$secret": "key" }` environment bindings via the OS keychain (Windows Credential Manager, macOS Keychain, Linux where supported).
 
 ## Usage
 
 ```ts
-import "@executioncontextprotocol/secrets"
-import { environment, extension, secrets } from "@executioncontextprotocol/node"
+import "@executioncontrolprotocol/secrets"
+import { environment, extension, secrets } from "@executioncontrolprotocol/node"
 
 const env = (await environment("demo")).withExtensions([
-  extension("@executioncontextprotocol/secrets").with({}),
-  extension("@executioncontextprotocol/openai").with({
+  extension("@executioncontrolprotocol/secrets").with({}),
+  extension("@executioncontrolprotocol/openai").with({
     apiKey: secrets("openai/api-key"),
   }),
 ])

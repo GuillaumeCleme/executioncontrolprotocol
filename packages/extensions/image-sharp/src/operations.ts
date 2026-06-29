@@ -1,5 +1,5 @@
 import type { Sharp } from "sharp"
-import type { CapabilityContext } from "@executioncontextprotocol/core"
+import type { CapabilityContext } from "@executioncontrolprotocol/core"
 import { readImageToBuffer } from "./artifact.js"
 import type { SharpPipelineOperation } from "./schemas.js"
 

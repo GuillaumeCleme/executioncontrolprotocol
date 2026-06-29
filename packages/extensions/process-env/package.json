@@ -1,5 +1,5 @@
 {
-  "name": "@executioncontextprotocol/process-env",
+  "name": "@executioncontrolprotocol/process-env",
   "version": "1.0.0",
   "description": "Process environment config extension for ECP",
   "license": "Apache-2.0",
@@ -17,13 +17,13 @@
     "build": "tsc -b"
   },
   "peerDependencies": {
-    "@executioncontextprotocol/core": "^1.0.0",
-    "@executioncontextprotocol/types": "^1.0.0",
+    "@executioncontrolprotocol/core": "^1.0.0",
+    "@executioncontrolprotocol/types": "^1.0.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@executioncontextprotocol/core": "1.0.0",
-    "@executioncontextprotocol/types": "1.0.0",
+    "@executioncontrolprotocol/core": "1.0.0",
+    "@executioncontrolprotocol/types": "1.0.0",
     "typescript": "^5.7.0",
     "zod": "^3.24.0"
   }

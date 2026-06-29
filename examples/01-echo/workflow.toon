@@ -1,4 +1,4 @@
-schema: @ecp.workflow
+schema: @executioncontrolprotocol.workflow
 version: "1.0"
 workflow:
   id: echo-test
@@ -7,7 +7,7 @@ steps[1]:
   - type: step
     id: echo
     label: Echo
-    uses: @executioncontextprotocol/test.echo
+    uses: @executioncontrolprotocol/test.echo
     input:
       value: hello from fluent API
     as: echo

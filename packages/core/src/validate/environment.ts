@@ -1,5 +1,5 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 import { globalRegistry } from "../registry/registry.js"
 import { validateWorkflow } from "./workflow.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
@@ -25,14 +25,14 @@ export function validateEnvironmentWithWorkflow(
     }
   }
 
-  if (rtId === "@executioncontextprotocol/local") {
+  if (rtId === "@executioncontrolprotocol/local") {
     result.valid = false
     result.errors.push({
       code: "DEPRECATED_RUNTIME",
-      message: "Runtime @executioncontextprotocol/local was replaced by @executioncontextprotocol/node.",
+      message: "Runtime @executioncontrolprotocol/local was replaced by @executioncontrolprotocol/node.",
     })
   }
-  result.schema = "@ecp.validation.result"
+  result.schema = "@executioncontrolprotocol.validation.result"
   result.version = LATEST_ECP_VERSION
   return result
 }

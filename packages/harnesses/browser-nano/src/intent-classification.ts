@@ -16,7 +16,7 @@ import {
   encodeForPrompt,
   formatFeedbackForModel,
   isRepairFeedbackEcho,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_CORE_FORMATTER_IDS,
   ECP_INTENT_SCHEMA,
@@ -27,7 +27,7 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type ValidationResult,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
@@ -40,7 +40,7 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(false),
       includeEncodedDescriptor: z.boolean().default(true),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-toon"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-toon"),
     })
     .default({}),
   output: z
@@ -73,10 +73,10 @@ const harnessInputSchema = z.object({
 })
 
 /**
- * Eval intent classification harness (@executioncontextprotocol/evals-intent-classification).
+ * Eval intent classification harness (@executioncontrolprotocol/evals-intent-classification).
  * @category Evals
  */
-const evalsIntentClassificationHarness = defineHarness("@executioncontextprotocol", "evals-intent-classification-internal")
+const evalsIntentClassificationHarness = defineHarness("@executioncontrolprotocol", "evals-intent-classification-internal")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -84,7 +84,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
-    const outputIsEql = format === "@executioncontextprotocol/format-eql" || format.endsWith("/format-eql")
+    const outputIsEql = format === "@executioncontrolprotocol/format-eql" || format.endsWith("/format-eql")
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
     const system = config.system ?? buildSystemPrompt(promptFixtureId)
@@ -239,7 +239,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
 
 function decodedValidationStub(valid = true): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],
@@ -247,7 +247,7 @@ function decodedValidationStub(valid = true): ValidationResult {
   }
 }
 
-/** Intent task handler (invoked by unified `@executioncontextprotocol/harness-evals`). @category Evals */
+/** Intent task handler (invoked by unified `@executioncontrolprotocol/harness-evals`). @category Evals */
 export async function invokeIntentClassification(
   input: { message: string; model?: string },
   ctx: HarnessCapabilityContext<Record<string, unknown>>

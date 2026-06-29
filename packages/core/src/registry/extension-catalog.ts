@@ -1,4 +1,4 @@
-import type { NamespacedId } from "@executioncontextprotocol/types"
+import type { NamespacedId } from "@executioncontrolprotocol/types"
 import type { ExtensionDefinition } from "../definitions/types.js"
 
 const catalog = new Map<NamespacedId, ExtensionDefinition>()
@@ -9,7 +9,7 @@ const catalog = new Map<NamespacedId, ExtensionDefinition>()
  */
 export function normalizeExtensionId(ref: string): NamespacedId {
   if (ref.startsWith("@")) return ref as NamespacedId
-  return `@executioncontextprotocol/${ref}` as NamespacedId
+  return `@executioncontrolprotocol/${ref}` as NamespacedId
 }
 
 /**

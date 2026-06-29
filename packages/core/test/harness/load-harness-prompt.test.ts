@@ -21,10 +21,10 @@ describe("harness prompt fixtures", () => {
 
   it("schema examples contain no pipe union in JSON", () => {
     for (const schema of [
-      "@ecp.intent",
-      "@ecp.workflow",
-      "@ecp.patch",
-      "@ecp.harness.reply",
+      "@executioncontrolprotocol.intent",
+      "@executioncontrolprotocol.workflow",
+      "@executioncontrolprotocol.patch",
+      "@executioncontrolprotocol.harness.reply",
     ] as const) {
       const json = formatSchemaExampleJson(schema)
       expect(json).not.toMatch(/"\|"/)
@@ -71,7 +71,7 @@ describe("harness prompt fixtures", () => {
   })
 
   it("loadRepairNeutralExampleEql loads patch repair fixture", () => {
-    const example = loadRepairNeutralExampleEql("@ecp.patch")
+    const example = loadRepairNeutralExampleEql("@executioncontrolprotocol.patch")
     expect(example).toContain("example-wf")
     expect(example).not.toContain("echo-test")
   })

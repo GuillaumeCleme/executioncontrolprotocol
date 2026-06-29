@@ -7,12 +7,12 @@ import {
   setSecretsStore,
   resetSecretsStore,
 } from "../src/index.js"
-import { catalogExtension, getCatalogedExtension } from "@executioncontextprotocol/core"
+import { catalogExtension, getCatalogedExtension } from "@executioncontrolprotocol/core"
 
-describe("@executioncontextprotocol/secrets extension", () => {
+describe("@executioncontrolprotocol/secrets extension", () => {
   it("catalogs on load", () => {
     catalogExtension(secretsExtension)
-    expect(getCatalogedExtension("@executioncontextprotocol/secrets")).toBeDefined()
+    expect(getCatalogedExtension("@executioncontrolprotocol/secrets")).toBeDefined()
   })
 
   it("memory store round-trips", async () => {

@@ -1,5 +1,5 @@
 {
-  "schema": "@ecp.workflow",
+  "schema": "@executioncontrolprotocol.workflow",
   "version": "1.0",
   "workflow": {
     "id": "multi-cap",
@@ -10,7 +10,7 @@
       "type": "step",
       "id": "validate",
       "label": "Validate",
-      "uses": "@executioncontextprotocol/demo.validate",
+      "uses": "@executioncontrolprotocol/demo.validate",
       "input": { "payload": { "ok": true } },
       "as": "validated"
     },
@@ -18,7 +18,7 @@
       "type": "step",
       "id": "echo",
       "label": "Echo",
-      "uses": "@executioncontextprotocol/test.echo",
+      "uses": "@executioncontrolprotocol/test.echo",
       "input": { "value": "after-validate" },
       "as": "echo"
     },
@@ -26,7 +26,7 @@
       "type": "step",
       "id": "notify",
       "label": "Notify",
-      "uses": "@executioncontextprotocol/demo.notify",
+      "uses": "@executioncontrolprotocol/demo.notify",
       "input": { "payload": { "$ref": "state.echo.output" } },
       "as": "notified"
     }

@@ -1,6 +1,6 @@
-import type { ImageRef } from "@executioncontextprotocol/types"
-import { IMAGE_REF_KINDS } from "@executioncontextprotocol/types"
-import type { CapabilityContext } from "@executioncontextprotocol/core"
+import type { ImageRef } from "@executioncontrolprotocol/types"
+import { IMAGE_REF_KINDS } from "@executioncontrolprotocol/types"
+import type { CapabilityContext } from "@executioncontrolprotocol/core"
 import { readFile } from "node:fs/promises"
 
 /** Read image result. @category Extensions */
@@ -51,7 +51,7 @@ export async function readImageToBuffer(
     case IMAGE_REF_KINDS.ARTIFACT: {
       if (ref.uri.startsWith("ecp://storage/")) {
         const key = ref.uri.slice("ecp://storage/".length)
-        const result = (await ctx.capabilities.call("@executioncontextprotocol/storage.read", {
+        const result = (await ctx.capabilities.call("@executioncontrolprotocol/storage.read", {
           key,
         })) as { value?: unknown }
         if (result.value instanceof Uint8Array) {
@@ -99,7 +99,7 @@ export async function writeArtifact(
 
   if (options.store === "storage" || storage.defaultStore === "storage") {
     const key = `${prefix}/${name}`
-    await ctx.capabilities.call("@executioncontextprotocol/storage.write", {
+    await ctx.capabilities.call("@executioncontrolprotocol/storage.write", {
       key,
       value: data,
     })

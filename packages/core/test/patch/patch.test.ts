@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest"
 import { workflow, step, applyPatch, buildStepIndex, parallel } from "../../src/index.js"
-import type { WorkflowManifest } from "@executioncontextprotocol/types"
+import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 
 function weeklyBriefManifest(): WorkflowManifest {
   return workflow("Weekly Brief")
     .id("weekly-brief")
     .run([
-      step("@executioncontextprotocol/memory.search", "Collect Signals")
+      step("@executioncontrolprotocol/memory.search", "Collect Signals")
         .id("collect-signals")
         .with({ query: "risks", since: "7d" })
         .as("signals"),
-      step("@executioncontextprotocol/openai.generate", "Write Brief")
+      step("@executioncontrolprotocol/openai.generate", "Write Brief")
         .id("write-brief")
         .with({
           prompt: "Create a brief",
@@ -34,14 +34,14 @@ describe("applyPatch", () => {
     const index = buildStepIndex(patched.result!)
     const path = index.pathsById.get("write-brief")!
     const stepNode = path.match(/^steps\[(\d+)\]/)?.[1]
-    const stepAt = patched.result!.steps[Number(stepNode)] as import("@executioncontextprotocol/types").StepNode
+    const stepAt = patched.result!.steps[Number(stepNode)] as import("@executioncontrolprotocol/types").StepNode
     expect(stepAt.input?.prompt).toBe("Create a concise executive brief.")
   })
 
   it("replaces the steps array when path is steps", () => {
     const manifest = workflow("Echo")
       .id("echo-test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontrolprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     const patched = applyPatch(manifest, [
@@ -53,7 +53,7 @@ describe("applyPatch", () => {
             type: "step",
             id: "echo",
             label: "Echo",
-            uses: "@executioncontextprotocol/test.echo",
+            uses: "@executioncontrolprotocol/test.echo",
             input: { value: "hi" },
             as: "echo",
           },
@@ -61,7 +61,7 @@ describe("applyPatch", () => {
             type: "step",
             id: "summarize",
             label: "Summarize",
-            uses: "@executioncontextprotocol/demo.summarize",
+            uses: "@executioncontrolprotocol/demo.summarize",
             input: { text: { $ref: "state.echo.output" } },
             as: "summary",
           },
@@ -77,7 +77,7 @@ describe("applyPatch", () => {
   it("inserts a step via eql:add-step without removing existing steps", () => {
     const manifest = workflow("Echo")
       .id("echo-test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontrolprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     const patched = applyPatch(manifest, [
@@ -90,7 +90,7 @@ describe("applyPatch", () => {
             type: "step",
             id: "summarize",
             label: "Summarize",
-            uses: "@executioncontextprotocol/demo.summarize",
+            uses: "@executioncontrolprotocol/demo.summarize",
             input: { text: { $ref: "state.echo.output" } },
             as: "summary",
           },
@@ -109,8 +109,8 @@ describe("applyPatch", () => {
     const manifest = workflow("Echo notify")
       .id("echo-notify")
       .run([
-        step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
-        step("@executioncontextprotocol/demo.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
+        step("@executioncontrolprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
+        step("@executioncontrolprotocol/demo.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
       ])
       .toManifest()
 
@@ -131,7 +131,7 @@ describe("applyPatch", () => {
   it("replaces scalar step fields without corrupting the step", () => {
     const manifest = workflow("Echo")
       .id("echo-test")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontrolprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo")])
       .toManifest()
 
     const patched = applyPatch(manifest, {
@@ -141,7 +141,7 @@ describe("applyPatch", () => {
     expect(patched.success).toBe(true)
     const echoStep = patched.result!.steps.find((s) => s.id === "echo")
     expect(echoStep?.label).toBe("Patched Echo")
-    expect(echoStep?.uses).toBe("@executioncontextprotocol/test.echo")
+    expect(echoStep?.uses).toBe("@executioncontrolprotocol/test.echo")
   })
 
   it("deep merges by default", () => {
@@ -156,7 +156,7 @@ describe("applyPatch", () => {
     const index = buildStepIndex(patched.result!)
     const stepNode = patched.result!.steps[
       Number(index.pathsById.get("write-brief")!.match(/^steps\[(\d+)\]/)?.[1])
-    ] as import("@executioncontextprotocol/types").StepNode
+    ] as import("@executioncontrolprotocol/types").StepNode
     expect(stepNode.input?.options).toMatchObject({ tone: "executive", maxWords: 100 })
   })
 
@@ -174,18 +174,18 @@ describe("applyPatch", () => {
     const index = buildStepIndex(patched.result!)
     const stepNode = patched.result!.steps[
       Number(index.pathsById.get("write-brief")!.match(/^steps\[(\d+)\]/)?.[1])
-    ] as import("@executioncontextprotocol/types").StepNode
+    ] as import("@executioncontrolprotocol/types").StepNode
     expect(stepNode.input).toEqual({ prompt: "Only this remains." })
   })
 
   it("fails when duplicate step ids exist", () => {
     const duplicate: WorkflowManifest = {
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "dup" },
       steps: [
-        { type: "step", id: "write-brief", uses: "@executioncontextprotocol/test.echo", input: {} },
-        { type: "step", id: "write-brief", uses: "@executioncontextprotocol/test.echo", input: {} },
+        { type: "step", id: "write-brief", uses: "@executioncontrolprotocol/test.echo", input: {} },
+        { type: "step", id: "write-brief", uses: "@executioncontrolprotocol/test.echo", input: {} },
       ],
     }
 
@@ -210,12 +210,12 @@ describe("applyPatch", () => {
     const manifest = workflow("Nested")
       .run([
         parallel([
-          [step("@executioncontextprotocol/test.echo", "Inner").with({ value: "a" }).as("inner")],
+          [step("@executioncontrolprotocol/test.echo", "Inner").with({ value: "a" }).as("inner")],
         ]),
       ])
       .toManifest()
-    const parallelNode = manifest.steps[0] as import("@executioncontextprotocol/types").ParallelNode
-    const innerStep = parallelNode.branches[0]![0] as import("@executioncontextprotocol/types").StepNode
+    const parallelNode = manifest.steps[0] as import("@executioncontrolprotocol/types").ParallelNode
+    const innerStep = parallelNode.branches[0]![0] as import("@executioncontrolprotocol/types").StepNode
     const index = buildStepIndex(manifest)
     const innerPath = index.pathsById.get(innerStep.id)
     expect(innerPath).toMatch(/^steps\[0\]\.branches\[/)
@@ -230,12 +230,12 @@ describe("assignUniqueStepIds via toManifest", () => {
   it("assigns unique ids for duplicate labels", () => {
     const manifest = workflow("Dup labels")
       .run([
-        step("@executioncontextprotocol/test.echo", "Echo").with({ value: "a" }).as("o"),
-        step("@executioncontextprotocol/test.echo", "Echo").with({ value: "b" }).as("o2"),
+        step("@executioncontrolprotocol/test.echo", "Echo").with({ value: "a" }).as("o"),
+        step("@executioncontrolprotocol/test.echo", "Echo").with({ value: "b" }).as("o2"),
       ])
       .toManifest()
 
-    const ids = manifest.steps.map((s) => (s as import("@executioncontextprotocol/types").StepNode).id)
+    const ids = manifest.steps.map((s) => (s as import("@executioncontrolprotocol/types").StepNode).id)
     expect(new Set(ids).size).toBe(2)
   })
 })

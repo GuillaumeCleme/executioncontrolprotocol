@@ -1,5 +1,5 @@
 const ECP_IMPORT_RE =
-  /import\s*\{[^}]+\}\s*from\s*["']@executioncontextprotocol\/(?:core|browser)["']\s*;?\s*/g
+  /import\s*\{[^}]+\}\s*from\s*["']@executioncontrolprotocol\/(?:core|browser)["']\s*;?\s*/g
 
 const BUILDER_NAMES = [
   "workflow",
@@ -13,7 +13,7 @@ const BUILDER_NAMES = [
   "loop",
 ] as const
 
-/** Strip @executioncontextprotocol/core|browser imports and inject globalThis workflow builder shim. */
+/** Strip @executioncontrolprotocol/core|browser imports and inject globalThis workflow builder shim. */
 export function prepareBrowserWorkflowSource(source: string): string {
   const stripped = source.replace(ECP_IMPORT_RE, "").trimStart()
   const used = BUILDER_NAMES.filter((name) => new RegExp(`\\b${name}\\b`).test(stripped))

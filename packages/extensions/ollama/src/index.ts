@@ -1,7 +1,7 @@
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontextprotocol/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
 
 const GenerateInput = modelGenerateInputSchema
 
@@ -38,15 +38,15 @@ async function ollamaChat(
   return data.message.content
 }
 
-/** @executioncontextprotocol/ollama extension. @category Extensions */
-export const ollamaExtension = defineExtension("@executioncontextprotocol", "ollama")
+/** @executioncontrolprotocol/ollama extension. @category Extensions */
+export const ollamaExtension = defineExtension("@executioncontrolprotocol", "ollama")
   .withConfig({
     baseURL: z.string().optional(),
     defaultModel: z.string().optional(),
     timeoutMs: z.number().optional(),
   })
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/ollama", "generate")
+    capabilityFor("@executioncontrolprotocol/ollama", "generate")
       .withInput(GenerateInput)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -69,7 +69,7 @@ export const ollamaExtension = defineExtension("@executioncontextprotocol", "oll
         )
         return { text }
       }),
-    capabilityFor("@executioncontextprotocol/ollama", "evaluate")
+    capabilityFor("@executioncontrolprotocol/ollama", "evaluate")
       .withInput(
         z.object({
           artifact: z.unknown(),
@@ -125,9 +125,9 @@ export const ollamaExtension = defineExtension("@executioncontextprotocol", "oll
 
 catalogExtension(ollamaExtension)
 
-/** Register @executioncontextprotocol/ollama. */
+/** Register @executioncontrolprotocol/ollama. */
 export async function registerOllamaExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@executioncontextprotocol/ollama")) {
+  if (!globalRegistry.getExtension("@executioncontrolprotocol/ollama")) {
     await globalRegistry.registerExtension(ollamaExtension)
   }
 }

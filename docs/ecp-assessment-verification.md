@@ -7,12 +7,12 @@ This document records gaps closed from [ecp-implementation-assessment.md](ecp-im
 | Step lifecycle (`finally`, `failed`, pre pause/deny) | Verified | `packages/core/test/lifecycle.test.ts` |
 | Store mutations + `history[].mutations` | Verified | `packages/core/test/store-mutation.test.ts` |
 | Fluent API surface | Verified | `packages/core/test/fluent-api.test.ts` |
-| JSON Schema artifacts (`@executioncontextprotocol/types`) | Verified | `npm run generate:schema`, `packages/types/test/schemas.test.ts` |
+| JSON Schema artifacts (`@executioncontrolprotocol/types`) | Verified | `npm run generate:schema`, `packages/types/test/schemas.test.ts` |
 | Describe / search | Verified | `packages/core/test/describe.test.ts`, `packages/core/test/search.test.ts` |
-| `@executioncontextprotocol/state-control` | Present | `packages/policies`, used in lifecycle/store tests |
-| `@executioncontextprotocol/openai.evaluate` | Verified | `packages/extensions/openai/test/openai.test.ts` |
-| `@executioncontextprotocol/storage` read/write | Verified | `packages/extensions/storage/test/storage.test.ts` |
-| `@executioncontextprotocol/memory` hooks | Verified | `packages/extensions/memory/test/memory.test.ts` |
+| `@executioncontrolprotocol/state-control` | Present | `packages/policies`, used in lifecycle/store tests |
+| `@executioncontrolprotocol/openai.evaluate` | Verified | `packages/extensions/openai/test/openai.test.ts` |
+| `@executioncontrolprotocol/storage` read/write | Verified | `packages/extensions/storage/test/storage.test.ts` |
+| `@executioncontrolprotocol/memory` hooks | Verified | `packages/extensions/memory/test/memory.test.ts` |
 | Example `02-weekly-brief` | Verified | `packages/core/test/weekly-brief.test.ts` |
 | E2E project (Ollama) | Non-failing placeholder | `packages/extensions/ollama/test/e2e/ollama-skip.test.ts` |
 

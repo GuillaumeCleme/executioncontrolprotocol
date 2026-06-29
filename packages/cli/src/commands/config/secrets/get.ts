@@ -3,7 +3,7 @@ import {
   canonicalSecretKey,
   ECP_SECRET_REF_PROTOCOL_PREFIX,
   redactSecret,
-} from "@executioncontextprotocol/secrets"
+} from "@executioncontrolprotocol/secrets"
 import { getCliSecretsStore } from "../../../lib/secrets/store.js"
 
 /** Read an OS keychain secret. */

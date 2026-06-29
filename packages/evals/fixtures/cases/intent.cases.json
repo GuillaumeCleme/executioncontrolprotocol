@@ -21,11 +21,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -55,11 +55,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -89,11 +89,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -125,11 +125,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -159,11 +159,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -195,11 +195,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -231,11 +231,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -265,11 +265,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -301,11 +301,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -337,11 +337,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -371,11 +371,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -407,11 +407,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -443,11 +443,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -479,11 +479,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -515,11 +515,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -551,11 +551,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],
@@ -585,11 +585,11 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test",
+              "@executioncontrolprotocol/demo"
             ]
           }
         ],

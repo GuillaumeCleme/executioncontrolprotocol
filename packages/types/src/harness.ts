@@ -23,8 +23,8 @@ export type EcpHarnessErrorCode =
 
 /** Core-cataloged formatter extension ids. @category Harness */
 export const ECP_CORE_FORMATTER_IDS = {
-  JSON: "@executioncontextprotocol/format-json",
-  FLUENT: "@executioncontextprotocol/format-fluent",
+  JSON: "@executioncontrolprotocol/format-json",
+  FLUENT: "@executioncontrolprotocol/format-fluent",
 } as const
 
 /** Harness namespaced id. @category Harness */
@@ -35,7 +35,7 @@ export type HarnessCapabilityId = `${HarnessId}.${typeof ECP_HARNESS_CAPABILITY_
 
 /** Build harness evaluate capability id. @category Harness */
 export function harnessCapabilityId(harnessId: HarnessId | string): HarnessCapabilityId {
-  const id = harnessId.startsWith("@") ? harnessId : (`@executioncontextprotocol/${harnessId}` as NamespacedId)
+  const id = harnessId.startsWith("@") ? harnessId : (`@executioncontrolprotocol/${harnessId}` as NamespacedId)
   return `${id}.${ECP_HARNESS_CAPABILITY_NAME}` as HarnessCapabilityId
 }
 

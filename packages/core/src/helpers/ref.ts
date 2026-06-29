@@ -1,4 +1,4 @@
-import type { RefValue } from "@executioncontextprotocol/types"
+import type { RefValue } from "@executioncontrolprotocol/types"
 
 /** Options for optional refs. */
 export interface RefOptions {

@@ -25,7 +25,7 @@ import {
   formatStructuredRepairForModel,
   isRepairFeedbackEcho,
   type CompactEnvironmentSummary,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_CORE_FORMATTER_IDS,
   ECP_MODEL_GENERATE_INTERFACE,
@@ -36,7 +36,7 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import {
   buildPatchOperationHintLines,
@@ -75,8 +75,8 @@ function alignPatchWorkflowId(
 }
 
 const outputConfigSchema = z.object({
-  schema: z.string().default("@ecp.workflow"),
-  format: z.string().default("@executioncontextprotocol/format-json"),
+  schema: z.string().default("@executioncontrolprotocol.workflow"),
+  format: z.string().default("@executioncontrolprotocol/format-json"),
   validate: z.boolean().default(true),
 })
 
@@ -88,7 +88,7 @@ const harnessConfigSchema = z.object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       /** When false, only plain-text capability lines are sent (smaller prompts for 1B models). */
       includeEncodedDescriptor: z.boolean().default(true),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-toon"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-toon"),
     })
     .default({}),
   output: outputConfigSchema.default({}),
@@ -116,10 +116,10 @@ const harnessInputSchema = z.object({
 })
 
 /**
- * Eval workflow authoring harness (@executioncontextprotocol/evals-workflow-authoring).
+ * Eval workflow authoring harness (@executioncontrolprotocol/evals-workflow-authoring).
  * @category Evals
  */
-const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol", "evals-workflow-authoring-internal")
+const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol", "evals-workflow-authoring-internal")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -127,12 +127,12 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol",
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const isPatch = input.manifest !== undefined
-    const outputSchema = isPatch ? "@ecp.patch" : config.output.schema
+    const outputSchema = isPatch ? "@executioncontrolprotocol.patch" : config.output.schema
     const format = config.output.format
     const descriptorFormat = config.context.descriptorFormat ?? format
     const outputIsJson =
       format === ECP_CORE_FORMATTER_IDS.JSON || format.endsWith("/format-json")
-    const outputIsEql = format === "@executioncontextprotocol/format-eql" || format.endsWith("/format-eql")
+    const outputIsEql = format === "@executioncontrolprotocol/format-eql" || format.endsWith("/format-eql")
 
     const promptFixtureId =
       config.promptFixture ??
@@ -201,16 +201,16 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol",
         : []
       const createOutputLine = outputIsEql
         ? /\bminimal\b/i.test(input.request) || /\bone step\b/i.test(input.request)
-          ? "Return only compact headerless EQL for @ecp.workflow with exactly ONE STEP line."
-          : "Return only compact headerless EQL for @ecp.workflow."
+          ? "Return only compact headerless EQL for @executioncontrolprotocol.workflow with exactly ONE STEP line."
+          : "Return only compact headerless EQL for @executioncontrolprotocol.workflow."
         : outputIsJson
-          ? "Return only a compact JSON @ecp.workflow document for this request."
-          : `Return only a compact @ecp.workflow document encoded as ${format} for this request.`
+          ? "Return only a compact JSON @executioncontrolprotocol.workflow document for this request."
+          : `Return only a compact @executioncontrolprotocol.workflow document encoded as ${format} for this request.`
       const patchOutputLine = outputIsEql
         ? "Apply the user request to the current workflow. Return EQL patch operations only. First line MUST be PATCH WORKFLOW <id from user prompt>, then UPDATE WORKFLOW / UPDATE STEP / ADD STEP / DELETE STEP / MOVE STEP as needed. Do not re-list unchanged steps."
         : outputIsJson
-          ? "Return only compact JSON for schema @ecp.patch."
-          : `Return only a compact @ecp.patch document encoded as ${format}.`
+          ? "Return only compact JSON for schema @executioncontrolprotocol.patch."
+          : `Return only a compact @executioncontrolprotocol.patch document encoded as ${format}.`
       const lines = isPatch
         ? [
             patchOutputLine,
@@ -232,8 +232,8 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol",
               ? [
                   `Example output shape:\n${
                     outputIsEql
-                      ? formatSchemaExampleEql("@ecp.workflow")
-                      : formatSchemaExampleJson("@ecp.workflow")
+                      ? formatSchemaExampleEql("@executioncontrolprotocol.workflow")
+                      : formatSchemaExampleJson("@executioncontrolprotocol.workflow")
                   }`,
                 ]
               : []),
@@ -290,13 +290,13 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol",
           !isPatch &&
           outputIsJson &&
           !outputIsEql &&
-          (raw.match(/"schema"\s*:\s*"@ecp\.workflow"/g)?.length ?? 0) > 1
+          (raw.match(/"schema"\s*:\s*"@executioncontrolprotocol\.workflow"/g)?.length ?? 0) > 1
         ) {
           return {
             success: false,
             feedback: [
               collectModelOutputFeedback(
-                "Return exactly one @ecp.workflow JSON object. Do not output multiple documents or examples."
+                "Return exactly one @executioncontrolprotocol.workflow JSON object. Do not output multiple documents or examples."
               ),
             ],
           }
@@ -324,7 +324,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol",
         const decoded = await ctx.ecp
           .decode(normalizedRaw)
           .uses(format)
-          .to(isPatch ? "@ecp.patch" : "@ecp.workflow")
+          .to(isPatch ? "@executioncontrolprotocol.patch" : "@executioncontrolprotocol.workflow")
           .with(decodeOptions)
           .process()
 
@@ -466,7 +466,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol",
   })
   .build()
 
-/** Workflow authoring task handler (invoked by unified `@executioncontextprotocol/harness-evals`). @category Evals */
+/** Workflow authoring task handler (invoked by unified `@executioncontrolprotocol/harness-evals`). @category Evals */
 export async function invokeWorkflowAuthoring(
   input: { request: string; manifest?: unknown; model?: string },
   ctx: HarnessCapabilityContext<Record<string, unknown>>

@@ -1,6 +1,6 @@
 import sharp from "sharp"
-import type { ImageRef } from "@executioncontextprotocol/types"
-import type { CapabilityContext } from "@executioncontextprotocol/core"
+import type { ImageRef } from "@executioncontrolprotocol/types"
+import type { CapabilityContext } from "@executioncontrolprotocol/core"
 import { readImageToBuffer, writeArtifact, mediaTypeForFormat } from "./artifact.js"
 import { applyOperation } from "./operations.js"
 import { applyOutputOptions } from "./output.js"

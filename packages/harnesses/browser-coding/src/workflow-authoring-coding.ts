@@ -1,4 +1,4 @@
-import { compileWorkflowSource } from "@executioncontextprotocol/core/compile"
+import { compileWorkflowSource } from "@executioncontrolprotocol/core/compile"
 import {
   buildRepairHint,
   buildWorkflowCreateCodingSystemPrompt,
@@ -19,12 +19,12 @@ import {
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
   type CompactEnvironmentSummary,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   buildRequestCapabilityHintLines,
   collectCreateCapabilityFeedback,
   collectCreateStepCountFeedback,
-} from "@executioncontextprotocol/harnesses-browser-nano"
+} from "@executioncontrolprotocol/harnesses-browser-nano"
 import {
   buildFluentPatchHintLines,
   collectFluentCompileErrorFeedback,
@@ -37,7 +37,7 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
 
@@ -53,7 +53,7 @@ function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<str
 }
 
 const outputConfigSchema = z.object({
-  schema: z.string().default("@ecp.workflow"),
+  schema: z.string().default("@executioncontrolprotocol.workflow"),
   format: z.string().default(HARNESS_OUTPUT_FORMAT_TYPESCRIPT),
   validate: z.boolean().default(true),
 })
@@ -65,7 +65,7 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-json"),
     })
     .default({}),
   output: outputConfigSchema.default({}),
@@ -92,7 +92,7 @@ const harnessInputSchema = z.object({
   model: z.string().optional(),
 })
 
-const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol", "browser-coding-workflow-authoring")
+const codingWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol", "browser-coding-workflow-authoring")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -161,7 +161,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
           ]
         : [
             `User request: ${input.request}`,
-            'Required import: import { workflow, step, ref } from "@executioncontextprotocol/core" (include ref even for single-step workflows).',
+            'Required import: import { workflow, step, ref } from "@executioncontrolprotocol/core" (include ref even for single-step workflows).',
             ...requestHints,
             ...envBlock,
           ]
@@ -279,7 +279,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
       harness: BROWSER_CODING_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
-      outputSchema: "@ecp.workflow",
+      outputSchema: "@executioncontrolprotocol.workflow",
       outputFormat: format,
       decodeSucceeded: true,
       validationSucceeded: validation.valid,

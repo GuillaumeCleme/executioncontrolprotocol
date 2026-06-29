@@ -1,5 +1,5 @@
-import type { Ecp, Environment } from "@executioncontextprotocol/core"
-import type { HarnessCapabilityId } from "@executioncontextprotocol/types"
+import type { Ecp, Environment } from "@executioncontrolprotocol/core"
+import type { HarnessCapabilityId } from "@executioncontrolprotocol/types"
 import {
   EVAL_HARNESS_NAMES,
   isFlowEvalCase,

@@ -5,10 +5,10 @@ import { globalRegistry } from "../registry/registry.js"
 import { z } from "zod"
 
 /** In-repo stub extension for examples and tests. @category Testing */
-export const testExtension = defineExtension("@executioncontextprotocol", "test")
+export const testExtension = defineExtension("@executioncontrolprotocol", "test")
   .withConfig({})
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/test", "echo")
+    capabilityFor("@executioncontrolprotocol/test", "echo")
       .withInput(z.object({ value: z.unknown().optional() }))
       .withOutput(z.object({ echo: z.unknown() }))
       .withHandler(async (input) => ({
@@ -19,11 +19,11 @@ export const testExtension = defineExtension("@executioncontextprotocol", "test"
 
 catalogExtension(testExtension)
 
-/** Register @executioncontextprotocol/test.echo for examples and tests. */
+/** Register @executioncontrolprotocol/test.echo for examples and tests. */
 export async function registerTestExtension(
   registry = globalRegistry
 ): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/test")) {
+  if (!registry.getExtension("@executioncontrolprotocol/test")) {
     await registry.registerExtension(testExtension)
   }
 }

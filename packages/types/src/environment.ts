@@ -3,7 +3,7 @@ import type { EcpVersion } from "./version.js"
 
 /** Environment manifest (bindings only). @category Environment */
 export interface EnvironmentManifest {
-  schema: "@ecp.environment"
+  schema: "@executioncontrolprotocol.environment"
   version: EcpVersion
   environment: {
     id: string
@@ -50,7 +50,7 @@ export interface RuntimeFeatures {
 
 /** Environment descriptor for discovery. @category Environment */
 export interface EnvironmentDescriptor {
-  schema: "@ecp.environment.describe"
+  schema: "@executioncontrolprotocol.environment.describe"
   version: EcpVersion
   environment: {
     id: string
@@ -140,7 +140,7 @@ export interface SearchResultItem {
 
 /** Search response. @category Environment */
 export interface SearchResult {
-  schema: "@ecp.environment.search"
+  schema: "@executioncontrolprotocol.environment.search"
   version: EcpVersion
   results: SearchResultItem[]
 }

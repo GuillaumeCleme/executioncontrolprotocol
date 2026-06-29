@@ -3,8 +3,8 @@ import {
   collectOutputFormatHints,
   imageRefUrlHostname,
   isSvgHint,
-} from "@executioncontextprotocol/core"
-import { IMAGE_REF_KINDS } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/core"
+import { IMAGE_REF_KINDS } from "@executioncontrolprotocol/types"
 
 /** Image policy configuration shape. @category Policies */
 export interface ImagePolicyConfig {
