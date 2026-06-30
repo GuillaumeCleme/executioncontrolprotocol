@@ -1,7 +1,6 @@
 import type { ImageRef } from "@executioncontrolprotocol/types"
 import { IMAGE_REF_KINDS } from "@executioncontrolprotocol/types"
 import type { CapabilityContext } from "@executioncontrolprotocol/core"
-import { readFile } from "node:fs/promises"
 
 /** Read image result. @category Extensions */
 export interface ReadImageResult {
@@ -20,6 +19,14 @@ export function clearImageArtifactStore(): void {
   artifactStore.clear()
 }
 
+async function readFileFromPath(path: string): Promise<Buffer> {
+  const fs = await import("node:fs/promises").catch(() => null)
+  if (!fs?.readFile) {
+    throw new Error("File image refs require Node.js (node:fs/promises is not available in this runtime)")
+  }
+  return fs.readFile(path)
+}
+
 /** Read image reference to buffer. @category Extensions */
 export async function readImageToBuffer(
   ref: ImageRef,
@@ -34,7 +41,7 @@ export async function readImageToBuffer(
       return { buffer, mediaType: ref.mediaType, sizeBytes: buffer.length }
     }
     case IMAGE_REF_KINDS.FILE: {
-      const buffer = await readFile(ref.path)
+      const buffer = await readFileFromPath(ref.path)
       return { buffer, mediaType: ref.mediaType, sizeBytes: buffer.length }
     }
     case IMAGE_REF_KINDS.URL: {

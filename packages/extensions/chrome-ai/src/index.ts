@@ -6,7 +6,11 @@ import {
   type CapabilityContext,
   type Registry,
 } from "@executioncontrolprotocol/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
+import {
+  modelGenerateInputSchema,
+  modelGenerateOutputSchema,
+  type ModelGenerateInput,
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import {
   assertModelReady,
@@ -20,11 +24,6 @@ import {
   type ChromeLanguageModelApi,
 } from "./prompt-session.js"
 
-const GenerateTextInput = z.object({
-  prompt: z.string(),
-  system: z.string().optional(),
-})
-
 interface ChromeAiGlobal {
   LanguageModel?: ChromeLanguageModelApi
 }
@@ -34,7 +33,7 @@ function chromeAi(): ChromeLanguageModelApi | undefined {
 }
 
 async function runChromePrompt(
-  input: z.infer<typeof GenerateTextInput>,
+  input: ModelGenerateInput,
   ctx: CapabilityContext
 ): Promise<{ text: string }> {
   await assertModelReady()
@@ -91,13 +90,7 @@ export const chromeAiExtension = defineExtension("@executioncontrolprotocol", "c
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (raw, ctx) =>
-        runChromePrompt(raw as z.infer<typeof GenerateTextInput>, ctx)
-      ),
-    capabilityFor("@executioncontrolprotocol/chrome-ai", "generateText")
-      .withInput(GenerateTextInput)
-      .withOutput(z.object({ text: z.string() }))
-      .withHandler(async (raw, ctx) =>
-        runChromePrompt(raw as z.infer<typeof GenerateTextInput>, ctx)
+        runChromePrompt(modelGenerateInputSchema.parse(raw), ctx)
       ),
   ])
   .build()

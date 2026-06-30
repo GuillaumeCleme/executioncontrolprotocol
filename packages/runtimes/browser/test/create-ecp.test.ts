@@ -7,6 +7,7 @@ describe("createEcp", () => {
     await registerBrowserDefaults()
     const env = createBrowserDemoEnvironment("create-ecp-test")
     await registerTestExtension(env.getRegistry())
+    env.addExtensionBinding("@executioncontrolprotocol/test", {})
     const ecp = await createEcp(env)
     const manifest = workflow("W")
       .run([step("@executioncontrolprotocol/test.echo", "E").with({ value: "x" }).as("o")])

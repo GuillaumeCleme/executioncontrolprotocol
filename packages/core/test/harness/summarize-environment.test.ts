@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeAll } from "vitest"
 import { z } from "zod"
-import { harnessCapabilityId } from "@executioncontrolprotocol/types"
+import { harnessCapabilityId, modelGenerateInputSchema } from "@executioncontrolprotocol/types"
 import {
   formatEnvironmentSummaryLines,
   summarizeEnvironmentDescriptor,
@@ -41,19 +41,17 @@ const browserDescriptor: EnvironmentDescriptor = {
     {
       id: "@executioncontrolprotocol/test.echo",
       extension: "@executioncontrolprotocol/test",
-      inputSchema: { type: "object", properties: { value: { type: "string" } } },
+      inputSchema: {
+        type: "object",
+        properties: { value: { type: "string" } },
+        required: ["value"],
+      },
       outputSchema: { type: "object", properties: { echo: { type: "string" } } },
     },
     {
       id: "@executioncontrolprotocol/chrome-ai.generate",
       extension: "@executioncontrolprotocol/chrome-ai",
-      inputSchema: {
-        type: "object",
-        properties: {
-          prompt: { type: "string" },
-          system: { type: "string" },
-        },
-      },
+      inputSchema: modelGenerateInputSchema,
       outputSchema: { type: "object", properties: { text: { type: "string" } } },
     },
     {
@@ -84,17 +82,31 @@ describe("summarize-environment workflow step capabilities", () => {
     )
   })
 
-  it("includes chrome-ai.generate in eql-create reference with prompt hint", () => {
+  it("includes chrome-ai.generate in eql-create reference with required prompt label", () => {
     const summary = summarizeEnvironmentDescriptor(browserDescriptor)
+    const chromeCap = summary.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
+    expect(chromeCap?.requiredInputs).toContain("prompt")
+    expect(chromeCap?.optionalInputs).toContain("system")
+
     const text = formatEnvironmentSummaryLines(summary, { format: "eql-create" }).join("\n")
     expect(text).toContain("@executioncontrolprotocol/chrome-ai.generate")
+    expect(text).toContain("prompt (required)")
     expect(text).toContain("WITH prompt =")
     expect(text).not.toContain("@executioncontrolprotocol/chrome-ai.checkAvailability")
+  })
+
+  it("labels JSON Schema required fields for test.echo", () => {
+    const summary = summarizeEnvironmentDescriptor(browserDescriptor)
+    const echoCap = summary.capabilities.find((c) => c.id === "@executioncontrolprotocol/test.echo")
+    expect(echoCap?.requiredInputs).toEqual(["value"])
+    const text = formatEnvironmentSummaryLines(summary, { format: "eql-create" }).join("\n")
+    expect(text).toContain("value (required)")
   })
 
   it("excludes harness evaluate from eql-create step reference", () => {
     const summary = summarizeEnvironmentDescriptor(browserDescriptor)
     const text = formatEnvironmentSummaryLines(summary, { format: "eql-create" }).join("\n")
     expect(text).not.toContain(STEP_FILTER_TEST_HARNESS_CAPABILITY)
+    expect(text).toContain("@executioncontrolprotocol/test.echo")
   })
 })

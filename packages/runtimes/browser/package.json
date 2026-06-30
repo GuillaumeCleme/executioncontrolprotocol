@@ -28,6 +28,8 @@
     "@executioncontrolprotocol/format-mermaid": "1.0.0",
     "@executioncontrolprotocol/format-toon": "1.0.0",
     "@executioncontrolprotocol/extension-openai": "1.0.0",
+    "@executioncontrolprotocol/extension-fal": "1.0.0",
+    "@executioncontrolprotocol/extension-image-sharp": "1.0.0",
     "@executioncontrolprotocol/browser-secrets": "1.0.0",
     "@executioncontrolprotocol/policies": "1.0.0",
     "@executioncontrolprotocol/types": "1.0.0"

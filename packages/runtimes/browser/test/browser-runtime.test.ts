@@ -28,9 +28,7 @@ describe("@executioncontrolprotocol/browser runtime", () => {
     }
 
     try {
-      await registerTestExtension()
       const env = await createBrowserTestEnvironment("browser-chrome-generate")
-      env.addExtensionBinding("@executioncontrolprotocol/test", {})
       const manifest = workflow("Chrome Summarize")
         .run([
           step("@executioncontrolprotocol/chrome-ai.generate", "Summarize")

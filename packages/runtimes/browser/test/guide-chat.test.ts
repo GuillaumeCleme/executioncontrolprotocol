@@ -39,7 +39,7 @@ describe("@executioncontrolprotocol/browser.guideChat", () => {
     expect(result.success).toBe(true)
     const text = String((result.result as { text: string }).text)
     expect(text).toMatch(/workflow/i)
-    expect(text).toMatch(/@executioncontrolprotocol\/test\.echo/)
+    expect(text).toMatch(/@executioncontrolprotocol\/chrome-ai\.generate/)
     await ecp.terminate()
   })
 })

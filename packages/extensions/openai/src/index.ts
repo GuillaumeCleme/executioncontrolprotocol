@@ -46,26 +46,7 @@ export const openaiExtension = defineExtension("@executioncontrolprotocol", "ope
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
-        const parsed = input as z.infer<typeof modelGenerateInputSchema>
-        const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
-        const apiKey = resolveOpenaiApiKey(cfg)
-        if (!apiKey) throw new Error("OpenAI API key required")
-        const model = parsed.model ?? (cfg.defaultModel as string) ?? "gpt-4o-mini"
-        ctx.usage.increment({ modelCalls: 1 })
-        const text = await chatComplete(
-          apiKey,
-          model,
-          parsed.prompt,
-          parsed.system,
-          parsed.context
-        )
-        return { text }
-      }),
-    capabilityFor("@executioncontrolprotocol/openai", "generateText")
-      .withInput(modelGenerateInputSchema)
-      .withOutput(modelGenerateOutputSchema)
-      .withHandler(async (input, ctx) => {
-        const parsed = input as z.infer<typeof modelGenerateInputSchema>
+        const parsed = modelGenerateInputSchema.parse(input)
         const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
         const apiKey = resolveOpenaiApiKey(cfg)
         if (!apiKey) throw new Error("OpenAI API key required")

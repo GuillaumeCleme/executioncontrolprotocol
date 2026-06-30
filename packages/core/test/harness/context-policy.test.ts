@@ -7,17 +7,23 @@ import {
   formatClassifiedIntentBlock,
 } from "../../src/harness/authoring/classified-intent.js"
 import type { Ecp } from "../../src/environment/ecp.js"
-import { ECP_INTENT_SCHEMA, ECP_INTENT_VALUES } from "@executioncontrolprotocol/types"
+import { ECP_INTENT_SCHEMA, ECP_INTENT_VALUES, modelGenerateInputSchema } from "@executioncontrolprotocol/types"
 
 const mockEcp = {
   describe: async () => ({
-    extensions: [{ id: "@executioncontrolprotocol/test", order: 0, capabilities: ["@executioncontrolprotocol/test.echo"] }],
+    extensions: [
+      {
+        id: "@executioncontrolprotocol/chrome-ai",
+        order: 0,
+        capabilities: ["@executioncontrolprotocol/chrome-ai.generate"],
+      },
+    ],
     capabilities: [
       {
-        id: "@executioncontrolprotocol/test.echo",
-        extension: "@executioncontrolprotocol/test",
-        inputSchema: { properties: { value: {} } },
-        outputSchema: { properties: { output: {} } },
+        id: "@executioncontrolprotocol/chrome-ai.generate",
+        extension: "@executioncontrolprotocol/chrome-ai",
+        inputSchema: modelGenerateInputSchema,
+        outputSchema: { type: "object", properties: { text: { type: "string" } } },
       },
     ],
   }),
@@ -50,6 +56,8 @@ describe("context-policy", () => {
     })
     const joined = bundle.lines.join("\n")
     expect(joined).toContain("Environment capabilities")
+    expect(joined).toContain("prompt (required)")
+    expect(joined).toContain("@executioncontrolprotocol/chrome-ai.generate")
     expect(joined.length).toBeLessThanOrEqual(CONTEXT_PROMPT_BUDGET.contextualized)
   })
 })
