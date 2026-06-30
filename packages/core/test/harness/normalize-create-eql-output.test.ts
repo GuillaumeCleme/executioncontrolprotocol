@@ -83,3 +83,46 @@ describe("filterWorkflowEqlToRequiredCapabilities", () => {
     expect(filtered).toContain("STEP summarize USES")
   })
 })
+
+describe("deduplicateWorkflowEqlStepIds", () => {
+  it("renames duplicate generate ids using AS aliases", async () => {
+    const { deduplicateWorkflowEqlStepIds } = await import(
+      "../../src/harness/authoring/normalize-create-eql-output.js"
+    )
+    const cap = "@executioncontrolprotocol/chrome-ai.generate"
+    const raw = [
+      'WORKFLOW email-action "Email Action"',
+      `STEP generate USES ${cap}`,
+      '  LABEL "Generate Email"',
+      '  WITH prompt = "Write email"',
+      "  AS email",
+      `STEP generate USES ${cap}`,
+      '  LABEL "Extract Action Items"',
+      '  WITH prompt = "Extract actions"',
+      "  AS actions",
+    ].join("\n")
+    const fixed = deduplicateWorkflowEqlStepIds(raw)
+    expect(fixed).toContain("STEP email USES")
+    expect(fixed).toContain("STEP actions USES")
+    expect((fixed.match(/^STEP generate /gm) ?? []).length).toBe(0)
+  })
+
+  it("updates REF paths when renaming duplicate step ids", async () => {
+    const { deduplicateWorkflowEqlStepIds } = await import(
+      "../../src/harness/authoring/normalize-create-eql-output.js"
+    )
+    const cap = "@executioncontrolprotocol/chrome-ai.generate"
+    const raw = [
+      'WORKFLOW poem-summarize "Poem"',
+      `STEP generate USES ${cap}`,
+      "  AS poem",
+      `STEP generate USES ${cap}`,
+      "  WITH context = REF generate.text",
+      "  AS summary",
+    ].join("\n")
+    const fixed = deduplicateWorkflowEqlStepIds(raw)
+    expect(fixed).toContain("STEP poem USES")
+    expect(fixed).toContain("REF poem.text")
+    expect(fixed).not.toContain("REF generate.")
+  })
+})

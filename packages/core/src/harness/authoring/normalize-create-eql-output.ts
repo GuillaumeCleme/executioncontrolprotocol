@@ -55,11 +55,102 @@ export function selectBestWorkflowEqlBlock(raw: string, requiredCapabilityIds: r
   return best
 }
 
+function isValidStepId(id: string): boolean {
+  return /^[a-zA-Z][\w-]*$/.test(id)
+}
+
+function parseStepAsAlias(stepLines: readonly string[]): string | undefined {
+  for (const line of stepLines) {
+    const match = line.match(/^\s*AS\s+(\S+)/)
+    if (match?.[1] && isValidStepId(match[1])) {
+      return match[1]
+    }
+  }
+  return undefined
+}
+
+function parseStepLabelSlug(stepLines: readonly string[]): string | undefined {
+  for (const line of stepLines) {
+    const match = line.match(/^\s*LABEL\s+"([^"]+)"/)
+    if (!match?.[1]) continue
+    const slug = match[1]
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+    if (slug && isValidStepId(slug)) {
+      return slug
+    }
+  }
+  return undefined
+}
+
+function rewriteStepLineId(stepLine: string, stepId: string): string {
+  return stepLine.replace(/^STEP\s+\S+/, `STEP ${stepId}`)
+}
+
+function replaceRefStepId(line: string, fromId: string, toId: string): string {
+  if (fromId === toId) return line
+  return line.replace(new RegExp(`REF ${fromId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.`, "g"), `REF ${toId}.`)
+}
+
+/**
+ * Assign unique STEP ids when the model repeats a capability suffix (e.g. generate twice).
+ * Prefers each step's AS alias when present.
+ * @category Harness
+ */
+export function deduplicateWorkflowEqlStepIds(raw: string): string {
+  const block = takeFirstWorkflowEqlBlock(raw)
+  const { header, steps } = parseWorkflowEqlStepBlocks(block)
+  if (steps.length <= 1) {
+    return raw
+  }
+
+  const usedIds = new Set<string>()
+  const resolved: { originalId: string; finalId: string; lines: string[] }[] = []
+
+  for (const step of steps) {
+    const asAlias = parseStepAsAlias(step.lines)
+    const labelSlug = parseStepLabelSlug(step.lines)
+    let finalId = step.stepId
+
+    if (asAlias && !usedIds.has(asAlias)) {
+      finalId = asAlias
+    } else if (usedIds.has(finalId)) {
+      if (labelSlug && !usedIds.has(labelSlug)) {
+        finalId = labelSlug
+      } else {
+        let suffix = 2
+        while (usedIds.has(`${step.stepId}-${suffix}`)) {
+          suffix += 1
+        }
+        finalId = `${step.stepId}-${suffix}`
+      }
+    }
+
+    const lines =
+      finalId === step.stepId ? [...step.lines] : [rewriteStepLineId(step.lines[0]!, finalId), ...step.lines.slice(1)]
+    usedIds.add(finalId)
+    resolved.push({ originalId: step.stepId, finalId, lines })
+  }
+
+  for (let i = 0; i < resolved.length; i += 1) {
+    const { originalId, finalId } = resolved[i]!
+    if (originalId === finalId) continue
+    for (let j = i + 1; j < resolved.length; j += 1) {
+      resolved[j]!.lines = resolved[j]!.lines.map((line) => replaceRefStepId(line, originalId, finalId))
+    }
+  }
+
+  return [...header, ...resolved.flatMap((step) => step.lines)].join("\n")
+}
+
 /** Normalize common small-model EQL typos before decode. @category Harness */
 export function normalizeCreateEqlRawOutput(raw: string): string {
-  return raw
-    .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/test.summarize")
-    .replace(/USES (@\S+)\s+"([^"]+)"/g, "USES $1\n  LABEL \"$2\"")
+  return deduplicateWorkflowEqlStepIds(
+    raw
+      .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/test.summarize")
+      .replace(/USES (@\S+)\s+"([^"]+)"/g, "USES $1\n  LABEL \"$2\"")
+  )
 }
 
 interface WorkflowEqlStepBlock {

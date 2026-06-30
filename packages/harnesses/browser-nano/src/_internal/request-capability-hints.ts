@@ -95,6 +95,10 @@ export function inferRequiredCapabilityIds(
     const cap = bySuffix("validate")
     if (cap) matched.add(cap)
   }
+  if (/\bchrome\s*ai\b/i.test(request)) {
+    const cap = capabilityIds.find((id) => id.includes("chrome-ai") && id.endsWith(".generate"))
+    if (cap) matched.add(cap)
+  }
 
   return [...matched]
 }
@@ -118,6 +122,15 @@ export function inferRequiredStepCount(request: string): number | undefined {
     return 2
   }
   if (/\bgenerate\b.+?\bthen\b.+?\bsummar/i.test(request)) {
+    return 2
+  }
+  if (/\bin a second step\b/i.test(request) || /\bsecond step\b/i.test(request)) {
+    return 2
+  }
+  if (/\bgenerate\b.+?\bthen\b/i.test(request)) {
+    return 2
+  }
+  if (/\btwo\s+steps?\b/i.test(request)) {
     return 2
   }
   return undefined
@@ -163,6 +176,7 @@ export function buildRequestCapabilityHintLines(
   const sameCapReuse =
     /\bsame capability\b/i.test(request) ||
     /\bwith the same\b/i.test(request) ||
+    (/\bchrome\s*ai\b/i.test(request) && stepCount !== undefined && stepCount > 1) ||
     (stepCount !== undefined && stepCount > required.length)
 
   if (stepCount !== undefined && stepCount > 1 && sameCapReuse) {
@@ -336,11 +350,15 @@ export function collectCreateCapabilityFeedback(
       )
     )
   } else if (required.length > 0 && uses.length > required.length) {
-    feedback.push(
-      collectModelOutputFeedback(
-        `Output exactly ${required.length} STEP line(s) for: ${required.join(", ")}. Remove extra STEP lines.`
+    const expectedSteps = inferRequiredStepCount(request) ?? required.length
+    const allUsesAreRequired = uses.every((id) => required.includes(id))
+    if (!(allUsesAreRequired && uses.length === expectedSteps)) {
+      feedback.push(
+        collectModelOutputFeedback(
+          `Output exactly ${required.length} STEP line(s) for: ${required.join(", ")}. Remove extra STEP lines.`
+        )
       )
-    )
+    }
   }
   return feedback.length > 0 ? feedback : undefined
 }
@@ -354,26 +372,27 @@ export function collectCreateStepCountFeedback(
   workflow: WorkflowManifest,
   requiredCapabilityIds?: readonly string[]
 ): HarnessOperationFeedback[] | undefined {
-  const requiredCount =
-    requiredCapabilityIds?.length ??
-    (/\bone step\b/i.test(request) || /\bexactly one\b/i.test(request) || /\bminimal\b/i.test(request)
-      ? 1
-      : undefined)
+  const explicitSingle =
+    /\bone step\b/i.test(request) ||
+    /\bexactly one\b/i.test(request) ||
+    /\bminimal\b/i.test(request)
+  const requiredCount = explicitSingle
+    ? 1
+    : inferRequiredStepCount(request) ?? requiredCapabilityIds?.length
   const count = workflow.steps?.length ?? 0
-  if (requiredCount === 1 && count > 1) {
+  if (requiredCount === undefined || count <= requiredCount) {
+    return undefined
+  }
+  if (requiredCount === 1) {
     return [
       collectModelOutputFeedback(
         `Request requires exactly one capability step but output has ${count} STEP lines. Output only one STEP ... USES line.`
       ),
     ]
   }
-  if (!/\bone step\b/i.test(request) && !/\bexactly one\b/i.test(request)) {
-    return undefined
-  }
-  if (count <= 1) return undefined
   return [
     collectModelOutputFeedback(
-      `Request asks for exactly one step but output has ${count} STEP lines. Output only one STEP ... USES line.`
+      `Request requires ${requiredCount} STEP lines but output has ${count}. Output exactly ${requiredCount} STEP ... USES lines.`
     ),
   ]
 }

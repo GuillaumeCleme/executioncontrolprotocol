@@ -50,6 +50,7 @@ export {
   splitWorkflowEqlBlocks,
   selectBestWorkflowEqlBlock,
   normalizeCreateEqlRawOutput,
+  deduplicateWorkflowEqlStepIds,
   filterWorkflowEqlToRequiredCapabilities,
   synthesizeCreateEqlFromRequiredCapabilities,
   createEqlIncludesRequiredCapabilities,
