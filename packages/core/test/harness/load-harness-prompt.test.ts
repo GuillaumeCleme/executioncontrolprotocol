@@ -84,4 +84,20 @@ describe("harness prompt fixtures", () => {
     expect(hint).toContain("ANSWER")
     expect(hint).not.toContain('"kind":"step"|')
   })
+
+  it("buildSystemPrompt for workflow create includes unique step id rule", () => {
+    const system = buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
+    expect(system).toContain("unique stepId")
+    expect(system).toContain("poem, summarize")
+    expect(system).toContain("poem-summarize")
+  })
+
+  it("workflow create few-shots use unique STEP ids", () => {
+    const fixture = loadHarnessPromptFixture(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
+    for (const shot of fixture.fewShots ?? []) {
+      if (typeof shot.output !== "string") continue
+      const stepIds = [...shot.output.matchAll(/^STEP\s+(\S+)\s+USES/gm)].map((m) => m[1]!)
+      expect(new Set(stepIds).size, shot.message).toBe(stepIds.length)
+    }
+  })
 })

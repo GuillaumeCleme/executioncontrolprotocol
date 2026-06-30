@@ -61,4 +61,25 @@ describe("filterWorkflowEqlToRequiredCapabilities", () => {
     expect((filtered.match(/^STEP /gm) ?? []).length).toBe(2)
     expect(filtered).not.toContain("demo.generate")
   })
+
+  it("preserves same USES with distinct step ids", async () => {
+    const { filterWorkflowEqlToRequiredCapabilities } = await import(
+      "../../src/harness/authoring/normalize-create-eql-output.js"
+    )
+    const cap = "@executioncontrolprotocol/chrome-ai.generate"
+    const raw = [
+      'WORKFLOW poem-summarize "Poem Summarization"',
+      `STEP poem USES ${cap}`,
+      '  LABEL "Generate Poem"',
+      "  AS poem",
+      `STEP summarize USES ${cap}`,
+      '  LABEL "Summarize Poem"',
+      "  WITH context = REF poem.output",
+      "  AS summary",
+    ].join("\n")
+    const filtered = filterWorkflowEqlToRequiredCapabilities(raw, [cap])
+    expect((filtered.match(/^STEP /gm) ?? []).length).toBe(2)
+    expect(filtered).toContain("STEP poem USES")
+    expect(filtered).toContain("STEP summarize USES")
+  })
 })

@@ -63,6 +63,8 @@ export function normalizeCreateEqlRawOutput(raw: string): string {
 }
 
 interface WorkflowEqlStepBlock {
+  /** Step id from the STEP line. */
+  stepId: string
   /** Capability id from the STEP USES line. */
   uses: string
   /** Raw STEP block lines. */
@@ -78,19 +80,21 @@ function parseWorkflowEqlStepBlocks(block: string): {
   const steps: WorkflowEqlStepBlock[] = []
   let current: string[] = []
   let currentUses: string | undefined
+  let currentStepId: string | undefined
 
   for (const line of lines) {
     if (/^WORKFLOW\s/.test(line)) {
       header.push(line)
       continue
     }
-    const stepMatch = line.match(/^STEP\s+\S+\s+USES\s+(@\S+)/)
+    const stepMatch = line.match(/^STEP\s+(\S+)\s+USES\s+(@\S+)/)
     if (stepMatch) {
-      if (currentUses && current.length > 0) {
-        steps.push({ uses: currentUses, lines: current })
+      if (currentUses && currentStepId && current.length > 0) {
+        steps.push({ stepId: currentStepId, uses: currentUses, lines: current })
       }
       current = [line]
-      currentUses = stepMatch[1]
+      currentStepId = stepMatch[1]
+      currentUses = stepMatch[2]
       continue
     }
     if (currentUses) {
@@ -99,10 +103,25 @@ function parseWorkflowEqlStepBlocks(block: string): {
       header.push(line)
     }
   }
-  if (currentUses && current.length > 0) {
-    steps.push({ uses: currentUses, lines: current })
+  if (currentUses && currentStepId && current.length > 0) {
+    steps.push({ stepId: currentStepId, uses: currentUses, lines: current })
   }
   return { header, steps }
+}
+
+function hasSameUsesDistinctStepIds(steps: readonly WorkflowEqlStepBlock[]): boolean {
+  const byUses = new Map<string, Set<string>>()
+  for (const step of steps) {
+    const set = byUses.get(step.uses) ?? new Set<string>()
+    set.add(step.stepId)
+    byUses.set(step.uses, set)
+  }
+  for (const ids of byUses.values()) {
+    if (ids.size > 1) {
+      return true
+    }
+  }
+  return false
 }
 
 /**
@@ -118,6 +137,12 @@ export function filterWorkflowEqlToRequiredCapabilities(
   }
   const block = takeFirstWorkflowEqlBlock(raw)
   const { header, steps } = parseWorkflowEqlStepBlocks(block)
+  const matchingSteps = steps.filter((step) => requiredCapabilityIds.includes(step.uses))
+
+  if (hasSameUsesDistinctStepIds(matchingSteps)) {
+    return [...header, ...matchingSteps.flatMap((step) => step.lines)].join("\n")
+  }
+
   const byCap = new Map<string, WorkflowEqlStepBlock>()
   for (const step of steps) {
     if (requiredCapabilityIds.includes(step.uses) && !byCap.has(step.uses)) {

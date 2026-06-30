@@ -59,6 +59,7 @@ import {
   buildRequestCapabilityHintLines,
   collectPatchGoalFeedback,
   collectCreateCapabilityFeedback,
+  collectCreateDuplicateStepIdFeedback,
   collectCreateStepCountFeedback,
   inferPatchTargetStepId,
   inferRequestedLabel,
@@ -530,6 +531,15 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
           const validation = await ctx.ecp.validate(artifact as WorkflowManifest)
           feedback.push(collectValidationFeedback(validation))
           if (!validation.valid) {
+            if (
+              !isPatch &&
+              validation.errors.some((d) => /Duplicate step id/i.test(d.message ?? ""))
+            ) {
+              const dupFeedback = collectCreateDuplicateStepIdFeedback(artifact as WorkflowManifest)
+              if (dupFeedback) {
+                feedback.push(...dupFeedback)
+              }
+            }
             return { success: false, feedback }
           }
         }

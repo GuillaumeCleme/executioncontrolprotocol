@@ -33,6 +33,7 @@ export const EQL_WORKFLOW_OPERATIONS = [
   "    WITH <inputField> = <value expression>",
   "    AS <stateKey>",
   "- Repeat STEP for each step in order. stepId is a short name (echo), not a capability id.",
+  "- Each STEP must have a unique stepId. Reusing the same capabilityId on multiple steps still requires distinct ids (poem, summarize — not generate twice).",
 ].join("\n")
 
 export const EQL_PATCH_OPERATIONS = [
