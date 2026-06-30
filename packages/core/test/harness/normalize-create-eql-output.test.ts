@@ -74,7 +74,7 @@ describe("filterWorkflowEqlToRequiredCapabilities", () => {
       "  AS poem",
       `STEP summarize USES ${cap}`,
       '  LABEL "Summarize Poem"',
-      "  WITH context = REF poem.output",
+      "  WITH context = REF poem.text",
       "  AS summary",
     ].join("\n")
     const filtered = filterWorkflowEqlToRequiredCapabilities(raw, [cap])

@@ -23,6 +23,7 @@ import {
   normalizePromptResponse,
   type ChromeLanguageModelApi,
 } from "./prompt-session.js"
+import { buildChromePromptWithContext } from "./format-model-context.js"
 
 interface ChromeAiGlobal {
   LanguageModel?: ChromeLanguageModelApi
@@ -43,7 +44,8 @@ async function runChromePrompt(
   }
   ctx.usage.increment({ modelCalls: 1 })
   const session = await createChromeLanguageModelSession(model, input.system)
-  const response = await session.prompt(input.prompt)
+  const effectivePrompt = buildChromePromptWithContext(input.prompt, input.context)
+  const response = await session.prompt(effectivePrompt)
   return { text: normalizePromptResponse(response) }
 }
 

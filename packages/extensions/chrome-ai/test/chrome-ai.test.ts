@@ -107,6 +107,37 @@ describe("@executioncontrolprotocol/chrome-ai", () => {
     expect(result).toEqual({ text: "hello from chrome" })
   })
 
+  it("generate appends object context text field to prompt", async () => {
+    const promptMock = vi.fn().mockResolvedValue({ text: "summary" })
+    ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
+      availability: vi.fn().mockResolvedValue("available"),
+      create: vi.fn().mockResolvedValue({ prompt: promptMock }),
+    }
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
+    await cap!.handler!(
+      {
+        prompt: "Summarize the following poem:",
+        context: { text: "poem body" },
+      },
+      { usage: { increment: vi.fn() } } as never
+    )
+    expect(promptMock).toHaveBeenCalledWith("Summarize the following poem:\n\npoem body")
+  })
+
+  it("generate appends string context to prompt", async () => {
+    const promptMock = vi.fn().mockResolvedValue({ text: "summary" })
+    ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
+      availability: vi.fn().mockResolvedValue("available"),
+      create: vi.fn().mockResolvedValue({ prompt: promptMock }),
+    }
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
+    await cap!.handler!(
+      { prompt: "Summarize:", context: "raw context text" },
+      { usage: { increment: vi.fn() } } as never
+    )
+    expect(promptMock).toHaveBeenCalledWith("Summarize:\n\nraw context text")
+  })
+
   it("generate returns text when prompt() resolves to a string", async () => {
     ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
       availability: vi.fn().mockResolvedValue("available"),
