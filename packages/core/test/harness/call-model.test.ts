@@ -67,6 +67,22 @@ describe("callModelGenerate", () => {
     expect(capturedPrompt.toLowerCase()).toContain("toon")
   })
 
+  it("appends EQL suffix when response format is eql", async () => {
+    let capturedPrompt = ""
+    const ctx = mockContext(async (_id, input) => {
+      capturedPrompt = (input as { prompt: string }).prompt
+      return { text: "WORKFLOW demo" }
+    })
+
+    await callModelGenerate(
+      "@executioncontrolprotocol/test.generate",
+      { prompt: "Create a workflow.", responseFormat: "eql" },
+      ctx
+    )
+    expect(capturedPrompt.toUpperCase()).toContain("EQL")
+    expect(capturedPrompt).not.toBe("Create a workflow.")
+  })
+
   it("accepts a bare string from the provider", async () => {
     const ctx = mockContext(async () => "plain-string")
     const result = await callModelGenerate(

@@ -1,4 +1,5 @@
 import type { EnvironmentDescriptor } from "@executioncontrolprotocol/types"
+import { isHarnessCapabilityId } from "../harness-catalog.js"
 
 /** Compact capability row for model prompts. @category Harness */
 export interface CompactCapabilityRow {
@@ -56,8 +57,27 @@ export type EnvironmentSummaryFormat = "plain" | "eql-create" | "eql-patch"
 
 const TEST_NON_STEP_CAPABILITY_IDS = new Set(["@executioncontrolprotocol/test.generate"])
 
+const NON_STEP_CAPABILITY_SUFFIXES = new Set([
+  "checkAvailability",
+  "startModelDownload",
+  "getModelInstallState",
+  "evaluate",
+])
+
+const MODEL_PROVIDER_CAPABILITY_SUFFIXES = new Set(["generate", "generateText"])
+
+function capabilitySuffix(capId: string): string {
+  const parts = capId.split(".")
+  return parts[parts.length - 1] ?? ""
+}
+
 function isWorkflowStepCapability(capId: string): boolean {
-  return capId.startsWith("@executioncontrolprotocol/test.") && !TEST_NON_STEP_CAPABILITY_IDS.has(capId)
+  if (isHarnessCapabilityId(capId)) return false
+  if (TEST_NON_STEP_CAPABILITY_IDS.has(capId)) return false
+  const suffix = capabilitySuffix(capId)
+  if (NON_STEP_CAPABILITY_SUFFIXES.has(suffix)) return false
+  if (capId.startsWith("@executioncontrolprotocol/test.")) return true
+  return MODEL_PROVIDER_CAPABILITY_SUFFIXES.has(suffix)
 }
 
 function workflowStepCapabilities(summary: CompactEnvironmentSummary): CompactCapabilityRow[] {
@@ -72,6 +92,13 @@ function capabilityStepId(capId: string): string {
 function sampleWithLines(inputs: string[]): string[] {
   if (inputs.length === 0) return []
   const field = inputs[0]!
+  if (field === "prompt") {
+    const lines = [`  WITH prompt = "..."`]
+    if (inputs.includes("system")) {
+      lines.push(`  WITH system = "..."`)
+    }
+    return lines
+  }
   if (field === "value") return [`  WITH value = "hello"`]
   if (field === "text") return [`  WITH text = REF echo.output`]
   if (field === "payload") return [`  WITH payload = {"ok": true}`]

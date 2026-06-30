@@ -3,6 +3,7 @@ import {
   capabilityFor,
   defineExtension,
   globalRegistry,
+  type CapabilityContext,
   type Registry,
 } from "@executioncontrolprotocol/core"
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
@@ -32,12 +33,16 @@ function chromeAi(): ChromeLanguageModelApi | undefined {
   return (globalThis as ChromeAiGlobal).LanguageModel
 }
 
-async function runChromePrompt(input: z.infer<typeof GenerateTextInput>): Promise<{ text: string }> {
+async function runChromePrompt(
+  input: z.infer<typeof GenerateTextInput>,
+  ctx: CapabilityContext
+): Promise<{ text: string }> {
   await assertModelReady()
   const model = chromeAi()
   if (!model?.create) {
     throw new Error("Chrome LanguageModel API is not available")
   }
+  ctx.usage.increment({ modelCalls: 1 })
   const session = await createChromeLanguageModelSession(model, input.system)
   const response = await session.prompt(input.prompt)
   return { text: normalizePromptResponse(response) }
@@ -85,11 +90,15 @@ export const chromeAiExtension = defineExtension("@executioncontrolprotocol", "c
     capabilityFor("@executioncontrolprotocol/chrome-ai", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
-      .withHandler(async (raw) => runChromePrompt(raw as z.infer<typeof GenerateTextInput>)),
+      .withHandler(async (raw, ctx) =>
+        runChromePrompt(raw as z.infer<typeof GenerateTextInput>, ctx)
+      ),
     capabilityFor("@executioncontrolprotocol/chrome-ai", "generateText")
       .withInput(GenerateTextInput)
       .withOutput(z.object({ text: z.string() }))
-      .withHandler(async (raw) => runChromePrompt(raw as z.infer<typeof GenerateTextInput>)),
+      .withHandler(async (raw, ctx) =>
+        runChromePrompt(raw as z.infer<typeof GenerateTextInput>, ctx)
+      ),
   ])
   .build()
 

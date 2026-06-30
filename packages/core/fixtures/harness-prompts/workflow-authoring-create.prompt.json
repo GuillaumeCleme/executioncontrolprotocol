@@ -28,6 +28,14 @@
     {
       "message": "Create a 3-step workflow using @executioncontrolprotocol/test.validate, @executioncontrolprotocol/test.echo, and @executioncontrolprotocol/test.summarize.",
       "output": "WORKFLOW triple-chain \"Validate echo summarize\"\nSTEP validate USES @executioncontrolprotocol/test.validate\n  LABEL \"Validate\"\n  WITH payload = {\"ok\": true}\n  AS validated\nSTEP echo USES @executioncontrolprotocol/test.echo\n  LABEL \"Echo\"\n  WITH value = \"hello\"\n  AS echo\nSTEP summarize USES @executioncontrolprotocol/test.summarize\n  LABEL \"Summarize\"\n  WITH payload = REF echo.output\n  AS summary"
+    },
+    {
+      "message": "Create a workflow with one step that uses @executioncontrolprotocol/chrome-ai.generate to summarize the text hello in one sentence.",
+      "output": "WORKFLOW chrome-summarize \"Chrome summarize\"\nSTEP summarize USES @executioncontrolprotocol/chrome-ai.generate\n  LABEL \"Summarize\"\n  WITH prompt = \"Summarize in one sentence: hello\"\n  AS summary"
+    },
+    {
+      "message": "Create a two-step workflow: echo with @executioncontrolprotocol/test.echo then summarize the echo output with @executioncontrolprotocol/chrome-ai.generate.",
+      "output": "WORKFLOW echo-chrome-summarize \"Echo then chrome summarize\"\nSTEP echo USES @executioncontrolprotocol/test.echo\n  LABEL \"Echo\"\n  WITH value = \"hello\"\n  AS echo\nSTEP summarize USES @executioncontrolprotocol/chrome-ai.generate\n  LABEL \"Summarize\"\n  WITH prompt = \"Summarize the echoed text in one sentence.\"\n  WITH context = REF echo.output\n  AS summary"
     }
   ],
   "repairHint": "Return corrected @executioncontrolprotocol.workflow EQL only. Output exactly one WORKFLOW block. Every STEP USES must match a capability id named in the user request. When the request names multiple capabilities, output one STEP per capability in order. When the request asks for one or minimal step, output exactly ONE STEP line."
