@@ -59,11 +59,11 @@
     },
     {
       "message": "List supported step capabilities.",
-      "output": "import type { HarnessReply } from \"@executioncontrolprotocol/types\"\n\nexport const reply: HarnessReply = {\n  schema: \"@executioncontrolprotocol.harness.reply\",\n  answer:\n    \"This environment includes step capabilities such as @executioncontrolprotocol/test.echo, @executioncontrolprotocol/demo.summarize, and @executioncontrolprotocol/demo.validate, plus format and Ollama utilities.\",\n}"
+      "output": "import type { HarnessReply } from \"@executioncontrolprotocol/types\"\n\nexport const reply: HarnessReply = {\n  schema: \"@executioncontrolprotocol.harness.reply\",\n  answer:\n    \"This environment includes step capabilities such as @executioncontrolprotocol/test.echo, @executioncontrolprotocol/test.summarize, and @executioncontrolprotocol/test.validate, plus format and Ollama utilities.\",\n}"
     },
     {
       "message": "What capabilities are available?",
-      "output": "import type { HarnessReply } from \"@executioncontrolprotocol/types\"\n\nexport const reply: HarnessReply = {\n  schema: \"@executioncontrolprotocol.harness.reply\",\n  answer:\n    \"Capabilities include @executioncontrolprotocol/test.echo for echo, @executioncontrolprotocol/demo.summarize, @executioncontrolprotocol/demo.validate, and format encode/decode extensions. Ask if you want help wiring them into a workflow.\",\n}"
+      "output": "import type { HarnessReply } from \"@executioncontrolprotocol/types\"\n\nexport const reply: HarnessReply = {\n  schema: \"@executioncontrolprotocol.harness.reply\",\n  answer:\n    \"Capabilities include @executioncontrolprotocol/test.echo for echo, @executioncontrolprotocol/test.summarize, @executioncontrolprotocol/test.validate, and format encode/decode extensions. Ask if you want help wiring them into a workflow.\",\n}"
     }
   ],
   "repairHint": "Return corrected TypeScript only. reply.answer must be non-empty, stay within ECP scope, and use cannot when declining. Use the word error when explaining failures."

@@ -1,9 +1,9 @@
-﻿/** Split headerless EQL into WORKFLOW blocks. @category Harness */
+/** Split headerless EQL into WORKFLOW blocks. @category Harness */
 export function splitWorkflowEqlBlocks(raw: string): string[] {
   const cleaned = raw
     .replace(/```[\w-]*\n?/g, "")
     .replace(/```/g, "")
-    .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/demo.summarize")
+    .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/test.summarize")
     .trim()
   const lines = cleaned.split(/\r?\n/)
   const blocks: string[] = []
@@ -58,7 +58,7 @@ export function selectBestWorkflowEqlBlock(raw: string, requiredCapabilityIds: r
 /** Normalize common small-model EQL typos before decode. @category Harness */
 export function normalizeCreateEqlRawOutput(raw: string): string {
   return raw
-    .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/demo.summarize")
+    .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/test.summarize")
     .replace(/USES (@\S+)\s+"([^"]+)"/g, "USES $1\n  LABEL \"$2\"")
 }
 

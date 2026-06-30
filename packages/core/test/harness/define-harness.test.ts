@@ -53,7 +53,7 @@ describe("defineHarness", () => {
 
     const result = await def.handler({ value: "hello" }, {
       harnessId: def.id,
-      uses: "@executioncontrolprotocol/demo.generate" as never,
+      uses: "@executioncontrolprotocol/test.generate" as never,
       config: { prefix: "ok" },
       capabilityContext: {} as never,
       environment: {} as never,

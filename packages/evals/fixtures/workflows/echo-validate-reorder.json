@@ -18,7 +18,7 @@
       "type": "step",
       "id": "validate",
       "label": "Validate",
-      "uses": "@executioncontrolprotocol/demo.validate",
+      "uses": "@executioncontrolprotocol/test.validate",
       "input": { "payload": { "ok": true } },
       "as": "validated"
     }

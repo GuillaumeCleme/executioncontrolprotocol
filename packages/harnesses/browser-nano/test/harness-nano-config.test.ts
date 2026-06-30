@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest"
 import {
-  HARNESS_BROWSER_NANO_DEMO_BINDING,
   HARNESS_NANO_BINDING,
   HARNESS_NANO_CHAT_REPAIR,
   HARNESS_NANO_REPAIR,
@@ -67,8 +66,9 @@ describe("getHarnessNanoConfig", () => {
     expect((config.repair as { maxAttempts: number }).maxAttempts).toBeGreaterThan(1)
   })
 
-  it("browser demo binding matches eval matrix binding", () => {
-    expect(HARNESS_BROWSER_NANO_DEMO_BINDING).toBe(HARNESS_NANO_BINDING)
+  it("nano binding exposes repair and trace config", () => {
+    expect(HARNESS_NANO_BINDING.repair).toBeDefined()
+    expect(HARNESS_NANO_BINDING.trace).toBeDefined()
   })
 
   it("chat repair experiment enables prior output reinjection", () => {

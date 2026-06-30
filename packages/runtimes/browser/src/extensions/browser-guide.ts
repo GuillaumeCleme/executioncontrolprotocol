@@ -39,7 +39,7 @@ function guideReply(message: string): string {
   if (/what can you do|what are you|who are you|help me|introduce/.test(lower)) {
     return [
       "I help you build and patch ECP workflows in this editor, explain ECP concepts,",
-      "and describe capabilities registered in this environment (for example @executioncontrolprotocol/test.echo and @executioncontrolprotocol/demo.*).",
+      "and describe capabilities registered in this environment (for example @executioncontrolprotocol/test.echo and @executioncontrolprotocol/test.summarize).",
       "Ask about workflows, the environment panel, validation, or Chrome AI.",
       'To generate a workflow, try: "Create a demo echo workflow."',
     ].join(" ")

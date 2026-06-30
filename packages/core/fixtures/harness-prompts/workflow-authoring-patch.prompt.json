@@ -22,12 +22,12 @@
       "output": "PATCH WORKFLOW two-step-chain\nUPDATE STEP summarize\n  LABEL \"Short Summary\""
     },
     {
-      "message": "Insert a validate step before echo using @executioncontrolprotocol/demo.validate.",
-      "output": "PATCH WORKFLOW echo-test\nADD STEP validate USES @executioncontrolprotocol/demo.validate BEFORE echo\n  LABEL \"Validate\"\n  WITH payload = {\"ok\": true}\n  AS validated"
+      "message": "Insert a validate step before echo using @executioncontrolprotocol/test.validate.",
+      "output": "PATCH WORKFLOW echo-test\nADD STEP validate USES @executioncontrolprotocol/test.validate BEFORE echo\n  LABEL \"Validate\"\n  WITH payload = {\"ok\": true}\n  AS validated"
     },
     {
-      "message": "Add a summarize step after echo using @executioncontrolprotocol/demo.summarize.",
-      "output": "PATCH WORKFLOW echo-test\nADD STEP summarize USES @executioncontrolprotocol/demo.summarize AFTER echo\n  LABEL \"Summarize\"\n  WITH payload = REF echo.output\n  AS summary"
+      "message": "Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
+      "output": "PATCH WORKFLOW echo-test\nADD STEP summarize USES @executioncontrolprotocol/test.summarize AFTER echo\n  LABEL \"Summarize\"\n  WITH payload = REF echo.output\n  AS summary"
     },
     {
       "message": "Ensure summarize input references echo output via $ref.",
@@ -35,7 +35,7 @@
     },
     {
       "message": "Add translate after echo and remove summarize if present.",
-      "output": "PATCH WORKFLOW two-step-chain\nDELETE STEP summarize\nADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo\n  LABEL \"Translate\"\n  WITH text = REF echo.output\n  AS translated"
+      "output": "PATCH WORKFLOW two-step-chain\nDELETE STEP summarize\nADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo\n  LABEL \"Translate\"\n  WITH text = REF echo.output\n  AS translated"
     },
     {
       "message": "Move the echo step to run after validate.",

@@ -41,7 +41,7 @@ describe("@executioncontrolprotocol/registry-control", () => {
   it("denies extension outside allowed namespace", async () => {
     const decision = await evalPre(
       { allowedExtensionNamespaces: ["@customer/*"] },
-      { kind: "extension", id: "@executioncontrolprotocol/demo" }
+      { kind: "extension", id: "@executioncontrolprotocol/memory" }
     )
     expect(decision?.type).toBe("deny")
   })

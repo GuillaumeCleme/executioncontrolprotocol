@@ -29,7 +29,7 @@ const env = environment("browser-demo", "Browser Demo")
   .withExtensions([
     extension("@executioncontrolprotocol/format-toon").with({}),
     extension("@executioncontrolprotocol/format-fluent").with({}),
-    extension("@executioncontrolprotocol/demo").with({}),
+    extension("@executioncontrolprotocol/test").with({}),
   ])
   .withPolicies([
     policy("@executioncontrolprotocol/registry-control").with({

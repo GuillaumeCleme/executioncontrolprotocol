@@ -1,27 +1,24 @@
 import { describe, expect, it } from "vitest"
 import { environment, extension, registerTestExtension, runtime } from "@executioncontrolprotocol/core"
 import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontrolprotocol/node"
-import { registerDemoExtension } from "../src/index.js"
 import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
 
-describe("@executioncontrolprotocol/demo generateText EQL", () => {
+describe("@executioncontrolprotocol/test generate EQL", () => {
   it("returns workflow EQL with USES (not capabilityId)", async () => {
     await registerNodeRuntime()
-    await registerDemoExtension()
     await registerTestExtension()
     await registerFormatEqlExtension()
 
-    const env = environment("demo-test")
+    const env = environment("test-generate")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@executioncontrolprotocol/demo").with({}),
         extension("@executioncontrolprotocol/format-eql").with({}),
         extension("@executioncontrolprotocol/test").with({}),
       ])
     const ecp = await env.init()
 
     const generated = await ecp
-      .invoke("@executioncontrolprotocol/demo.generateText")
+      .invoke("@executioncontrolprotocol/test.generate")
       .with({ prompt: "build me a workflow" })
       .process()
     expect(generated.success).toBe(true)
@@ -48,5 +45,7 @@ describe("@executioncontrolprotocol/demo generateText EQL", () => {
 
     const validation = await ecp.validate(manifest as never)
     expect(validation.valid).toBe(true)
+
+    await ecp.terminate()
   })
 })

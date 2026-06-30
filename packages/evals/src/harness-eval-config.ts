@@ -47,7 +47,6 @@ export const MATRIX_EVAL_EXTENSION_IDS = [
   "@executioncontrolprotocol/format-eql",
   "@executioncontrolprotocol/format-json",
   "@executioncontrolprotocol/test",
-  "@executioncontrolprotocol/demo",
 ] as const
 
 /** Intent harness config for matrix environment. @category Evals */

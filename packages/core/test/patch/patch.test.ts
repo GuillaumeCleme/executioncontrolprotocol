@@ -61,7 +61,7 @@ describe("applyPatch", () => {
             type: "step",
             id: "summarize",
             label: "Summarize",
-            uses: "@executioncontrolprotocol/demo.summarize",
+            uses: "@executioncontrolprotocol/test.summarize",
             input: { text: { $ref: "state.echo.output" } },
             as: "summary",
           },
@@ -90,7 +90,7 @@ describe("applyPatch", () => {
             type: "step",
             id: "summarize",
             label: "Summarize",
-            uses: "@executioncontrolprotocol/demo.summarize",
+            uses: "@executioncontrolprotocol/test.summarize",
             input: { text: { $ref: "state.echo.output" } },
             as: "summary",
           },
@@ -110,7 +110,7 @@ describe("applyPatch", () => {
       .id("echo-notify")
       .run([
         step("@executioncontrolprotocol/test.echo", "Echo").id("echo").with({ value: "hi" }).as("echo"),
-        step("@executioncontrolprotocol/demo.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
+        step("@executioncontrolprotocol/test.notify", "Notify").id("notify").with({ payload: { ok: true } }).as("notify"),
       ])
       .toManifest()
 

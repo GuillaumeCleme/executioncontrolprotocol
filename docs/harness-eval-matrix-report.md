@@ -33,7 +33,7 @@ This document catalogs **every assertion and eval case** in the `@executioncontr
 
 **Model under test:** `gemma3:1b` (`OLLAMA_GEMMA_1B_EVAL`), base URL `http://localhost:11434`, `num_ctx: 8192`.
 
-**Matrix environment extensions (binding order):** `@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/format-json`, `@executioncontrolprotocol/test`, `@executioncontrolprotocol/demo`.
+**Matrix environment extensions (binding order):** `@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/format-eql`, `@executioncontrolprotocol/format-json`, `@executioncontrolprotocol/test`.
 
 Cases are defined in [`packages/evals/fixtures/cases/*.cases.json`](../packages/evals/fixtures/cases/). Vitest loads them via `loadEvalCases()` and `runEvalCase()` — no per-case test files.
 
@@ -186,18 +186,18 @@ Harness: **workflow-authoring** (create). Model: **default** → `gemma3:1b`.
 
 | ID | Title | User request (summary) | Deterministic expectations | Judge |
 | -- | ----- | ---------------------- | -------------------------- | ----- |
-| **wf-create-01** | Minimal echo | Create minimal `@executioncontrolprotocol.workflow` with one echo step, input `hello` | `invokeSuccess`; `artifactSchema` `@executioncontrolprotocol.workflow`; `validationValid`; extensions `@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/format-json`, `@executioncontrolprotocol/test`, `@executioncontrolprotocol/demo`; `stepUses` `@executioncontrolprotocol/test.echo`; `stepCount` **exact 1** | Off |
-| **wf-create-02** | Echo plus summarize | Echo then summarize, passing echo output | Same extension list; `stepCount` **min 2**; `stepUses` `@executioncontrolprotocol/demo.summarize` | Off |
-| **wf-create-03** | Validate then echo | Build workflow: first `@executioncontrolprotocol/demo.validate` then `@executioncontrolprotocol/test.echo` | `stepUses` `@executioncontrolprotocol/demo.validate` | Off |
-| **wf-create-04** | Notify step | Echo + final `@executioncontrolprotocol/demo.notify` | `stepUses` `@executioncontrolprotocol/demo.notify` | Off |
-| **wf-create-05** | Translate branch | Two-step echo + `@executioncontrolprotocol/demo.translate` | `stepUses` `@executioncontrolprotocol/demo.translate` | Off |
+| **wf-create-01** | Minimal echo | Create minimal `@executioncontrolprotocol.workflow` with one echo step, input `hello` | `invokeSuccess`; `artifactSchema` `@executioncontrolprotocol.workflow`; `validationValid`; extensions `@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/format-json`, `@executioncontrolprotocol/test`; `stepUses` `@executioncontrolprotocol/test.echo`; `stepCount` **exact 1** | Off |
+| **wf-create-02** | Echo plus summarize | Echo then summarize, passing echo output | Same extension list; `stepCount` **min 2**; `stepUses` `@executioncontrolprotocol/test.summarize` | Off |
+| **wf-create-03** | Validate then echo | Build workflow: first `@executioncontrolprotocol/test.validate` then `@executioncontrolprotocol/test.echo` | `stepUses` `@executioncontrolprotocol/test.validate` | Off |
+| **wf-create-04** | Notify step | Echo + final `@executioncontrolprotocol/test.notify` | `stepUses` `@executioncontrolprotocol/test.notify` | Off |
+| **wf-create-05** | Translate branch | Two-step echo + `@executioncontrolprotocol/test.translate` | `stepUses` `@executioncontrolprotocol/test.translate` | Off |
 | **wf-create-06** | Spanish label | Spanish: one echo step | `stepUses` `@executioncontrolprotocol/test.echo` | Off |
 | **wf-create-07** | French label | French: one echo step | `stepUses` `@executioncontrolprotocol/test.echo` | Off |
 | **wf-create-08** | German label | German: one echo step | `stepUses` `@executioncontrolprotocol/test.echo` | Off |
 | **wf-create-09** | Triple steps | 3-step: validate, echo, summarize | `stepCount` **min 3** | Off |
 | **wf-create-10** | Workflow id minimal-echo | Workflow id `minimal-echo`, one echo labeled Runner | `stepUses` `@executioncontrolprotocol/test.echo` | Off |
 | **wf-create-11** | Quality judge | Production-style echo ingestion workflow | `invokeSuccess`; schema + validation + extensions (no step-specific asserts) | **On** — Goal: *"Workflow is coherent and references echo capability"*; `requireApproved: true`; default rubric |
-| **wf-create-12** | Descriptor caps | List capabilities then echo-only workflow | `descriptorListsCapabilities` `@executioncontrolprotocol/test.echo`, `@executioncontrolprotocol/demo.summarize` | Off |
+| **wf-create-12** | Descriptor caps | List capabilities then echo-only workflow | `descriptorListsCapabilities` `@executioncontrolprotocol/test.echo`, `@executioncontrolprotocol/test.summarize` | Off |
 
 **Implicit create expectations (harness, all rows):** Top-level `steps` array; `input` not `inputs`; `uses` must be real capability ids from environment; multi-capability requests must produce one step per required capability (enforced via repair feedback).
 
@@ -211,12 +211,12 @@ Harness: **workflow-authoring** (patch). Baseline from `baselineWorkflow` fixtur
 | -- | ----- | -------- | ---------------------- | -------------------------- | ----- |
 | **wf-patch-01** | Label change | `echo-workflow.json` | Change echo label to **Patched Echo** | `stepLabel` echo → `"Patched Echo"` | Off |
 | **wf-patch-02** | Input value | `echo-workflow.json` | Set echo input value to **world** | schema + validation only | Off |
-| **wf-patch-03** | Add summarize | `echo-workflow.json` | Add summarize after echo (`@executioncontrolprotocol/demo.summarize`) | `stepCount` **min 2** | Off |
+| **wf-patch-03** | Add summarize | `echo-workflow.json` | Add summarize after echo (`@executioncontrolprotocol/test.summarize`) | `stepCount` **min 2** | Off |
 | **wf-patch-04** | Remove notify | `multi-cap-workflow.json` | Remove notify step | `stepRemoved` **notify** | Off |
 | **wf-patch-05** | Workflow label | `two-step-chain.json` | Change workflow label to **Updated Chain** | schema + validation | Off |
 | **wf-patch-06** | Step config | `two-step-chain.json` | Summarize label → **Short Summary** | `stepLabel` summarize → `"Short Summary"` | Off |
 | **wf-patch-07** | Ref chain | `two-step-chain.json` | Summarize input must `$ref` echo output | `inputRefPresent` **summarize** | Off |
-| **wf-patch-08** | Add validate | `echo-workflow.json` | Insert validate before echo | `stepUses` `@executioncontrolprotocol/demo.validate` | Off |
+| **wf-patch-08** | Add validate | `echo-workflow.json` | Insert validate before echo | `stepUses` `@executioncontrolprotocol/test.validate` | Off |
 | **wf-patch-09** | Combined | `two-step-chain.json` | Add translate after echo; remove summarize if present | schema + validation | Off |
 | **wf-patch-10** | Patch judge | `echo-workflow.json` | Improve echo label (user-friendly) | schema + validation | **On** — Goal: *"Patch is minimal and correct"*; `requireApproved: true` |
 | **wf-patch-11** | Translate label | `echo-workflow.json` | Rename echo label to **Translated Output** | schema + validation | Off |
@@ -288,7 +288,7 @@ Suite: **`flow`** (6 cases). Each case is one Vitest `it` but **multiple harness
 | Step | Harness | Input | Assertions |
 | ---- | ------- | ----- | ---------- |
 | 0 | intent-classification | *"I need a new workflow with echo and summarize."* | `intent` → `workflow-create` |
-| 1 | workflow-authoring | *"Create echo then @executioncontrolprotocol/demo.summarize workflow."* | `artifactSchema` `@executioncontrolprotocol.workflow` |
+| 1 | workflow-authoring | *"Create echo then @executioncontrolprotocol/test.summarize workflow."* | `artifactSchema` `@executioncontrolprotocol.workflow` |
 
 Note: step 1 does **not** list `invokeSuccess` in JSON; runner still injects it.
 

@@ -23,7 +23,7 @@ describe("BrowserAuthoringService", () => {
     const ecp = await authoringEcp()
     const invoked = await ecp
       .invoke(WORKFLOW_AUTHORING_CAPABILITY)
-      .uses("@executioncontrolprotocol/demo.generate")
+      .uses("@executioncontrolprotocol/test.generate")
       .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "echo demo workflow" })
       .process()
     expect(invoked.success).toBe(true)
@@ -65,7 +65,7 @@ describe("BrowserAuthoringService", () => {
     const service = new BrowserAuthoringService(ecp)
     const invoked = await ecp
       .invoke(WORKFLOW_AUTHORING_CAPABILITY)
-      .uses("@executioncontrolprotocol/demo.generate")
+      .uses("@executioncontrolprotocol/test.generate")
       .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "demo" })
       .process()
     const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>

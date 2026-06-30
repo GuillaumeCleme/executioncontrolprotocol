@@ -103,9 +103,3 @@ export const HARNESS_NANO_BINDING = {
   trace: HARNESS_NANO_TRACE,
   context: SHARED_CONTEXT,
 } as const
-
-/**
- * Browser demo uses the same harness binding as eval matrix tests.
- * Only the model provider (`.uses(...)` at invoke) differs in the demo app.
- */
-export const HARNESS_BROWSER_NANO_DEMO_BINDING = HARNESS_NANO_BINDING

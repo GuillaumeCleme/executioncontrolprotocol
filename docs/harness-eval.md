@@ -44,7 +44,7 @@ Source: [`packages/evals/src/profiles/chrome-nano.ts`](../packages/evals/src/pro
 
 `@executioncontrolprotocol/harness-browser-nano` owns prompts, repair loops, EQL decode, and validation. Providers only implement `@executioncontrolprotocol/model.generate`. Matrix evals use `createHarnessMatrixEnvironment(profile)` — the same harness binding (`HARNESS_NANO_BINDING`) for Ollama and Chrome; only `.uses()` and runtime change.
 
-The browser demo uses the same matrix harness profile; the UI swaps providers via `.uses(@executioncontrolprotocol/chrome-ai.generate)` (or OpenAI, demo stub, etc.) at invoke time.
+The browser demo uses the same matrix harness profile; the UI swaps providers via `.uses(@executioncontrolprotocol/chrome-ai.generate)` (or OpenAI, Claude, etc.) at invoke time.
 
 ### Run
 
@@ -132,7 +132,7 @@ See [packages/evals/README.md](../packages/evals/README.md#fixture-driven-matrix
 3. For matrix cases, edit the appropriate `*.cases.json` file; for smoke, add `packages/evals/test/harness/<name>.eval.test.ts`.
 4. **Use the matching environment factory** — `createHarnessOllamaMatrixEnvironment()` for matrix rows.
 5. **Assert narrowly** — schema, validation, decode trace, and concrete artifact fields.
-6. **Keep fast tests in core** — `packages/core/test/harness/` with `@executioncontrolprotocol/demo.generate` runs in every `npm run check`.
+6. **Keep fast tests in core** — `packages/core/test/harness/` with `@executioncontrolprotocol/test.generate` runs in every `npm run check`.
 
 Example skeleton:
 

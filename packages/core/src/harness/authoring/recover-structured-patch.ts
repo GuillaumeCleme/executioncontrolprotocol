@@ -63,6 +63,56 @@ function hasValidPatchHeader(raw: string, workflowId: string): boolean {
   return new RegExp(`^PATCH WORKFLOW\\s+${escapeRegExp(workflowId)}\\b`, "im").test(raw.trim())
 }
 
+function inferMoveStep(
+  request: string,
+  stepIds: readonly string[]
+): { stepId: string; relation: "AFTER" | "BEFORE"; anchorId: string } | undefined {
+  const match = request.match(
+    /\bmove\s+(?:the\s+)?(\w+)\s+(?:step\s+)?(?:to\s+run\s+)?(after|before)\s+(\w+)/i
+  )
+  if (!match) {
+    return undefined
+  }
+  const stepId = match[1]!
+  const relation = match[2]!.toUpperCase() as "AFTER" | "BEFORE"
+  const anchorId = match[3]!
+  if (!stepIds.includes(stepId) || !stepIds.includes(anchorId)) {
+    return undefined
+  }
+  return { stepId, relation, anchorId }
+}
+
+function recoverMoveStepPatch(
+  request: string,
+  raw: string,
+  workflowId: string,
+  stepIds: readonly string[]
+): string | undefined {
+  const move = inferMoveStep(request, stepIds)
+  if (!move) {
+    return undefined
+  }
+  const minimal = `PATCH WORKFLOW ${workflowId}\nMOVE STEP ${move.stepId} ${move.relation} ${move.anchorId}`
+  const valid = new RegExp(
+    `^PATCH WORKFLOW\\s+${escapeRegExp(workflowId)}\\s*\\nMOVE STEP\\s+${escapeRegExp(move.stepId)}\\s+${move.relation}\\s+${escapeRegExp(move.anchorId)}\\s*$`,
+    "im"
+  )
+  if (valid.test(raw.trim())) {
+    return undefined
+  }
+  if (
+    isGarbledPatchEqlOutput(raw) ||
+    /ADD STEP/i.test(raw) ||
+    /UPDATE WORKFLOW/i.test(raw) ||
+    /UPDATE STEP/i.test(raw) ||
+    !/MOVE STEP/i.test(raw) ||
+    !hasValidPatchHeader(raw, workflowId)
+  ) {
+    return minimal
+  }
+  return undefined
+}
+
 function recoverDeleteStepPatch(
   request: string,
   raw: string,
@@ -235,6 +285,7 @@ export function recoverStructuredPatchFromRequest(
       context.stepIds,
       capabilityIds
     ) ??
+    recoverMoveStepPatch(context.request, raw, context.workflowId, context.stepIds) ??
     recoverDeleteStepPatch(context.request, raw, context.workflowId, context.stepIds) ??
     recoverAddStepPatch(context.request, raw, context.workflowId, capabilityIds) ??
     recoverWorkflowLabelPatch(context.request, raw, context.workflowId, context.requestedLabel) ??

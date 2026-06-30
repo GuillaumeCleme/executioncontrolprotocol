@@ -53,7 +53,7 @@ extension("@executioncontrolprotocol/browser-registry").with({
 })
 
 policy("@executioncontrolprotocol/registry-control").with({
-  allowedExtensionNamespaces: ["@customer/*", "@executioncontrolprotocol/demo"],
+  allowedExtensionNamespaces: ["@customer/*"],
   deniedExtensionNamespaces: ["@unsafe/*"],
   allowAutoBind: true
 })
@@ -190,7 +190,7 @@ Move those to:
 
 ```ts
 policy("@executioncontrolprotocol/registry-control").with({
-  allowedExtensionNamespaces: ["@executioncontrolprotocol/demo", "@customer/*"],
+  allowedExtensionNamespaces: ["@customer/*"],
   deniedExtensionNamespaces: ["@customer/unsafe"],
   allowDynamicExtensionRegistration: true,
   allowAutoBind: true,

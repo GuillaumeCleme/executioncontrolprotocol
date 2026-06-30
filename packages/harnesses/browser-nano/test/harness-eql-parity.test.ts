@@ -11,7 +11,6 @@ import {
 import { registerTestExtension } from "../../../core/src/testing/test-extension.js"
 import {
   BROWSER_NANO_HARNESS_CAPABILITY,
-  HARNESS_BROWSER_NANO_DEMO_BINDING,
   HARNESS_NANO_BINDING,
   registerBrowserNanoHarnesses,
   resetBrowserNanoHarnessRegistrationForTests,
@@ -36,7 +35,7 @@ const eqlAssistantExtension = defineExtension("@executioncontrolprotocol", "eql-
   ])
   .build()
 
-describe("browser nano harness EQL parity (eval binding = demo binding)", () => {
+describe("browser nano harness EQL parity", () => {
   beforeAll(async () => {
     await registerCoreFormats()
     await registerFormatEqlExtension()
@@ -47,11 +46,7 @@ describe("browser nano harness EQL parity (eval binding = demo binding)", () => 
     registerBrowserNanoHarnesses()
   })
 
-  it("HARNESS_BROWSER_NANO_DEMO_BINDING is the same object as HARNESS_NANO_BINDING", () => {
-    expect(HARNESS_BROWSER_NANO_DEMO_BINDING).toBe(HARNESS_NANO_BINDING)
-  })
-
-  it("decodes EQL assistant output with the demo binding", async () => {
+  it("decodes EQL assistant output with the nano binding", async () => {
     const env = environment("workflow-assistant-eql-parity-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
@@ -62,7 +57,7 @@ describe("browser nano harness EQL parity (eval binding = demo binding)", () => 
       .withHarnesses([
         harness("@executioncontrolprotocol/harness-browser-nano")
           .uses("@executioncontrolprotocol/eql-assistant-gen.generate")
-          .with({ ...HARNESS_BROWSER_NANO_DEMO_BINDING }),
+          .with({ ...HARNESS_NANO_BINDING }),
       ])
 
     const ecp = await env.init()

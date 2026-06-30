@@ -5,7 +5,7 @@ describe("isRepairFeedbackEcho", () => {
   it("detects echoed capability repair prose", () => {
     expect(
       isRepairFeedbackEcho(
-        "Workflow must include steps for every required capability. Missing uses: @executioncontrolprotocol/demo.validate."
+        "Workflow must include steps for every required capability. Missing uses: @executioncontrolprotocol/test.validate."
       )
     ).toBe(true)
   })

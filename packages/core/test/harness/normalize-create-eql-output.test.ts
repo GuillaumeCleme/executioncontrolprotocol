@@ -10,7 +10,7 @@ describe("takeFirstWorkflowEqlBlock", () => {
       'WORKFLOW echo-summarize "Echo summarize"',
       "STEP echo USES @executioncontrolprotocol/test.echo",
       'WORKFLOW echo-notify "Echo and notify"',
-      "STEP notify USES @executioncontrolprotocol/demo.notify",
+      "STEP notify USES @executioncontrolprotocol/test.notify",
     ].join("\n")
     const trimmed = takeFirstWorkflowEqlBlock(raw)
     expect(trimmed).toContain("echo-summarize")
@@ -23,14 +23,14 @@ describe("selectBestWorkflowEqlBlock", () => {
     const raw = [
       'WORKFLOW two-step-translate "Echo translate"',
       "STEP echo USES @executioncontrolprotocol/test.echo",
-      "STEP translate USES @executioncontrolprotocol/demo.translate",
+      "STEP translate USES @executioncontrolprotocol/test.translate",
       'WORKFLOW echo-summarize "Echo summarize"',
       "STEP echo USES @executioncontrolprotocol/test.echo",
-      "STEP summarize USES @executioncontrolprotocol/demo.summarize",
+      "STEP summarize USES @executioncontrolprotocol/test.summarize",
     ].join("\n")
     const best = selectBestWorkflowEqlBlock(raw, [
       "@executioncontrolprotocol/test.echo",
-      "@executioncontrolprotocol/demo.summarize",
+      "@executioncontrolprotocol/test.summarize",
     ])
     expect(best).toContain("echo-summarize")
     expect(best).not.toContain("translate")
@@ -47,16 +47,16 @@ describe("filterWorkflowEqlToRequiredCapabilities", () => {
       "STEP echo USES @executioncontrolprotocol/test.echo",
       "  LABEL \"Echo\"",
       "  AS echo",
-      "STEP generate USES @executioncontrolprotocol/demo.generate",
+      "STEP generate USES @executioncontrolprotocol/test.generate",
       "  LABEL \"Generate\"",
       "  AS generate",
-      "STEP summarize USES @executioncontrolprotocol/demo.summarize",
+      "STEP summarize USES @executioncontrolprotocol/test.summarize",
       "  LABEL \"Summarize\"",
       "  AS summarize",
     ].join("\n")
     const filtered = filterWorkflowEqlToRequiredCapabilities(raw, [
       "@executioncontrolprotocol/test.echo",
-      "@executioncontrolprotocol/demo.summarize",
+      "@executioncontrolprotocol/test.summarize",
     ])
     expect((filtered.match(/^STEP /gm) ?? []).length).toBe(2)
     expect(filtered).not.toContain("demo.generate")

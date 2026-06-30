@@ -79,11 +79,10 @@ npx vitest run --project eval packages/evals/test/harness/matrix-chat.eval.test.
 | Workflow operations (smoke) | `createHarnessOllamaWorkflowEnvironment()` | `@executioncontrolprotocol/harness-browser-nano` workflow task | `@executioncontrolprotocol/format-eql` |
 | Intent routing (smoke) | `createHarnessOllamaIntentEnvironment()` | `@executioncontrolprotocol/harness-browser-nano` intent task | `@executioncontrolprotocol/format-eql` |
 | Combined (both) | `createHarnessOllamaEnvironment()` | both tasks | EQL output |
-| Demo (not counted) | demo provider env | same harness ids | deterministic stubs only |
 
 ### Extension alignment (matrix)
 
-Matrix evals bind **formatters, test, and demo stubs** only (no memory/storage/telemetry):
+Matrix evals bind **formatters and test workflow stubs** only (no memory/storage/telemetry):
 
 | Extension | Why |
 | --------- | --- |
@@ -91,8 +90,7 @@ Matrix evals bind **formatters, test, and demo stubs** only (no memory/storage/t
 | `@executioncontrolprotocol/format-toon` | Legacy descriptor encoding (optional; matrix uses plain-text + EQL grammar in prompts) |
 | `@executioncontrolprotocol/format-eql` | Harness model output (workflow, patch, intent, reply) — headerless |
 | `@executioncontrolprotocol/format-json` | Run context encoding (core formatter, explicit binding) |
-| `@executioncontrolprotocol/test` | `@executioncontrolprotocol/test.echo` in workflow prompts |
-| `@executioncontrolprotocol/demo` | Stub ops: `summarize`, `translate`, `notify`, `validate` (not the LLM provider) |
+| `@executioncontrolprotocol/test` | `@executioncontrolprotocol/test.echo` and stub ops (`summarize`, `translate`, `notify`, `validate`) in workflow prompts |
 
 Legacy smoke environments use `@executioncontrolprotocol/format-toon` + `@executioncontrolprotocol/test` only.
 
@@ -286,7 +284,7 @@ Prefer checks the model can reliably satisfy:
 
 ### 5. Fast offline tests stay in `@executioncontrolprotocol/core`
 
-Deterministic harness behavior (demo provider, mocks) belongs in `packages/core/test/harness/` and runs in `npm run test:unit`. Reserve `@executioncontrolprotocol/evals` for real model scrutiny.
+Deterministic harness behavior (`@executioncontrolprotocol/test.generate`, mocks) belongs in `packages/core/test/` and runs in `npm run test:unit`. Reserve `@executioncontrolprotocol/evals` for real model scrutiny.
 
 ## Changing the pinned model
 

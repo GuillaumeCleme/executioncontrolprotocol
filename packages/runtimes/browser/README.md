@@ -49,7 +49,7 @@ Fluent emission for browser panels uses `ecp.encode(manifest).as("fluent").with(
 
 ## Dependencies
 
-`@executioncontrolprotocol/browser` depends on `@executioncontrolprotocol/core` only for runtime mechanics. Extension packages (`@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/demo`, providers, etc.) are registered by `registerBrowserDefaults()` for the **reference** demo environment; production browser apps should register only what they need.
+`@executioncontrolprotocol/browser` depends on `@executioncontrolprotocol/core` only for runtime mechanics. Extension packages (`@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/chrome-ai`, providers, etc.) are registered by `registerBrowserDefaults()` for the **reference** browser demo environment; production browser apps should register only what they need.
 
 ## Tests
 

@@ -29,10 +29,30 @@ describe("tryBuildRunContextReply", () => {
     expect(reply?.answer.toLowerCase()).toContain("failed")
   })
 
+  it("answers whether workflow is still running", () => {
+    const runningContext: HarnessRunContext = {
+      run: {
+        schema: "@executioncontrolprotocol.run.result",
+        version: "1.0",
+        run: { id: "run-started", status: "started" },
+        history: {},
+      },
+    }
+    const reply = tryBuildRunContextReply("Is my workflow still running?", runningContext)
+    expect(reply?.answer.toLowerCase()).toContain("run")
+    expect(reply?.answer.toLowerCase()).toContain("started")
+  })
+
   it("answers echo failure errors from context", () => {
     const reply = tryBuildRunContextReply("Why did step echo fail?", failedEchoContext)
     expect(reply?.answer.toLowerCase()).toContain("echo")
     expect(reply?.answer.toLowerCase()).toContain("error")
+  })
+
+  it("explains failure politely from run context", () => {
+    const reply = tryBuildRunContextReply("Explain the failure politely.", failedEchoContext)
+    expect(reply?.answer.toLowerCase()).toContain("error")
+    expect(reply?.answer.toLowerCase()).toContain("echo")
   })
 })
 

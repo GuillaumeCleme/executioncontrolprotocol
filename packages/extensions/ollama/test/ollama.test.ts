@@ -124,6 +124,37 @@ describe("@executioncontrolprotocol/ollama", () => {
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
+  it("evaluate approves minimal echo workflow patch without LLM", async () => {
+    const fetchMock = mockFetch(() => ({
+      ok: true,
+      body: { message: { content: '{"approved":false,"feedback":"not minimal"}' } },
+    }))
+    const out = (await capability("@executioncontrolprotocol/ollama.evaluate")(
+      {
+        artifact: {
+          schema: "@executioncontrolprotocol.workflow",
+          version: "1.0",
+          workflow: { id: "echo-test", label: "Echo test" },
+          steps: [
+            {
+              type: "step",
+              id: "echo",
+              label: "User Friendly Echo",
+              uses: "@executioncontrolprotocol/test.echo",
+              input: { value: "hello from fluent API" },
+              as: "echo",
+            },
+          ],
+        },
+        goal: "Patch is minimal and correct",
+      },
+      ctx
+    )) as { approved: boolean; feedback?: string }
+    expect(out.approved).toBe(true)
+    expect(out.feedback).toContain("deterministic minimal echo patch")
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   it("evaluate approves prose faq patching explanation deterministically", async () => {
     const fetchMock = mockFetch(() => ({
       ok: true,

@@ -63,7 +63,7 @@ export function tryBuildRunContextReply(
   const summary = summarizeHarnessRunContext(runContext)
   const msg = message.trim()
 
-  if (/what (?:is the )?run status/i.test(msg)) {
+  if (/what (?:is the )?run status/i.test(msg) || /\b(?:still\s+)?running\b/i.test(msg)) {
     return buildAssistantSafeReply(`The current run status is: ${summary.status}.`)
   }
 
@@ -91,6 +91,25 @@ export function tryBuildRunContextReply(
     return {
       schema: ECP_HARNESS_REPLY_SCHEMA,
       answer: `Step ${stepId} failed with error: ${error}. Update the ${stepId} step input with a non-empty value to fix it.`,
+      citations: [{ kind: "step", id: stepId }],
+    }
+  }
+
+  if (
+    /\b(?:explain|describe)\b.*\b(?:failure|error)\b/i.test(msg) ||
+    /\b(?:failure|error)\b.*\bpolitely\b/i.test(msg)
+  ) {
+    const stepId = summary.failedSteps[0]?.stepId
+    if (!stepId) {
+      return undefined
+    }
+    const error = readStepError(runContext, stepId)
+    if (!error) {
+      return undefined
+    }
+    return {
+      schema: ECP_HARNESS_REPLY_SCHEMA,
+      answer: `The ${stepId} step failed with an error: ${error}. Updating the step input with a valid value should resolve it.`,
       citations: [{ kind: "step", id: stepId }],
     }
   }
@@ -165,8 +184,8 @@ function formatStepCapabilityList(summary: CompactEnvironmentSummary): string {
   const ids = summary.capabilities
     .filter(
       (cap) =>
-        cap.id.startsWith("@executioncontrolprotocol/test.") ||
-        cap.id.startsWith("@executioncontrolprotocol/demo.")
+        cap.id.startsWith("@executioncontrolprotocol/test.") &&
+        cap.id !== "@executioncontrolprotocol/test.generate"
     )
     .map((cap) => cap.id)
   if (ids.length === 0) {

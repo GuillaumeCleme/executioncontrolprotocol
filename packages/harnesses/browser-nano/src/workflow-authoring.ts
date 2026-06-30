@@ -321,7 +321,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
             raw = selectBestWorkflowEqlBlock(raw, requiredCaps)
           }
           raw = raw
-            .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/demo.summarize")
+            .replace(/@executioncontrolprotocol\/demo\.summarizes\b/g, "@executioncontrolprotocol/test.summarize")
           raw = normalizeCreateEqlRawOutput(raw)
           if (requiredCaps.length > 0) {
             if (!createEqlIncludesRequiredCapabilities(raw, requiredCaps)) {

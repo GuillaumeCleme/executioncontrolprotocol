@@ -54,8 +54,10 @@ export function summarizeEnvironmentDescriptor(
 /** How to render capability rows in user prompts. @category Harness */
 export type EnvironmentSummaryFormat = "plain" | "eql-create" | "eql-patch"
 
+const TEST_NON_STEP_CAPABILITY_IDS = new Set(["@executioncontrolprotocol/test.generate"])
+
 function isWorkflowStepCapability(capId: string): boolean {
-  return capId.startsWith("@executioncontrolprotocol/test.") || capId.startsWith("@executioncontrolprotocol/demo.")
+  return capId.startsWith("@executioncontrolprotocol/test.") && !TEST_NON_STEP_CAPABILITY_IDS.has(capId)
 }
 
 function workflowStepCapabilities(summary: CompactEnvironmentSummary): CompactCapabilityRow[] {

@@ -18,7 +18,7 @@
       "type": "step",
       "id": "summarize",
       "label": "Summarize",
-      "uses": "@executioncontrolprotocol/demo.summarize",
+      "uses": "@executioncontrolprotocol/test.summarize",
       "input": { "payload": { "$ref": "state.echo.output" } },
       "as": "summary"
     }

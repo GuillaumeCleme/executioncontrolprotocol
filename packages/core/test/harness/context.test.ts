@@ -25,7 +25,7 @@ describe("createHarnessCapabilityContext", () => {
 
     const ctx = createHarnessCapabilityContext(
       "@executioncontrolprotocol/test" as never,
-      "@executioncontrolprotocol/demo.generate" as never,
+      "@executioncontrolprotocol/test.generate" as never,
       {},
       {} as never,
       {} as never,
@@ -39,7 +39,7 @@ describe("createHarnessCapabilityContext", () => {
   it("passes raw config when configSchema is omitted", () => {
     const ctx = createHarnessCapabilityContext(
       "@executioncontrolprotocol/test" as never,
-      "@executioncontrolprotocol/demo.generate" as never,
+      "@executioncontrolprotocol/test.generate" as never,
       { custom: true },
       {} as never,
       {} as never,

@@ -69,7 +69,7 @@
       "model": "default",
       "baselineWorkflow": "workflows/echo-workflow.json",
       "input": {
-        "request": "Add a summarize step after echo using @executioncontrolprotocol/demo.summarize."
+        "request": "Add a summarize step after echo using @executioncontrolprotocol/test.summarize."
       },
       "assertions": {
         "deterministic": [
@@ -230,7 +230,7 @@
       "model": "default",
       "baselineWorkflow": "workflows/echo-workflow.json",
       "input": {
-        "request": "Insert a validate step before echo using @executioncontrolprotocol/demo.validate."
+        "request": "Insert a validate step before echo using @executioncontrolprotocol/test.validate."
       },
       "assertions": {
         "deterministic": [
@@ -246,7 +246,7 @@
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontrolprotocol/demo.validate"
+            "capabilityId": "@executioncontrolprotocol/test.validate"
           }
         ],
         "judge": {

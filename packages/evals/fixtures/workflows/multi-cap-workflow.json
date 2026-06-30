@@ -10,7 +10,7 @@
       "type": "step",
       "id": "validate",
       "label": "Validate",
-      "uses": "@executioncontrolprotocol/demo.validate",
+      "uses": "@executioncontrolprotocol/test.validate",
       "input": { "payload": { "ok": true } },
       "as": "validated"
     },
@@ -26,7 +26,7 @@
       "type": "step",
       "id": "notify",
       "label": "Notify",
-      "uses": "@executioncontrolprotocol/demo.notify",
+      "uses": "@executioncontrolprotocol/test.notify",
       "input": { "payload": { "$ref": "state.echo.output" } },
       "as": "notified"
     }

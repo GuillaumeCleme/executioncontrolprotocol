@@ -33,7 +33,7 @@ describe("harness catalog", () => {
       TEST_MINIMAL_HARNESS_ID
     )
     expect(isHarnessCapabilityId("@executioncontrolprotocol/test-minimal-harness.evaluate")).toBe(true)
-    expect(isHarnessCapabilityId("@executioncontrolprotocol/demo.generate")).toBe(false)
+    expect(isHarnessCapabilityId("@executioncontrolprotocol/test.generate")).toBe(false)
     expect(isHarnessCapabilityId("@executioncontrolprotocol/ollama.evaluate")).toBe(false)
   })
 

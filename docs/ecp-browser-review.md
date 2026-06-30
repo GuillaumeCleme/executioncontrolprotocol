@@ -104,7 +104,7 @@ registerBrowserDefaults();
 
 const wf = workflow("Browser Echo")
   .run([
-    step("@executioncontrolprotocol/demo.echo", "Echo")
+    step("@executioncontrolprotocol/test.echo", "Echo")
       .with({ message: "Hello browser" })
       .as("echo"),
   ])
@@ -561,7 +561,7 @@ const env = environment("browser-demo")
       freezeOnFirstRun: true,
       allowRuntimeRegistration: true,
       autoBindRegisteredExtensions: true,
-      allowedNamespaces: ["@executioncontrolprotocol/demo", "@customer/*"],
+      allowedNamespaces: ["@customer/*"],
       exposeGlobal: true,
       globalName: "ECP",
     }),
@@ -822,7 +822,7 @@ export const browserRegistryExtension = defineExtension("@executioncontrolprotoc
     autoBindRegisteredExtensions: boolean().default(false),
     exposeGlobal: boolean().default(false),
     globalName: string().default("ECP"),
-    allowedNamespaces: array(string()).default(["@executioncontrolprotocol/demo", "@customer/*"]),
+    allowedNamespaces: array(string()).default(["@customer/*"]),
     deniedNamespaces: array(string()).default([]),
   })
   .withHooks([
@@ -859,7 +859,7 @@ export interface BrowserRegistryConfig {
 Support:
 
 ```txt
-@executioncontrolprotocol/demo
+@executioncontrolprotocol/chrome-ai
 @customer/*
 @partner/*
 ```

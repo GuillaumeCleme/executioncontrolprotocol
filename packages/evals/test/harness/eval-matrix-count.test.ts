@@ -12,7 +12,6 @@ describe("eval matrix fixtures", () => {
       "@executioncontrolprotocol/format-eql",
       "@executioncontrolprotocol/format-json",
       "@executioncontrolprotocol/test",
-      "@executioncontrolprotocol/demo",
     ])
   })
 

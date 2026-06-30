@@ -15,11 +15,11 @@
     },
     {
       "message": "List supported step capabilities.",
-      "output": "REPLY\n  ANSWER \"Supported step capabilities: @executioncontrolprotocol/test.echo, @executioncontrolprotocol/demo.summarize, @executioncontrolprotocol/demo.validate, @executioncontrolprotocol/demo.notify, @executioncontrolprotocol/demo.translate.\"\n  CITATION extension @executioncontrolprotocol/test \"@executioncontrolprotocol/test.echo\"\n  CITATION extension @executioncontrolprotocol/demo \"@executioncontrolprotocol/demo.summarize, @executioncontrolprotocol/demo.validate, @executioncontrolprotocol/demo.notify, @executioncontrolprotocol/demo.translate\""
+      "output": "REPLY\n  ANSWER \"Supported step capabilities: @executioncontrolprotocol/test.echo, @executioncontrolprotocol/test.summarize, @executioncontrolprotocol/test.validate, @executioncontrolprotocol/test.notify, @executioncontrolprotocol/test.translate.\"\n  CITATION extension @executioncontrolprotocol/test \"@executioncontrolprotocol/test.echo\"\n  CITATION extension @executioncontrolprotocol/test \"@executioncontrolprotocol/test.summarize, @executioncontrolprotocol/test.validate, @executioncontrolprotocol/test.notify, @executioncontrolprotocol/test.translate\""
     },
     {
       "message": "What capabilities are available?",
-      "output": "REPLY\n  ANSWER \"Available step capabilities include @executioncontrolprotocol/test.echo, @executioncontrolprotocol/demo.summarize, @executioncontrolprotocol/demo.validate, and format encode/decode extensions in this ECP environment.\""
+      "output": "REPLY\n  ANSWER \"Available step capabilities include @executioncontrolprotocol/test.echo, @executioncontrolprotocol/test.summarize, @executioncontrolprotocol/test.validate, and format encode/decode extensions in this ECP environment.\""
     },
     {
       "message": "What can you do?",

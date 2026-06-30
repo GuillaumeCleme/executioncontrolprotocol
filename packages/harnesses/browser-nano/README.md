@@ -2,7 +2,7 @@
 
 **Browser Nano** harness — catalog id **`@executioncontrolprotocol/harness-browser-nano`**. Tuned for on-device and small (~1B) models: short EQL replies, compact context, repair loop, identity primer.
 
-Used by the browser demo and `@executioncontrolprotocol/evals` matrix tests (Ollama gemma3:1b, Chrome Nano). **Same harness binding** (`HARNESS_NANO_BINDING`); the demo hot-swaps the model provider at invoke.
+Used by the browser demo and `@executioncontrolprotocol/evals` matrix tests (Ollama gemma3:1b, Chrome Nano). **Same harness binding** (`HARNESS_NANO_BINDING`); the browser demo defaults to Chrome AI and may override the model provider at invoke.
 
 For stronger cloud models, add a separate harness package (e.g. `@executioncontrolprotocol/harnesses-browser-nano-standard`) with its own prompts and output shaping.
 

@@ -27,8 +27,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -52,7 +51,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a workflow with echo (@executioncontrolprotocol/test.echo) then summarize (@executioncontrolprotocol/demo.summarize) passing echo output."
+        "request": "Create a workflow with echo (@executioncontrolprotocol/test.echo) then summarize (@executioncontrolprotocol/test.summarize) passing echo output."
       },
       "assertions": {
         "deterministic": [
@@ -72,8 +71,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -82,7 +80,7 @@
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontrolprotocol/demo.summarize"
+            "capabilityId": "@executioncontrolprotocol/test.summarize"
           }
         ],
         "judge": {
@@ -97,7 +95,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Build a workflow: first @executioncontrolprotocol/demo.validate then @executioncontrolprotocol/test.echo."
+        "request": "Build a workflow: first @executioncontrolprotocol/test.validate then @executioncontrolprotocol/test.echo."
       },
       "assertions": {
         "deterministic": [
@@ -117,13 +115,12 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontrolprotocol/demo.validate"
+            "capabilityId": "@executioncontrolprotocol/test.validate"
           }
         ],
         "judge": {
@@ -138,7 +135,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create workflow with @executioncontrolprotocol/test.echo and a final @executioncontrolprotocol/demo.notify step."
+        "request": "Create workflow with @executioncontrolprotocol/test.echo and a final @executioncontrolprotocol/test.notify step."
       },
       "assertions": {
         "deterministic": [
@@ -158,13 +155,12 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontrolprotocol/demo.notify"
+            "capabilityId": "@executioncontrolprotocol/test.notify"
           }
         ],
         "judge": {
@@ -179,7 +175,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a two-step workflow using @executioncontrolprotocol/test.echo and @executioncontrolprotocol/demo.translate."
+        "request": "Create a two-step workflow using @executioncontrolprotocol/test.echo and @executioncontrolprotocol/test.translate."
       },
       "assertions": {
         "deterministic": [
@@ -199,13 +195,12 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontrolprotocol/demo.translate"
+            "capabilityId": "@executioncontrolprotocol/test.translate"
           }
         ],
         "judge": {
@@ -240,8 +235,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -281,8 +275,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -322,8 +315,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -343,7 +335,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a 3-step workflow using @executioncontrolprotocol/demo.validate, @executioncontrolprotocol/test.echo, and @executioncontrolprotocol/demo.summarize."
+        "request": "Create a 3-step workflow using @executioncontrolprotocol/test.validate, @executioncontrolprotocol/test.echo, and @executioncontrolprotocol/test.summarize."
       },
       "assertions": {
         "deterministic": [
@@ -363,8 +355,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -404,8 +395,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -445,8 +435,7 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           }
         ],
@@ -484,15 +473,14 @@
               "@executioncontrolprotocol/format-toon",
               "@executioncontrolprotocol/format-eql",
               "@executioncontrolprotocol/format-json",
-              "@executioncontrolprotocol/test",
-              "@executioncontrolprotocol/demo"
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "descriptorListsCapabilities",
             "ids": [
               "@executioncontrolprotocol/test.echo",
-              "@executioncontrolprotocol/demo.summarize"
+              "@executioncontrolprotocol/test.summarize"
             ]
           }
         ],

@@ -7,12 +7,12 @@ import {
 describe("normalizePatchEqlRawOutput", () => {
   it("prepends PATCH WORKFLOW when the header is missing", () => {
     const raw = `DELETE STEP summarize
-ADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo
+ADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo
   LABEL "Translate"`
     expect(normalizePatchEqlRawOutput(raw, "two-step-chain")).toBe(
       `PATCH WORKFLOW two-step-chain
 DELETE STEP summarize
-ADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo
+ADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo
   LABEL "Translate"`
     )
   })

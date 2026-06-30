@@ -18,20 +18,18 @@ import { registerBrowserGuideExtension } from "./extensions/browser-guide.js"
 import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
 import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
 import { registerFormatMermaidExtension } from "@executioncontrolprotocol/format-mermaid"
-import { registerDemoExtension } from "@executioncontrolprotocol/demo"
 import { registerChromeAiExtension } from "@executioncontrolprotocol/chrome-ai"
 import { registerOpenaiExtension } from "@executioncontrolprotocol/extension-openai"
 import { registerClaudeExtension } from "@executioncontrolprotocol/claude"
 import { registerBrowserSecretsExtension } from "@executioncontrolprotocol/browser-secrets"
 import {
   BROWSER_NANO_HARNESS_ID,
-  HARNESS_BROWSER_NANO_DEMO_BINDING,
+  HARNESS_NANO_BINDING,
   registerBrowserNanoHarnesses,
 } from "@executioncontrolprotocol/harnesses-browser-nano"
 import "@executioncontrolprotocol/format-eql"
 import "@executioncontrolprotocol/format-toon"
 import "@executioncontrolprotocol/format-mermaid"
-import "@executioncontrolprotocol/demo"
 import "@executioncontrolprotocol/chrome-ai"
 import "@executioncontrolprotocol/extension-openai"
 import "@executioncontrolprotocol/claude"
@@ -47,7 +45,6 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerFormatEqlExtension(registry)
   await registerFormatToonExtension(registry)
   await registerFormatMermaidExtension(registry)
-  await registerDemoExtension(registry)
   await registerChromeAiExtension(registry)
   await registerOpenaiExtension(registry)
   await registerClaudeExtension(registry)
@@ -72,7 +69,6 @@ export function createBrowserDemoEnvironment(
       extension("@executioncontrolprotocol/format-toon").with({}),
       extension("@executioncontrolprotocol/format-mermaid").with({}),
       extension("@executioncontrolprotocol/format-json").with({}),
-      extension("@executioncontrolprotocol/demo").with({}),
       extension("@executioncontrolprotocol/chrome-ai").with({}),
       extension("@executioncontrolprotocol/test").with({}),
       extension("@executioncontrolprotocol/browser-secrets").with({}),
@@ -94,13 +90,12 @@ export function createBrowserDemoEnvironment(
     ])
     .withHarnesses([
       harness(BROWSER_NANO_HARNESS_ID, "Harness")
-        .uses("@executioncontrolprotocol/demo.generate")
-        .with({ ...HARNESS_BROWSER_NANO_DEMO_BINDING }),
+        .uses("@executioncontrolprotocol/chrome-ai.generate")
+        .with({ ...HARNESS_NANO_BINDING }),
     ])
     .withPolicies([
       policy("@executioncontrolprotocol/registry-control").with({
         allowedExtensionNamespaces: [
-          "@executioncontrolprotocol/demo",
           "@executioncontrolprotocol/chrome-ai",
           "@executioncontrolprotocol/openai",
           "@executioncontrolprotocol/claude",

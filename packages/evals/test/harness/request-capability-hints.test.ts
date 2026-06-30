@@ -11,32 +11,32 @@ import type { CompactEnvironmentSummary } from "@executioncontrolprotocol/core"
 import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 
 const summary: CompactEnvironmentSummary = {
-  extensions: [{ id: "@executioncontrolprotocol/demo", capabilities: ["@executioncontrolprotocol/demo.summarize", "@executioncontrolprotocol/demo.notify"] }],
+  extensions: [{ id: "@executioncontrolprotocol/test", capabilities: ["@executioncontrolprotocol/test.summarize", "@executioncontrolprotocol/test.notify"] }],
   capabilities: [
     { id: "@executioncontrolprotocol/test.echo", extension: "@executioncontrolprotocol/test", inputs: ["value"], outputs: ["text"] },
-    { id: "@executioncontrolprotocol/demo.summarize", extension: "@executioncontrolprotocol/demo", inputs: ["text"], outputs: [] },
-    { id: "@executioncontrolprotocol/demo.notify", extension: "@executioncontrolprotocol/demo", inputs: ["payload"], outputs: [] },
-    { id: "@executioncontrolprotocol/demo.validate", extension: "@executioncontrolprotocol/demo", inputs: ["payload"], outputs: [] },
-    { id: "@executioncontrolprotocol/demo.translate", extension: "@executioncontrolprotocol/demo", inputs: ["text"], outputs: [] },
+    { id: "@executioncontrolprotocol/test.summarize", extension: "@executioncontrolprotocol/test", inputs: ["text"], outputs: [] },
+    { id: "@executioncontrolprotocol/test.notify", extension: "@executioncontrolprotocol/test", inputs: ["payload"], outputs: [] },
+    { id: "@executioncontrolprotocol/test.validate", extension: "@executioncontrolprotocol/test", inputs: ["payload"], outputs: [] },
+    { id: "@executioncontrolprotocol/test.translate", extension: "@executioncontrolprotocol/test", inputs: ["text"], outputs: [] },
   ],
 }
 
 describe("request-capability-hints", () => {
   it("infers echo and summarize from natural language", () => {
     const ids = inferRequiredCapabilityIds(
-      "Create a workflow with echo (@executioncontrolprotocol/test.echo) then summarize (@executioncontrolprotocol/demo.summarize)",
+      "Create a workflow with echo (@executioncontrolprotocol/test.echo) then summarize (@executioncontrolprotocol/test.summarize)",
       summary.capabilities.map((c) => c.id)
     )
     expect(ids).toContain("@executioncontrolprotocol/test.echo")
-    expect(ids).toContain("@executioncontrolprotocol/demo.summarize")
+    expect(ids).toContain("@executioncontrolprotocol/test.summarize")
   })
 
   it("infers validate when capability id appears in request", () => {
     const ids = inferRequiredCapabilityIds(
-      "Build a workflow: first @executioncontrolprotocol/demo.validate then @executioncontrolprotocol/test.echo.",
+      "Build a workflow: first @executioncontrolprotocol/test.validate then @executioncontrolprotocol/test.echo.",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@executioncontrolprotocol/demo.validate")
+    expect(ids).toContain("@executioncontrolprotocol/test.validate")
     expect(ids).toContain("@executioncontrolprotocol/test.echo")
   })
 
@@ -46,7 +46,7 @@ describe("request-capability-hints", () => {
       summary.capabilities.map((c) => c.id)
     )
     expect(ids).toContain("@executioncontrolprotocol/test.echo")
-    expect(ids).not.toContain("@executioncontrolprotocol/demo.validate")
+    expect(ids).not.toContain("@executioncontrolprotocol/test.validate")
   })
 
   it("collectCreateCapabilityFeedback accepts steps without type field", () => {
@@ -100,8 +100,8 @@ describe("request-capability-hints", () => {
       "Add translate after echo and remove summarize if present.",
       summary.capabilities.map((c) => c.id)
     )
-    expect(ids).toContain("@executioncontrolprotocol/demo.translate")
-    expect(ids).not.toContain("@executioncontrolprotocol/demo.summarize")
+    expect(ids).toContain("@executioncontrolprotocol/test.translate")
+    expect(ids).not.toContain("@executioncontrolprotocol/test.summarize")
   })
 
   it("buildPatchOperationHintLines provides workflow context and operation selection", () => {
@@ -120,7 +120,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "summarize",
-          uses: "@executioncontrolprotocol/demo.summarize",
+          uses: "@executioncontrolprotocol/test.summarize",
           label: "Summarize",
           as: "summary",
         },
@@ -172,7 +172,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "summarize",
-          uses: "@executioncontrolprotocol/demo.summarize",
+          uses: "@executioncontrolprotocol/test.summarize",
           label: "Summarize",
           as: "summary",
         },
@@ -202,7 +202,7 @@ describe("request-capability-hints", () => {
         {
           type: "step",
           id: "summarize",
-          uses: "@executioncontrolprotocol/demo.summarize",
+          uses: "@executioncontrolprotocol/test.summarize",
           label: "Summarize",
           as: "summary",
         },
@@ -215,19 +215,19 @@ describe("request-capability-hints", () => {
     )
     const text = lines.join("\n")
     expect(text).toContain("DELETE STEP summarize")
-    expect(text).toContain("ADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo")
+    expect(text).toContain("ADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo")
     expect(text).not.toContain("for the new capability")
     expect(text).toContain("Do not UPDATE STEP summarize")
   })
 
   it("buildRequestCapabilityHintLines patch mode does not inject operation templates", () => {
     const lines = buildRequestCapabilityHintLines(
-      "Add a summarize step after echo using @executioncontrolprotocol/demo.summarize.",
+      "Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
       summary,
       { mode: "patch" }
     )
     const text = lines.join("\n")
-    expect(text).not.toContain("ADD STEP summarize USES @executioncontrolprotocol/demo.summarize")
+    expect(text).not.toContain("ADD STEP summarize USES @executioncontrolprotocol/test.summarize")
     expect(text).not.toContain("Required: 1 step(s) in order")
   })
 
@@ -247,13 +247,13 @@ describe("request-capability-hints", () => {
       ],
     }
     const feedback = collectPatchGoalFeedback(
-      "Insert a validate step before echo using @executioncontrolprotocol/demo.validate.",
+      "Insert a validate step before echo using @executioncontrolprotocol/test.validate.",
       baseline,
       summary,
       baseline
     )
     expect(
-      feedback?.some((f) => f.issues.some((i) => i.message.includes("@executioncontrolprotocol/demo.validate")))
+      feedback?.some((f) => f.issues.some((i) => i.message.includes("@executioncontrolprotocol/test.validate")))
     ).toBe(true)
   })
 
@@ -290,7 +290,7 @@ describe("request-capability-hints", () => {
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
         { type: "step", id: "echo", uses: "@executioncontrolprotocol/test.echo", label: "Echo", as: "echo" },
-        { type: "step", id: "validate", uses: "@executioncontrolprotocol/demo.validate", label: "Validate", as: "validated" },
+        { type: "step", id: "validate", uses: "@executioncontrolprotocol/test.validate", label: "Validate", as: "validated" },
       ],
     }
     const lines = buildPatchOperationHintLines(
@@ -317,13 +317,13 @@ describe("request-capability-hints", () => {
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
         { type: "step", id: "echo", uses: "@executioncontrolprotocol/test.echo", label: "Echo", as: "echo" },
-        { type: "step", id: "validate", uses: "@executioncontrolprotocol/demo.validate", label: "Validate", as: "validated" },
+        { type: "step", id: "validate", uses: "@executioncontrolprotocol/test.validate", label: "Validate", as: "validated" },
       ],
     }
     const patched: WorkflowManifest = {
       ...baseline,
       steps: [
-        { type: "step", id: "validate", uses: "@executioncontrolprotocol/demo.validate", label: "Validate", as: "validated" },
+        { type: "step", id: "validate", uses: "@executioncontrolprotocol/test.validate", label: "Validate", as: "validated" },
       ],
     }
     const feedback = collectPatchGoalFeedback(
@@ -344,7 +344,7 @@ describe("request-capability-hints", () => {
       workflow: { id: "echo-validate", label: "Echo validate reorder" },
       steps: [
         { type: "step", id: "echo", uses: "@executioncontrolprotocol/test.echo", label: "Echo", as: "echo" },
-        { type: "step", id: "validate", uses: "@executioncontrolprotocol/demo.validate", label: "Validate", as: "validated" },
+        { type: "step", id: "validate", uses: "@executioncontrolprotocol/test.validate", label: "Validate", as: "validated" },
       ],
     }
     const feedback = collectPatchGoalFeedback(

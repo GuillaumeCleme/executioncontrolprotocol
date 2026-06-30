@@ -32,15 +32,15 @@ describe("buildFluentPatchHintLines", () => {
 
   it("wf-patch-03 steers append step and ref after echo", () => {
     const wf = loadWorkflow("echo-workflow.json")
-    const caps = ["@executioncontrolprotocol/test.echo", "@executioncontrolprotocol/demo.summarize"]
+    const caps = ["@executioncontrolprotocol/test.echo", "@executioncontrolprotocol/test.summarize"]
     const lines = buildFluentPatchHintLines(
-      "Add a summarize step after echo using @executioncontrolprotocol/demo.summarize.",
+      "Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
       wf,
       caps
     )
     const text = lines.join("\n")
     expect(text).toMatch(/ref\(|append/i)
-    expect(text).toContain("@executioncontrolprotocol/demo.summarize")
+    expect(text).toContain("@executioncontrolprotocol/test.summarize")
   })
 
   it("wf-patch-12 steers reorder in run array not moveStep", () => {

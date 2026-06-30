@@ -22,7 +22,6 @@ await registerAllExtensions()
 | `@executioncontrolprotocol/format-toon` | TOON encode/decode |
 | `@executioncontrolprotocol/format-eql` | EQL encode/decode (harness output) |
 | `@executioncontrolprotocol/format-mermaid` | Mermaid encode (workflow graph) |
-| `@executioncontrolprotocol/demo` | Offline deterministic demo provider/ops |
 
 The exact set is exported as `BUNDLED_EXTENSION_IDS`.
 

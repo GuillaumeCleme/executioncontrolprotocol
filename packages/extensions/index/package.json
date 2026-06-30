@@ -10,7 +10,6 @@
   "files": ["dist", "README.md"],
   "scripts": { "build": "tsc -b" },
   "dependencies": {
-    "@executioncontrolprotocol/demo": "1.0.0",
     "@executioncontrolprotocol/extension-memory": "1.0.0",
     "@executioncontrolprotocol/extension-ollama": "1.0.0",
     "@executioncontrolprotocol/extension-openai": "1.0.0",

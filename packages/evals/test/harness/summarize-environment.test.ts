@@ -12,7 +12,7 @@ const minimalDescriptor: EnvironmentDescriptor = {
   runtime: { id: "local", features: {} },
   extensions: [
     { id: "@executioncontrolprotocol/test", order: 0, capabilities: ["@executioncontrolprotocol/test.echo"] },
-    { id: "@executioncontrolprotocol/demo", order: 1, capabilities: ["@executioncontrolprotocol/demo.summarize"] },
+    { id: "@executioncontrolprotocol/test", order: 1, capabilities: ["@executioncontrolprotocol/test.summarize"] },
   ],
   capabilities: [
     {
@@ -22,8 +22,8 @@ const minimalDescriptor: EnvironmentDescriptor = {
       outputSchema: { type: "object", properties: { text: { type: "string" } } },
     },
     {
-      id: "@executioncontrolprotocol/demo.summarize",
-      extension: "@executioncontrolprotocol/demo",
+      id: "@executioncontrolprotocol/test.summarize",
+      extension: "@executioncontrolprotocol/test",
       inputSchema: { type: "object", properties: { text: { type: "string" } } },
     },
   ],
@@ -44,7 +44,7 @@ describe("summarizeEnvironmentDescriptor", () => {
     const summary = summarizeEnvironmentDescriptor(minimalDescriptor)
     const text = formatEnvironmentSummaryLines(summary).join("\n")
     expect(text).toContain("@executioncontrolprotocol/test.echo")
-    expect(text).toContain("@executioncontrolprotocol/demo.summarize")
+    expect(text).toContain("@executioncontrolprotocol/test.summarize")
   })
 
   it("formatEnvironmentSummaryLines eql-patch marks caps already in workflow", () => {
@@ -53,7 +53,7 @@ describe("summarizeEnvironmentDescriptor", () => {
       format: "eql-patch",
       existingCapabilityUses: new Set(["@executioncontrolprotocol/test.echo"]),
     }).join("\n")
-    expect(text).toContain("ADD STEP <newStepId> USES @executioncontrolprotocol/demo.summarize")
+    expect(text).toContain("ADD STEP <newStepId> USES @executioncontrolprotocol/test.summarize")
     expect(text).toContain("@executioncontrolprotocol/test.echo (already used by an existing step")
   })
 })

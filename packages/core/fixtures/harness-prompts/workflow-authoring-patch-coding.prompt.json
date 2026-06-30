@@ -10,28 +10,28 @@
       "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo test\")\n  .id(\"echo-test\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Patched Echo\")\n      .id(\"echo\")\n      .with({ value: \"hello from fluent API\" })\n      .as(\"echo\"),\n  ])"
     },
     {
-      "message": "Add a summarize step after echo using @executioncontrolprotocol/demo.summarize.",
-      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo test\")\n  .id(\"echo-test\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"hello from fluent API\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/demo.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
+      "message": "Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
+      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo test\")\n  .id(\"echo-test\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"hello from fluent API\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/test.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
     },
     {
       "message": "Remove the notify step from the workflow.",
-      "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Multi capability\")\n  .id(\"multi-cap\")\n  .run([\n    step(\"@executioncontrolprotocol/demo.validate\", \"Validate\")\n      .id(\"validate\")\n      .with({ payload: { ok: true } })\n      .as(\"validated\"),\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"after-validate\" })\n      .as(\"echo\"),\n  ])"
+      "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Multi capability\")\n  .id(\"multi-cap\")\n  .run([\n    step(\"@executioncontrolprotocol/test.validate\", \"Validate\")\n      .id(\"validate\")\n      .with({ payload: { ok: true } })\n      .as(\"validated\"),\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"after-validate\" })\n      .as(\"echo\"),\n  ])"
     },
     {
       "message": "Change workflow label to Updated Chain.",
-      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Updated Chain\")\n  .id(\"two-step-chain\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"seed\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/demo.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
+      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Updated Chain\")\n  .id(\"two-step-chain\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"seed\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/test.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
     },
     {
       "message": "Change summarize step label to Short Summary.",
-      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Two step chain\")\n  .id(\"two-step-chain\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"seed\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/demo.summarize\", \"Short Summary\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
+      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Two step chain\")\n  .id(\"two-step-chain\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"seed\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/test.summarize\", \"Short Summary\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
     },
     {
       "message": "Ensure summarize input references echo output via $ref.",
-      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Two step chain\")\n  .id(\"two-step-chain\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"seed\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/demo.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
+      "output": "import { workflow, step, ref } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Two step chain\")\n  .id(\"two-step-chain\")\n  .run([\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"seed\" })\n      .as(\"echo\"),\n    step(\"@executioncontrolprotocol/test.summarize\", \"Summarize\")\n      .id(\"summarize\")\n      .with({ payload: ref(\"echo.output\") })\n      .as(\"summary\"),\n  ])"
     },
     {
       "message": "Move the echo step to run after validate.",
-      "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo validate reorder\")\n  .id(\"echo-validate\")\n  .run([\n    step(\"@executioncontrolprotocol/demo.validate\", \"Validate\")\n      .id(\"validate\")\n      .with({ payload: { ok: true } })\n      .as(\"validated\"),\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"before-validate\" })\n      .as(\"echo\"),\n  ])"
+      "output": "import { workflow, step } from \"@executioncontrolprotocol/core\"\n\nexport default workflow(\"Echo validate reorder\")\n  .id(\"echo-validate\")\n  .run([\n    step(\"@executioncontrolprotocol/test.validate\", \"Validate\")\n      .id(\"validate\")\n      .with({ payload: { ok: true } })\n      .as(\"validated\"),\n    step(\"@executioncontrolprotocol/test.echo\", \"Echo\")\n      .id(\"echo\")\n      .with({ value: \"before-validate\" })\n      .as(\"echo\"),\n  ])"
     },
     {
       "message": "Rename the echo step label to Hello Echo.",

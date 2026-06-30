@@ -87,7 +87,7 @@
         {
           "harness": "workflow-authoring",
           "input": {
-            "request": "Create echo then @executioncontrolprotocol/demo.summarize workflow."
+            "request": "Create echo then @executioncontrolprotocol/test.summarize workflow."
           },
           "assertions": {
             "deterministic": [

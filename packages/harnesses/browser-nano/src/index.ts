@@ -19,7 +19,6 @@ export {
   HARNESS_NANO_CHAT_REPAIR,
   HARNESS_NANO_TRACE,
   HARNESS_NANO_BINDING,
-  HARNESS_BROWSER_NANO_DEMO_BINDING,
   getHarnessNanoConfig,
   type HarnessTask,
 } from "./harness-nano-config.js"

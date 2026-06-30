@@ -7,7 +7,6 @@ export { registerTelemetryExtension, telemetryExtension } from "@executioncontro
 export { registerFormatToonExtension, formatToonExtension } from "@executioncontrolprotocol/format-toon"
 export { registerFormatEqlExtension, formatEqlExtension } from "@executioncontrolprotocol/format-eql"
 export { registerFormatMermaidExtension, formatMermaidExtension } from "@executioncontrolprotocol/format-mermaid"
-export { registerDemoExtension, demoExtension } from "@executioncontrolprotocol/demo"
 
 import { registerMemoryExtension } from "@executioncontrolprotocol/extension-memory"
 import { registerOpenaiExtension } from "@executioncontrolprotocol/extension-openai"
@@ -18,7 +17,6 @@ import { registerTelemetryExtension } from "@executioncontrolprotocol/extension-
 import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
 import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
 import { registerFormatMermaidExtension } from "@executioncontrolprotocol/format-mermaid"
-import { registerDemoExtension } from "@executioncontrolprotocol/demo"
 
 /** Namespaced ids registered by {@link registerAllExtensions}. */
 export const BUNDLED_EXTENSION_IDS = [
@@ -31,7 +29,6 @@ export const BUNDLED_EXTENSION_IDS = [
   "@executioncontrolprotocol/format-toon",
   "@executioncontrolprotocol/format-eql",
   "@executioncontrolprotocol/format-mermaid",
-  "@executioncontrolprotocol/demo",
 ] as const
 
 /**
@@ -39,9 +36,8 @@ export const BUNDLED_EXTENSION_IDS = [
  *
  * This bundle is host-agnostic and dependency-light: it includes the standard
  * capability extensions (memory, storage, slack, telemetry), the local/remote
- * model providers that do not pull heavy SDKs (openai, ollama), the format
- * extensions used by harness encode/decode (toon, eql, mermaid), and the demo
- * stub provider.
+ * model providers that do not pull heavy SDKs (openai, ollama), and the format
+ * extensions used by harness encode/decode (toon, eql, mermaid).
  *
  * Intentionally excluded (register them explicitly when needed):
  * - `@executioncontrolprotocol/chrome-ai` — browser-only (Chrome on-device `LanguageModel` API).
@@ -59,5 +55,4 @@ export async function registerAllExtensions(): Promise<void> {
   await registerFormatToonExtension()
   await registerFormatEqlExtension()
   await registerFormatMermaidExtension()
-  await registerDemoExtension()
 }

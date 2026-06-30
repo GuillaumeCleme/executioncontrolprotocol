@@ -135,7 +135,7 @@ await ecp.run(manifest)
 
 Browser demo: [executioncontrolprotocol-browser-demo](https://github.com/GuillaumeCleme/executioncontrolprotocol-browser-demo) (standalone repo; uses `@executioncontrolprotocol/*` from npm or `npm link`).
 
-**Browser demo chat:** FAQ and assistant replies must come from the bound model provider via `@executioncontrolprotocol/harness-browser-nano` (`workflow-assistant` task). Do not route user-facing chat through template capabilities (`@executioncontrolprotocol/browser.guideChat`) or other non-model stand-ins. Browser demo and eval matrix share **`HARNESS_NANO_BINDING`** (EQL outputs for intent, workflow, and assistant); only the provider (`.uses(...)` at invoke) differs in the demo app.
+**Browser demo chat:** FAQ and assistant replies must come from the bound model provider via `@executioncontrolprotocol/harness-browser-nano` (`workflow-assistant` task). Do not route user-facing chat through template capabilities (`@executioncontrolprotocol/browser.guideChat`) or other non-model stand-ins. Browser demo defaults to **Chrome AI** (`@executioncontrolprotocol/chrome-ai.generate`); browser demo and eval matrix share **`HARNESS_NANO_BINDING`** (EQL outputs for intent, workflow, and assistant). The demo app may override the provider via `.uses(...)` at invoke.
 
 **Mechanism vs policy:** `@executioncontrolprotocol/browser-registry` handles freeze, `globalThis.ecp`, and auto-bind. **`@executioncontrolprotocol/registry-control`** (bound as a policy) authorizes dynamic extension registration via `policy:pre` and `registryRequest` on the policy context.
 

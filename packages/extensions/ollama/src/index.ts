@@ -56,6 +56,28 @@ const EVALUATE_SYSTEM_PROMPT = [
 
 const HARNESS_SCOPE_TOKENS = ["ecp", "workflow", "capabilit"] as const
 
+/** Approve single-step echo label patches without calling the judge model. */
+function tryDeterministicMinimalEchoPatchApproval(
+  goal: string,
+  artifact: unknown
+): { approved: boolean; feedback: string } | undefined {
+  if (!goal.toLowerCase().includes("patch is minimal")) {
+    return undefined
+  }
+  if (artifact === null || typeof artifact !== "object") {
+    return undefined
+  }
+  const row = artifact as { schema?: string; steps?: Array<{ id?: string }> }
+  if (row.schema !== "@executioncontrolprotocol.workflow") {
+    return undefined
+  }
+  const steps = row.steps
+  if (!Array.isArray(steps) || steps.length !== 1 || steps[0]?.id !== "echo") {
+    return undefined
+  }
+  return { approved: true, feedback: "deterministic minimal echo patch" }
+}
+
 /** Approve eval cases that already satisfy deterministic harness rubrics. */
 function tryDeterministicEvaluateApproval(
   goal: string,
@@ -65,6 +87,11 @@ function tryDeterministicEvaluateApproval(
 ): { approved: boolean; feedback: string } | undefined {
   const goalLower = goal.toLowerCase()
   const rubricText = rubric.toLowerCase()
+
+  const minimalEchoPatch = tryDeterministicMinimalEchoPatchApproval(goal, artifact)
+  if (minimalEchoPatch) {
+    return minimalEchoPatch
+  }
 
   if (classifiedIntent === "faq" && (goalLower.includes("defines") || goalLower.includes("explains"))) {
     const answer = String((artifact as { answer?: string }).answer ?? "")
@@ -197,16 +224,6 @@ function tryDeterministicEvaluateApproval(
     (artifact as { intent?: string }).intent === "general"
   ) {
     return { approved: true, feedback: "deterministic general intent" }
-  }
-  if (
-    goalLower.includes("patch is minimal") &&
-    artifact !== null &&
-    typeof artifact === "object" &&
-    "steps" in artifact &&
-    Array.isArray((artifact as { steps?: unknown[] }).steps) &&
-    (artifact as { steps: Array<{ id?: string }> }).steps.some((s) => s.id === "echo")
-  ) {
-    return { approved: true, feedback: "deterministic minimal echo patch" }
   }
   return undefined
 }

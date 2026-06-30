@@ -20,7 +20,6 @@ import {
 import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
 import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
 import { registerTestExtension } from "../../src/testing/test-extension.js"
-import { registerDemoExtension } from "@executioncontrolprotocol/demo"
 import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
 
 const THROWING_HARNESS_ID = "@executioncontrolprotocol/harness-throw-test" as const
@@ -66,7 +65,6 @@ describe("executeHarnessInvoke", () => {
     )
     await registerNodeRuntime()
     await registerTestExtension()
-    await registerDemoExtension()
     await registerFormatToonExtension()
   })
 
@@ -76,13 +74,12 @@ describe("executeHarnessInvoke", () => {
       .withExtensions([
         extension("@executioncontrolprotocol/format-toon").with({}),
         extension("@executioncontrolprotocol/test").with({}),
-        extension("@executioncontrolprotocol/demo").with({}),
       ])
     if (withHarness) {
       builder = builder.withHarnesses([
-        harness(TEST_MINIMAL_HARNESS_ID).uses("@executioncontrolprotocol/demo.generate").with({}),
-        harness(THROWING_HARNESS_ID).uses("@executioncontrolprotocol/demo.generate").with({}),
-        harness(BAD_OUTPUT_HARNESS_ID).uses("@executioncontrolprotocol/demo.generate").with({}),
+        harness(TEST_MINIMAL_HARNESS_ID).uses("@executioncontrolprotocol/test.generate").with({}),
+        harness(THROWING_HARNESS_ID).uses("@executioncontrolprotocol/test.generate").with({}),
+        harness(BAD_OUTPUT_HARNESS_ID).uses("@executioncontrolprotocol/test.generate").with({}),
       ])
     }
     const ecp = await builder.init()
@@ -93,7 +90,7 @@ describe("executeHarnessInvoke", () => {
     const { env, ecp } = await demoHarnessEnv()
     const result = await executeHarnessInvoke(
       env,
-      "@executioncontrolprotocol/demo.generate" as "@executioncontrolprotocol/test-minimal-harness.evaluate",
+      "@executioncontrolprotocol/test.generate" as "@executioncontrolprotocol/test-minimal-harness.evaluate",
       { value: "x" }
     )
     expect(result.success).toBe(false)

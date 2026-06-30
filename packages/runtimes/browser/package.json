@@ -24,7 +24,6 @@
     "@executioncontrolprotocol/claude": "1.0.0",
     "@executioncontrolprotocol/core": "1.0.0",
     "@executioncontrolprotocol/harnesses-browser-nano": "1.0.0",
-    "@executioncontrolprotocol/demo": "1.0.0",
     "@executioncontrolprotocol/format-eql": "1.0.0",
     "@executioncontrolprotocol/format-mermaid": "1.0.0",
     "@executioncontrolprotocol/format-toon": "1.0.0",

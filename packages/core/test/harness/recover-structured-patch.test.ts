@@ -21,26 +21,26 @@ DELETE STEP notify`)
     expect(
       recoverStructuredPatchFromRequest("PATCH WORKFLOW echo-test\nUPDATE WORKFLOW", {
         request:
-          "Add a summarize step after echo using @executioncontrolprotocol/demo.summarize.",
+          "Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
         workflowId: "echo-test",
         stepIds: ["echo"],
-        capabilityIds: ["@executioncontrolprotocol/demo.summarize"],
+        capabilityIds: ["@executioncontrolprotocol/test.summarize"],
       })
     ).toBe(`PATCH WORKFLOW echo-test
-ADD STEP summarize USES @executioncontrolprotocol/demo.summarize AFTER echo`)
+ADD STEP summarize USES @executioncontrolprotocol/test.summarize AFTER echo`)
   })
 
   it("rebuilds ADD STEP before anchor", () => {
     expect(
       recoverStructuredPatchFromRequest("PATCH WORKFLOW echo-test\nUPDATE WORKFLOW", {
         request:
-          "Insert a validate step before echo using @executioncontrolprotocol/demo.validate.",
+          "Insert a validate step before echo using @executioncontrolprotocol/test.validate.",
         workflowId: "echo-test",
         stepIds: ["echo"],
-        capabilityIds: ["@executioncontrolprotocol/demo.validate"],
+        capabilityIds: ["@executioncontrolprotocol/test.validate"],
       })
     ).toBe(`PATCH WORKFLOW echo-test
-ADD STEP validate USES @executioncontrolprotocol/demo.validate BEFORE echo`)
+ADD STEP validate USES @executioncontrolprotocol/test.validate BEFORE echo`)
   })
 
   it("rebuilds echo input value patch", () => {
@@ -55,20 +55,34 @@ UPDATE STEP echo
   WITH value = "recovered"`)
   })
 
+  it("rebuilds MOVE STEP for reorder requests", () => {
+    expect(
+      recoverStructuredPatchFromRequest(
+        "PATCH WORKFLOW echo-validate\nUPDATE WORKFLOW\n  LABEL \"Echo validate reorder\"\nADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo",
+        {
+          request: "Move the echo step to run after validate.",
+          workflowId: "echo-validate",
+          stepIds: ["echo", "validate"],
+        }
+      )
+    ).toBe(`PATCH WORKFLOW echo-validate
+MOVE STEP echo AFTER validate`)
+  })
+
   it("rebuilds combined DELETE and ADD patch", () => {
     expect(
       recoverStructuredPatchFromRequest(
-        "PATCH WORKFLOW two-step-chain\nADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo",
+        "PATCH WORKFLOW two-step-chain\nADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo",
         {
           request: "Add translate after echo and remove summarize if present.",
           workflowId: "two-step-chain",
           stepIds: ["echo", "summarize"],
-          capabilityIds: ["@executioncontrolprotocol/demo.translate"],
+          capabilityIds: ["@executioncontrolprotocol/test.translate"],
         }
       )
     ).toBe(`PATCH WORKFLOW two-step-chain
 DELETE STEP summarize
-ADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo
+ADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo
   WITH text = REF echo.output
   AS translate`)
   })
@@ -76,19 +90,19 @@ ADD STEP translate USES @executioncontrolprotocol/demo.translate AFTER echo
 
 describe("synthesizeCreateEqlFromRequiredCapabilities", () => {
   const required = [
-    "@executioncontrolprotocol/demo.validate",
+    "@executioncontrolprotocol/test.validate",
     "@executioncontrolprotocol/test.echo",
-    "@executioncontrolprotocol/demo.summarize",
+    "@executioncontrolprotocol/test.summarize",
   ]
 
   it("builds all required steps in request order", () => {
     const synthesized = synthesizeCreateEqlFromRequiredCapabilities(
-      "Create a 3-step workflow using @executioncontrolprotocol/demo.validate, @executioncontrolprotocol/test.echo, and @executioncontrolprotocol/demo.summarize.",
+      "Create a 3-step workflow using @executioncontrolprotocol/test.validate, @executioncontrolprotocol/test.echo, and @executioncontrolprotocol/test.summarize.",
       required
     )
-    expect(synthesized).toContain("STEP validate USES @executioncontrolprotocol/demo.validate")
+    expect(synthesized).toContain("STEP validate USES @executioncontrolprotocol/test.validate")
     expect(synthesized).toContain("STEP echo USES @executioncontrolprotocol/test.echo")
-    expect(synthesized).toContain("STEP summarize USES @executioncontrolprotocol/demo.summarize")
+    expect(synthesized).toContain("STEP summarize USES @executioncontrolprotocol/test.summarize")
     expect(createEqlIncludesRequiredCapabilities(synthesized!, required)).toBe(true)
   })
 })
