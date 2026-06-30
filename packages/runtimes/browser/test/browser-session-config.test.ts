@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest"
-import { env } from "@executioncontextprotocol/core"
+import { env } from "@executioncontrolprotocol/core"
 import { setBrowserSessionValue } from "../src/extensions/browser-session-config.js"
-import { resolveEnvConfigAsync } from "@executioncontextprotocol/core"
+import { resolveEnvConfigAsync } from "@executioncontrolprotocol/core"
 
-describe("@executioncontextprotocol/browser-session-config", () => {
+describe("@executioncontrolprotocol/browser-session-config", () => {
   it("resolves session values in memory", async () => {
     setBrowserSessionValue("OPENAI_API_KEY", "user-key")
     const config = await resolveEnvConfigAsync(
       { key: env("OPENAI_API_KEY") },
       [
         {
-          id: "@executioncontextprotocol/browser-session-config",
+          id: "@executioncontrolprotocol/browser-session-config",
           resolve(name) {
             return name === "OPENAI_API_KEY" ? "user-key" : undefined
           },

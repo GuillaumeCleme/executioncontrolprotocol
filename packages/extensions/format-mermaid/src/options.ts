@@ -1,7 +1,7 @@
 /** Mermaid flowchart direction (first line: `flowchart <direction>`). @category Encoding */
 export type MermaidFlowchartDirection = "TD" | "LR" | "RL" | "BT"
 
-/** Options for `@executioncontextprotocol/format-mermaid` encode (via `ecp.encode(...).uses("@executioncontextprotocol/format-mermaid").with({...})`). @category Encoding */
+/** Options for `@executioncontrolprotocol/format-mermaid` encode (via `ecp.encode(...).uses("@executioncontrolprotocol/format-mermaid").with({...})`). @category Encoding */
 export interface MermaidEncodeOptions {
   /** Flowchart direction. Default `TD`. Use `LR` for left-to-right. */
   direction?: MermaidFlowchartDirection

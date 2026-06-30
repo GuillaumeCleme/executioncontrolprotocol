@@ -7,9 +7,9 @@ const bindingSchema = z.object({
   config: z.record(z.unknown()).optional(),
 })
 
-/** Zod schema for `@ecp.environment` manifests. */
+/** Zod schema for `@executioncontrolprotocol.environment` manifests. */
 export const environmentManifestSchema = z.object({
-  schema: z.literal("@ecp.environment"),
+  schema: z.literal("@executioncontrolprotocol.environment"),
   version: z.string(),
   environment: z.object({
     id: z.string().min(1),
@@ -38,9 +38,9 @@ const runtimeFeaturesSchema = z.object({
 
 const eqlTypesSchema = z.record(z.string())
 
-/** Zod schema for `@ecp.environment.describe` documents. */
+/** Zod schema for `@executioncontrolprotocol.environment.describe` documents. */
 export const environmentDescribeSchema = z.object({
-  schema: z.literal("@ecp.environment.describe"),
+  schema: z.literal("@executioncontrolprotocol.environment.describe"),
   version: z.string(),
   environment: z.object({
     id: z.string().min(1),

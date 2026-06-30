@@ -3,7 +3,7 @@ import type { EcpVersion } from "./version.js"
 
 /** Portable workflow manifest. @category Workflow */
 export interface WorkflowManifest {
-  schema: "@ecp.workflow"
+  schema: "@executioncontrolprotocol.workflow"
   version: EcpVersion
   workflow: {
     id: string

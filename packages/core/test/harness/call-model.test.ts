@@ -10,7 +10,7 @@ function mockContext(
     store: {},
     state: {},
     run: { id: "run", input: {} },
-    step: { id: "step", capabilityId: "@executioncontextprotocol/demo.generate" },
+    step: { id: "step", capabilityId: "@executioncontrolprotocol/test.generate" },
     logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
     usage: createUsageLedger(),
     capabilities: { call: handler },
@@ -21,14 +21,14 @@ describe("callModelGenerate", () => {
   it("rejects non-generate provider capabilities", async () => {
     const ctx = mockContext(async () => ({ text: "ok" }))
     await expect(
-      callModelGenerate("@executioncontextprotocol/demo.generateText", { prompt: "hi" }, ctx)
+      callModelGenerate("@executioncontrolprotocol/test.echo", { prompt: "hi" }, ctx)
     ).rejects.toThrow('must use capability name "generate"')
   })
 
   it("extracts text from text and content response shapes", async () => {
     const ctxText = mockContext(async () => ({ text: "from-text" }))
     const textResult = await callModelGenerate(
-      "@executioncontextprotocol/demo.generate",
+      "@executioncontrolprotocol/test.generate",
       { prompt: "hi" },
       ctxText
     )
@@ -36,7 +36,7 @@ describe("callModelGenerate", () => {
 
     const ctxContent = mockContext(async () => ({ content: "from-content" }))
     const contentResult = await callModelGenerate(
-      "@executioncontextprotocol/demo.generate",
+      "@executioncontrolprotocol/test.generate",
       { prompt: "hi" },
       ctxContent
     )
@@ -51,18 +51,18 @@ describe("callModelGenerate", () => {
     })
 
     await callModelGenerate(
-      "@executioncontextprotocol/demo.generate",
+      "@executioncontrolprotocol/test.generate",
       { prompt: "Classify this message." },
       ctx,
-      "@executioncontextprotocol/format-json"
+      "@executioncontrolprotocol/format-json"
     )
     expect(capturedPrompt).toContain("JSON")
 
     await callModelGenerate(
-      "@executioncontextprotocol/demo.generate",
+      "@executioncontrolprotocol/test.generate",
       { prompt: "Return a workflow." },
       ctx,
-      "@executioncontextprotocol/format-toon"
+      "@executioncontrolprotocol/format-toon"
     )
     expect(capturedPrompt.toLowerCase()).toContain("toon")
   })
@@ -70,7 +70,7 @@ describe("callModelGenerate", () => {
   it("accepts a bare string from the provider", async () => {
     const ctx = mockContext(async () => "plain-string")
     const result = await callModelGenerate(
-      "@executioncontextprotocol/demo.generate",
+      "@executioncontrolprotocol/test.generate",
       { prompt: "hi", responseFormat: "text" },
       ctx
     )
@@ -80,7 +80,7 @@ describe("callModelGenerate", () => {
   it("rejects unsupported provider output shapes", async () => {
     const ctx = mockContext(async () => 42)
     await expect(
-      callModelGenerate("@executioncontextprotocol/demo.generate", { prompt: "hi", responseFormat: "text" }, ctx)
+      callModelGenerate("@executioncontrolprotocol/test.generate", { prompt: "hi", responseFormat: "text" }, ctx)
     ).rejects.toThrow(/unsupported generate output shape/)
   })
 })

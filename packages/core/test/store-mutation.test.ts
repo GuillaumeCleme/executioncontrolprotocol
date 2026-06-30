@@ -5,7 +5,7 @@ import {
   registerLifecycleSpyExtension,
   resetLifecycleSpy,
 } from "../src/testing/test-lifecycle-extension.js"
-import { registerStandardPolicies } from "@executioncontextprotocol/policies"
+import { registerStandardPolicies } from "@executioncontrolprotocol/policies"
 import { createTransactionalStore, createMutationBuffer } from "../src/runtime/store.js"
 
 describe("store mutations", () => {
@@ -17,12 +17,12 @@ describe("store mutations", () => {
 
   it("commits merge via state() handle after successful step", async () => {
     const env = (await createTestEnvironment("store-test")).withExtensions([
-      extension("@executioncontextprotocol/lifecycle-spy", "Spy").with({}),
+      extension("@executioncontrolprotocol/lifecycle-spy", "Spy").with({}),
     ])
 
     const manifest = workflow("Merge")
       .run([
-        step("@executioncontextprotocol/lifecycle-spy.merge-state", "Merge")
+        step("@executioncontrolprotocol/lifecycle-spy.merge-state", "Merge")
           .with({ target: state("target") })
           .as("result"),
       ])
@@ -53,16 +53,16 @@ describe("store mutations", () => {
 
   it("state-control policy denies disallowed mutable path", async () => {
     const env = (await createTestEnvironment("store-policy"))
-      .withExtensions([extension("@executioncontextprotocol/lifecycle-spy", "Spy").with({})])
+      .withExtensions([extension("@executioncontrolprotocol/lifecycle-spy", "Spy").with({})])
       .withPolicies([
-        policy("@executioncontextprotocol/state-control").with({
+        policy("@executioncontrolprotocol/state-control").with({
           allowedMutablePaths: ["allowed"],
         }),
       ])
 
     const manifest = workflow("Denied path")
       .run([
-        step("@executioncontextprotocol/lifecycle-spy.merge-state", "Merge")
+        step("@executioncontrolprotocol/lifecycle-spy.merge-state", "Merge")
           .with({ target: state("forbidden") })
           .as("result"),
       ])

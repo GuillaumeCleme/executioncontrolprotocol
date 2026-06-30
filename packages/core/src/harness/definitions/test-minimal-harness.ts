@@ -2,13 +2,13 @@ import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   type HarnessId,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { defineHarness } from "../define-harness.js"
 import { catalogHarness } from "../harness-catalog.js"
 
 /** Fixture harness id for core unit tests. @category Harness */
-export const TEST_MINIMAL_HARNESS_ID = "@executioncontextprotocol/test-minimal-harness" as HarnessId
+export const TEST_MINIMAL_HARNESS_ID = "@executioncontrolprotocol/test-minimal-harness" as HarnessId
 
 const configSchema = z.object({
   echoPrefix: z.string().default("ok"),
@@ -22,7 +22,7 @@ const inputSchema = z.object({
  * Minimal harness for framework tests (no product logic).
  * @category Harness
  */
-export const testMinimalHarness = defineHarness("@executioncontextprotocol", "test-minimal-harness")
+export const testMinimalHarness = defineHarness("@executioncontrolprotocol", "test-minimal-harness")
   .withConfig(configSchema)
   .withInput(inputSchema)
   .withOutput(

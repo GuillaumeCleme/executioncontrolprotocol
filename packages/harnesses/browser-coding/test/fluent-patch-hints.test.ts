@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
-import type { WorkflowManifest } from "@executioncontextprotocol/types"
+import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 import {
   buildFluentPatchHintLines,
   collectFluentPatchGoalFeedback,
@@ -32,15 +32,15 @@ describe("buildFluentPatchHintLines", () => {
 
   it("wf-patch-03 steers append step and ref after echo", () => {
     const wf = loadWorkflow("echo-workflow.json")
-    const caps = ["@executioncontextprotocol/test.echo", "@executioncontextprotocol/demo.summarize"]
+    const caps = ["@executioncontrolprotocol/test.echo", "@executioncontrolprotocol/test.summarize"]
     const lines = buildFluentPatchHintLines(
-      "Add a summarize step after echo using @executioncontextprotocol/demo.summarize.",
+      "Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
       wf,
       caps
     )
     const text = lines.join("\n")
     expect(text).toMatch(/ref\(|append/i)
-    expect(text).toContain("@executioncontextprotocol/demo.summarize")
+    expect(text).toContain("@executioncontrolprotocol/test.summarize")
   })
 
   it("wf-patch-12 steers reorder in run array not moveStep", () => {
@@ -65,7 +65,7 @@ describe("collectFluentPatchGoalFeedback", () => {
           type: "step",
           id: "patched-echo",
           label: "Patched Echo",
-          uses: "@executioncontextprotocol/test.echo",
+          uses: "@executioncontrolprotocol/test.echo",
           input: { value: "hello from fluent API" },
           as: "echo",
         },
@@ -74,7 +74,7 @@ describe("collectFluentPatchGoalFeedback", () => {
     const feedback = collectFluentPatchGoalFeedback(
       "Change the echo step label to Patched Echo.",
       patched,
-      { capabilities: [], extensions: [] } as import("@executioncontextprotocol/core").CompactEnvironmentSummary,
+      { capabilities: [], extensions: [] } as import("@executioncontrolprotocol/core").CompactEnvironmentSummary,
       baseline
     )
     expect(feedback?.length).toBeGreaterThan(0)

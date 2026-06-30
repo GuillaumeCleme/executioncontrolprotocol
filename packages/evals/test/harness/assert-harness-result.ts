@@ -1,5 +1,5 @@
 import { expect } from "vitest"
-import type { EcpIntentValue, HarnessInvokeResult, InvokeResult } from "@executioncontextprotocol/types"
+import type { EcpIntentValue, HarnessInvokeResult, InvokeResult } from "@executioncontrolprotocol/types"
 import { formatHarnessTrace, formatInvokeFailure } from "../../src/fixtures/harness-trace-format.js"
 
 export { formatHarnessTrace, formatInvokeFailure } from "../../src/fixtures/harness-trace-format.js"
@@ -40,8 +40,8 @@ export function harnessTraceHint(harnessOutput: HarnessInvokeResult): string {
 export function expectHarnessIntent(
   result: InvokeResult,
   expected: EcpIntentValue
-): HarnessInvokeResult<{ schema: "@ecp.intent"; intent: EcpIntentValue }> {
-  const harnessOutput = harnessResult<{ schema: "@ecp.intent"; intent: EcpIntentValue }>(result)
+): HarnessInvokeResult<{ schema: "@executioncontrolprotocol.intent"; intent: EcpIntentValue }> {
+  const harnessOutput = harnessResult<{ schema: "@executioncontrolprotocol.intent"; intent: EcpIntentValue }>(result)
   expect(harnessOutput.artifact.intent, harnessTraceHint(harnessOutput)).toBe(expected)
   return harnessOutput
 }

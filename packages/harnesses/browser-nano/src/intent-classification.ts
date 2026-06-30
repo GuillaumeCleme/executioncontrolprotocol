@@ -11,23 +11,26 @@ import {
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
-  formatEnvironmentSummaryLines,
-  summarizeEnvironmentDescriptor,
-  encodeForPrompt,
-  formatFeedbackForModel,
+  formatStructuredRepairForModel,
+  formatModelRepairDialogLines,
   isRepairFeedbackEcho,
-} from "@executioncontextprotocol/core"
+  coerceIntentEqlRawOutput,
+  buildContextBundle,
+  correctClassifiedIntent,
+  formatIntentRoutingHintLines,
+} from "@executioncontrolprotocol/core"
 import {
-  ECP_CORE_FORMATTER_IDS,
   ECP_INTENT_SCHEMA,
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   LATEST_ECP_VERSION,
+  type EcpIntent,
   type HarnessEvaluateOutput,
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
+  type HarnessPromptPhase,
   type ValidationResult,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
 
@@ -38,15 +41,16 @@ const harnessConfigSchema = z.object({
   system: z.string().optional(),
   context: z
     .object({
+      promptPhase: z.enum(["unfiltered", "contextualized"]).default("unfiltered"),
       includeEnvironmentDescriptor: z.boolean().default(false),
-      includeEncodedDescriptor: z.boolean().default(true),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-toon"),
+      includeEncodedDescriptor: z.boolean().default(false),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-toon"),
     })
     .default({}),
   output: z
     .object({
       schema: z.string().default(ECP_INTENT_SCHEMA),
-      format: z.string().default(ECP_CORE_FORMATTER_IDS.JSON),
+      format: z.string().default("@executioncontrolprotocol/format-eql"),
       validate: z.boolean().default(true),
     })
     .default({}),
@@ -55,6 +59,8 @@ const harnessConfigSchema = z.object({
       enabled: z.boolean().default(true),
       maxAttempts: z.number().default(1),
       includeValidationErrors: z.boolean().default(true),
+      includePriorOutput: z.boolean().default(false),
+      priorOutputMaxChars: z.number().optional(),
     })
     .default({}),
   trace: z
@@ -73,10 +79,10 @@ const harnessInputSchema = z.object({
 })
 
 /**
- * Eval intent classification harness (@executioncontextprotocol/evals-intent-classification).
+ * Eval intent classification harness (@executioncontrolprotocol/evals-intent-classification).
  * @category Evals
  */
-const evalsIntentClassificationHarness = defineHarness("@executioncontextprotocol", "evals-intent-classification-internal")
+const evalsIntentClassificationHarness = defineHarness("@executioncontrolprotocol", "evals-intent-classification-internal")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -84,53 +90,26 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
-    const outputIsEql = format === "@executioncontextprotocol/format-eql" || format.endsWith("/format-eql")
+    const outputIsEql = format === "@executioncontrolprotocol/format-eql" || format.endsWith("/format-eql")
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
     const system = config.system ?? buildSystemPrompt(promptFixtureId)
+    const promptPhase = config.context.promptPhase as HarnessPromptPhase
 
-    let descriptorText = ""
-    let environmentSummaryLines = ""
-    if (config.context.includeEnvironmentDescriptor) {
-      const descriptor = await ctx.ecp.describe()
-      const summary = summarizeEnvironmentDescriptor(descriptor)
-      environmentSummaryLines = formatEnvironmentSummaryLines(summary, {
-        format: outputIsEql ? "eql-create" : "plain",
-      }).join("\n")
-      if (config.context.includeEncodedDescriptor) {
-        descriptorText = await encodeForPrompt(ctx.ecp, summary, descriptorFormat)
-      }
-    }
+    const contextBundle = await buildContextBundle(ctx.ecp, {
+      phase: promptPhase,
+      message: input.message,
+      includeEnvironmentDescriptor: config.context.includeEnvironmentDescriptor,
+      includeEncodedDescriptor: config.context.includeEncodedDescriptor,
+      descriptorFormat,
+      outputIsEql,
+    })
 
-    const buildPrompt = (repairText?: string) => {
-      const lines = [`User message: ${input.message}`]
-      if (
-        /^how\s+(?:does|do)\b/i.test(input.message.trim()) &&
-        /\bwork\b/i.test(input.message)
-      ) {
-        lines.push(
-          "Routing hint: how-does questions about ECP features → INTENT faq (not workflow-patch)."
-        )
-      }
-      if (/^what is ecp\b/i.test(input.message.trim())) {
-        lines.push("Routing hint: definitional questions about ECP → INTENT faq.")
-      }
-      if (environmentSummaryLines) {
-        const envHeader = [
-          "Environment capabilities:",
-          environmentSummaryLines,
-          ...(descriptorText
-            ? ["", "Environment capabilities (encoded):", descriptorText, ""]
-            : [""]),
-        ]
-        lines.unshift(...envHeader)
-      }
-      if (repairText) {
-        lines.push(
-          "Previous attempt failed. Fix these issues and return corrected EQL only:",
-          repairText,
-          buildRepairHint(promptFixtureId)
-        )
+    const buildPrompt = (repairDialogLines: string[] = []) => {
+      const lines = [...contextBundle.lines, ...formatIntentRoutingHintLines(input.message)]
+      lines.push(`User message: ${input.message}`)
+      if (repairDialogLines.length > 0) {
+        lines.push(...repairDialogLines)
       }
       return lines.join("\n")
     }
@@ -141,12 +120,23 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
 
     const loopResult = await runModelRepairLoop({
       maxAttempts,
-      generate: async ({ attempt, priorFeedback }) => {
-        const repairText =
+      generate: async ({ attempt, priorFeedback, priorRaw }) => {
+        const repairFeedback =
           attempt > 0 && config.repair.includeValidationErrors
-            ? formatFeedbackForModel(priorFeedback)
+            ? formatStructuredRepairForModel(priorFeedback)
             : undefined
-        lastPrompt = buildPrompt(repairText)
+        const repairDialogLines =
+          attempt > 0 && repairFeedback
+            ? formatModelRepairDialogLines({
+                includePriorOutput: config.repair.includePriorOutput,
+                priorOutputMaxChars: config.repair.priorOutputMaxChars,
+                priorRaw,
+                repairFeedback,
+                repairHint: buildRepairHint(promptFixtureId),
+                repairLead: "Previous attempt failed. Fix these issues and return corrected EQL only:",
+              })
+            : []
+        lastPrompt = buildPrompt(repairDialogLines)
         const generated = await callModelGenerate(
           ctx.uses,
           {
@@ -163,10 +153,12 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
       evaluate: async (raw, { attempt, priorFeedback }) => {
         const feedback: HarnessOperationFeedback[] = []
 
+        const normalizedRaw = coerceIntentEqlRawOutput(raw, input.message.trim())
+
         if (
           attempt > 0 &&
           config.repair.includeValidationErrors &&
-          isRepairFeedbackEcho(raw, formatFeedbackForModel(priorFeedback))
+          isRepairFeedbackEcho(normalizedRaw, formatStructuredRepairForModel(priorFeedback))
         ) {
           return {
             success: false,
@@ -179,7 +171,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
         }
 
         const decoded = await ctx.ecp
-          .decode(raw)
+          .decode(normalizedRaw)
           .uses(format)
           .to(ECP_INTENT_SCHEMA)
           .with({ headers: false })
@@ -196,22 +188,12 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
           return { success: false, feedback }
         }
 
-        const intent = (decoded.result as { intent?: string }).intent
-        const msg = input.message.trim()
-        if (
-          intent === "workflow-patch" &&
-          ((/^how\s+(?:does|do)\b/i.test(msg) && /\bwork\b/i.test(msg)) ||
-            /^what is ecp\b/i.test(msg))
-        ) {
-          feedback.push(
-            collectModelOutputFeedback(
-              "Use INTENT faq for how-does or what-is questions about ECP (no workflow change requested)."
-            )
-          )
-          return { success: false, feedback }
-        }
+        const intentDoc = correctClassifiedIntent(
+          input.message.trim(),
+          decoded.result as EcpIntent
+        )
 
-        return { success: true, artifact: decoded.result, feedback }
+        return { success: true, artifact: intentDoc, feedback }
       },
     })
 
@@ -223,6 +205,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
       outputFormat: format,
       decodeSucceeded: true,
       validationSucceeded: validation.valid,
+      promptPhase,
       ...(config.trace.includePrompt ? { prompt: lastPrompt } : {}),
       ...(config.trace.includeRawOutput ? { rawOutput: loopResult.raw } : {}),
       ...(config.trace.includeRepairAttempts ? { repairAttempts: loopResult.attempts } : {}),
@@ -239,7 +222,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontextprotoco
 
 function decodedValidationStub(valid = true): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],
@@ -247,7 +230,7 @@ function decodedValidationStub(valid = true): ValidationResult {
   }
 }
 
-/** Intent task handler (invoked by unified `@executioncontextprotocol/harness-evals`). @category Evals */
+/** Intent task handler (invoked by unified `@executioncontrolprotocol/harness-evals`). @category Evals */
 export async function invokeIntentClassification(
   input: { message: string; model?: string },
   ctx: HarnessCapabilityContext<Record<string, unknown>>

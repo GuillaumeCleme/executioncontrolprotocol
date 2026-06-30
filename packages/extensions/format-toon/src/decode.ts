@@ -1,9 +1,9 @@
 import {
   ECP_ENCODING_ERROR_CODES,
   LATEST_ECP_VERSION,
-} from "@executioncontextprotocol/types"
-import type { DecodeResult, EcpDecodeInput, EcpSchema } from "@executioncontextprotocol/types"
-import { EcpError, decodeFailure, validateWorkflow, type UtilityCapabilityContext } from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/types"
+import type { DecodeResult, EcpDecodeInput, EcpSchema } from "@executioncontrolprotocol/types"
+import { EcpError, decodeFailure, validateWorkflow, type UtilityCapabilityContext } from "@executioncontrolprotocol/core"
 import { decodeDocumentFromToon } from "./toon-codec.js"
 import { validateEcpDocument, validationToDiagnostics } from "./validate-document.js"
 import { getEcpSchema } from "./schema.js"
@@ -30,7 +30,7 @@ export function decodeFromToon(
   input: EcpDecodeInput,
   _ctx: UtilityCapabilityContext
 ): DecodeResult {
-  const targetSchema = input.targetSchema ?? "@ecp.workflow"
+  const targetSchema = input.targetSchema ?? "@executioncontrolprotocol.workflow"
   const content = String(input.input)
   const headersOpt = input.options?.headers ?? "auto"
   const hasHeaders =
@@ -61,8 +61,8 @@ export function decodeFromToon(
   }
 
   let validation = validateEcpDocument(document, targetSchema)
-  if (targetSchema === "@ecp.workflow") {
-    validation = validateWorkflow(document as import("@executioncontextprotocol/types").WorkflowManifest)
+  if (targetSchema === "@executioncontrolprotocol.workflow") {
+    validation = validateWorkflow(document as import("@executioncontrolprotocol/types").WorkflowManifest)
   }
 
   const diagnostics = validationToDiagnostics(validation)
@@ -76,7 +76,7 @@ export function decodeFromToon(
   }
 
   return {
-    schema: "@ecp.decode.result",
+    schema: "@executioncontrolprotocol.decode.result",
     version: LATEST_ECP_VERSION,
     success,
     targetSchema: getEcpSchema(document) ?? targetSchema,

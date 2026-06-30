@@ -1,4 +1,4 @@
-import type { MutationRecord, PendingMutation } from "@executioncontextprotocol/types"
+import type { MutationRecord, PendingMutation } from "@executioncontrolprotocol/types"
 
 function getAtPath(obj: Record<string, unknown>, path: string): unknown {
   const parts = path.split(".")

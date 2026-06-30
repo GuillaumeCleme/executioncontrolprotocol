@@ -13,10 +13,10 @@
     { "path": "../../extensions/format-eql" },
     { "path": "../../extensions/format-toon" },
     { "path": "../../extensions/format-mermaid" },
-    { "path": "../../extensions/demo" },
     { "path": "../../extensions/chrome-ai" },
     { "path": "../../extensions/claude" },
-    { "path": "../../extensions/openai" }
+    { "path": "../../extensions/openai" },
+    { "path": "../../extensions/browser-secrets" }
   ],
   "include": ["src/**/*.ts"]
 }

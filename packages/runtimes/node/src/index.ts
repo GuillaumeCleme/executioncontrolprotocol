@@ -8,16 +8,21 @@ export {
 export {
   processEnvExtension,
   registerProcessEnvExtension,
-} from "./extensions/process-env.js"
+} from "@executioncontrolprotocol/process-env"
 
 export {
   secretsExtension,
   registerSecretsExtension,
   setMemorySecret,
   setSecretsProvider,
+  setSecretsStore,
+  resetSecretsStore,
   memorySecretsProvider,
-  type SecretsProvider,
-} from "./extensions/secrets.js"
+  memorySecretsStore,
+  createOsSecretsStore,
+  redactSecret,
+  type SecretsStore,
+} from "@executioncontrolprotocol/secrets"
 
 export { registerNodeDefaults, environment } from "./environment.js"
 
@@ -27,6 +32,7 @@ export {
   ref,
   state,
   env,
+  secrets,
   expr,
   parallel,
   branch,
@@ -45,5 +51,5 @@ export {
   globalRegistry,
   registerTestExtension,
   validateWorkflow,
-} from "@executioncontextprotocol/core"
-export { compileWorkflowSource, compileAndValidateWorkflowSource } from "@executioncontextprotocol/core/compile"
+} from "@executioncontrolprotocol/core"
+export { compileWorkflowSource, compileAndValidateWorkflowSource } from "@executioncontrolprotocol/core/compile"

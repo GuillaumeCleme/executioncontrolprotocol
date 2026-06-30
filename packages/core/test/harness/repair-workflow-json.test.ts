@@ -12,30 +12,30 @@ function parse(raw: string): unknown {
 describe("repairWorkflowJsonSyntax", () => {
   it("returns valid JSON unchanged (still parseable)", () => {
     const valid = JSON.stringify({
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "w" },
-      steps: [{ type: "step", id: "a", uses: "@executioncontextprotocol/test.echo", input: {}, as: "a" }],
+      steps: [{ type: "step", id: "a", uses: "@executioncontrolprotocol/test.echo", input: {}, as: "a" }],
     })
     expect(() => parse(repairWorkflowJsonSyntax(valid))).not.toThrow()
   })
 
   it("strips trailing stray array brackets after the root object", () => {
-    const raw = '{"schema":"@ecp.workflow","version":"1.0","workflow":{"id":"w"},"steps":[]}]'
+    const raw = '{"schema":"@executioncontrolprotocol.workflow","version":"1.0","workflow":{"id":"w"},"steps":[]}]'
     const repaired = repairWorkflowJsonSyntax(raw)
     expect(() => parse(repaired)).not.toThrow()
   })
 
   it("closes a single missing root brace", () => {
-    const raw = '{"schema":"@ecp.workflow","version":"1.0","workflow":{"id":"w"},"steps":[]'
+    const raw = '{"schema":"@executioncontrolprotocol.workflow","version":"1.0","workflow":{"id":"w"},"steps":[]'
     const repaired = repairWorkflowJsonSyntax(raw)
     const parsed = parse(repaired) as { schema: string }
-    expect(parsed.schema).toBe("@ecp.workflow")
+    expect(parsed.schema).toBe("@executioncontrolprotocol.workflow")
   })
 
   it("moves a floating 'as' back inside the preceding step", () => {
     const raw =
-      '{"schema":"@ecp.workflow","version":"1.0","workflow":{"id":"w"},"steps":[{"type":"step","id":"echo","uses":"@executioncontextprotocol/test.echo","input":{"value":"hi"}},"as":"echo"},{"type":"step","id":"two","uses":"@executioncontextprotocol/test.echo","input":{}}]}'
+      '{"schema":"@executioncontrolprotocol.workflow","version":"1.0","workflow":{"id":"w"},"steps":[{"type":"step","id":"echo","uses":"@executioncontrolprotocol/test.echo","input":{"value":"hi"}},"as":"echo"},{"type":"step","id":"two","uses":"@executioncontrolprotocol/test.echo","input":{}}]}'
     const repaired = repairWorkflowJsonSyntax(raw)
     const parsed = parse(repaired) as { steps: { id: string; as?: string }[] }
     const echo = parsed.steps.find((s) => s.id === "echo")
@@ -44,11 +44,11 @@ describe("repairWorkflowJsonSyntax", () => {
 
   it("preserves $ref inputs with legitimate nested braces", () => {
     const raw = JSON.stringify({
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "w" },
       steps: [
-        { type: "step", id: "a", uses: "@executioncontextprotocol/test.echo", input: { x: { $ref: "state.y" } }, as: "a" },
+        { type: "step", id: "a", uses: "@executioncontrolprotocol/test.echo", input: { x: { $ref: "state.y" } }, as: "a" },
       ],
     })
     const repaired = repairWorkflowJsonSyntax(raw)
@@ -62,11 +62,11 @@ describe("repairWorkflowJsonSyntax", () => {
 describe("hoistWorkflowStepsInRawJson", () => {
   it("hoists steps nested under workflow to the top level", () => {
     const raw = JSON.stringify({
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: {
         id: "w",
-        steps: [{ type: "step", id: "a", uses: "@executioncontextprotocol/test.echo", input: {}, as: "a" }],
+        steps: [{ type: "step", id: "a", uses: "@executioncontrolprotocol/test.echo", input: {}, as: "a" }],
       },
     })
     const hoisted = hoistWorkflowStepsInRawJson(raw)
@@ -81,9 +81,9 @@ describe("hoistWorkflowStepsInRawJson", () => {
 
 describe("repairPatchJsonSyntax", () => {
   it("strips a stray ) before } that wraps the document", () => {
-    const raw = '{"schema":"@ecp.patch","version":"1.0","targetSchema":"@ecp.workflow","patches":[])}'
+    const raw = '{"schema":"@executioncontrolprotocol.patch","version":"1.0","targetSchema":"@executioncontrolprotocol.workflow","patches":[])}'
     const repaired = repairPatchJsonSyntax(raw)
     const parsed = parse(repaired) as { schema: string }
-    expect(parsed.schema).toBe("@ecp.patch")
+    expect(parsed.schema).toBe("@executioncontrolprotocol.patch")
   })
 })

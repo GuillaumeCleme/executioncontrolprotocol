@@ -8,19 +8,19 @@ describe("environment.search", () => {
 
   it("ranks multi-token queries", async () => {
     const env = (await createTestEnvironment("s")).withExtensions([
-      extension("@executioncontextprotocol/test", "T").with({}),
+      extension("@executioncontrolprotocol/test", "T").with({}),
     ])
 
     const ecp = await env.init()
     const result = await ecp.search("test echo")
     expect(result.results.length).toBeGreaterThan(0)
-    expect(result.results[0]?.id).toBe("@executioncontextprotocol/test.echo")
+    expect(result.results[0]?.id).toBe("@executioncontrolprotocol/test.echo")
     expect(result.results[0]?.score).toBeGreaterThan(0)
   })
 
   it("includes schemas when requested", async () => {
     const env = (await createTestEnvironment("s")).withExtensions([
-      extension("@executioncontextprotocol/test", "T").with({}),
+      extension("@executioncontrolprotocol/test", "T").with({}),
     ])
 
     const ecp = await env.init()

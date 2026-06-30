@@ -1,4 +1,4 @@
-import type { InputValue, RefValue, StateValue } from "@executioncontextprotocol/types"
+import type { InputValue, RefValue, StateValue } from "@executioncontrolprotocol/types"
 
 function getStatePath(ref: string): string {
   return ref.startsWith("state.") ? ref.slice(6) : ref

@@ -180,7 +180,7 @@ Applications
 
 ### Workflow
 
-A portable, runtime-free execution graph (schema: `@ecp.workflow`, version: `"1.0"`).
+A portable, runtime-free execution graph (schema: `@executioncontrolprotocol.workflow`, version: `"1.0"`).
 
 Workflows do **not** contain runtime config, extension config, policy config, or secrets.
 
@@ -282,27 +282,27 @@ The smallest runnable workflow in this repo is the echo example:
 ecp run examples/01-echo/workflow.ts --env examples/01-echo/environment.ts
 ```
 
-The canonical artifact is the JSON workflow manifest (`@ecp.workflow`), even when
+The canonical artifact is the JSON workflow manifest (`@executioncontrolprotocol.workflow`), even when
 you author in TypeScript via the Fluent API.
 
 ------------------------------------------------------------------------
 
 ## Repository Structure
 
-This repo is the **ECP Fluent API monorepo** (`@executioncontextprotocol/*`). For commands, package boundaries, and extension rules, start with [`AGENTS.md`](AGENTS.md).
+This repo is the **ECP Fluent API monorepo** (`@executioncontrolprotocol/*`). For commands, package boundaries, and extension rules, start with [`AGENTS.md`](AGENTS.md).
 
 | Path | Description |
 | ---- | ----------- |
-| [`packages/types/`](packages/types/) | Protocol types and generated JSON Schema (`@executioncontextprotocol/types`) |
-| [`packages/core/`](packages/core/) | Runtime-agnostic core: fluent API, environment, encode/decode/patch (`@executioncontextprotocol/core`; subpaths `@executioncontextprotocol/core/node`, `@executioncontextprotocol/core/browser`, …) |
-| [`packages/runtimes/node/`](packages/runtimes/node/) | Node runtime host: process env, secrets, compile (`@executioncontextprotocol/node`) |
-| [`packages/runtimes/browser/`](packages/runtimes/browser/) | Browser runtime host: registry, session config (`@executioncontextprotocol/browser`) — **not** the demo UI |
-| [`packages/runtimes/temporal/`](packages/runtimes/temporal/) | Temporal runtime adapter stub (`@executioncontextprotocol/runtime-temporal`) |
+| [`packages/types/`](packages/types/) | Protocol types and generated JSON Schema (`@executioncontrolprotocol/types`) |
+| [`packages/core/`](packages/core/) | Runtime-agnostic core: fluent API, environment, encode/decode/patch (`@executioncontrolprotocol/core`; subpaths `@executioncontrolprotocol/core/node`, `@executioncontrolprotocol/core/browser`, …) |
+| [`packages/runtimes/node/`](packages/runtimes/node/) | Node runtime host: process env, secrets, compile (`@executioncontrolprotocol/node`) |
+| [`packages/runtimes/browser/`](packages/runtimes/browser/) | Browser runtime host: registry, session config (`@executioncontrolprotocol/browser`) — **not** the demo UI |
+| [`packages/runtimes/temporal/`](packages/runtimes/temporal/) | Temporal runtime adapter stub (`@executioncontrolprotocol/runtime-temporal`) |
 | [Browser demo (standalone repo)](https://github.com/GuillaumeCleme/executioncontrolprotocol-browser-demo) | Reference browser demo app (Vite + React): chat, panels, provider picker |
 | [`packages/cli/`](packages/cli/) | CLI (`ecp run`, `ecp compile`, `ecp encode`, …) |
 | [`packages/extensions/`](packages/extensions/) | First-party extensions (TOON, Mermaid, providers, …) |
 | [`packages/harnesses/`](packages/harnesses/) | Harnesses (agent-facing author/repair/invoke flows); used by demo + evals |
-| [`packages/evals/`](packages/evals/) | Eval fixtures and matrix tests for harness behavior (`@executioncontextprotocol/evals`, private) |
+| [`packages/evals/`](packages/evals/) | Eval fixtures and matrix tests for harness behavior (`@executioncontrolprotocol/evals`, private) |
 | [`packages/mcp/`](packages/mcp/) | MCP server adapter |
 | [`packages/policies/`](packages/policies/) | Budget, approval, state-control policies |
 | [`examples/`](examples/) | Fluent workflow + environment examples (`workflow.ts`, `environment.ts`) |

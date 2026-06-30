@@ -1,4 +1,4 @@
-import type { CapabilityId, NamespacedId } from "@executioncontextprotocol/types"
+import type { CapabilityId, NamespacedId } from "@executioncontrolprotocol/types"
 import type { z } from "zod"
 import type { CapabilityDefinition, CapabilityHandler } from "./types.js"
 
@@ -47,7 +47,7 @@ export class CapabilityBuilder {
  * @category Definitions
  */
 export function capability(name: string): CapabilityBuilder {
-  return new CapabilityBuilder("@executioncontextprotocol/placeholder" as NamespacedId, name)
+  return new CapabilityBuilder("@executioncontrolprotocol/placeholder" as NamespacedId, name)
 }
 
 /** Bind capability builder to extension id. @category Definitions */

@@ -3,7 +3,7 @@ import type {
   EcpDecodeOptions,
   EcpFormatOptions,
   EncodeCapabilityInput,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 /** EQL-specific format options (intersect with {@link EcpFormatOptions}). @category Encoding */

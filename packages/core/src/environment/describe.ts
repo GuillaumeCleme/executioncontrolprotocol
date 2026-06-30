@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import type {
   CapabilityDescription,
   DescribeQuery,
@@ -6,9 +6,9 @@ import type {
   EnvironmentDescriptor,
   ExtensionDescription,
   PolicyDescription,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { Registry } from "../registry/registry.js"
-import type { EnvironmentManifest } from "@executioncontextprotocol/types"
+import type { EnvironmentManifest } from "@executioncontrolprotocol/types"
 
 function fuzzyMatch(haystack: string, needle: string): boolean {
   return haystack.toLowerCase().includes(needle.toLowerCase())
@@ -88,6 +88,9 @@ export async function buildDescriptor(
           label: e.label,
           order: e.order ?? i,
           capabilities: def?.capabilities.map((c) => c.id) ?? [],
+          ...(def?.supportedRuntimes?.length
+            ? { supportedRuntimes: [...def.supportedRuntimes] }
+            : {}),
         }
         return pickFields(desc, query?.extensions?.include) as ExtensionDescription
       })
@@ -114,14 +117,14 @@ export async function buildDescriptor(
     query?.policies?.limit
   )
 
-  const runtimeId = String(manifest.runtime?.id ?? "@executioncontextprotocol/node")
+  const runtimeId = String(manifest.runtime?.id ?? "@executioncontrolprotocol/node")
   const runtimeLabel = manifest.runtime?.label
   const runtimeText = `${runtimeId} ${runtimeLabel ?? ""}`
   const includeRuntime =
     !query?.runtime?.match || matchesSelection(runtimeText, runtimeId, query.runtime)
 
   return {
-    schema: "@ecp.environment.describe",
+    schema: "@executioncontrolprotocol.environment.describe",
     version: LATEST_ECP_VERSION,
     environment: manifest.environment,
     runtime: includeRuntime

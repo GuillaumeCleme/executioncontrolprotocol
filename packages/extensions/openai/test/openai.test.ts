@@ -1,8 +1,8 @@
 import { describe, expect, it, vi, beforeEach } from "vitest"
 import { registerOpenaiExtension } from "../src/index.js"
-import { globalRegistry } from "@executioncontextprotocol/core"
+import { globalRegistry } from "@executioncontrolprotocol/core"
 
-describe("@executioncontextprotocol/openai.evaluate", () => {
+describe("@executioncontrolprotocol/openai.evaluate", () => {
   beforeEach(() => {
     registerOpenaiExtension()
     vi.stubGlobal(
@@ -18,8 +18,8 @@ describe("@executioncontextprotocol/openai.evaluate", () => {
   })
 
   it("parses evaluation JSON from API", async () => {
-    const ext = globalRegistry.getExtension("@executioncontextprotocol/openai")
-    const evaluate = ext?.capabilities.find((c) => c.id === "@executioncontextprotocol/openai.evaluate")
+    const ext = globalRegistry.getExtension("@executioncontrolprotocol/openai")
+    const evaluate = ext?.capabilities.find((c) => c.id === "@executioncontrolprotocol/openai.evaluate")
     const result = await evaluate?.handler(
       { artifact: {}, goal: "quality" },
       { usage: { increment: () => undefined } } as never

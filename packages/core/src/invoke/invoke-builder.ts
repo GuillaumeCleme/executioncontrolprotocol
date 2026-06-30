@@ -1,4 +1,4 @@
-import type { CapabilityId, InvokeResult } from "@executioncontextprotocol/types"
+import type { CapabilityId, InvokeResult } from "@executioncontrolprotocol/types"
 import type { Environment } from "../environment/environment.js"
 import { executeInvoke } from "./execute-invoke.js"
 

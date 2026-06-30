@@ -1,5 +1,5 @@
 import { eqlSyntaxIssue } from "./diagnostics.js"
-import type { ValidationIssue } from "@executioncontextprotocol/types"
+import type { ValidationIssue } from "@executioncontrolprotocol/types"
 
 /** Parse a scalar or composite literal from EQL token text. */
 export function parseLiteral(
@@ -63,7 +63,7 @@ export function parseStatePath(stateToken: string, line: number): { value?: { $s
 export function parseWhenExpr(
   expr: string,
   line: number
-): { value?: import("@executioncontextprotocol/types").ExprValue; issues: ValidationIssue[] } {
+): { value?: import("@executioncontrolprotocol/types").ExprValue; issues: ValidationIssue[] } {
   const eqIndex = expr.indexOf("==")
   if (eqIndex === -1) {
     return { issues: [eqlSyntaxIssue(line, `Unsupported WHEN expression: ${expr}`)] }

@@ -1,4 +1,4 @@
-import type { ValidationIssue } from "@executioncontextprotocol/types"
+import type { ValidationIssue } from "@executioncontrolprotocol/types"
 import type {
   EqlBinding,
   EqlDescribeCapability,
@@ -382,12 +382,12 @@ export function parseEnvironmentEql(text: string): {
     return { issues }
   }
 
-  if (header?.schema === "@ecp.environment.describe") {
+  if (header?.schema === "@executioncontrolprotocol.environment.describe") {
     const doc = parseDescribeDocument(lines, index, header, issues)
     return { document: doc, issues }
   }
 
-  if (header?.schema === "@ecp.environment") {
+  if (header?.schema === "@executioncontrolprotocol.environment") {
     const doc = parseEnvironmentDocument(lines, index, header, issues)
     return { document: doc, issues }
   }

@@ -1,4 +1,4 @@
-import { ECP_INTENT_VALUES } from "@executioncontextprotocol/types"
+import { ECP_INTENT_VALUES } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 /** Eval suite identifiers. @category Evals */
@@ -8,6 +8,7 @@ export const EVAL_SUITE_VALUES = {
   INTENT: "intent",
   ASSISTANT: "assistant",
   FLOW: "flow",
+  CHAT: "chat",
 } as const
 
 /** Eval suite union. @category Evals */
@@ -18,6 +19,7 @@ export const EVAL_HARNESS_NAMES = {
   WORKFLOW_AUTHORING: "workflow-authoring",
   INTENT_CLASSIFICATION: "intent-classification",
   WORKFLOW_ASSISTANT: "workflow-assistant",
+  CHAT: "chat",
 } as const
 
 const deterministicAssertionSchema = z.discriminatedUnion("kind", [
@@ -45,6 +47,22 @@ const deterministicAssertionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("answerRedirectsToScope") }),
   z.object({ kind: z.literal("inputRefPresent"), stepId: z.string() }),
   z.object({ kind: z.literal("stepOrder"), stepIds: z.array(z.string()).min(1) }),
+  z.object({
+    kind: z.literal("classifiedIntent"),
+    value: z.enum([
+      ECP_INTENT_VALUES.FAQ,
+      ECP_INTENT_VALUES.WORKFLOW_CREATE,
+      ECP_INTENT_VALUES.WORKFLOW_PATCH,
+      ECP_INTENT_VALUES.GENERAL,
+    ]),
+  }),
+  z.object({ kind: z.literal("classifiedTopic"), contains: z.string() }),
+  z.object({ kind: z.literal("shotCount"), value: z.number() }),
+  z.object({
+    kind: z.literal("promptPhase"),
+    shotIndex: z.number(),
+    value: z.enum(["unfiltered", "contextualized"]),
+  }),
 ])
 
 const judgeAssertionSchema = z.object({
@@ -53,6 +71,14 @@ const judgeAssertionSchema = z.object({
   rubric: z.string().optional(),
   requireApproved: z.boolean().optional(),
   only: z.boolean().optional(),
+  classifiedIntent: z
+    .enum([
+      ECP_INTENT_VALUES.FAQ,
+      ECP_INTENT_VALUES.WORKFLOW_CREATE,
+      ECP_INTENT_VALUES.WORKFLOW_PATCH,
+      ECP_INTENT_VALUES.GENERAL,
+    ])
+    .optional(),
 })
 
 const assertionsSchema = z.object({
@@ -78,12 +104,14 @@ export const singleEvalCaseSchema = z.object({
     EVAL_SUITE_VALUES.WORKFLOW_PATCH,
     EVAL_SUITE_VALUES.INTENT,
     EVAL_SUITE_VALUES.ASSISTANT,
+    EVAL_SUITE_VALUES.CHAT,
   ]),
   title: z.string().optional(),
   harness: z.enum([
     EVAL_HARNESS_NAMES.WORKFLOW_AUTHORING,
     EVAL_HARNESS_NAMES.INTENT_CLASSIFICATION,
     EVAL_HARNESS_NAMES.WORKFLOW_ASSISTANT,
+    EVAL_HARNESS_NAMES.CHAT,
   ]),
   skip: z.boolean().optional(),
   model: z.string().optional(),

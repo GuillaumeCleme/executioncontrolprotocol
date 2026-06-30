@@ -2,12 +2,12 @@ import {
   catalogHarness,
   defineHarness,
   type HarnessCapabilityContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   type HarnessEvaluateOutput,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import {
   getHarnessCodingConfig,
@@ -71,7 +71,7 @@ function handlerContextForTask(
   }
 }
 
-const browserCodingHarnessDefinition = defineHarness("@executioncontextprotocol", "harness-browser-coding")
+const browserCodingHarnessDefinition = defineHarness("@executioncontrolprotocol", "harness-browser-coding")
   .withConfig(harnessBindingSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -102,7 +102,7 @@ const browserCodingHarnessDefinition = defineHarness("@executioncontextprotocol"
   })
   .build()
 
-/** Register Browser Coding harness (`@executioncontextprotocol/harness-browser-coding`). @category Harness */
+/** Register Browser Coding harness (`@executioncontrolprotocol/harness-browser-coding`). @category Harness */
 export function registerBrowserCodingHarness(): void {
   catalogHarness(browserCodingHarnessDefinition)
 }

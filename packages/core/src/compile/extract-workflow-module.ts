@@ -1,4 +1,4 @@
-import type { WorkflowManifest } from "@executioncontextprotocol/types"
+import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 import type { WorkflowBuilder } from "../workflow/builder.js"
 
 const WORKFLOW_EXPORT_NAMES = ["default", "workflow", "defaultWorkflow", "manifest"]
@@ -15,12 +15,12 @@ export function extractWorkflowFromModule(
       if ("toManifest" in value && typeof (value as WorkflowBuilder).toManifest === "function") {
         return (value as WorkflowBuilder).toManifest()
       }
-      if ("schema" in value && (value as WorkflowManifest).schema === "@ecp.workflow") {
+      if ("schema" in value && (value as WorkflowManifest).schema === "@executioncontrolprotocol.workflow") {
         return value as WorkflowManifest
       }
     }
   }
   throw new Error(
-    "Module must export a workflow builder or @ecp.workflow manifest (default, workflow, or defaultWorkflow)"
+    "Module must export a workflow builder or @executioncontrolprotocol.workflow manifest (default, workflow, or defaultWorkflow)"
   )
 }

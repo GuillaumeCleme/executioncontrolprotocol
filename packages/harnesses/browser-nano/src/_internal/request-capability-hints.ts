@@ -1,6 +1,6 @@
-import { collectModelOutputFeedback } from "@executioncontextprotocol/core"
-import type { HarnessOperationFeedback, WorkflowManifest } from "@executioncontextprotocol/types"
-import type { CompactEnvironmentSummary } from "@executioncontextprotocol/core"
+import { collectModelOutputFeedback } from "@executioncontrolprotocol/core"
+import type { HarnessOperationFeedback, WorkflowManifest } from "@executioncontrolprotocol/types"
+import type { CompactEnvironmentSummary } from "@executioncontrolprotocol/core"
 
 function stepHasInputRef(step: WorkflowManifest["steps"][number]): boolean {
   if (!("input" in step) || step.input === undefined) return false
@@ -16,6 +16,7 @@ export function inferPatchTargetStepId(
   stepIds: readonly string[]
 ): string | undefined {
   const patterns = [
+    /failed?\s+on\s+(\w+)/i,
     /change\s+(?:the\s+)?(\w+)\s+step\s+label/i,
     /rename\s+(\w+)\s+(?:step\s+)?label/i,
     /rename\s+(?:the\s+)?(\w+)\s+label/i,
@@ -77,7 +78,7 @@ export function inferRequiredCapabilityIds(
     const cap = bySuffix("notify")
     if (cap && !isRemovalTarget && !isConfigureExisting) matched.add(cap)
   }
-  if (/\btranslate\b/i.test(request) && /\btranslate\b.*\bstep\b|\badd\b.*\btranslate\b|@executioncontextprotocol\/demo\.translate/i.test(request)) {
+  if (/\btranslate\b/i.test(request) && /\btranslate\b.*\bstep\b|\badd\b.*\btranslate\b|@executioncontrolprotocol\/demo\.translate/i.test(request)) {
     const cap = bySuffix("translate")
     if (cap) matched.add(cap)
   }
@@ -123,7 +124,7 @@ export function buildRequestCapabilityHintLines(
   const stepIdMatch = request.match(/\bstep id\s+(\w+)/i)
   if (stepIdMatch && mode === "create") {
     lines.push(
-      `Step id must be "${stepIdMatch[1]}" (short name, not a capability id). Format: STEP ${stepIdMatch[1]} USES @executioncontextprotocol/...`,
+      `Step id must be "${stepIdMatch[1]}" (short name, not a capability id). Format: STEP ${stepIdMatch[1]} USES @executioncontrolprotocol/...`,
       ""
     )
   }
@@ -275,15 +276,33 @@ export function collectCreateCapabilityFeedback(
   if (required.length === 0) return undefined
   const uses = stepUsesList(workflow)
   const missing = required.filter((id) => !uses.includes(id))
-  if (missing.length === 0) return undefined
-  const allStepsList = required.map((id, i) => `${i + 1}. STEP ... USES ${id}`).join(", ")
-  return [
-    collectModelOutputFeedback(
-      `Workflow has ${uses.length} STEP(s) but needs ${required.length}. ` +
-        `Include ALL required steps in EQL: ${allStepsList}. ` +
-        `Missing USES: ${missing.join(", ")}.`
-    ),
-  ]
+  const feedback: HarnessOperationFeedback[] = []
+  if (missing.length > 0) {
+    const allStepsList = required.map((id, i) => `${i + 1}. STEP ... USES ${id}`).join(", ")
+    feedback.push(
+      collectModelOutputFeedback(
+        `Workflow has ${uses.length} STEP(s) but needs ${required.length}. ` +
+          `Include ALL required steps in EQL: ${allStepsList}. ` +
+          `Missing USES: ${missing.join(", ")}.`
+      )
+    )
+  }
+  const extra = uses.filter((id) => !required.includes(id))
+  if (required.length > 0 && extra.length > 0) {
+    feedback.push(
+      collectModelOutputFeedback(
+        `Output exactly ${required.length} STEP line(s) for capabilities named in the request: ${required.join(", ")}. ` +
+          `Remove extra steps (not requested: ${extra.join(", ")}).`
+      )
+    )
+  } else if (required.length > 0 && uses.length > required.length) {
+    feedback.push(
+      collectModelOutputFeedback(
+        `Output exactly ${required.length} STEP line(s) for: ${required.join(", ")}. Remove extra STEP lines.`
+      )
+    )
+  }
+  return feedback.length > 0 ? feedback : undefined
 }
 
 /**
@@ -292,12 +311,25 @@ export function collectCreateCapabilityFeedback(
  */
 export function collectCreateStepCountFeedback(
   request: string,
-  workflow: WorkflowManifest
+  workflow: WorkflowManifest,
+  requiredCapabilityIds?: readonly string[]
 ): HarnessOperationFeedback[] | undefined {
+  const requiredCount =
+    requiredCapabilityIds?.length ??
+    (/\bone step\b/i.test(request) || /\bexactly one\b/i.test(request) || /\bminimal\b/i.test(request)
+      ? 1
+      : undefined)
+  const count = workflow.steps?.length ?? 0
+  if (requiredCount === 1 && count > 1) {
+    return [
+      collectModelOutputFeedback(
+        `Request requires exactly one capability step but output has ${count} STEP lines. Output only one STEP ... USES line.`
+      ),
+    ]
+  }
   if (!/\bone step\b/i.test(request) && !/\bexactly one\b/i.test(request)) {
     return undefined
   }
-  const count = workflow.steps?.length ?? 0
   if (count <= 1) return undefined
   return [
     collectModelOutputFeedback(
@@ -374,7 +406,13 @@ export function collectPatchGoalFeedback(
         .map((s) => s.id) ?? []
     const stepIdx = stepOrder.indexOf(stepId)
     const anchorIdx = stepOrder.indexOf(anchorId)
-    if (stepIdx >= 0 && anchorIdx >= 0) {
+    if (stepIdx < 0 && baselineStepIds.includes(stepId)) {
+      feedback.push(
+        collectModelOutputFeedback(
+          `Use MOVE STEP ${stepId} ${relation.toUpperCase()} ${anchorId}. Do not DELETE STEP ${stepId}.`
+        )
+      )
+    } else if (stepIdx >= 0 && anchorIdx >= 0) {
       const correct =
         relation === "after" ? stepIdx === anchorIdx + 1 : stepIdx === anchorIdx - 1
       if (!correct) {

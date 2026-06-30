@@ -7,7 +7,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a minimal @ecp.workflow with one step id echo using @executioncontextprotocol/test.echo and input value hello."
+        "request": "Create a minimal @executioncontrolprotocol.workflow with one step id echo using @executioncontrolprotocol/test.echo and input value hello."
       },
       "assertions": {
         "deterministic": [
@@ -16,7 +16,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -24,16 +24,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontrolprotocol/test.echo"
           },
           {
             "kind": "stepCount",
@@ -52,7 +51,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a workflow with echo (@executioncontextprotocol/test.echo) then summarize (@executioncontextprotocol/demo.summarize) passing echo output."
+        "request": "Create a workflow with echo (@executioncontrolprotocol/test.echo) then summarize (@executioncontrolprotocol/test.summarize) passing echo output."
       },
       "assertions": {
         "deterministic": [
@@ -61,7 +60,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -69,11 +68,10 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -82,7 +80,7 @@
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/demo.summarize"
+            "capabilityId": "@executioncontrolprotocol/test.summarize"
           }
         ],
         "judge": {
@@ -97,7 +95,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Build a workflow: first @executioncontextprotocol/demo.validate then @executioncontextprotocol/test.echo."
+        "request": "Build a workflow: first @executioncontrolprotocol/test.validate then @executioncontrolprotocol/test.echo."
       },
       "assertions": {
         "deterministic": [
@@ -106,7 +104,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -114,16 +112,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/demo.validate"
+            "capabilityId": "@executioncontrolprotocol/test.validate"
           }
         ],
         "judge": {
@@ -138,7 +135,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create workflow with @executioncontextprotocol/test.echo and a final @executioncontextprotocol/demo.notify step."
+        "request": "Create workflow with @executioncontrolprotocol/test.echo and a final @executioncontrolprotocol/test.notify step."
       },
       "assertions": {
         "deterministic": [
@@ -147,7 +144,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -155,16 +152,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/demo.notify"
+            "capabilityId": "@executioncontrolprotocol/test.notify"
           }
         ],
         "judge": {
@@ -179,7 +175,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a two-step workflow using @executioncontextprotocol/test.echo and @executioncontextprotocol/demo.translate."
+        "request": "Create a two-step workflow using @executioncontrolprotocol/test.echo and @executioncontrolprotocol/test.translate."
       },
       "assertions": {
         "deterministic": [
@@ -188,7 +184,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -196,16 +192,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/demo.translate"
+            "capabilityId": "@executioncontrolprotocol/test.translate"
           }
         ],
         "judge": {
@@ -220,7 +215,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Crea un flujo con un paso echo usando @executioncontextprotocol/test.echo."
+        "request": "Crea un flujo con un paso echo usando @executioncontrolprotocol/test.echo."
       },
       "assertions": {
         "deterministic": [
@@ -229,7 +224,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -237,16 +232,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontrolprotocol/test.echo"
           }
         ],
         "judge": {
@@ -261,7 +255,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Créez un workflow avec une étape @executioncontextprotocol/test.echo."
+        "request": "Créez un workflow avec une étape @executioncontrolprotocol/test.echo."
       },
       "assertions": {
         "deterministic": [
@@ -270,7 +264,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -278,16 +272,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontrolprotocol/test.echo"
           }
         ],
         "judge": {
@@ -302,7 +295,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Erstelle einen Workflow mit @executioncontextprotocol/test.echo."
+        "request": "Erstelle einen Workflow mit @executioncontrolprotocol/test.echo."
       },
       "assertions": {
         "deterministic": [
@@ -311,7 +304,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -319,16 +312,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontrolprotocol/test.echo"
           }
         ],
         "judge": {
@@ -343,7 +335,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create a 3-step workflow using @executioncontextprotocol/demo.validate, @executioncontextprotocol/test.echo, and @executioncontextprotocol/demo.summarize."
+        "request": "Create a 3-step workflow using @executioncontrolprotocol/test.validate, @executioncontrolprotocol/test.echo, and @executioncontrolprotocol/test.summarize."
       },
       "assertions": {
         "deterministic": [
@@ -352,7 +344,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -360,11 +352,10 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
@@ -384,7 +375,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Create workflow id minimal-echo with one @executioncontextprotocol/test.echo step labeled Runner."
+        "request": "Create workflow id minimal-echo with one @executioncontrolprotocol/test.echo step labeled Runner."
       },
       "assertions": {
         "deterministic": [
@@ -393,7 +384,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -401,16 +392,15 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "stepUses",
-            "capabilityId": "@executioncontextprotocol/test.echo"
+            "capabilityId": "@executioncontrolprotocol/test.echo"
           }
         ],
         "judge": {
@@ -425,7 +415,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "Design a clear production workflow using @executioncontextprotocol/test.echo for ingestion."
+        "request": "Design a clear production workflow using @executioncontrolprotocol/test.echo for ingestion."
       },
       "assertions": {
         "deterministic": [
@@ -434,7 +424,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -442,11 +432,10 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           }
         ],
@@ -464,7 +453,7 @@
       "harness": "workflow-authoring",
       "model": "default",
       "input": {
-        "request": "List capabilities then create echo-only workflow with @executioncontextprotocol/test.echo."
+        "request": "List capabilities then create echo-only workflow with @executioncontrolprotocol/test.echo."
       },
       "assertions": {
         "deterministic": [
@@ -473,7 +462,7 @@
           },
           {
             "kind": "artifactSchema",
-            "value": "@ecp.workflow"
+            "value": "@executioncontrolprotocol.workflow"
           },
           {
             "kind": "validationValid"
@@ -481,18 +470,17 @@
           {
             "kind": "descriptorListsExtensions",
             "ids": [
-              "@executioncontextprotocol/format-toon",
-              "@executioncontextprotocol/format-eql",
-              "@executioncontextprotocol/format-json",
-              "@executioncontextprotocol/test",
-              "@executioncontextprotocol/demo"
+              "@executioncontrolprotocol/format-toon",
+              "@executioncontrolprotocol/format-eql",
+              "@executioncontrolprotocol/format-json",
+              "@executioncontrolprotocol/test"
             ]
           },
           {
             "kind": "descriptorListsCapabilities",
             "ids": [
-              "@executioncontextprotocol/test.echo",
-              "@executioncontextprotocol/demo.summarize"
+              "@executioncontrolprotocol/test.echo",
+              "@executioncontrolprotocol/test.summarize"
             ]
           }
         ],

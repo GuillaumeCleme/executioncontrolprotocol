@@ -1,6 +1,6 @@
-# @executioncontextprotocol/cli
+# @executioncontrolprotocol/cli
 
-ECP command-line interface for running **workflows** (`@ecp.workflow`) in configured
+ECP command-line interface for running **workflows** (`@executioncontrolprotocol.workflow`) in configured
 **environments** (runtime + extensions + policies).
 
 This CLI is how you run ECP deterministically in a Node.js / TypeScript ecosystem:
@@ -19,7 +19,7 @@ For the architecture and monorepo package boundaries, start with
 From npm (when published):
 
 ```sh
-npm install -g @executioncontextprotocol/cli
+npm install -g @executioncontrolprotocol/cli
 ```
 
 From this monorepo (recommended for development):
@@ -91,7 +91,7 @@ Notes:
 
 ## Related packages
 
-- [`@executioncontextprotocol/core`](../core/README.md): runtime-agnostic core + fluent API
-- [`@executioncontextprotocol/node`](../runtimes/node/README.md): Node runtime host used by CLI examples
-- [`@executioncontextprotocol/types`](../types/README.md): protocol types + generated JSON Schemas
-- [`@executioncontextprotocol/mcp`](../mcp/): MCP server adapter exposing an environment to agents
+- [`@executioncontrolprotocol/core`](../core/README.md): runtime-agnostic core + fluent API
+- [`@executioncontrolprotocol/node`](../runtimes/node/README.md): Node runtime host used by CLI examples
+- [`@executioncontrolprotocol/types`](../types/README.md): protocol types + generated JSON Schemas
+- [`@executioncontrolprotocol/mcp`](../mcp/): MCP server adapter exposing an environment to agents

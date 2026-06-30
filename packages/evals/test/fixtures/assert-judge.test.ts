@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from "vitest"
-import type { Ecp } from "@executioncontextprotocol/core"
-import type { HarnessInvokeResult } from "@executioncontextprotocol/types"
+import type { Ecp } from "@executioncontrolprotocol/core"
+import type { HarnessInvokeResult } from "@executioncontrolprotocol/types"
 import { assertJudge } from "../../src/fixtures/assertions.js"
 import type { EvalCase } from "../../src/fixtures/eval-case-schema.js"
 import { CHROME_NANO_EVAL } from "../../src/profiles/chrome-nano.js"
@@ -20,9 +20,9 @@ const caseRow = {
 } as EvalCase
 
 const harnessOutput = {
-  artifact: { schema: "@ecp.harness.reply", answer: "ok" },
+  artifact: { schema: "@executioncontrolprotocol.harness.reply", answer: "ok" },
   raw: "{}",
-  trace: { harness: "@executioncontextprotocol/harness-browser-nano" },
+  trace: { harness: "@executioncontrolprotocol/harness-browser-nano" },
 } as HarnessInvokeResult
 
 describe("assertJudge", () => {
@@ -61,9 +61,9 @@ describe("assertJudge", () => {
         with: () => ({
           process: async () => ({
             success: false,
-            schema: "@ecp.invoke.result",
+            schema: "@executioncontrolprotocol.invoke.result",
             version: "1.0",
-            capabilityId: "@executioncontextprotocol/ollama.evaluate",
+            capabilityId: "@executioncontrolprotocol/ollama.evaluate",
             diagnostics: [{ message: "rate limited" }],
           }),
         }),
@@ -80,7 +80,7 @@ describe("assertJudge", () => {
         with: vi.fn(() => ({
           process: vi.fn(async () => ({
             success: true,
-            schema: "@ecp.invoke.result",
+            schema: "@executioncontrolprotocol.invoke.result",
             version: "1.0",
             capabilityId: capId,
             result: { approved: true },
@@ -91,7 +91,7 @@ describe("assertJudge", () => {
     } as unknown as Ecp
 
     await assertJudge(caseRow, harnessOutput, caseRow.assertions.judge, ecp)
-    expect(ecp.invoke).toHaveBeenCalledWith("@executioncontextprotocol/ollama.evaluate")
+    expect(ecp.invoke).toHaveBeenCalledWith("@executioncontrolprotocol/ollama.evaluate")
   })
 
   it("passes when evaluate approves", async () => {

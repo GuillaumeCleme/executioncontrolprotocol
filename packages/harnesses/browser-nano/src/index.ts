@@ -1,6 +1,6 @@
 /**
- * Browser Nano harness (`@executioncontextprotocol/harness-browser-nano`): workflow authoring, intent, assistant.
- * Tuned for on-device and ~1B models. Used by browser demo and `@executioncontextprotocol/evals` matrix tests.
+ * Browser Nano harness (`@executioncontrolprotocol/harness-browser-nano`): workflow authoring, intent, assistant.
+ * Tuned for on-device and ~1B models. Used by browser demo and `@executioncontrolprotocol/evals` matrix tests.
  * @category Harness
  */
 export {
@@ -16,14 +16,21 @@ export {
 export {
   HARNESS_TASKS,
   HARNESS_NANO_REPAIR,
+  HARNESS_NANO_CHAT_REPAIR,
   HARNESS_NANO_TRACE,
   HARNESS_NANO_BINDING,
-  HARNESS_BROWSER_NANO_DEMO_BINDING,
   getHarnessNanoConfig,
   type HarnessTask,
 } from "./harness-nano-config.js"
 
 export type { BrowserNanoHarnessInput } from "./browser-nano-harness.js"
+
+export {
+  chatResultAnswer,
+  chatResultWorkflow,
+  intentRoutesToAuthoring,
+  invokeMultiShotChat,
+} from "./multi-shot-chat.js"
 
 export {
   buildPatchOperationHintLines,

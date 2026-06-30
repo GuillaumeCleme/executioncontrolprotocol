@@ -1,4 +1,4 @@
-import type { NamespacedId } from "@executioncontextprotocol/types"
+import type { NamespacedId } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import type {
   CapabilityDefinition,
@@ -17,11 +17,18 @@ export class ExtensionDefinitionBuilder {
   private configSchema?: ConfigSchema
   private capabilities: CapabilityDefinition[] = []
   private hooks: HookDefinition[] = []
+  private supportedRuntimes?: NamespacedId[]
 
   constructor(
     private readonly namespace: string,
     private readonly name: string
   ) {}
+
+  /** Restrict this extension to specific runtime hosts. Omit for universal support. */
+  withSupportedRuntimes(runtimes: NamespacedId[]): this {
+    this.supportedRuntimes = runtimes
+    return this
+  }
 
   /** Set extension config Zod schema. */
   withConfig(schema: ConfigSchema | z.ZodRawShape): this {
@@ -55,6 +62,7 @@ export class ExtensionDefinitionBuilder {
       configSchema: this.configSchema,
       capabilities: this.capabilities,
       hooks: this.hooks,
+      supportedRuntimes: this.supportedRuntimes,
     }
   }
 }

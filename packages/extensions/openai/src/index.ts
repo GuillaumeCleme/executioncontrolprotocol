@@ -1,5 +1,5 @@
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension, type Registry } from "@executioncontextprotocol/core"
-import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontextprotocol/types"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension, type Registry } from "@executioncontrolprotocol/core"
+import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { resolveOpenaiApiKey } from "./resolve-api-key.js"
 
@@ -35,14 +35,14 @@ async function chatComplete(
   return data.choices[0]?.message?.content ?? ""
 }
 
-/** @executioncontextprotocol/openai extension. @category Extensions */
-export const openaiExtension = defineExtension("@executioncontextprotocol", "openai")
+/** @executioncontrolprotocol/openai extension. @category Extensions */
+export const openaiExtension = defineExtension("@executioncontrolprotocol", "openai")
   .withConfig({
     apiKey: z.string().optional(),
     defaultModel: z.string().optional(),
   })
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/openai", "generate")
+    capabilityFor("@executioncontrolprotocol/openai", "generate")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -61,7 +61,7 @@ export const openaiExtension = defineExtension("@executioncontextprotocol", "ope
         )
         return { text }
       }),
-    capabilityFor("@executioncontextprotocol/openai", "generateText")
+    capabilityFor("@executioncontrolprotocol/openai", "generateText")
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (input, ctx) => {
@@ -80,7 +80,7 @@ export const openaiExtension = defineExtension("@executioncontextprotocol", "ope
         )
         return { text }
       }),
-    capabilityFor("@executioncontextprotocol/openai", "evaluate")
+    capabilityFor("@executioncontrolprotocol/openai", "evaluate")
       .withInput(
         z.object({
           artifact: z.unknown(),
@@ -106,9 +106,9 @@ export const openaiExtension = defineExtension("@executioncontextprotocol", "ope
 
 catalogExtension(openaiExtension)
 
-/** Register @executioncontextprotocol/openai. */
+/** Register @executioncontrolprotocol/openai. */
 export async function registerOpenaiExtension(registry: Registry = globalRegistry): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/openai")) {
+  if (!registry.getExtension("@executioncontrolprotocol/openai")) {
     await registry.registerExtension(openaiExtension)
   }
 }

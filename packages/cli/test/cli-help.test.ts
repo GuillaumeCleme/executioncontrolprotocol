@@ -29,5 +29,7 @@ describe("ecp --help", () => {
     runHelp("validate")
     runHelp("describe")
     runHelp("search")
+    runHelp("config secrets")
+    runHelp("config secrets add")
   })
 })

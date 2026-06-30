@@ -21,10 +21,10 @@ describe("harness prompt fixtures", () => {
 
   it("schema examples contain no pipe union in JSON", () => {
     for (const schema of [
-      "@ecp.intent",
-      "@ecp.workflow",
-      "@ecp.patch",
-      "@ecp.harness.reply",
+      "@executioncontrolprotocol.intent",
+      "@executioncontrolprotocol.workflow",
+      "@executioncontrolprotocol.patch",
+      "@executioncontrolprotocol.harness.reply",
     ] as const) {
       const json = formatSchemaExampleJson(schema)
       expect(json).not.toMatch(/"\|"/)
@@ -52,10 +52,12 @@ describe("harness prompt fixtures", () => {
     expect(system).toContain("ADD STEP")
     expect(system).toContain("DELETE STEP")
     expect(system).toContain("MOVE STEP")
+    expect(system).toContain("Patched Echo")
+    expect(system).toContain("Translated Output")
     expect(system).toContain("Updated Chain")
     expect(system).toContain("Short Summary")
     expect(system).toContain("DELETE STEP summarize")
-    expect(system).not.toContain('WITH value = "world"')
+    expect(system).toContain('WITH value = "world"')
     expect(system).toContain("Do NOT re-emit unchanged steps")
     expect(system).toContain("Examples teach syntax only")
     expect(system).not.toContain("Full operation reference")
@@ -63,15 +65,15 @@ describe("harness prompt fixtures", () => {
 
   it("buildRepairHint for patch avoids copyable eval-specific examples", () => {
     const hint = buildRepairHint(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH)
-    expect(hint).toContain("workflow id from the user prompt")
+    expect(hint).toContain("PATCH WORKFLOW")
+    expect(hint).not.toContain("example-wf")
     expect(hint).not.toContain("echo-test")
     expect(hint).not.toContain("Patched Echo")
-    expect(hint).not.toContain("example-wf")
-    expect(hint).not.toContain("<")
+    expect(hint).not.toContain("Example shape")
   })
 
   it("loadRepairNeutralExampleEql loads patch repair fixture", () => {
-    const example = loadRepairNeutralExampleEql("@ecp.patch")
+    const example = loadRepairNeutralExampleEql("@executioncontrolprotocol.patch")
     expect(example).toContain("example-wf")
     expect(example).not.toContain("echo-test")
   })

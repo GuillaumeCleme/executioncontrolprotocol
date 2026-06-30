@@ -9,7 +9,7 @@ import { validateWorkflow } from "../../src/validate/workflow.js"
 describe("workflowManifestSchema", () => {
   it("accepts a valid builder manifest", () => {
     const manifest = workflow("Echo")
-      .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo")])
+      .run([step("@executioncontrolprotocol/test.echo", "Echo").with({ value: "hi" }).as("echo")])
       .toManifest()
     expect(() => parseWorkflowManifest(manifest)).not.toThrow()
     expect(validateWorkflow(manifest).valid).toBe(true)
@@ -17,10 +17,10 @@ describe("workflowManifestSchema", () => {
 
   it("rejects step with capabilityId instead of uses", () => {
     const invalid = {
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "bad" },
-      steps: [{ id: "echo", capabilityId: "@executioncontextprotocol/test.echo", label: "Demo Echo", as: "echo" }],
+      steps: [{ id: "echo", capabilityId: "@executioncontrolprotocol/test.echo", label: "Demo Echo", as: "echo" }],
     }
     const parsed = workflowManifestSchema.safeParse(invalid)
     expect(parsed.success).toBe(false)
@@ -29,7 +29,7 @@ describe("workflowManifestSchema", () => {
 
   it("rejects step missing uses", () => {
     const invalid = {
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "bad" },
       steps: [{ id: "echo", label: "Demo Echo", as: "echo" }],
@@ -39,7 +39,7 @@ describe("workflowManifestSchema", () => {
 
   it("rejects invalid capability id format", () => {
     const invalid = {
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "bad" },
       steps: [{ id: "echo", uses: "not-a-capability", as: "echo" }],
@@ -49,7 +49,7 @@ describe("workflowManifestSchema", () => {
 
   it("rejects manifest missing steps array", () => {
     const invalid = {
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0",
       workflow: { id: "bad" },
     }

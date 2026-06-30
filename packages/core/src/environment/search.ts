@@ -1,5 +1,5 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-import type { EnvironmentDescriptor, SearchOptions, SearchResult, SearchResultItem } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+import type { EnvironmentDescriptor, SearchOptions, SearchResult, SearchResultItem } from "@executioncontrolprotocol/types"
 
 function tokenize(query: string): string[] {
   return query.toLowerCase().split(/\s+/).filter(Boolean)
@@ -81,7 +81,7 @@ export function searchCapabilities(
   const limit = options?.limit ?? 5
 
   return {
-    schema: "@ecp.environment.search",
+    schema: "@executioncontrolprotocol.environment.search",
     version: LATEST_ECP_VERSION,
     results: results.slice(0, limit),
   }

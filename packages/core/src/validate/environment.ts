@@ -1,9 +1,8 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest } from "@executioncontrolprotocol/types"
+import { globalRegistry } from "../registry/registry.js"
 import { validateWorkflow } from "./workflow.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
-
-const BROWSER_FORBIDDEN_EXTENSIONS = new Set(["@executioncontextprotocol/process-env", "@executioncontextprotocol/secrets"])
 
 /** Validate workflow against a live environment. */
 export function validateEnvironmentWithWorkflow(
@@ -13,25 +12,27 @@ export function validateEnvironmentWithWorkflow(
 ): ValidationResult {
   const result = validateWorkflow(workflow, descriptor)
   const rtId = String(bindings.runtime.id)
-  if (rtId === "@executioncontextprotocol/browser") {
-    for (const ext of bindings.extensions) {
-      if (BROWSER_FORBIDDEN_EXTENSIONS.has(String(ext.id))) {
-        result.valid = false
-        result.errors.push({
-          code: "BROWSER_FORBIDDEN_EXTENSION",
-          message: `Extension ${ext.id} cannot be used with @executioncontextprotocol/browser runtime.`,
-        })
-      }
+
+  for (const ext of bindings.extensions) {
+    const def = globalRegistry.getExtension(String(ext.id))
+    const supported = def?.supportedRuntimes
+    if (supported?.length && !supported.includes(rtId as (typeof supported)[number])) {
+      result.valid = false
+      result.errors.push({
+        code: "UNSUPPORTED_RUNTIME_EXTENSION",
+        message: `Extension ${ext.id} does not support runtime ${rtId}. Supported: ${supported.join(", ")}`,
+      })
     }
   }
-  if (rtId === "@executioncontextprotocol/local") {
+
+  if (rtId === "@executioncontrolprotocol/local") {
     result.valid = false
     result.errors.push({
       code: "DEPRECATED_RUNTIME",
-      message: "Runtime @executioncontextprotocol/local was replaced by @executioncontextprotocol/node.",
+      message: "Runtime @executioncontrolprotocol/local was replaced by @executioncontrolprotocol/node.",
     })
   }
-  result.schema = "@ecp.validation.result"
+  result.schema = "@executioncontrolprotocol.validation.result"
   result.version = LATEST_ECP_VERSION
   return result
 }

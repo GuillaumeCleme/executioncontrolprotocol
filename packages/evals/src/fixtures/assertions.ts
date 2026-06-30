@@ -1,6 +1,6 @@
 import { expect } from "vitest"
-import type { Ecp, Environment } from "@executioncontextprotocol/core"
-import { answerRedirectsToHarnessScope } from "@executioncontextprotocol/core"
+import type { Ecp, Environment } from "@executioncontrolprotocol/core"
+import { answerRedirectsToHarnessScope } from "@executioncontrolprotocol/core"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   ECP_INTENT_SCHEMA,
@@ -10,7 +10,7 @@ import {
   type InvokeResult,
   type StepNode,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { OLLAMA_GEMMA_1B_EVAL } from "../profiles/ollama-gemma.js"
 import { OLLAMA_QWEN_CODER_15B_EVAL } from "../profiles/ollama-qwen.js"
 
@@ -243,6 +243,31 @@ export async function assertDeterministic(
         }
         break
       }
+      case "classifiedIntent": {
+        const classified = harnessOutput.trace?.classifiedIntent
+        expect(classified?.intent, `${label} classified intent`).toBe(assertion.value)
+        break
+      }
+      case "classifiedTopic": {
+        const topic = harnessOutput.trace?.classifiedIntent?.topic ?? ""
+        expect(
+          topic.toLowerCase(),
+          `${label} classified topic`
+        ).toContain(assertion.contains.toLowerCase())
+        break
+      }
+      case "shotCount": {
+        const count = harnessOutput.trace?.shots?.length ?? 0
+        expect(count, `${label} shot count`).toBe(assertion.value)
+        break
+      }
+      case "promptPhase": {
+        const shot = harnessOutput.trace?.shots?.[assertion.shotIndex]
+        expect(shot?.promptPhase, `${label} prompt phase shot ${assertion.shotIndex}`).toBe(
+          assertion.value
+        )
+        break
+      }
       default:
         break
     }
@@ -262,7 +287,7 @@ export async function assertDeterministic(
 }
 
 /**
- * Run LLM judge via @executioncontextprotocol/ollama.evaluate when enabled.
+ * Run LLM judge via @executioncontrolprotocol/ollama.evaluate when enabled.
  * @category Evals
  */
 export async function assertJudge(
@@ -282,11 +307,13 @@ export async function assertJudge(
   let judgeDetail = ""
   try {
     const evalInvoke = await ecp
-      .invoke("@executioncontextprotocol/ollama.evaluate")
+      .invoke("@executioncontrolprotocol/ollama.evaluate")
       .with({
         artifact: harnessOutput.artifact,
         goal: judge.goal ?? `Eval case ${caseRow.id}`,
         criteria: judge.rubric,
+        classifiedIntent:
+          judge.classifiedIntent ?? harnessOutput.trace?.classifiedIntent?.intent,
       })
       .process()
     if (!evalInvoke.success) {

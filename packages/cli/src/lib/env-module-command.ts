@@ -1,6 +1,6 @@
 import { Args, Command, Flags } from "@oclif/core"
-import { loadEnvironmentModule } from "@executioncontextprotocol/core/loaders"
-import type { Ecp } from "@executioncontextprotocol/core"
+import { loadEnvironmentModule } from "@executioncontrolprotocol/core/loaders"
+import type { Ecp } from "@executioncontrolprotocol/core"
 
 /** Shared `--env` flag for commands that load an environment module. */
 export const envModuleFlags = {

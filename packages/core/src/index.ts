@@ -1,9 +1,11 @@
-export { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-export * from "@executioncontextprotocol/types"
+export { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+export * from "@executioncontrolprotocol/types"
 
 export { ref } from "./helpers/ref.js"
 export { state } from "./helpers/state.js"
 export { env } from "./helpers/env.js"
+export { secrets } from "./helpers/secrets.js"
+export { browser } from "./helpers/browser.js"
 export { expr } from "./helpers/expr.js"
 
 export * from "./config-schema/index.js"
@@ -34,6 +36,11 @@ export { assignUniqueStepIds } from "./workflow/assign-unique-step-ids.js"
 export { createInvokeBuilder, type InvokeOperationBuilder } from "./invoke/index.js"
 export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
 export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
+export {
+  PROCESS_ENV_RESOLVER_ID,
+  SECRETS_RESOLVER_ID,
+  BROWSER_SECRETS_RESOLVER_ID,
+} from "./environment/config-resolver.js"
 export { Registry, globalRegistry, type RegistryRegistrationGuard } from "./registry/registry.js"
 export {
   catalogExtension,
@@ -112,3 +119,11 @@ export type {
   StoreReadOptions,
   StoreWriteOptions,
 } from "./runtime/store.js"
+export {
+  isImageRef,
+  collectImageRefs,
+  collectOutputFormatHints,
+  imageRefUrlHostname,
+  isSvgHint,
+} from "./image/image-ref.js"
+export type { CollectedImageRef, CollectedFormatHint } from "./image/image-ref.js"

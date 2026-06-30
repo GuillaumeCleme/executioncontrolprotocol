@@ -1,4 +1,4 @@
-import type { WorkflowManifest } from "@executioncontextprotocol/types"
+import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 import { renderNodes } from "./render-node.js"
 import { createImportNeeds } from "./render-value.js"
 
@@ -6,17 +6,19 @@ import { createImportNeeds } from "./render-value.js"
 export interface RenderWorkflowToFluentOptions {
   /** Prefer compact output (reserved for future formatting). */
   compact?: boolean
-  /** Import module target (`@executioncontextprotocol/core` default, `@executioncontextprotocol/browser` for browser demo). */
-  importFrom?: "@executioncontextprotocol/core" | "@executioncontextprotocol/browser"
+  /** Import module target (`@executioncontrolprotocol/core` default, `@executioncontrolprotocol/browser` for browser demo). */
+  importFrom?: "@executioncontrolprotocol/core" | "@executioncontrolprotocol/browser"
 }
 
 function renderImports(
   needs: ReturnType<typeof createImportNeeds>,
-  importFrom: "@executioncontextprotocol/core" | "@executioncontextprotocol/browser"
+  importFrom: "@executioncontrolprotocol/core" | "@executioncontrolprotocol/browser"
 ): string {
   const names: string[] = ["workflow", "step"]
   if (needs.ref) names.push("ref")
   if (needs.state) names.push("state")
+  if (needs.secrets) names.push("secrets")
+  if (needs.browser) names.push("browser")
   if (needs.expr) names.push("expr")
   if (needs.loop) names.push("loop")
   if (needs.parallel) names.push("parallel")
@@ -32,7 +34,7 @@ export function renderWorkflowToFluent(
   manifest: WorkflowManifest,
   _options?: RenderWorkflowToFluentOptions
 ): string {
-  const importFrom = _options?.importFrom ?? "@executioncontextprotocol/core"
+  const importFrom = _options?.importFrom ?? "@executioncontrolprotocol/core"
   const needs = createImportNeeds()
   const nodes = renderNodes(manifest.steps, needs, "    ")
   const header = renderImports(needs, importFrom)

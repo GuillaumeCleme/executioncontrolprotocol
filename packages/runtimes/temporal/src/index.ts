@@ -1,18 +1,18 @@
-import { defineRuntime, globalRegistry } from "@executioncontextprotocol/core"
+import { defineRuntime, globalRegistry } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 import type {
   RunResult,
   RuntimeExecutionContext,
   RuntimeExecutor,
   WorkflowManifest,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 
 /**
  * Temporal runtime id.
  *
  * @category Runtimes
  */
-export const TEMPORAL_RUNTIME_ID = "@executioncontextprotocol/temporal" as const
+export const TEMPORAL_RUNTIME_ID = "@executioncontrolprotocol/temporal" as const
 
 /**
  * Temporal runtime id (string binding).
@@ -25,8 +25,8 @@ export const temporalRuntime = TEMPORAL_RUNTIME_ID
 
 /** Error thrown when the Temporal runtime executes a workflow. */
 const NOT_IMPLEMENTED_MESSAGE =
-  "@executioncontextprotocol/temporal is a pre-release scaffold and cannot execute workflows yet. " +
-  "Bind a host runtime such as @executioncontextprotocol/node for local execution. Track Temporal " +
+  "@executioncontrolprotocol/temporal is a pre-release scaffold and cannot execute workflows yet. " +
+  "Bind a host runtime such as @executioncontrolprotocol/node for local execution. Track Temporal " +
   "durable execution support before depending on this runtime in production."
 
 /**
@@ -56,7 +56,7 @@ export class TemporalRuntimeExecutor implements RuntimeExecutor {
  *
  * @category Runtimes
  */
-export const temporalRuntimeDefinition = defineRuntime("@executioncontextprotocol", "temporal")
+export const temporalRuntimeDefinition = defineRuntime("@executioncontrolprotocol", "temporal")
   .withConfig({
     /** Temporal task queue name. */
     taskQueue: z.string().optional(),
@@ -66,7 +66,7 @@ export const temporalRuntimeDefinition = defineRuntime("@executioncontextprotoco
   .withExecutor(new TemporalRuntimeExecutor())
 
 /**
- * Register `@executioncontextprotocol/temporal` on a registry (idempotent).
+ * Register `@executioncontrolprotocol/temporal` on a registry (idempotent).
  *
  * @category Runtimes
  */

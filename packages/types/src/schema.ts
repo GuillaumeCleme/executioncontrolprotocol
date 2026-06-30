@@ -2,20 +2,20 @@ import type { EcpVersion } from "./version.js"
 
 /** Serialized object schema discriminator. @category Common */
 export type EcpSchema =
-  | "@ecp.workflow"
-  | "@ecp.environment"
-  | "@ecp.environment.describe"
-  | "@ecp.environment.search"
-  | "@ecp.run.request"
-  | "@ecp.run.result"
-  | "@ecp.run.event"
-  | "@ecp.validation.result"
-  | "@ecp.patch"
-  | "@ecp.patch.result"
-  | "@ecp.encode.result"
-  | "@ecp.decode.result"
-  | "@ecp.intent"
-  | "@ecp.harness.reply"
+  | "@executioncontrolprotocol.workflow"
+  | "@executioncontrolprotocol.environment"
+  | "@executioncontrolprotocol.environment.describe"
+  | "@executioncontrolprotocol.environment.search"
+  | "@executioncontrolprotocol.run.request"
+  | "@executioncontrolprotocol.run.result"
+  | "@executioncontrolprotocol.run.event"
+  | "@executioncontrolprotocol.validation.result"
+  | "@executioncontrolprotocol.patch"
+  | "@executioncontrolprotocol.patch.result"
+  | "@executioncontrolprotocol.encode.result"
+  | "@executioncontrolprotocol.decode.result"
+  | "@executioncontrolprotocol.intent"
+  | "@executioncontrolprotocol.harness.reply"
 
 /** Namespaced definition id (`@namespace/name`). @category Common */
 export type NamespacedId = `@${string}/${string}`
@@ -60,6 +60,26 @@ export interface EnvValue {
   fallback?: unknown
 }
 
+/** OS secrets reference (not portable in workflows). @category Environment */
+export interface SecretValue {
+  /** Logical key in the OS secrets store. */
+  $secret: string
+  /** When true, missing secret does not fail resolution. */
+  optional?: boolean
+  /** Fallback when optional secret is missing. */
+  fallback?: unknown
+}
+
+/** Browser encrypted secrets reference (not portable in workflows). @category Environment */
+export interface BrowserValue {
+  /** Logical key in the browser secrets vault. */
+  $browser: string
+  /** When true, missing secret does not fail resolution. */
+  optional?: boolean
+  /** Fallback when optional secret is missing. */
+  fallback?: unknown
+}
+
 /** Expression value in workflow conditions. @category Workflow */
 export type ExprValue =
   | { eq: [string, unknown] }
@@ -77,6 +97,8 @@ export type InputValue =
   | RefValue
   | StateValue
   | EnvValue
+  | SecretValue
+  | BrowserValue
 
 /** Base fields on serialized ECP objects. @category Common */
 export interface EcpDocumentBase {

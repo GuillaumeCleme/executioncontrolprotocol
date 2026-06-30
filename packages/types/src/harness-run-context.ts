@@ -14,7 +14,7 @@ export const stepRunRecordSchema = z.object({
 
 /** Zod mirror of run result document (eval fixtures). @category Harness */
 export const runResultSchema = z.object({
-  schema: z.literal("@ecp.run.result"),
+  schema: z.literal("@executioncontrolprotocol.run.result"),
   version: z.string(),
   run: z.object({
     id: z.string(),

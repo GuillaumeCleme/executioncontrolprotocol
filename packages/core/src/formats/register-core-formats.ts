@@ -4,7 +4,7 @@ import { formatJsonExtension } from "./format-json.js"
 import { formatFluentExtension } from "./format-fluent.js"
 
 /**
- * Catalog and register core-built-in format extensions (@executioncontextprotocol/format-json, @executioncontextprotocol/format-fluent).
+ * Catalog and register core-built-in format extensions (@executioncontrolprotocol/format-json, @executioncontrolprotocol/format-fluent).
  * @category Formats
  */
 export async function registerCoreFormats(registry?: Registry): Promise<void> {

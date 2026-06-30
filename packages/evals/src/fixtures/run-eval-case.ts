@@ -1,6 +1,6 @@
-import type { Ecp, Environment } from "@executioncontextprotocol/core"
-import { formatRepairLoopTimingReport } from "@executioncontextprotocol/core"
-import type { HarnessCapabilityId, HarnessInvokeResult } from "@executioncontextprotocol/types"
+import type { Ecp, Environment } from "@executioncontrolprotocol/core"
+import { formatRepairLoopTimingReport } from "@executioncontrolprotocol/core"
+import type { HarnessCapabilityId, HarnessInvokeResult } from "@executioncontrolprotocol/types"
 import {
   EVAL_HARNESS_NAMES,
   isFlowEvalCase,
@@ -74,6 +74,7 @@ const HARNESS_TASK_BY_CASE_NAME: Record<string, HarnessTask> = {
   [EVAL_HARNESS_NAMES.WORKFLOW_AUTHORING]: HARNESS_TASKS.WORKFLOW_AUTHORING,
   [EVAL_HARNESS_NAMES.INTENT_CLASSIFICATION]: HARNESS_TASKS.INTENT_CLASSIFICATION,
   [EVAL_HARNESS_NAMES.WORKFLOW_ASSISTANT]: HARNESS_TASKS.WORKFLOW_ASSISTANT,
+  [EVAL_HARNESS_NAMES.CHAT]: HARNESS_TASKS.CHAT,
 }
 
 function withHarnessTask(

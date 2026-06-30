@@ -20,7 +20,7 @@ export interface EcpPatchEntry {
 
 /** Canonical patch document. @category Patch */
 export interface EcpPatchDocument {
-  schema: "@ecp.patch"
+  schema: "@executioncontrolprotocol.patch"
   version: EcpVersion
   targetSchema: EcpSchema
   patches: EcpPatchEntry[]
@@ -39,7 +39,7 @@ export interface AppliedPatchEntry {
 
 /** Result from `ecp.patch(...).process()`. @category Patch */
 export interface PatchResult<T = unknown> {
-  schema: "@ecp.patch.result"
+  schema: "@executioncontrolprotocol.patch.result"
   version: EcpVersion
   success: boolean
   targetSchema: EcpSchema

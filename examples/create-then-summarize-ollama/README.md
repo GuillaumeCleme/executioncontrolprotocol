@@ -4,7 +4,7 @@ Legacy documentation note: this folder previously documented a v0.5 **Context YA
 example that chained multiple Ollama calls.
 
 The repository has since moved to the v1 model: portable **workflows**
-(`@ecp.workflow`) executed inside configured **environments**.
+(`@executioncontrolprotocol.workflow`) executed inside configured **environments**.
 
 For current runnable examples, use:
 

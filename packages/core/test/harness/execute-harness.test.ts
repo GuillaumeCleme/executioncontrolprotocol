@@ -5,7 +5,7 @@ import {
   ECP_INVOKE_ERROR_CODES,
   ECP_MODEL_GENERATE_INTERFACE,
   harnessCapabilityId,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { extension } from "../../src/bindings/extension.js"
 import { harness } from "../../src/bindings/harness.js"
 import { environment } from "../../src/environment/environment.js"
@@ -18,20 +18,19 @@ import {
   TEST_MINIMAL_HARNESS_ID,
 } from "../../src/harness/definitions/test-minimal-harness.js"
 import { registerCoreFormats } from "../../src/formats/register-core-formats.js"
-import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontextprotocol/node"
+import { registerNodeRuntime, NODE_RUNTIME_ID } from "@executioncontrolprotocol/node"
 import { registerTestExtension } from "../../src/testing/test-extension.js"
-import { registerDemoExtension } from "@executioncontextprotocol/demo"
-import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
+import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
 
-const THROWING_HARNESS_ID = "@executioncontextprotocol/harness-throw-test" as const
-const BAD_OUTPUT_HARNESS_ID = "@executioncontextprotocol/harness-bad-output-test" as const
+const THROWING_HARNESS_ID = "@executioncontrolprotocol/harness-throw-test" as const
+const BAD_OUTPUT_HARNESS_ID = "@executioncontrolprotocol/harness-bad-output-test" as const
 
 describe("executeHarnessInvoke", () => {
   beforeAll(async () => {
     await registerCoreFormats()
     registerTestMinimalHarness()
     catalogHarness(
-      defineHarness("@executioncontextprotocol", "harness-throw-test")
+      defineHarness("@executioncontrolprotocol", "harness-throw-test")
         .withInput(z.object({ request: z.string() }))
         .withOutput(
           z.object({
@@ -47,7 +46,7 @@ describe("executeHarnessInvoke", () => {
         .build()
     )
     catalogHarness(
-      defineHarness("@executioncontextprotocol", "harness-bad-output-test")
+      defineHarness("@executioncontrolprotocol", "harness-bad-output-test")
         .withInput(z.object({ request: z.string() }))
         .withOutput(
           z.object({
@@ -66,7 +65,6 @@ describe("executeHarnessInvoke", () => {
     )
     await registerNodeRuntime()
     await registerTestExtension()
-    await registerDemoExtension()
     await registerFormatToonExtension()
   })
 
@@ -74,15 +72,14 @@ describe("executeHarnessInvoke", () => {
     let builder = environment("execute-harness-test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@executioncontextprotocol/format-toon").with({}),
-        extension("@executioncontextprotocol/test").with({}),
-        extension("@executioncontextprotocol/demo").with({}),
+        extension("@executioncontrolprotocol/format-toon").with({}),
+        extension("@executioncontrolprotocol/test").with({}),
       ])
     if (withHarness) {
       builder = builder.withHarnesses([
-        harness(TEST_MINIMAL_HARNESS_ID).uses("@executioncontextprotocol/demo.generate").with({}),
-        harness(THROWING_HARNESS_ID).uses("@executioncontextprotocol/demo.generate").with({}),
-        harness(BAD_OUTPUT_HARNESS_ID).uses("@executioncontextprotocol/demo.generate").with({}),
+        harness(TEST_MINIMAL_HARNESS_ID).uses("@executioncontrolprotocol/test.generate").with({}),
+        harness(THROWING_HARNESS_ID).uses("@executioncontrolprotocol/test.generate").with({}),
+        harness(BAD_OUTPUT_HARNESS_ID).uses("@executioncontrolprotocol/test.generate").with({}),
       ])
     }
     const ecp = await builder.init()
@@ -93,7 +90,7 @@ describe("executeHarnessInvoke", () => {
     const { env, ecp } = await demoHarnessEnv()
     const result = await executeHarnessInvoke(
       env,
-      "@executioncontextprotocol/demo.generate" as "@executioncontextprotocol/test-minimal-harness.evaluate",
+      "@executioncontrolprotocol/test.generate" as "@executioncontrolprotocol/test-minimal-harness.evaluate",
       { value: "x" }
     )
     expect(result.success).toBe(false)
@@ -146,7 +143,7 @@ describe("executeHarnessInvoke", () => {
     const { env, ecp } = await demoHarnessEnv()
     const result = await executeHarnessInvoke(
       env,
-      harnessCapabilityId("@executioncontextprotocol/not-registered"),
+      harnessCapabilityId("@executioncontrolprotocol/not-registered"),
       { value: "x" }
     )
     expect(result.success).toBe(false)

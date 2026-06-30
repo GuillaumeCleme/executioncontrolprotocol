@@ -2,14 +2,14 @@ import {
   ECP_ENCODING_ERROR_CODES,
   ECP_FORMATS,
   LATEST_ECP_VERSION,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type {
   EcpFormatOptions,
   EcpSchema,
   EcpVersion,
   EncodeResult,
   WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { encodeFailure } from "../encoding/json-codec.js"
 import { validateWorkflow } from "../validate/workflow.js"
 import { renderWorkflowToFluent } from "./render-workflow.js"
@@ -32,9 +32,9 @@ export function encodeFluent(
     "schema" in source &&
     typeof (source as { schema: unknown }).schema === "string"
       ? ((source as { schema: string }).schema as EcpSchema)
-      : "@ecp.workflow")
+      : "@executioncontrolprotocol.workflow")
 
-  if (sourceSchema !== "@ecp.workflow") {
+  if (sourceSchema !== "@executioncontrolprotocol.workflow") {
     return encodeFailure({
       format: ECP_FORMATS.FLUENT,
       sourceSchema,
@@ -42,7 +42,7 @@ export function encodeFluent(
         {
           severity: "error",
           code: ECP_ENCODING_ERROR_CODES.FORMAT_UNSUPPORTED_SOURCE_SCHEMA,
-          message: "Fluent encoder only supports @ecp.workflow.",
+          message: "Fluent encoder only supports @executioncontrolprotocol.workflow.",
         },
       ],
     })
@@ -53,7 +53,7 @@ export function encodeFluent(
   if (!validation.valid) {
     return encodeFailure({
       format: ECP_FORMATS.FLUENT,
-      sourceSchema: "@ecp.workflow",
+      sourceSchema: "@executioncontrolprotocol.workflow",
       validation,
       diagnostics: [...validation.errors, ...validation.warnings],
     })
@@ -62,18 +62,18 @@ export function encodeFluent(
   const content = renderWorkflowToFluent(manifest, {
     compact: options.compact ?? false,
     importFrom:
-      options.importFrom === "@executioncontextprotocol/browser" || options.target === "browser"
-        ? "@executioncontextprotocol/browser"
-        : "@executioncontextprotocol/core",
+      options.importFrom === "@executioncontrolprotocol/browser" || options.target === "browser"
+        ? "@executioncontrolprotocol/browser"
+        : "@executioncontrolprotocol/core",
   })
 
   return {
-    schema: "@ecp.encode.result",
+    schema: "@executioncontrolprotocol.encode.result",
     version: LATEST_ECP_VERSION,
     success: true,
     format: ECP_FORMATS.FLUENT,
     mediaType: "text/typescript",
-    sourceSchema: "@ecp.workflow",
+    sourceSchema: "@executioncontrolprotocol.workflow",
     sourceVersion: options.sourceVersion,
     result: content,
     diagnostics: [],

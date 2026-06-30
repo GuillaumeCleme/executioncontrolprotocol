@@ -1,5 +1,5 @@
 {
-  "name": "@executioncontextprotocol/evals",
+  "name": "@executioncontrolprotocol/evals",
   "version": "1.0.0",
   "description": "Harness and provider evaluation tests for ECP",
   "private": true,
@@ -17,17 +17,16 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@executioncontextprotocol/browser": "1.0.0",
-    "@executioncontextprotocol/chrome-ai": "1.0.0",
-    "@executioncontextprotocol/core": "1.0.0",
-    "@executioncontextprotocol/harnesses-browser-nano": "1.0.0",
-    "@executioncontextprotocol/harnesses-browser-coding": "1.0.0",
-    "@executioncontextprotocol/demo": "1.0.0",
-    "@executioncontextprotocol/extension-ollama": "1.0.0",
-    "@executioncontextprotocol/format-eql": "1.0.0",
-    "@executioncontextprotocol/format-toon": "1.0.0",
-    "@executioncontextprotocol/node": "1.0.0",
-    "@executioncontextprotocol/types": "1.0.0"
+    "@executioncontrolprotocol/browser": "1.0.0",
+    "@executioncontrolprotocol/chrome-ai": "1.0.0",
+    "@executioncontrolprotocol/core": "1.0.0",
+    "@executioncontrolprotocol/harnesses-browser-nano": "1.0.0",
+    "@executioncontrolprotocol/harnesses-browser-coding": "1.0.0",
+    "@executioncontrolprotocol/extension-ollama": "1.0.0",
+    "@executioncontrolprotocol/format-eql": "1.0.0",
+    "@executioncontrolprotocol/format-toon": "1.0.0",
+    "@executioncontrolprotocol/node": "1.0.0",
+    "@executioncontrolprotocol/types": "1.0.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

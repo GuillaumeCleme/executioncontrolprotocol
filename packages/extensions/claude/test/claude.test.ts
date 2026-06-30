@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach } from "vitest"
 import { claudeExtension, registerClaudeExtension } from "../src/index.js"
 
-describe("@executioncontextprotocol/claude", () => {
+describe("@executioncontrolprotocol/claude", () => {
   afterEach(() => {
     vi.unstubAllGlobals()
   })
@@ -17,7 +17,7 @@ describe("@executioncontextprotocol/claude", () => {
         }),
       })
     )
-    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontextprotocol/claude.generateText")
+    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/claude.generateText")
     const result = await cap!.handler!(
       { prompt: "hello" },
       {
@@ -29,7 +29,7 @@ describe("@executioncontextprotocol/claude", () => {
   })
 
   it("generateText fails without api key", async () => {
-    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontextprotocol/claude.generateText")
+    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/claude.generateText")
     await expect(
       cap!.handler!({ prompt: "hello" }, { extensionConfig: {}, usage: { increment: vi.fn() } } as never)
     ).rejects.toThrow("Claude API key required")

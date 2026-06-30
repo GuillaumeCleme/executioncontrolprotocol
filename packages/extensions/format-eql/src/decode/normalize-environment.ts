@@ -1,9 +1,9 @@
-import { LATEST_ECP_VERSION, type EnvironmentManifest } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION, type EnvironmentManifest } from "@executioncontrolprotocol/types"
 import type { EqlEnvironmentDoc } from "./ast.js"
 
 export function environmentFromEql(doc: EqlEnvironmentDoc): EnvironmentManifest {
   return {
-    schema: "@ecp.environment",
+    schema: "@executioncontrolprotocol.environment",
     version: LATEST_ECP_VERSION,
     environment: {
       id: doc.environmentId,

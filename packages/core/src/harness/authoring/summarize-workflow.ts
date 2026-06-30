@@ -1,4 +1,4 @@
-import type { StepNode, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { StepNode, WorkflowManifest } from "@executioncontrolprotocol/types"
 
 function formatInputValueEql(value: unknown): string {
   if (typeof value === "string") return `"${value.replace(/"/g, '\\"')}"`

@@ -3,20 +3,20 @@ import {
   compileHarnessArtifactSource,
   extractArtifactFromModule,
 } from "../../src/compile/compile-harness-artifact.js"
-import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@executioncontextprotocol/types"
+import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@executioncontrolprotocol/types"
 
 const INTENT_TS = `
-import type { EcpIntent } from "@executioncontextprotocol/types"
+import type { EcpIntent } from "@executioncontrolprotocol/types"
 export const intent: EcpIntent = {
-  schema: "@ecp.intent",
+  schema: "@executioncontrolprotocol.intent",
   intent: "faq",
 }
 `
 
 const REPLY_TS = `
-import type { HarnessReply } from "@executioncontextprotocol/types"
+import type { HarnessReply } from "@executioncontrolprotocol/types"
 export const reply: HarnessReply = {
-  schema: "@ecp.harness.reply",
+  schema: "@executioncontrolprotocol.harness.reply",
   answer: "ECP governs portable workflows in governed environments.",
 }
 `
@@ -29,7 +29,7 @@ describe("compileHarnessArtifactSource", () => {
       expectedSchema: ECP_INTENT_SCHEMA,
     })
     expect(result.ok).toBe(true)
-    expect(result.artifact).toEqual({ schema: "@ecp.intent", intent: "faq" })
+    expect(result.artifact).toEqual({ schema: "@executioncontrolprotocol.intent", intent: "faq" })
   })
 
   it("compiles harness reply TypeScript module", async () => {
@@ -56,7 +56,7 @@ describe("compileHarnessArtifactSource", () => {
 describe("extractArtifactFromModule", () => {
   it("reads default export", () => {
     const artifact = extractArtifactFromModule(
-      { default: { schema: "@ecp.intent", intent: "general" } },
+      { default: { schema: "@executioncontrolprotocol.intent", intent: "general" } },
       ECP_INTENT_SCHEMA
     )
     expect(artifact.intent).toBe("general")

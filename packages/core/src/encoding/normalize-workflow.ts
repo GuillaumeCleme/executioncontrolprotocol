@@ -6,7 +6,7 @@ import type {
   StepNode,
   WorkflowManifest,
   WorkflowNode,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 
 function sortKeys<T extends Record<string, unknown>>(obj: T): T {
   const sorted = Object.keys(obj)
@@ -107,7 +107,7 @@ function normalizeNode(node: WorkflowNode): WorkflowNode {
  */
 export function normalizeWorkflowManifest(manifest: WorkflowManifest): WorkflowManifest {
   return {
-    schema: "@ecp.workflow",
+    schema: "@executioncontrolprotocol.workflow",
     version: manifest.version,
     workflow: {
       id: manifest.workflow.id,

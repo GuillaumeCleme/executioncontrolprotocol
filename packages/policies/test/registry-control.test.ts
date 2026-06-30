@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest"
-import { createUsageLedger } from "@executioncontextprotocol/core"
-import type { PolicyContext } from "@executioncontextprotocol/core"
+import { createUsageLedger } from "@executioncontrolprotocol/core"
+import type { PolicyContext } from "@executioncontrolprotocol/core"
 import { registryControlPolicy } from "../src/registry-control.js"
-import type { RegistryRegistrationRequest } from "@executioncontextprotocol/types"
+import type { RegistryRegistrationRequest } from "@executioncontrolprotocol/types"
 
 async function evalPre(
   config: Record<string, unknown>,
   registryRequest: RegistryRegistrationRequest
-): Promise<import("@executioncontextprotocol/types").PolicyDecision | void> {
+): Promise<import("@executioncontrolprotocol/types").PolicyDecision | void> {
   const hook = registryControlPolicy.hooks.find((h) => h.event === "policy:pre")
   if (!hook) throw new Error("missing policy:pre")
   const ctx: PolicyContext & { config: Record<string, unknown> } = {
     workflow: {
-      schema: "@ecp.workflow",
+      schema: "@executioncontrolprotocol.workflow",
       version: "1.0.0",
       workflow: { id: "stub" },
       steps: [],
@@ -26,10 +26,10 @@ async function evalPre(
     registryRequest,
     config,
   }
-  return (await hook.handler(ctx as never)) as import("@executioncontextprotocol/types").PolicyDecision | void
+  return (await hook.handler(ctx as never)) as import("@executioncontrolprotocol/types").PolicyDecision | void
 }
 
-describe("@executioncontextprotocol/registry-control", () => {
+describe("@executioncontrolprotocol/registry-control", () => {
   it("allows extension in allowed namespace", async () => {
     const decision = await evalPre(
       { allowedExtensionNamespaces: ["@customer/*"] },
@@ -41,7 +41,7 @@ describe("@executioncontextprotocol/registry-control", () => {
   it("denies extension outside allowed namespace", async () => {
     const decision = await evalPre(
       { allowedExtensionNamespaces: ["@customer/*"] },
-      { kind: "extension", id: "@executioncontextprotocol/demo" }
+      { kind: "extension", id: "@executioncontrolprotocol/memory" }
     )
     expect(decision?.type).toBe("deny")
   })
@@ -58,7 +58,7 @@ describe("@executioncontextprotocol/registry-control", () => {
   })
 
   it("denies policy registration via registry request", async () => {
-    const decision = await evalPre({}, { kind: "policy", id: "@executioncontextprotocol/budget" })
+    const decision = await evalPre({}, { kind: "policy", id: "@executioncontrolprotocol/budget" })
     expect(decision?.type).toBe("deny")
   })
 

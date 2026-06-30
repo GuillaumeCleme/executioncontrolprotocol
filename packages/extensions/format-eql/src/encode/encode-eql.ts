@@ -9,14 +9,14 @@ import {
   type EnvironmentManifest,
   type HarnessReply,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import {
   EcpError,
   encodeFailure,
   ecpPatchDocumentSchema,
   validateWorkflow,
   type UtilityCapabilityContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import type { EqlEncodeInput } from "../schemas.js"
 import { resolveEqlOptions } from "../schemas.js"
 import { encodeDescribeToEql } from "./encode-describe.js"
@@ -51,7 +51,7 @@ export function encodeToEql(
   const opts = resolveEqlOptions(input.options)
   const includeHeader = opts.headers
 
-  if (sourceSchema === "@ecp.workflow") {
+  if (sourceSchema === "@executioncontrolprotocol.workflow") {
     const manifest = input.source as WorkflowManifest
     const validation = validateWorkflow(manifest)
     if (!validation.valid) {
@@ -64,7 +64,7 @@ export function encodeToEql(
     }
     const content = encodeWorkflowToEql(manifest, input.options, includeHeader)
     return {
-      schema: "@ecp.encode.result",
+      schema: "@executioncontrolprotocol.encode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       format: ECP_FORMATS.EQL,
@@ -77,7 +77,7 @@ export function encodeToEql(
     }
   }
 
-  if (sourceSchema === "@ecp.environment") {
+  if (sourceSchema === "@executioncontrolprotocol.environment") {
     const manifest = input.source as EnvironmentManifest
     const zod = environmentManifestSchema.safeParse(manifest)
     if (!zod.success) {
@@ -94,7 +94,7 @@ export function encodeToEql(
     }
     const content = encodeEnvironmentToEql(manifest, input.options, includeHeader)
     return {
-      schema: "@ecp.encode.result",
+      schema: "@executioncontrolprotocol.encode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       format: ECP_FORMATS.EQL,
@@ -106,7 +106,7 @@ export function encodeToEql(
     }
   }
 
-  if (sourceSchema === "@ecp.environment.describe") {
+  if (sourceSchema === "@executioncontrolprotocol.environment.describe") {
     const descriptor = input.source as EnvironmentDescriptor
     const zod = environmentDescribeSchema.safeParse(descriptor)
     if (!zod.success) {
@@ -123,7 +123,7 @@ export function encodeToEql(
     }
     const content = encodeDescribeToEql(descriptor, input.options, includeHeader)
     return {
-      schema: "@ecp.encode.result",
+      schema: "@executioncontrolprotocol.encode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       format: ECP_FORMATS.EQL,
@@ -135,7 +135,7 @@ export function encodeToEql(
     }
   }
 
-  if (sourceSchema === "@ecp.intent") {
+  if (sourceSchema === "@executioncontrolprotocol.intent") {
     const intent = input.source as EcpIntent
     const zod = ecpIntentSchema.safeParse(intent)
     if (!zod.success) {
@@ -152,7 +152,7 @@ export function encodeToEql(
     }
     const content = encodeIntentToEql(intent, input.options, includeHeader)
     return {
-      schema: "@ecp.encode.result",
+      schema: "@executioncontrolprotocol.encode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       format: ECP_FORMATS.EQL,
@@ -164,7 +164,7 @@ export function encodeToEql(
     }
   }
 
-  if (sourceSchema === "@ecp.harness.reply") {
+  if (sourceSchema === "@executioncontrolprotocol.harness.reply") {
     const reply = input.source as HarnessReply
     const zod = harnessReplySchema.safeParse(reply)
     if (!zod.success) {
@@ -181,7 +181,7 @@ export function encodeToEql(
     }
     const content = encodeReplyToEql(reply, input.options, includeHeader)
     return {
-      schema: "@ecp.encode.result",
+      schema: "@executioncontrolprotocol.encode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       format: ECP_FORMATS.EQL,
@@ -193,7 +193,7 @@ export function encodeToEql(
     }
   }
 
-  if (sourceSchema === "@ecp.patch") {
+  if (sourceSchema === "@executioncontrolprotocol.patch") {
     const patch = input.source as EcpPatchDocument
     const zod = ecpPatchDocumentSchema.safeParse(patch)
     if (!zod.success) {
@@ -214,7 +214,7 @@ export function encodeToEql(
       "workflow"
     const content = encodePatchToEql(patch, workflowId, input.options, includeHeader)
     return {
-      schema: "@ecp.encode.result",
+      schema: "@executioncontrolprotocol.encode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       format: ECP_FORMATS.EQL,

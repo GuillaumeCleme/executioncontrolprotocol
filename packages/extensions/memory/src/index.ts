@@ -1,17 +1,17 @@
-import { defineExtension, capabilityFor, globalRegistry, hook, catalogExtension } from "@executioncontextprotocol/core"
+import { defineExtension, capabilityFor, globalRegistry, hook, catalogExtension } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
 const store = new Map<string, unknown[]>()
 
-/** In-memory stub for @executioncontextprotocol/memory. @category Extensions */
-export const memoryExtension = defineExtension("@executioncontextprotocol", "memory")
+/** In-memory stub for @executioncontrolprotocol/memory. @category Extensions */
+export const memoryExtension = defineExtension("@executioncontrolprotocol", "memory")
   .withConfig({
     hydrateModels: z.boolean().default(true),
     rememberOutputs: z.boolean().default(false),
     collections: z.array(z.string()).default([]),
   })
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/memory", "search")
+    capabilityFor("@executioncontrolprotocol/memory", "search")
       .withInput(z.object({ query: z.string(), since: z.string().optional() }))
       .withOutput(z.object({ results: z.array(z.unknown()) }))
       .withHandler(async (input) => {
@@ -21,7 +21,7 @@ export const memoryExtension = defineExtension("@executioncontextprotocol", "mem
           results: all.filter((r) => JSON.stringify(r).toLowerCase().includes(q)),
         }
       }),
-    capabilityFor("@executioncontextprotocol/memory", "remember")
+    capabilityFor("@executioncontrolprotocol/memory", "remember")
       .withInput(z.object({ entry: z.unknown(), collection: z.string().optional() }))
       .withOutput(z.object({ stored: z.boolean() }))
       .withHandler(async (input) => {
@@ -47,7 +47,7 @@ export const memoryExtension = defineExtension("@executioncontextprotocol", "mem
 catalogExtension(memoryExtension)
 
 export async function registerMemoryExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@executioncontextprotocol/memory")) {
+  if (!globalRegistry.getExtension("@executioncontrolprotocol/memory")) {
     await globalRegistry.registerExtension(memoryExtension)
   }
 }

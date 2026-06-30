@@ -4,7 +4,7 @@ import {
   HARNESS_CODING_BINDING,
   HARNESS_TASKS,
 } from "../src/harness-coding-config.js"
-import { HARNESS_OUTPUT_FORMAT_TYPESCRIPT } from "@executioncontextprotocol/core"
+import { HARNESS_OUTPUT_FORMAT_TYPESCRIPT } from "@executioncontrolprotocol/core"
 
 describe("getHarnessCodingConfig", () => {
   it("uses typescript output format for all tasks", () => {

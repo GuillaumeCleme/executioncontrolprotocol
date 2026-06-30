@@ -9,6 +9,8 @@ export type {
   RefValue,
   StateValue,
   EnvValue,
+  SecretValue,
+  BrowserValue,
   ExprValue,
   InputValue,
   EcpDocumentBase,
@@ -120,6 +122,8 @@ export type {
   HarnessId,
   HarnessCapabilityId,
   HarnessTrace,
+  HarnessShotTrace,
+  HarnessPromptPhase,
   HarnessInvokeResult,
   HarnessEvaluateOutput,
 } from "./harness.js"
@@ -146,13 +150,30 @@ export {
 export type { HarnessReply } from "./harness-reply.js"
 export {
   HARNESS_TASK_IDS,
+  harnessChatInputSchema,
   harnessIntentClassificationInputSchema,
   harnessWorkflowAuthoringInputSchema,
   harnessWorkflowAssistantInputSchema,
 } from "./harness-tasks.js"
 export type {
   HarnessTaskId,
+  HarnessChatInput,
   HarnessIntentClassificationInput,
   HarnessWorkflowAuthoringInput,
   HarnessWorkflowAssistantInput,
 } from "./harness-tasks.js"
+export {
+  IMAGE_REF_KINDS,
+  IMAGE_OUTPUT_FORMATS,
+  imageRefSchema,
+} from "./image.js"
+export type {
+  ImageRefKind,
+  ImageOutputFormat,
+  ArtifactImageRef,
+  FileImageRef,
+  UrlImageRef,
+  BufferImageRef,
+  ImageRef,
+  ImageOutputInfo,
+} from "./image.js"

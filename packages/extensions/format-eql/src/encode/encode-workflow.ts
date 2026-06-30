@@ -1,6 +1,6 @@
-import type { StepNode, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { StepNode, WorkflowManifest } from "@executioncontrolprotocol/types"
 import type { EqlFormatOptions } from "../schemas.js"
-import type { EcpFormatOptions } from "@executioncontextprotocol/types"
+import type { EcpFormatOptions } from "@executioncontrolprotocol/types"
 import { EqlWriter, formatInputValue, formatLiteral, formatWhen } from "./writer.js"
 
 export function encodeWorkflowToEql(
@@ -10,7 +10,7 @@ export function encodeWorkflowToEql(
 ): string {
   const writer = new EqlWriter(options)
   if (includeHeader) {
-    writer.writeln(`ECP @ecp.workflow ${manifest.version}`)
+    writer.writeln(`ECP @executioncontrolprotocol.workflow ${manifest.version}`)
   }
   const label = manifest.workflow.label
   const wfLine = label
