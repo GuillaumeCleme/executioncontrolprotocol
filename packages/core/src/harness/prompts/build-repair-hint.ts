@@ -1,5 +1,5 @@
-import { loadHarnessPromptFixture } from "./load-harness-prompt.js"
 import { formatSchemaExampleEql, formatSchemaExampleJson } from "./load-schema-example.js"
+import type { HarnessPromptFixture } from "./harness-prompt-fixture-schema.js"
 
 function formatRepairExample(outputSchema: string, eql: boolean): string {
   if (eql && outputSchema === "@executioncontrolprotocol.patch") {
@@ -9,11 +9,10 @@ function formatRepairExample(outputSchema: string, eql: boolean): string {
 }
 
 /**
- * Build repair-line text for a failed model attempt (valid example + prose).
+ * Build repair-line text from an in-memory harness prompt fixture.
  * @category Harness
  */
-export function buildRepairHint(fixtureId: string): string {
-  const fixture = loadHarnessPromptFixture(fixtureId)
+export function buildRepairHintFromFixture(fixture: HarnessPromptFixture): string {
   const eql = fixture.promptFormat !== "json"
   const parts = [
     fixture.repairHint ??

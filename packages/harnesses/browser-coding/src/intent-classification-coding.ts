@@ -1,7 +1,5 @@
 import { compileHarnessArtifactSource } from "@executioncontrolprotocol/core/compile"
 import {
-  buildIntentClassificationCodingSystemPrompt,
-  buildRepairHint,
   callModelGenerate,
   collectModelOutputFeedback,
   collectValidationFeedback,
@@ -9,7 +7,6 @@ import {
   formatEnvironmentSummaryLines,
   formatFeedbackForModel,
   HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   isRepairFeedbackEcho,
   runModelRepairLoop,
@@ -29,11 +26,16 @@ import {
 } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildCodingRepairHint,
+  buildCodingSystemPrompt,
+  CODING_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z
     .string()
-    .default(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION_CODING),
+    .default(CODING_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION),
   system: z.string().optional(),
   context: z
     .object({
@@ -79,7 +81,7 @@ const codingIntentHarness = defineHarness("@executioncontrolprotocol", "browser-
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
-    const system = config.system ?? buildIntentClassificationCodingSystemPrompt()
+    const system = config.system ?? buildCodingSystemPrompt(config.promptFixture)
 
     let environmentSummaryLines = ""
     if (config.context.includeEnvironmentDescriptor) {
@@ -110,7 +112,7 @@ const codingIntentHarness = defineHarness("@executioncontrolprotocol", "browser-
         lines.push(
           "Previous attempt failed. Fix and return corrected TypeScript only:",
           repairText,
-          buildRepairHint(config.promptFixture)
+          buildCodingRepairHint(config.promptFixture)
         )
       }
       return lines.join("\n")

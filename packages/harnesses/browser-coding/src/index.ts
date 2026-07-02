@@ -16,3 +16,10 @@ export {
   resetBrowserCodingHarnessRegistrationForTests,
 } from "./register.js"
 export type { BrowserCodingHarnessInput } from "./browser-coding-harness.js"
+export {
+  CODING_PROMPT_FIXTURE_IDS,
+  buildCodingRepairHint,
+  buildCodingSystemPrompt,
+  loadCodingHarnessPromptFixture,
+  type CodingPromptFixtureId,
+} from "./prompts/index.js"

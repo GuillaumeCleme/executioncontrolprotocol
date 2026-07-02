@@ -15,11 +15,8 @@ import {
   isJudgeOnly,
   resolveEvalModel,
 } from "./assertions.js"
-import { resolveEvalInvokeInput, resolveSingleEvalCaseInput } from "./load-eval-cases.js"
-import {
-  resolveEvalInvokeInputBrowser,
-  resolveSingleEvalCaseInputBrowser,
-} from "./load-eval-cases.browser.js"
+import type { NodeEvalFixturesLoader } from "./eval-fixtures-loader.js"
+import type { BrowserEvalFixturesLoader } from "./eval-fixtures-loader.browser.js"
 import {
   evalDebugContextFromCase,
   isEvalDebugEnabled,
@@ -41,24 +38,46 @@ export interface RunEvalCaseOptions {
   browserFixtures?: boolean
   /** Harness evaluate capability (default Browser Nano). */
   harnessCapability?: HarnessCapabilityId
+  /** Harness-owned fixture loader (overrides default evals package paths). */
+  fixturesLoader?: NodeEvalFixturesLoader | BrowserEvalFixturesLoader
+  /** Extension ids for descriptor-order assertions (harness matrix binding order). */
+  descriptorExtensionIds?: readonly string[]
 }
 
 function resolveInvokeInput(
   input: Record<string, unknown>,
   options?: RunEvalCaseOptions
 ): Record<string, unknown> {
-  return options?.browserFixtures
-    ? resolveEvalInvokeInputBrowser(input)
-    : resolveEvalInvokeInput(input)
+  if (options?.fixturesLoader) {
+    const loader = options.fixturesLoader
+    const resolved = { ...input }
+    const manifestRef = resolved.manifestRef
+    if (typeof manifestRef === "string") {
+      resolved.manifest = loader.loadWorkflowFixture(manifestRef)
+      delete resolved.manifestRef
+    }
+    const runContextFixture = resolved.runContextFixture
+    if (typeof runContextFixture === "string") {
+      resolved.runContext = loader.loadHarnessRunFixture(runContextFixture)
+      delete resolved.runContextFixture
+    }
+    return resolved
+  }
+  throw new Error(
+    "runEvalCase requires options.fixturesLoader from createNodeEvalFixturesLoader or createBrowserEvalFixturesLoader"
+  )
 }
 
 function resolveCaseInput(
   caseRow: SingleEvalCase,
   options?: RunEvalCaseOptions
 ): Record<string, unknown> {
-  return options?.browserFixtures
-    ? resolveSingleEvalCaseInputBrowser(caseRow)
-    : resolveSingleEvalCaseInput(caseRow)
+  if (options?.fixturesLoader) {
+    return options.fixturesLoader.resolveSingleEvalCaseInput(caseRow)
+  }
+  throw new Error(
+    "runEvalCase requires options.fixturesLoader from createNodeEvalFixturesLoader or createBrowserEvalFixturesLoader"
+  )
 }
 
 function withInvokeSuccessAssertion(
@@ -68,6 +87,10 @@ function withInvokeSuccessAssertion(
     return assertions
   }
   return [{ kind: "invokeSuccess" }, ...assertions]
+}
+
+function descriptorExtensionIds(options?: RunEvalCaseOptions): string[] {
+  return [...(options?.descriptorExtensionIds ?? (MATRIX_EVAL_EXTENSION_IDS as unknown as string[]))]
 }
 
 const HARNESS_TASK_BY_CASE_NAME: Record<string, HarnessTask> = {
@@ -139,7 +162,7 @@ export async function runSingleEvalCase(
       const harnessOutput = await assertDeterministic(caseRow, result, deterministic, {
         ecp,
         env,
-        descriptorExtensionIds: MATRIX_EVAL_EXTENSION_IDS as unknown as string[],
+        descriptorExtensionIds: descriptorExtensionIds(options),
       })
       assertMs = timingEnabled ? performance.now() - assertStarted : undefined
       const judgeStarted = timingEnabled ? performance.now() : 0
@@ -218,7 +241,7 @@ export async function runFlowEvalCase(
       const harnessOutput = await assertDeterministic(caseRow, result, deterministic, {
         ecp,
         env,
-        descriptorExtensionIds: MATRIX_EVAL_EXTENSION_IDS as unknown as string[],
+        descriptorExtensionIds: descriptorExtensionIds(options),
         stepIndex: i,
       })
       await assertJudge(caseRow, harnessOutput, judge, ecp, i)

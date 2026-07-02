@@ -1,7 +1,4 @@
 import {
-  buildRepairHint,
-  buildWorkflowCreateSystemPrompt,
-  buildWorkflowPatchSystemPrompt,
   callModelGenerate,
   collectDecodeFeedback,
   collectModelOutputFeedback,
@@ -11,7 +8,6 @@ import {
   type HarnessCapabilityContext,
   formatSchemaExampleEql,
   formatSchemaExampleJson,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
@@ -66,6 +62,11 @@ import {
   inferRequiredCapabilityIds,
 } from "./_internal/request-capability-hints.js"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildNanoRepairHint,
+  buildNanoSystemPrompt,
+  NANO_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<string> {
   const uses = new Set<string>()
@@ -160,12 +161,11 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
     const promptFixtureId =
       config.promptFixture ??
       (isPatch
-        ? HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH
-        : HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
+        ? NANO_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH
+        : NANO_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
 
     const system =
-      config.system ??
-      (isPatch ? buildWorkflowPatchSystemPrompt() : buildWorkflowCreateSystemPrompt())
+      config.system ?? buildNanoSystemPrompt(promptFixtureId)
 
     const promptPhase = config.context.promptPhase as HarnessPromptPhase
 
@@ -287,7 +287,7 @@ const evalsWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol",
                 priorOutputMaxChars: config.repair.priorOutputMaxChars,
                 priorRaw,
                 repairFeedback,
-                repairHint: buildRepairHint(promptFixtureId),
+                repairHint: buildNanoRepairHint(promptFixtureId),
                 repairLead: "Previous attempt failed. Do not repeat error text. Output only the corrected document:",
               })
             : []

@@ -12,6 +12,7 @@ const browserPromptPlugins = [
 ]
 
 export default defineConfig({
+  root: repoRoot,
   resolve: {
     alias: {
       "@executioncontrolprotocol/types": path.resolve(repoRoot, "packages/types/src/index.ts"),
@@ -133,6 +134,7 @@ export default defineConfig({
             "packages/mcp/**/*.test.ts",
             "packages/extensions/**/*.test.ts",
             "packages/harnesses/**/test/**/*.test.ts",
+            "!packages/harnesses/**/test/eval/**",
             "packages/runtimes/node/**/*.test.ts",
             "packages/runtimes/browser/test/*.test.ts",
           ],
@@ -179,7 +181,8 @@ export default defineConfig({
         test: {
           name: "eval",
           include: [
-            "packages/evals/test/harness/**/*.test.ts",
+            "packages/harnesses/browser-nano/test/eval/**/*.test.ts",
+            "packages/harnesses/browser-coding/test/eval/**/*.test.ts",
             "packages/evals/test/fixtures/**/*.test.ts",
           ],
           testTimeout: 180_000,
@@ -254,7 +257,7 @@ export default defineConfig({
         },
         test: {
           name: "eval-browser",
-          include: ["packages/evals/test/browser/**/*.eval.test.ts"],
+          include: ["packages/harnesses/browser-nano/test/eval/browser/**/*.eval.test.ts"],
           testTimeout: 180_000,
           browser: {
             enabled: true,

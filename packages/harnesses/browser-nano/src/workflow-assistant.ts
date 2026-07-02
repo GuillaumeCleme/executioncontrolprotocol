@@ -1,6 +1,4 @@
 import {
-  buildRepairHint,
-  buildSystemPrompt,
   buildAssistantSafeReply,
   tryBuildRunContextReply,
   tryBuildFaqReply,
@@ -45,6 +43,7 @@ import {
 } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
+import { buildNanoRepairHint, buildNanoSystemPrompt } from "./prompts/index.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z.string().default("workflow-assistant"),
@@ -121,7 +120,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontrolpro
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
     const promptPhase = config.context.promptPhase as HarnessPromptPhase
-    const system = config.system ?? buildSystemPrompt(promptFixtureId)
+    const system = config.system ?? buildNanoSystemPrompt(promptFixtureId)
     const envQuestion = isEnvironmentQuestion(input.message)
     const workflowManifest = input.workflow as unknown as WorkflowManifest | undefined
 
@@ -236,7 +235,7 @@ export const evalsWorkflowAssistantHarness = defineHarness("@executioncontrolpro
                   priorOutputMaxChars: config.repair.priorOutputMaxChars,
                   priorRaw,
                   repairFeedback,
-                  repairHint: buildRepairHint(promptFixtureId),
+                  repairHint: buildNanoRepairHint(promptFixtureId),
                   repairLead: `Previous attempt failed. Fix these issues and return corrected ${outputLabel} only:`,
                 })
               : []

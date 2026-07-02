@@ -10,5 +10,5 @@
     { "path": "../../core" },
     { "path": "../browser-nano" }
   ],
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/import-meta-glob.d.ts"]
 }

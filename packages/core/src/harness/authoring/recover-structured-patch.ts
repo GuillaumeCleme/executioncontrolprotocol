@@ -131,7 +131,13 @@ function recoverDeleteStepPatch(
   if (valid.test(raw.trim())) {
     return undefined
   }
-  if (isGarbledPatchEqlOutput(raw) || /UPDATE WORKFLOW/i.test(raw) || !hasValidPatchHeader(raw, workflowId)) {
+  const hasDeleteOp = /DELETE STEP/i.test(raw)
+  if (
+    isGarbledPatchEqlOutput(raw) ||
+    /UPDATE WORKFLOW/i.test(raw) ||
+    !hasValidPatchHeader(raw, workflowId) ||
+    hasDeleteOp
+  ) {
     return minimal
   }
   return undefined

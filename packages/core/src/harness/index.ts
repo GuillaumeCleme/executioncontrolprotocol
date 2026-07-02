@@ -38,21 +38,12 @@ export {
 } from "./repair-loop-timing.js"
 export {
   harnessPromptFixtureSchema,
-  HARNESS_PROMPT_FIXTURE_IDS,
-  loadHarnessPromptFixture,
   loadSchemaExample,
   loadSchemaExampleEql,
   formatSchemaExampleJson,
   formatSchemaExampleEql,
-  buildSystemPrompt,
-  buildWorkflowCreateSystemPrompt,
-  buildWorkflowPatchSystemPrompt,
-  buildWorkflowCreateCodingSystemPrompt,
-  buildWorkflowPatchCodingSystemPrompt,
-  buildIntentClassificationCodingSystemPrompt,
-  buildWorkflowAssistantCodingSystemPrompt,
-  buildRepairHint,
+  buildSystemPromptFromFixture,
+  buildRepairHintFromFixture,
   type HarnessPromptFixture,
-  type HarnessPromptFixtureId,
 } from "./prompts/index.js"
 export * from "./authoring/index.js"
