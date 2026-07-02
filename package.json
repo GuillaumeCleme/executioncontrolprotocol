@@ -1,6 +1,6 @@
 {
   "name": "@executioncontrolprotocol/workspace",
-  "version": "1.0.0",
+  "version": "0.0.10",
   "description": "Execution Control Protocol (ECP) — TypeScript fluent API for workflow authoring and execution",
   "private": true,
   "engines": {
@@ -47,6 +47,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/browser-playwright": "^4.0.18",
