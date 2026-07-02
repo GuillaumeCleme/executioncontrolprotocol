@@ -172,7 +172,7 @@ export async function startModelDownload(): Promise<{ started: boolean }> {
   return { started: true }
 }
 
-/** Whether generateText can run (model ready). @category Extensions */
+/** Whether generate can run (model ready). @category Extensions */
 export async function assertModelReady(): Promise<void> {
   const avail = await readAvailability()
   if (!avail.available) {

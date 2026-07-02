@@ -37,7 +37,9 @@ export {
   buildRequestCapabilityHintLines,
   collectPatchGoalFeedback,
   collectCreateCapabilityFeedback,
+  collectCreateDuplicateStepIdFeedback,
   collectCreateStepCountFeedback,
   inferPatchTargetStepId,
   inferRequiredCapabilityIds,
+  inferRequiredStepCount,
 } from "./_internal/request-capability-hints.js"

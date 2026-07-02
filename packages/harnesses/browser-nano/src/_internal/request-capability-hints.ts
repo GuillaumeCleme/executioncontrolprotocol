@@ -95,8 +95,45 @@ export function inferRequiredCapabilityIds(
     const cap = bySuffix("validate")
     if (cap) matched.add(cap)
   }
+  if (/\bchrome\s*ai\b/i.test(request)) {
+    const cap = capabilityIds.find((id) => id.includes("chrome-ai") && id.endsWith(".generate"))
+    if (cap) matched.add(cap)
+  }
 
   return [...matched]
+}
+
+/**
+ * Infer expected step count from natural-language create requests (hint text only).
+ * @internal
+ */
+export function inferRequiredStepCount(request: string): number | undefined {
+  const nStepMatch = request.match(/\b(\d+)-step\b/i)
+  if (nStepMatch) {
+    return Number.parseInt(nStepMatch[1]!, 10)
+  }
+  if (/\btwo-step\b/i.test(request)) {
+    return 2
+  }
+  if (/\bthree-step\b/i.test(request) || /\b3-step\b/i.test(request)) {
+    return 3
+  }
+  if (/\bfirst\b.+?\bthen\b/i.test(request)) {
+    return 2
+  }
+  if (/\bgenerate\b.+?\bthen\b.+?\bsummar/i.test(request)) {
+    return 2
+  }
+  if (/\bin a second step\b/i.test(request) || /\bsecond step\b/i.test(request)) {
+    return 2
+  }
+  if (/\bgenerate\b.+?\bthen\b/i.test(request)) {
+    return 2
+  }
+  if (/\btwo\s+steps?\b/i.test(request)) {
+    return 2
+  }
+  return undefined
 }
 
 /**
@@ -110,6 +147,7 @@ export function buildRequestCapabilityHintLines(
 ): string[] {
   const ids = summary.capabilities.map((c) => c.id)
   const required = inferRequiredCapabilityIds(request, ids)
+  const stepCount = inferRequiredStepCount(request)
   const lines: string[] = []
   const mode = options?.mode ?? "create"
 
@@ -129,9 +167,25 @@ export function buildRequestCapabilityHintLines(
     )
   }
 
-  if (required.length === 0) return lines
+  if (required.length === 0 && stepCount === undefined) return lines
 
   if (mode === "patch") {
+    return lines
+  }
+
+  const sameCapReuse =
+    /\bsame capability\b/i.test(request) ||
+    /\bwith the same\b/i.test(request) ||
+    (/\bchrome\s*ai\b/i.test(request) && stepCount !== undefined && stepCount > 1) ||
+    (stepCount !== undefined && stepCount > required.length)
+
+  if (stepCount !== undefined && stepCount > 1 && sameCapReuse) {
+    lines.push(
+      `Required: ${stepCount} STEP lines with distinct step ids (e.g. poem, summarize).`,
+      ...required.map((id, index) => `${index + 1}. STEP ... USES ${id}`),
+      "Reusing the same USES capability twice still requires unique step ids — do not repeat the capability suffix.",
+      ""
+    )
     return lines
   }
 
@@ -296,11 +350,15 @@ export function collectCreateCapabilityFeedback(
       )
     )
   } else if (required.length > 0 && uses.length > required.length) {
-    feedback.push(
-      collectModelOutputFeedback(
-        `Output exactly ${required.length} STEP line(s) for: ${required.join(", ")}. Remove extra STEP lines.`
+    const expectedSteps = inferRequiredStepCount(request) ?? required.length
+    const allUsesAreRequired = uses.every((id) => required.includes(id))
+    if (!(allUsesAreRequired && uses.length === expectedSteps)) {
+      feedback.push(
+        collectModelOutputFeedback(
+          `Output exactly ${required.length} STEP line(s) for: ${required.join(", ")}. Remove extra STEP lines.`
+        )
       )
-    )
+    }
   }
   return feedback.length > 0 ? feedback : undefined
 }
@@ -314,26 +372,77 @@ export function collectCreateStepCountFeedback(
   workflow: WorkflowManifest,
   requiredCapabilityIds?: readonly string[]
 ): HarnessOperationFeedback[] | undefined {
-  const requiredCount =
-    requiredCapabilityIds?.length ??
-    (/\bone step\b/i.test(request) || /\bexactly one\b/i.test(request) || /\bminimal\b/i.test(request)
-      ? 1
-      : undefined)
+  const explicitSingle =
+    /\bone step\b/i.test(request) ||
+    /\bexactly one\b/i.test(request) ||
+    /\bminimal\b/i.test(request)
+  const requiredCount = explicitSingle
+    ? 1
+    : inferRequiredStepCount(request) ?? requiredCapabilityIds?.length
   const count = workflow.steps?.length ?? 0
-  if (requiredCount === 1 && count > 1) {
+  if (requiredCount === undefined || count <= requiredCount) {
+    return undefined
+  }
+  if (requiredCount === 1) {
     return [
       collectModelOutputFeedback(
         `Request requires exactly one capability step but output has ${count} STEP lines. Output only one STEP ... USES line.`
       ),
     ]
   }
-  if (!/\bone step\b/i.test(request) && !/\bexactly one\b/i.test(request)) {
-    return undefined
-  }
-  if (count <= 1) return undefined
   return [
     collectModelOutputFeedback(
-      `Request asks for exactly one step but output has ${count} STEP lines. Output only one STEP ... USES line.`
+      `Request requires ${requiredCount} STEP lines but output has ${count}. Output exactly ${requiredCount} STEP ... USES lines.`
+    ),
+  ]
+}
+
+/**
+ * Harness repair feedback when create output reuses a step id.
+ * @internal
+ */
+export function collectCreateDuplicateStepIdFeedback(
+  workflow: WorkflowManifest
+): HarnessOperationFeedback[] | undefined {
+  const stepIds: string[] = []
+  for (const node of workflow.steps ?? []) {
+    if (!node.type || node.type === "step") {
+      stepIds.push(node.id)
+    }
+  }
+  const seen = new Set<string>()
+  const duplicates: string[] = []
+  for (const id of stepIds) {
+    if (seen.has(id)) {
+      if (!duplicates.includes(id)) {
+        duplicates.push(id)
+      }
+    } else {
+      seen.add(id)
+    }
+  }
+  if (duplicates.length === 0) {
+    return undefined
+  }
+  const dupId = duplicates[0]!
+  const usesForDup = new Set<string>()
+  for (const node of workflow.steps ?? []) {
+    if (
+      (!node.type || node.type === "step") &&
+      node.id === dupId &&
+      "uses" in node &&
+      typeof node.uses === "string"
+    ) {
+      usesForDup.add(node.uses)
+    }
+  }
+  const capHint =
+    usesForDup.size === 1
+      ? ` When reusing ${[...usesForDup][0]} twice, use distinct ids like poem and summarize.`
+      : ""
+  return [
+    collectModelOutputFeedback(
+      `Duplicate step id "${dupId}". Each STEP needs a unique short id.${capHint} Do not repeat the capability suffix.`
     ),
   ]
 }

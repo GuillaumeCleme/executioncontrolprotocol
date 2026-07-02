@@ -12,7 +12,7 @@ This is **not** the browser demo application. UI, provider picker, layout, and d
 | `@executioncontrolprotocol/browser-registry` (`globalThis.ecp`, freeze) | First-run modal, provider mode UI |
 | `@executioncontrolprotocol/browser-session-config` (in-memory API keys) | `localStorage` for **provider choice** (not secrets) |
 | `createEcp()`, `installBrowserWorkflowShim()` | Monaco, Mermaid viewer, CSS |
-| `registerBrowserDefaults()` — registers extensions on the catalog | Which capability id to pass to authoring (e.g. `@executioncontrolprotocol/openai.generateText`) |
+| `registerBrowserDefaults()` — registers extensions on the catalog | Which capability id to pass to authoring (e.g. `@executioncontrolprotocol/openai.generate`) |
 
 **Do not add demo-app UI types here** (e.g. hardcoded `ProviderMode` unions, demo localStorage keys). Those stay in the demo app.
 
@@ -34,7 +34,7 @@ const env = (await environment("my-app"))
   .withExtensions([/* your bindings */])
 const ecp = await createEcp(env, { exposeGlobal: true })
 
-await ecp.run(workflow("Hello").run([step("@executioncontrolprotocol/test.echo", "E").with({ value: 1 }).as("out")]).toManifest())
+await ecp.run(workflow("Hello").run([step("@executioncontrolprotocol/chrome-ai.generate", "Summarize").with({ prompt: "hi" }).as("out")]).toManifest())
 ```
 
 ## Compile-on-edit in the browser
@@ -49,7 +49,7 @@ Fluent emission for browser panels uses `ecp.encode(manifest).as("fluent").with(
 
 ## Dependencies
 
-`@executioncontrolprotocol/browser` depends on `@executioncontrolprotocol/core` only for runtime mechanics. Extension packages (`@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/chrome-ai`, providers, etc.) are registered by `registerBrowserDefaults()` for the **reference** browser demo environment; production browser apps should register only what they need.
+`@executioncontrolprotocol/browser` depends on `@executioncontrolprotocol/core` only for runtime mechanics. Extension packages (`@executioncontrolprotocol/format-toon`, `@executioncontrolprotocol/chrome-ai`, `@executioncontrolprotocol/extension-fal`, `@executioncontrolprotocol/extension-image-sharp`, providers, etc.) are registered by `registerBrowserDefaults()` for the **reference** browser demo environment; production browser apps should register only what they need.
 
 ## Tests
 

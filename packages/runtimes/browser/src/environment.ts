@@ -22,6 +22,8 @@ import { registerChromeAiExtension } from "@executioncontrolprotocol/chrome-ai"
 import { registerOpenaiExtension } from "@executioncontrolprotocol/extension-openai"
 import { registerClaudeExtension } from "@executioncontrolprotocol/claude"
 import { registerBrowserSecretsExtension } from "@executioncontrolprotocol/browser-secrets"
+import { registerFalExtension } from "@executioncontrolprotocol/extension-fal"
+import { registerImageSharpExtension } from "@executioncontrolprotocol/extension-image-sharp"
 import {
   BROWSER_NANO_HARNESS_ID,
   HARNESS_NANO_BINDING,
@@ -34,6 +36,8 @@ import "@executioncontrolprotocol/chrome-ai"
 import "@executioncontrolprotocol/extension-openai"
 import "@executioncontrolprotocol/claude"
 import "@executioncontrolprotocol/browser-secrets"
+import "@executioncontrolprotocol/extension-fal"
+import "@executioncontrolprotocol/extension-image-sharp"
 
 /** Register browser runtime and standard browser extensions. */
 export async function registerBrowserDefaults(registry: Registry = globalRegistry): Promise<void> {
@@ -49,6 +53,8 @@ export async function registerBrowserDefaults(registry: Registry = globalRegistr
   await registerOpenaiExtension(registry)
   await registerClaudeExtension(registry)
   await registerBrowserSecretsExtension(registry)
+  await registerFalExtension(registry)
+  await registerImageSharpExtension(registry)
   await registerStandardPolicies(registry)
   registerBrowserNanoHarnesses()
 }
@@ -70,7 +76,6 @@ export function createBrowserDemoEnvironment(
       extension("@executioncontrolprotocol/format-mermaid").with({}),
       extension("@executioncontrolprotocol/format-json").with({}),
       extension("@executioncontrolprotocol/chrome-ai").with({}),
-      extension("@executioncontrolprotocol/test").with({}),
       extension("@executioncontrolprotocol/browser-secrets").with({}),
       extension("@executioncontrolprotocol/openai").with({
         apiKey: browser("OPENAI_API_KEY", { optional: true }),
@@ -78,6 +83,11 @@ export function createBrowserDemoEnvironment(
       extension("@executioncontrolprotocol/claude").with({
         apiKey: browser("ANTHROPIC_API_KEY", { optional: true }),
       }),
+      extension("@executioncontrolprotocol/fal").with({
+        apiKey: browser("FAL_KEY", { optional: true }),
+        defaultMode: "subscribe",
+      }),
+      extension("@executioncontrolprotocol/image-sharp").with({}),
       extension("@executioncontrolprotocol/browser-registry").with({
         freezeOn: "environment:beforeRun",
         autoBindRegisteredExtensions: true,
@@ -99,9 +109,10 @@ export function createBrowserDemoEnvironment(
           "@executioncontrolprotocol/chrome-ai",
           "@executioncontrolprotocol/openai",
           "@executioncontrolprotocol/claude",
+          "@executioncontrolprotocol/fal",
+          "@executioncontrolprotocol/image-sharp",
           "@executioncontrolprotocol/browser",
           "@customer/*",
-          "@executioncontrolprotocol/test",
         ],
         deniedExtensionNamespaces: [],
         allowDynamicExtensionRegistration: true,

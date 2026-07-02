@@ -6,6 +6,12 @@ export {
   type EnvironmentSummaryFormat,
 } from "./summarize-environment.js"
 export {
+  introspectCapabilitySchema,
+  formatCapabilityInputLabels,
+  allCapabilityInputNames,
+} from "./summarize-capability-schema.js"
+export type { CapabilitySchemaFields } from "./summarize-capability-schema.js"
+export {
   summarizeHarnessRunContext,
   formatRunContextSummaryLines,
   type CompactRunContextSummary,
@@ -44,6 +50,7 @@ export {
   splitWorkflowEqlBlocks,
   selectBestWorkflowEqlBlock,
   normalizeCreateEqlRawOutput,
+  deduplicateWorkflowEqlStepIds,
   filterWorkflowEqlToRequiredCapabilities,
   synthesizeCreateEqlFromRequiredCapabilities,
   createEqlIncludesRequiredCapabilities,

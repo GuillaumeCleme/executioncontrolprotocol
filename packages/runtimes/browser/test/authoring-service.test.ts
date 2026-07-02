@@ -63,14 +63,11 @@ describe("BrowserAuthoringService", () => {
   it("encodePanels includes patch TOON when provided", async () => {
     const ecp = await authoringEcp()
     const service = new BrowserAuthoringService(ecp)
-    const invoked = await ecp
-      .invoke(WORKFLOW_AUTHORING_CAPABILITY)
-      .uses("@executioncontrolprotocol/test.generate")
-      .with({ task: HARNESS_TASKS.WORKFLOW_AUTHORING, request: "demo" })
-      .process()
-    const harnessResult = invoked.result as HarnessInvokeResult<WorkflowManifest>
+    const manifest = workflow("Patch test")
+      .run([step("@executioncontrolprotocol/test.echo", "Echo").with({ value: "hello" }).as("echo")])
+      .toManifest()
     const panels = await service.encodePanels(
-      harnessResult.artifact,
+      manifest,
       "steps[echo].input:\n  value: patched"
     )
     expect(panels.patch).toContain("steps[echo]")

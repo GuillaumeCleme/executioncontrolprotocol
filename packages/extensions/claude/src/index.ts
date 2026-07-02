@@ -8,12 +8,6 @@ import {
 import { modelGenerateInputSchema, modelGenerateOutputSchema } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
-const GenerateTextInput = z.object({
-  prompt: z.string(),
-  system: z.string().optional(),
-  model: z.string().optional(),
-})
-
 async function claudeComplete(
   apiKey: string,
   model: string,
@@ -52,21 +46,7 @@ export const claudeExtension = defineExtension("@executioncontrolprotocol", "cla
       .withInput(modelGenerateInputSchema)
       .withOutput(modelGenerateOutputSchema)
       .withHandler(async (raw, ctx) => {
-        const input = raw as z.infer<typeof GenerateTextInput>
-        const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
-        const apiKey = (cfg.apiKey as string) ?? ""
-        if (!apiKey) throw new Error("Claude API key required")
-        const model =
-          input.model ?? (cfg.defaultModel as string) ?? "claude-3-5-haiku-latest"
-        ctx.usage.increment({ modelCalls: 1 })
-        const text = await claudeComplete(apiKey, model, input.prompt, input.system)
-        return { text }
-      }),
-    capabilityFor("@executioncontrolprotocol/claude", "generateText")
-      .withInput(GenerateTextInput)
-      .withOutput(z.object({ text: z.string() }))
-      .withHandler(async (raw, ctx) => {
-        const input = raw as z.infer<typeof GenerateTextInput>
+        const input = modelGenerateInputSchema.parse(raw)
         const cfg = (ctx as { extensionConfig?: Record<string, unknown> }).extensionConfig ?? {}
         const apiKey = (cfg.apiKey as string) ?? ""
         if (!apiKey) throw new Error("Claude API key required")

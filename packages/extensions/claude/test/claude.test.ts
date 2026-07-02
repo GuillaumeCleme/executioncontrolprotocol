@@ -6,7 +6,12 @@ describe("@executioncontrolprotocol/claude", () => {
     vi.unstubAllGlobals()
   })
 
-  it("generateText returns text from Messages API", async () => {
+  it("has only generate capability (no generateText)", () => {
+    const ids = claudeExtension.capabilities.map((c) => c.id)
+    expect(ids).toEqual(["@executioncontrolprotocol/claude.generate"])
+  })
+
+  it("generate returns text from Messages API", async () => {
     await registerClaudeExtension()
     vi.stubGlobal(
       "fetch",
@@ -17,7 +22,7 @@ describe("@executioncontrolprotocol/claude", () => {
         }),
       })
     )
-    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/claude.generateText")
+    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/claude.generate")
     const result = await cap!.handler!(
       { prompt: "hello" },
       {
@@ -28,8 +33,8 @@ describe("@executioncontrolprotocol/claude", () => {
     expect(result).toEqual({ text: "claude reply" })
   })
 
-  it("generateText fails without api key", async () => {
-    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/claude.generateText")
+  it("generate fails without api key", async () => {
+    const cap = claudeExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/claude.generate")
     await expect(
       cap!.handler!({ prompt: "hello" }, { extensionConfig: {}, usage: { increment: vi.fn() } } as never)
     ).rejects.toThrow("Claude API key required")

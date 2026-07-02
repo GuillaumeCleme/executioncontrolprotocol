@@ -26,6 +26,12 @@ describe("@executioncontrolprotocol/chrome-ai", () => {
     }
   })
 
+  it("has generate but not generateText", () => {
+    const ids = chromeAiExtension.capabilities.map((c) => c.id)
+    expect(ids).toContain("@executioncontrolprotocol/chrome-ai.generate")
+    expect(ids).not.toContain("@executioncontrolprotocol/chrome-ai.generateText")
+  })
+
   it("checkAvailability returns unsupported when LanguageModel is missing", async () => {
     delete (globalThis as { LanguageModel?: unknown }).LanguageModel
     const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.checkAvailability")
@@ -86,19 +92,50 @@ describe("@executioncontrolprotocol/chrome-ai", () => {
     expect(result).toMatchObject({ phase: "ready" })
   })
 
-  it("generateText returns text from LanguageModel session (legacy object shape)", async () => {
+  it("generate returns text from LanguageModel session", async () => {
     ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
       availability: vi.fn().mockResolvedValue("available"),
       create: vi.fn().mockResolvedValue({
         prompt: vi.fn().mockResolvedValue({ text: "hello from chrome" }),
       }),
     }
-    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generateText")
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
     const result = await cap!.handler!(
       { prompt: "hi", system: "be brief" },
       { usage: { increment: vi.fn() } } as never
     )
     expect(result).toEqual({ text: "hello from chrome" })
+  })
+
+  it("generate appends object context text field to prompt", async () => {
+    const promptMock = vi.fn().mockResolvedValue({ text: "summary" })
+    ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
+      availability: vi.fn().mockResolvedValue("available"),
+      create: vi.fn().mockResolvedValue({ prompt: promptMock }),
+    }
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
+    await cap!.handler!(
+      {
+        prompt: "Summarize the following poem:",
+        context: { text: "poem body" },
+      },
+      { usage: { increment: vi.fn() } } as never
+    )
+    expect(promptMock).toHaveBeenCalledWith("Summarize the following poem:\n\npoem body")
+  })
+
+  it("generate appends string context to prompt", async () => {
+    const promptMock = vi.fn().mockResolvedValue({ text: "summary" })
+    ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
+      availability: vi.fn().mockResolvedValue("available"),
+      create: vi.fn().mockResolvedValue({ prompt: promptMock }),
+    }
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
+    await cap!.handler!(
+      { prompt: "Summarize:", context: "raw context text" },
+      { usage: { increment: vi.fn() } } as never
+    )
+    expect(promptMock).toHaveBeenCalledWith("Summarize:\n\nraw context text")
   })
 
   it("generate returns text when prompt() resolves to a string", async () => {
@@ -116,11 +153,11 @@ describe("@executioncontrolprotocol/chrome-ai", () => {
     expect(result.text).toContain("WORKFLOW")
   })
 
-  it("generateText throws when model not ready", async () => {
+  it("generate throws when model not ready", async () => {
     ;(globalThis as { LanguageModel?: unknown }).LanguageModel = {
       availability: vi.fn().mockResolvedValue("downloadable"),
     }
-    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generateText")
+    const cap = chromeAiExtension.capabilities.find((c) => c.id === "@executioncontrolprotocol/chrome-ai.generate")
     await expect(cap!.handler!({ prompt: "hi" }, {} as never)).rejects.toThrow(/downloading/i)
   })
 

@@ -1,4 +1,4 @@
-import sharp from "sharp"
+import type { SharpOptions } from "sharp"
 import type { ImageRef } from "@executioncontrolprotocol/types"
 import type { CapabilityContext } from "@executioncontrolprotocol/core"
 import { readImageToBuffer, writeArtifact, mediaTypeForFormat } from "./artifact.js"
@@ -18,6 +18,20 @@ import type { z } from "zod"
 type Ctx = CapabilityContext & { extensionConfig?: Record<string, unknown> }
 type TransformOutput = z.infer<typeof transformOutputSchema>
 
+type SharpModule = typeof import("sharp")
+
+const SHARP_UNAVAILABLE_MESSAGE =
+  "image-sharp requires the native sharp module (Node runtime). Image processing steps cannot run in the browser."
+
+async function loadSharp(): Promise<SharpModule> {
+  try {
+    const mod = await import("sharp")
+    return mod.default
+  } catch {
+    throw new Error(SHARP_UNAVAILABLE_MESSAGE)
+  }
+}
+
 /** Options for {@link runPipeline}. @category Extensions */
 export interface RunPipelineOptions {
   image: ImageRef
@@ -33,6 +47,7 @@ export async function runPipeline(
   options: RunPipelineOptions,
   ctx: Ctx
 ): Promise<TransformOutput> {
+  const sharp = await loadSharp()
   const cfg = ctx.extensionConfig ?? {}
   const limits = resolveLimits(cfg)
   const defaults = resolveDefaultOutput(cfg)
@@ -44,7 +59,7 @@ export async function runPipeline(
   const failOn = options.failOn ?? (cfg.defaults as { failOn?: string } | undefined)?.failOn ?? "warning"
 
   let instance = sharp(source.buffer, {
-    failOn: failOn as sharp.SharpOptions["failOn"],
+    failOn: failOn as SharpOptions["failOn"],
     animated: options.animated ?? true,
     limitInputPixels: limits.maxPixels,
   })
@@ -92,13 +107,14 @@ export async function runInspect(
   animated?: boolean,
   failOn?: "none" | "truncated" | "error" | "warning"
 ) {
+  const sharp = await loadSharp()
   const cfg = ctx.extensionConfig ?? {}
   const limits = resolveLimits(cfg)
   assertImageRefAllowed(imageRef, limits)
   const source = await readImageToBuffer(imageRef, ctx)
 
   const instance = sharp(source.buffer, {
-    failOn: (failOn ?? "warning") as sharp.SharpOptions["failOn"],
+    failOn: (failOn ?? "warning") as SharpOptions["failOn"],
     animated: animated ?? true,
     limitInputPixels: limits.maxPixels,
   })

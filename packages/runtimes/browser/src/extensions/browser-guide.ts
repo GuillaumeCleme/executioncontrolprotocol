@@ -39,7 +39,7 @@ function guideReply(message: string): string {
   if (/what can you do|what are you|who are you|help me|introduce/.test(lower)) {
     return [
       "I help you build and patch ECP workflows in this editor, explain ECP concepts,",
-      "and describe capabilities registered in this environment (for example @executioncontrolprotocol/test.echo and @executioncontrolprotocol/test.summarize).",
+      "and describe capabilities registered in this environment (for example @executioncontrolprotocol/chrome-ai.generate, @executioncontrolprotocol/fal.generate, and @executioncontrolprotocol/image-sharp.transform).",
       "Ask about workflows, the environment panel, validation, or Chrome AI.",
       'To generate a workflow, try: "Create a demo echo workflow."',
     ].join(" ")
@@ -56,9 +56,9 @@ function guideReply(message: string): string {
 
   if (lower.includes("environment") || lower.includes("extension") || lower.includes("capabilit")) {
     return [
-      "The **Environment** tab lists extensions bound to this session (for example @executioncontrolprotocol/test).",
+      "The **Environment** tab lists extensions bound to this session (for example @executioncontrolprotocol/chrome-ai).",
       "Capabilities come from those bindings and appear in describe() output.",
-      "The demo binds @executioncontrolprotocol/test so @executioncontrolprotocol/test.echo is available for workflow steps.",
+      "The demo binds @executioncontrolprotocol/chrome-ai, @executioncontrolprotocol/fal, and @executioncontrolprotocol/image-sharp for workflow steps (FAL generates images; image-sharp inspects and transforms when running on Node).",
     ].join(" ")
   }
 

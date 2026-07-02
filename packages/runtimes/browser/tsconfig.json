@@ -16,6 +16,8 @@
     { "path": "../../extensions/chrome-ai" },
     { "path": "../../extensions/claude" },
     { "path": "../../extensions/openai" },
+    { "path": "../../extensions/fal" },
+    { "path": "../../extensions/image-sharp" },
     { "path": "../../extensions/browser-secrets" }
   ],
   "include": ["src/**/*.ts"]

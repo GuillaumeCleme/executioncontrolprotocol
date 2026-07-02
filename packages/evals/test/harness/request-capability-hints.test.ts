@@ -3,9 +3,11 @@ import {
   buildPatchOperationHintLines,
   buildRequestCapabilityHintLines,
   collectCreateCapabilityFeedback,
+  collectCreateDuplicateStepIdFeedback,
   collectPatchGoalFeedback,
   inferPatchTargetStepId,
   inferRequiredCapabilityIds,
+  inferRequiredStepCount,
 } from "../../../harnesses/browser-nano/src/_internal/request-capability-hints.js"
 import type { CompactEnvironmentSummary } from "@executioncontrolprotocol/core"
 import type { WorkflowManifest } from "@executioncontrolprotocol/types"
@@ -18,6 +20,7 @@ const summary: CompactEnvironmentSummary = {
     { id: "@executioncontrolprotocol/test.notify", extension: "@executioncontrolprotocol/test", inputs: ["payload"], outputs: [] },
     { id: "@executioncontrolprotocol/test.validate", extension: "@executioncontrolprotocol/test", inputs: ["payload"], outputs: [] },
     { id: "@executioncontrolprotocol/test.translate", extension: "@executioncontrolprotocol/test", inputs: ["text"], outputs: [] },
+    { id: "@executioncontrolprotocol/chrome-ai.generate", extension: "@executioncontrolprotocol/chrome-ai", inputs: ["prompt"], outputs: ["text"] },
   ],
 }
 
@@ -356,5 +359,139 @@ describe("request-capability-hints", () => {
     expect(
       feedback?.some((f) => f.issues.some((i) => i.message.includes("MOVE STEP echo AFTER validate")))
     ).toBe(true)
+  })
+
+  it("inferRequiredStepCount returns 2 for two-step and generate-then-summarize", () => {
+    expect(inferRequiredStepCount("Create a two-step workflow")).toBe(2)
+    expect(
+      inferRequiredStepCount(
+        "Generate a poem then summarize it with @executioncontrolprotocol/chrome-ai.generate"
+      )
+    ).toBe(2)
+    expect(
+      inferRequiredStepCount(
+        "Build a workflow that uses Chrome AI to generate a short email, then extract key action items from it in a second step."
+      )
+    ).toBe(2)
+    expect(inferRequiredStepCount("Create a 3-step workflow")).toBe(3)
+  })
+
+  it("infers chrome-ai.generate from Chrome AI natural language", () => {
+    const ids = inferRequiredCapabilityIds(
+      "Build a workflow that uses Chrome AI to generate a short email, then extract key action items from it in a second step.",
+      summary.capabilities.map((c) => c.id)
+    )
+    expect(ids).toContain("@executioncontrolprotocol/chrome-ai.generate")
+  })
+
+  it("buildRequestCapabilityHintLines nudges distinct ids for email quick start", () => {
+    const lines = buildRequestCapabilityHintLines(
+      "Build a workflow that uses Chrome AI to generate a short email, then extract key action items from it in a second step.",
+      summary,
+      { mode: "create" }
+    )
+    const text = lines.join("\n")
+    expect(text).toContain("2 STEP lines with distinct step ids")
+    expect(text).toContain("do not repeat the capability suffix")
+  })
+
+  it("collectCreateCapabilityFeedback allows two chrome-ai steps for same-cap reuse", () => {
+    const cap = "@executioncontrolprotocol/chrome-ai.generate"
+    const wf: WorkflowManifest = {
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "email-action", label: "Email Action" },
+      steps: [
+        { type: "step", id: "email", uses: cap, label: "Generate Email", as: "email" },
+        { type: "step", id: "actions", uses: cap, label: "Extract Action Items", as: "actions" },
+      ],
+    }
+    const feedback = collectCreateCapabilityFeedback(
+      "Build a workflow that uses Chrome AI to generate a short email, then extract key action items from it in a second step.",
+      summary,
+      wf
+    )
+    expect(feedback).toBeUndefined()
+  })
+
+  it("collectCreateStepCountFeedback allows two steps for email quick start", async () => {
+    const { collectCreateStepCountFeedback } = await import(
+      "../../../harnesses/browser-nano/src/_internal/request-capability-hints.js"
+    )
+    const cap = "@executioncontrolprotocol/chrome-ai.generate"
+    const wf: WorkflowManifest = {
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "email-action", label: "Email Action" },
+      steps: [
+        { type: "step", id: "email", uses: cap, label: "Generate Email", as: "email" },
+        { type: "step", id: "actions", uses: cap, label: "Extract Action Items", as: "actions" },
+      ],
+    }
+    const request =
+      "Build a workflow that uses Chrome AI to generate a short email, then extract key action items from it in a second step."
+    const feedback = collectCreateStepCountFeedback(request, wf, [cap])
+    expect(feedback).toBeUndefined()
+  })
+
+  it("collectCreateStepCountFeedback flags extra steps for single-step request", async () => {
+    const { collectCreateStepCountFeedback } = await import(
+      "../../../harnesses/browser-nano/src/_internal/request-capability-hints.js"
+    )
+    const cap = "@executioncontrolprotocol/chrome-ai.generate"
+    const wf: WorkflowManifest = {
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "w", label: "W" },
+      steps: [
+        { type: "step", id: "a", uses: cap, label: "A", as: "a" },
+        { type: "step", id: "b", uses: cap, label: "B", as: "b" },
+      ],
+    }
+    const feedback = collectCreateStepCountFeedback(
+      "Create a minimal one-step workflow with Chrome AI",
+      wf,
+      [cap]
+    )
+    expect(feedback?.[0]?.issues[0]?.message).toContain("exactly one capability step")
+  })
+
+  it("buildRequestCapabilityHintLines nudges distinct ids for same-cap reuse", () => {
+    const lines = buildRequestCapabilityHintLines(
+      "Create a two-step workflow: generate a poem with @executioncontrolprotocol/chrome-ai.generate, then summarize with the same capability.",
+      summary,
+      { mode: "create" }
+    )
+    const text = lines.join("\n")
+    expect(text).toContain("2 STEP lines with distinct step ids")
+    expect(text).toContain("do not repeat the capability suffix")
+  })
+
+  it("collectCreateDuplicateStepIdFeedback flags duplicate generate id", () => {
+    const wf: WorkflowManifest = {
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "poem-summarize", label: "Poem" },
+      steps: [
+        {
+          type: "step",
+          id: "generate",
+          uses: "@executioncontrolprotocol/chrome-ai.generate",
+          label: "Generate Poem",
+          as: "poem",
+        },
+        {
+          type: "step",
+          id: "generate",
+          uses: "@executioncontrolprotocol/chrome-ai.generate",
+          label: "Summarize Poem",
+          as: "summary",
+        },
+      ],
+    }
+    const feedback = collectCreateDuplicateStepIdFeedback(wf)
+    expect(feedback?.length).toBe(1)
+    expect(feedback?.[0]?.issues[0]?.message).toContain('Duplicate step id "generate"')
+    expect(feedback?.[0]?.issues[0]?.message).toContain("poem and summarize")
   })
 })
