@@ -8,14 +8,14 @@ For a **full matrix catalog** (every case, assertion, judge goal, and fixture), 
 
 | Harness | Capability | Purpose |
 | ------- | ---------- | ------- |
-| `@executioncontextprotocol/harness-browser-nano` | `@executioncontextprotocol/harness-browser-nano.evaluate` | Browser demo + Ollama Gemma matrix; EQL output |
-| `@executioncontextprotocol/harness-browser-coding` | `@executioncontextprotocol/harness-browser-coding.evaluate` | Ollama Qwen coding matrix; TypeScript (Fluent + typed intent/reply) |
+| `@executioncontrolprotocol/harness-browser-nano` | `@executioncontrolprotocol/harness-browser-nano.evaluate` | Browser demo + Ollama Gemma matrix; EQL output |
+| `@executioncontrolprotocol/harness-browser-coding` | `@executioncontrolprotocol/harness-browser-coding.evaluate` | Ollama Qwen coding matrix; TypeScript (Fluent + typed intent/reply) |
 
 Both harnesses use the same `task` routing: `workflow-authoring`, `intent-classification`, `workflow-assistant`.
 
-## `@executioncontextprotocol/evals` package
+## `@executioncontrolprotocol/evals` package (framework)
 
-Harness eval tests live in [`packages/evals/`](../packages/evals/). See [`packages/evals/README.md`](../packages/evals/README.md) for the full guide to **creating new eval cases**.
+`@executioncontrolprotocol/evals` provides the **eval framework** only: case schema, `runEvalCase`, assertions, provider profiles, and `createNodeEvalFixturesLoader` / `createBrowserEvalFixturesLoader`. Harness packages own prompt fixtures, eval case JSON, workflow/run support fixtures, and matrix test drivers under `packages/harnesses/*/test/eval/`.
 
 ### Pinned Ollama profile (no env overrides)
 
@@ -26,7 +26,7 @@ Eval model and URL are defined in code, not `OLLAMA_MODEL` / `OLLAMA_BASE_URL`:
 | Profile | `ollama-gemma-1b` (`OLLAMA_GEMMA_1B_EVAL`) |
 | Base URL | `http://localhost:11434` |
 | Model | `gemma3:1b` |
-| Provider | `@executioncontextprotocol/ollama.generate` |
+| Provider | `@executioncontrolprotocol/ollama.generate` |
 
 Source: [`packages/evals/src/profiles/ollama-gemma.ts`](../packages/evals/src/profiles/ollama-gemma.ts).
 
@@ -35,16 +35,16 @@ Source: [`packages/evals/src/profiles/ollama-gemma.ts`](../packages/evals/src/pr
 | Setting | Baked value |
 | ------- | ----------- |
 | Profile | `chrome-nano` (`CHROME_NANO_EVAL`) |
-| Provider | `@executioncontextprotocol/chrome-ai.generate` |
-| Runtime | `@executioncontextprotocol/browser` |
+| Provider | `@executioncontrolprotocol/chrome-ai.generate` |
+| Runtime | `@executioncontrolprotocol/browser` |
 
 Source: [`packages/evals/src/profiles/chrome-nano.ts`](../packages/evals/src/profiles/chrome-nano.ts).
 
 ### Reusable harness, swappable providers
 
-`@executioncontextprotocol/harness-browser-nano` owns prompts, repair loops, EQL decode, and validation. Providers only implement `@executioncontextprotocol/model.generate`. Matrix evals use `createHarnessMatrixEnvironment(profile)` — the same harness binding (`HARNESS_NANO_BINDING`) for Ollama and Chrome; only `.uses()` and runtime change.
+`@executioncontrolprotocol/harness-browser-nano` owns prompts, repair loops, EQL decode, and validation. Providers only implement `@executioncontrolprotocol/model.generate`. Matrix evals use `createNanoOllamaMatrixEnvironment()` (Node) or `createNanoBrowserMatrixEnvironment(CHROME_NANO_EVAL)` (browser) — same harness binding (`HARNESS_NANO_BINDING`); only `.uses()` and runtime change.
 
-The browser demo uses the same matrix harness profile; the UI swaps providers via `.uses(@executioncontextprotocol/chrome-ai.generate)` (or OpenAI, demo stub, etc.) at invoke time.
+The browser demo uses the same matrix harness profile; the UI swaps providers via `.uses(@executioncontrolprotocol/chrome-ai.generate)` (or OpenAI, Claude, etc.) at invoke time.
 
 ### Run
 
@@ -84,65 +84,64 @@ Tests **skip** when Ollama or `gemma3:1b` is unavailable. When Ollama is up, fai
 
 | Eval set | Factory | Tests |
 | -------- | ------- | ----- |
-| **Matrix (52+ Ollama cases)** | `createHarnessOllamaMatrixEnvironment()` | [`matrix-*.eval.test.ts`](../packages/evals/test/harness/) + JSON fixtures |
-| **Matrix Chrome Nano** | `createHarnessMatrixEnvironment(CHROME_NANO_EVAL)` | [`test/browser/matrix-*.eval.test.ts`](../packages/evals/test/browser/) + same JSON fixtures |
-| **Workflow operations (smoke)** | `createHarnessOllamaWorkflowEnvironment()` | [`workflow-authoring.eval.test.ts`](../packages/evals/test/harness/workflow-authoring.eval.test.ts) |
-| **Intent routing (smoke)** | `createHarnessOllamaIntentEnvironment()` | [`intent-classification.eval.test.ts`](../packages/evals/test/harness/intent-classification.eval.test.ts) |
+| **Matrix Nano (81 Ollama cases)** | `createNanoOllamaMatrixEnvironment()` | [`packages/harnesses/browser-nano/test/eval/matrix-*.eval.test.ts`](../packages/harnesses/browser-nano/test/eval/) |
+| **Matrix Coding (63 Ollama cases)** | `createCodingOllamaMatrixEnvironment()` | [`packages/harnesses/browser-coding/test/eval/matrix-*.eval.test.ts`](../packages/harnesses/browser-coding/test/eval/) |
+| **Matrix Chrome Nano** | `createNanoBrowserMatrixEnvironment(CHROME_NANO_EVAL)` | [`packages/harnesses/browser-nano/test/eval/browser/matrix-*.eval.test.ts`](../packages/harnesses/browser-nano/test/eval/browser/) |
 
 | Scenario | Invoke | Model output encoding |
 | -------- | ------ | --------------------- |
-| Create workflow | `@executioncontextprotocol/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@executioncontextprotocol/format-eql` |
-| Patch workflow | `@executioncontextprotocol/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@executioncontextprotocol/format-eql` |
-| Intent | `@executioncontextprotocol/harness-browser-nano.evaluate` + `task: "intent-classification"` | `@executioncontextprotocol/format-eql` |
-| Assistant | `@executioncontextprotocol/harness-browser-nano.evaluate` + `task: "workflow-assistant"` | `@executioncontextprotocol/format-eql` |
+| Create workflow | `@executioncontrolprotocol/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@executioncontrolprotocol/format-eql` |
+| Patch workflow | `@executioncontrolprotocol/harness-browser-nano.evaluate` + `task: "workflow-authoring"` | `@executioncontrolprotocol/format-eql` |
+| Intent | `@executioncontrolprotocol/harness-browser-nano.evaluate` + `task: "intent-classification"` | `@executioncontrolprotocol/format-eql` |
+| Assistant | `@executioncontrolprotocol/harness-browser-nano.evaluate` + `task: "workflow-assistant"` | `@executioncontrolprotocol/format-eql` |
 
-Browser demo and Chrome Nano matrix evals share **`HARNESS_NANO_BINDING`**; only the model provider (`.uses(...)` at invoke) differs. Run context in prompts may still use `@executioncontextprotocol/format-json` for encoding prior run results — that is separate from the model's structured reply format.
+Browser demo and Chrome Nano matrix evals share **`HARNESS_NANO_BINDING`**; only the model provider (`.uses(...)` at invoke) differs. Run context in prompts may still use `@executioncontrolprotocol/format-json` for encoding prior run results — that is separate from the model's structured reply format.
 
 Workflow environment: [`packages/evals/src/environments/harness-ollama-workflow.ts`](../packages/evals/src/environments/harness-ollama-workflow.ts).
 
 [`examples/harness-ollama/environment.ts`](../examples/harness-ollama/environment.ts) re-exports `createHarnessOllamaEnvironment()` (combined workflow + intent).
 
-Intent eval environments bind `@executioncontextprotocol/format-toon` and `@executioncontextprotocol/test` (same as workflow) and include a **summarized** environment capability block in the user prompt (see `_internal/summarize-environment` in `@executioncontextprotocol/evals`). System prompts come from [`packages/core/fixtures/harness-prompts/`](../packages/core/fixtures/harness-prompts/) via `buildSystemPrompt()` — not from eval case JSON.
+Intent eval environments bind `@executioncontrolprotocol/format-toon` and `@executioncontrolprotocol/test` (same as workflow) and include a **summarized** environment capability block in the user prompt (see `summarizeEnvironmentDescriptor` in `@executioncontrolprotocol/core`). System prompts come from harness-owned fixtures via `buildSystemPromptFromFixture()` — not from eval case JSON.
 
 ## Flow eval failures (step 0)
 
-Multi-step `flow` cases in [`flow.cases.json`](../packages/evals/fixtures/cases/flow.cases.json) run harness invokes sequentially. Failures at **step 0** are almost always **intent-classification harness invoke** failures (decode/validation/repair), not `ecp.run()` execution and not failure to load `fixtures/runs/*.json` (run fixtures are used on later assistant steps only).
+Multi-step `flow` cases in [`flow.cases.json`](../packages/harnesses/browser-nano/fixtures/eval-cases/flow.cases.json) run harness invokes sequentially. Failures at **step 0** are almost always **intent-classification harness invoke** failures (decode/validation/repair), not `ecp.run()` execution and not failure to load `fixtures/runs/*.json` (run fixtures are used on later assistant steps only).
 
 ## Traceability
 
 When an eval fails, use harness `trace` and eval helpers:
 
 - **Invoke failed:** `invokeSuccess` assertions append `error`, `rawOutput`, and validation issues when present (`packages/evals/src/fixtures/assertions.ts`).
-- **Judge:** `@executioncontextprotocol/ollama.evaluate` runs only when the active eval provider is Ollama (`ollama-gemma-1b`); skipped for Chrome Nano matrix runs.
-- **Wrong intent/artifact:** `expectHarnessIntent()` or `expect(..., harnessTraceHint(output))` — see [`assert-harness-result.ts`](../packages/evals/test/harness/assert-harness-result.ts).
+- **Judge:** `@executioncontrolprotocol/ollama.evaluate` runs only when the active eval provider is Ollama (`ollama-gemma-1b`); skipped for Chrome Nano matrix runs.
+- **Wrong intent/artifact:** inspect `formatHarnessTrace(harnessOutput)` from `@executioncontrolprotocol/evals`.
 
 ## Fixture-driven matrix
 
-Add rows to [`packages/evals/fixtures/cases/*.cases.json`](../packages/evals/fixtures/cases/) (JSON arrays). Matrix tests call `loadEvalCases({ suite })` and `runEvalCase()`—no per-case Vitest files.
+Add rows to `packages/harnesses/<harness>/fixtures/eval-cases/*.cases.json` (JSON arrays). Matrix tests call `loadEvalCasesFromDir` (via harness-local loaders) and `runEvalCase()` — no per-case Vitest files.
 
 - **Deterministic** assertions: `invokeSuccess`, `artifactSchema`, `intent`, `stepUses`, `validationValid`, etc.
-- **Judge** assertions: `judge.enabled` uses `@executioncontextprotocol/ollama.evaluate` with `goal` / `rubric`.
+- **Judge** assertions: `judge.enabled` uses `@executioncontrolprotocol/ollama.evaluate` with `goal` / `rubric`.
 
 See [packages/evals/README.md](../packages/evals/README.md#fixture-driven-matrix-json).
 
 ## Creating new eval cases (smoke / manual)
 
 1. **Pick an eval set** — matrix JSON row vs legacy smoke test file.
-2. **Add a fixture** under `packages/evals/fixtures/workflows/` or `fixtures/runs/` when needed.
+2. **Add a fixture** under `packages/harnesses/<harness>/fixtures/workflows/` or `fixtures/runs/` when needed.
 3. For matrix cases, edit the appropriate `*.cases.json` file; for smoke, add `packages/evals/test/harness/<name>.eval.test.ts`.
 4. **Use the matching environment factory** — `createHarnessOllamaMatrixEnvironment()` for matrix rows.
 5. **Assert narrowly** — schema, validation, decode trace, and concrete artifact fields.
-6. **Keep fast tests in core** — `packages/core/test/harness/` with `@executioncontextprotocol/demo.generate` runs in every `npm run check`.
+6. **Keep fast tests in core** — `packages/core/test/harness/` with `@executioncontrolprotocol/test.generate` runs in every `npm run check`.
 
 Example skeleton:
 
 ```ts
-import { harnessCapabilityId } from "@executioncontextprotocol/types"
+import { harnessCapabilityId } from "@executioncontrolprotocol/types"
 import {
   OLLAMA_GEMMA_1B_EVAL,
   createHarnessOllamaWorkflowEnvironment,
   ollamaEvalReady,
-} from "@executioncontextprotocol/evals"
+} from "@executioncontrolprotocol/evals"
 import { assertHarnessInvokeSuccess, harnessResult } from "./assert-harness-result.js"
 
 const readiness = await ollamaEvalReady()
@@ -170,7 +169,7 @@ describe.skipIf(!readiness.ready)("my eval", () => {
 
 ```ts
 const result = await ecp
-  .invoke("@executioncontextprotocol/evals-workflow-authoring.evaluate")
+  .invoke("@executioncontrolprotocol/evals-workflow-authoring.evaluate")
   .with({
     request: "Create an echo workflow",
     model: "gemma3:1b",
@@ -178,15 +177,15 @@ const result = await ecp
   .process()
 ```
 
-Environment bindings already set `defaultModel` on `@executioncontextprotocol/ollama`; invoke `model` reinforces the pinned tag per call.
+Environment bindings already set `defaultModel` on `@executioncontrolprotocol/ollama`; invoke `model` reinforces the pinned tag per call.
 
 ## Core formatters
 
 | Formatter | Id |
 | --------- | -- |
-| JSON | `@executioncontextprotocol/format-json` (core) |
-| Fluent | `@executioncontextprotocol/format-fluent` (core) |
-| TOON | `@executioncontextprotocol/format-toon` (extension) |
+| JSON | `@executioncontrolprotocol/format-json` (core) |
+| Fluent | `@executioncontrolprotocol/format-fluent` (core) |
+| TOON | `@executioncontrolprotocol/format-toon` (extension) |
 
 Encode/decode always require `.uses(formatterId)` — no `.as("fluent")` shorthand.
 

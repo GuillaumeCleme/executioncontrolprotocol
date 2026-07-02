@@ -1,4 +1,4 @@
-import type { RunResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { RunResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 
 /** Runtime execution options passed to the executor. @category Runtime */
 export interface RuntimeExecutionContext {

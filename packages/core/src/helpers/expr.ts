@@ -1,4 +1,4 @@
-import type { ExprValue } from "@executioncontextprotocol/types"
+import type { ExprValue } from "@executioncontrolprotocol/types"
 
 /**
  * Workflow condition expressions.

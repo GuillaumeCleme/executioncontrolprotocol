@@ -1,4 +1,4 @@
 {
-  "schema": "@ecp.intent",
+  "schema": "@executioncontrolprotocol.intent",
   "intent": "workflow-create"
 }

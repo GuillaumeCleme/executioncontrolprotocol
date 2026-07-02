@@ -27,14 +27,14 @@ describe("harness catalog", () => {
   it("builds evaluate capability ids", () => {
     registerTestMinimalHarness()
     expect(harnessEvaluateCapabilityId(TEST_MINIMAL_HARNESS_ID)).toBe(
-      "@executioncontextprotocol/test-minimal-harness.evaluate"
+      "@executioncontrolprotocol/test-minimal-harness.evaluate"
     )
-    expect(harnessIdFromCapabilityId("@executioncontextprotocol/test-minimal-harness.evaluate")).toBe(
+    expect(harnessIdFromCapabilityId("@executioncontrolprotocol/test-minimal-harness.evaluate")).toBe(
       TEST_MINIMAL_HARNESS_ID
     )
-    expect(isHarnessCapabilityId("@executioncontextprotocol/test-minimal-harness.evaluate")).toBe(true)
-    expect(isHarnessCapabilityId("@executioncontextprotocol/demo.generate")).toBe(false)
-    expect(isHarnessCapabilityId("@executioncontextprotocol/ollama.evaluate")).toBe(false)
+    expect(isHarnessCapabilityId("@executioncontrolprotocol/test-minimal-harness.evaluate")).toBe(true)
+    expect(isHarnessCapabilityId("@executioncontrolprotocol/test.generate")).toBe(false)
+    expect(isHarnessCapabilityId("@executioncontrolprotocol/ollama.evaluate")).toBe(false)
   })
 
   it("lists cataloged harness ids after registration", () => {

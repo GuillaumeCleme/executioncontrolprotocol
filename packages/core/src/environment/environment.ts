@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import type {
   DescribeQuery,
   EnvironmentDescriptor,
@@ -9,8 +9,8 @@ import type {
   SearchResult,
   ValidationResult,
   WorkflowManifest,
-} from "@executioncontextprotocol/types"
-import type { NamespacedId } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
+import type { NamespacedId } from "@executioncontrolprotocol/types"
 import { extension, type ExtensionBindingBuilder } from "../bindings/extension.js"
 import type { HarnessBindingBuilder } from "../bindings/harness.js"
 import { policy, type PolicyBindingBuilder } from "../bindings/policy.js"
@@ -46,7 +46,7 @@ function resolveId(ref: NamespacedId | { id: NamespacedId } | string): Namespace
 
 function emptyWorkflowStub(): WorkflowManifest {
   return {
-    schema: "@ecp.workflow",
+    schema: "@executioncontrolprotocol.workflow",
     version: LATEST_ECP_VERSION,
     workflow: { id: "environment-stub" },
     steps: [],
@@ -131,7 +131,7 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
   }
 
   private collectPolicyHooks(
-    event: import("@executioncontextprotocol/types").PolicyLifecycleEvent
+    event: import("@executioncontrolprotocol/types").PolicyLifecycleEvent
   ): Array<{ hook: HookDefinition; config: Record<string, unknown> }> {
     return this.policyBindings.flatMap((b) => {
       const id = resolveId(b.getRef())
@@ -172,7 +172,7 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
   }
 
   private async emitEnvironmentEvent(
-    event: import("@executioncontextprotocol/types").EnvironmentLifecycleEvent
+    event: import("@executioncontrolprotocol/types").EnvironmentLifecycleEvent
   ): Promise<void> {
     const base = {
       event,
@@ -312,7 +312,7 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
     }
     const rtId = resolveId(this.runtimeBinding.getRef())
     return {
-      schema: "@ecp.environment",
+      schema: "@executioncontrolprotocol.environment",
       version: LATEST_ECP_VERSION,
       environment: {
         id: this.envId,
@@ -395,7 +395,7 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
     await this.prepareForDiscovery()
     if (this.harnessBindings.length === 0) {
       return {
-        schema: "@ecp.validation.result",
+        schema: "@executioncontrolprotocol.validation.result",
         version: LATEST_ECP_VERSION,
         valid: true,
         errors: [],
@@ -413,7 +413,7 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
   }
 
   /** @internal {@link EcpImpl} — invoke. */
-  ecpInvoke(capabilityId: import("@executioncontextprotocol/types").CapabilityId) {
+  ecpInvoke(capabilityId: import("@executioncontrolprotocol/types").CapabilityId) {
     return createInvokeBuilder(this, capabilityId)
   }
 
@@ -432,7 +432,7 @@ export class Environment implements EnvironmentLifecycleHost, EncodingEnvironmen
     }
     if (options?.dryRun) {
       return {
-        schema: "@ecp.run.result",
+        schema: "@executioncontrolprotocol.run.result",
         version: LATEST_ECP_VERSION,
         run: { id: "dry-run", status: "completed" },
         state: options.input ?? {},

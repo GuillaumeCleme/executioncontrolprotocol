@@ -1,4 +1,4 @@
-import type { StateValue, StoreStateHandle } from "@executioncontextprotocol/types"
+import type { StateValue, StoreStateHandle } from "@executioncontrolprotocol/types"
 
 /** Options for optional state handles. */
 export interface StateOptions {

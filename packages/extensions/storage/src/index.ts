@@ -1,15 +1,15 @@
-import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontextprotocol/core"
+import { defineExtension, capabilityFor, globalRegistry, catalogExtension } from "@executioncontrolprotocol/core"
 import { z } from "zod"
 
 const blobs = new Map<string, unknown>()
 
-/** In-memory @executioncontextprotocol/storage stub. @category Extensions */
-export const storageExtension = defineExtension("@executioncontextprotocol", "storage")
+/** In-memory @executioncontrolprotocol/storage stub. @category Extensions */
+export const storageExtension = defineExtension("@executioncontrolprotocol", "storage")
   .withConfig({
     prefix: z.string().optional(),
   })
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/storage", "write")
+    capabilityFor("@executioncontrolprotocol/storage", "write")
       .withInput(z.object({ key: z.string(), value: z.unknown() }))
       .withOutput(z.object({ ok: z.boolean() }))
       .withHandler(async (input, ctx) => {
@@ -19,7 +19,7 @@ export const storageExtension = defineExtension("@executioncontextprotocol", "st
         blobs.set(key, (input as { value: unknown }).value)
         return { ok: true }
       }),
-    capabilityFor("@executioncontextprotocol/storage", "read")
+    capabilityFor("@executioncontrolprotocol/storage", "read")
       .withInput(z.object({ key: z.string() }))
       .withOutput(z.object({ value: z.unknown().optional() }))
       .withHandler(async (input, ctx) => {
@@ -33,9 +33,9 @@ export const storageExtension = defineExtension("@executioncontextprotocol", "st
 
 catalogExtension(storageExtension)
 
-/** Register @executioncontextprotocol/storage. */
+/** Register @executioncontrolprotocol/storage. */
 export async function registerStorageExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@executioncontextprotocol/storage")) {
+  if (!globalRegistry.getExtension("@executioncontrolprotocol/storage")) {
     await globalRegistry.registerExtension(storageExtension)
   }
 }

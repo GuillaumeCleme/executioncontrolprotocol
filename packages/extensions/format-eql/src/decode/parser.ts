@@ -1,4 +1,4 @@
-import type { InputValue, ValidationIssue } from "@executioncontextprotocol/types"
+import type { InputValue, ValidationIssue } from "@executioncontrolprotocol/types"
 import type {
   EqlDocument,
   EqlHeader,
@@ -174,27 +174,22 @@ export function parseEql(text: string): ParseResult {
     return { issues, header }
   }
 
-  if (header?.schema === "@ecp.environment") {
+  if (header?.schema === "@executioncontrolprotocol.environment") {
     const doc = parseEnvironmentDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 
-  if (header?.schema === "@ecp.environment.describe") {
+  if (header?.schema === "@executioncontrolprotocol.environment.describe") {
     const doc = parseDescribeDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 
-  if (header?.schema === "@ecp.intent") {
-    const row = lines[index]
-    if (!row) {
-      issues.push(eqlSyntaxIssue(1, "Expected INTENT statement"))
-      return { issues, header }
-    }
-    const doc = parseIntentDocument(row, header, issues)
+  if (header?.schema === "@executioncontrolprotocol.intent") {
+    const doc = parseIntentDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 
-  if (header?.schema === "@ecp.harness.reply") {
+  if (header?.schema === "@executioncontrolprotocol.harness.reply") {
     const doc = parseReplyDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
@@ -203,7 +198,7 @@ export function parseEql(text: string): ParseResult {
   const ft = upper(first.tokens)
 
   if (ft[0] === "INTENT") {
-    const doc = parseIntentDocument(first, header, issues)
+    const doc = parseIntentDocument(lines, index, header, issues)
     return doc ? { document: doc, header, issues } : { issues, header }
   }
 

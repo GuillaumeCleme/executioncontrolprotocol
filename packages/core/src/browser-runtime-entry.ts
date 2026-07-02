@@ -1,16 +1,20 @@
 /**
- * Browser-safe subset of @executioncontextprotocol/core (no Node compile/loaders).
+ * Browser-safe subset of @executioncontrolprotocol/core (no Node compile/loaders).
  * @packageDocumentation
  */
 
-export { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
-export * from "@executioncontextprotocol/types"
+export { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
+export * from "@executioncontrolprotocol/types"
 
 export * from "./browser.js"
 export { environment, Environment, type RunOptions } from "./environment/environment.js"
 export { EcpImpl, type Ecp } from "./environment/ecp.js"
 export type { EnvironmentConfigResolver } from "./environment/config-resolver.js"
-export { resolveEnvConfigAsync, cloneConfigForManifest } from "./environment/config-resolver.js"
+export {
+  resolveEnvConfigAsync,
+  cloneConfigForManifest,
+  BROWSER_SECRETS_RESOLVER_ID,
+} from "./environment/config-resolver.js"
 export { extension } from "./bindings/extension.js"
 export { harness } from "./bindings/harness.js"
 export { runtime } from "./bindings/runtime.js"
@@ -122,11 +126,8 @@ export {
 } from "./harness/run-model-repair-loop.js"
 export {
   harnessPromptFixtureSchema,
-  HARNESS_PROMPT_FIXTURE_IDS,
   type HarnessPromptFixture,
-  type HarnessPromptFixtureId,
 } from "./harness/prompts/harness-prompt-fixture-schema.js"
-export { loadHarnessPromptFixture } from "./harness/prompts/load-harness-prompt.browser.js"
 export {
   loadSchemaExample,
   loadSchemaExampleEql,
@@ -134,10 +135,6 @@ export {
   formatSchemaExampleEql,
   loadRepairNeutralExampleEql,
 } from "./harness/prompts/load-schema-example.browser.js"
-export {
-  buildSystemPrompt,
-  buildWorkflowCreateSystemPrompt,
-  buildWorkflowPatchSystemPrompt,
-} from "./harness/prompts/build-system-prompt.js"
-export { buildRepairHint } from "./harness/prompts/build-repair-hint.js"
+export { buildSystemPromptFromFixture } from "./harness/prompts/build-system-prompt.js"
+export { buildRepairHintFromFixture } from "./harness/prompts/build-repair-hint.js"
 export * from "./harness/authoring/index.js"

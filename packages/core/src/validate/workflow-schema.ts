@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 
 /** Capability id pattern: `@namespace/name.capability`. @category Validation */
@@ -39,6 +39,24 @@ export const envValueSchema = z
   })
   .strict()
 
+/** OS secrets reference (not portable in workflows). @category Validation */
+export const secretValueSchema = z
+  .object({
+    $secret: z.string().min(1),
+    optional: z.boolean().optional(),
+    fallback: z.unknown().optional(),
+  })
+  .strict()
+
+/** Browser encrypted secrets reference (not portable in workflows). @category Validation */
+export const browserValueSchema = z
+  .object({
+    $browser: z.string().min(1),
+    optional: z.boolean().optional(),
+    fallback: z.unknown().optional(),
+  })
+  .strict()
+
 /** Recursive step input value. @category Validation */
 export const inputValueSchema: z.ZodType<unknown> = z.lazy(() =>
   z.union([
@@ -51,6 +69,8 @@ export const inputValueSchema: z.ZodType<unknown> = z.lazy(() =>
     refValueSchema,
     stateValueSchema,
     envValueSchema,
+    secretValueSchema,
+    browserValueSchema,
   ])
 )
 
@@ -121,10 +141,10 @@ export const workflowNodeSchema: z.ZodType<unknown> = z.lazy(() =>
   z.union([parallelNodeSchema, branchNodeSchema, loopNodeSchema, stepNodeSchema])
 )
 
-/** Zod schema for `@ecp.workflow` manifests. @category Validation */
+/** Zod schema for `@executioncontrolprotocol.workflow` manifests. @category Validation */
 export const workflowManifestSchema = z
   .object({
-    schema: z.literal("@ecp.workflow"),
+    schema: z.literal("@executioncontrolprotocol.workflow"),
     version: z.string().min(1),
     workflow: z
       .object({
@@ -151,9 +171,9 @@ export function parseWorkflowManifest(manifest: unknown): ParsedWorkflowManifest
 }
 
 /** Empty validation result template. */
-export function emptyValidationResult(valid: boolean): import("@executioncontextprotocol/types").ValidationResult {
+export function emptyValidationResult(valid: boolean): import("@executioncontrolprotocol/types").ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],

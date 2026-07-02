@@ -30,7 +30,7 @@ export interface UsageSummary {
 /** Direct capability invocation result. @category Invoke */
 export interface InvokeResult<T = unknown> {
   /** Result schema discriminator. */
-  schema: "@ecp.invoke.result"
+  schema: "@executioncontrolprotocol.invoke.result"
   /** ECP version. */
   version: EcpVersion
   /** Whether invocation succeeded. */

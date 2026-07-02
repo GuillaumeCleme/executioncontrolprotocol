@@ -5,7 +5,7 @@ import {
   type HarnessId,
   type ValidationIssue,
   type ValidationResult,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { Registry } from "../registry/registry.js"
 import type { ResolvedBindings } from "../environment/bindings.js"
 import { getCatalogedHarness } from "../harness/harness-catalog.js"
@@ -134,7 +134,7 @@ export function validateHarnessBindings(
     }
   }
 
-  result.schema = "@ecp.validation.result"
+  result.schema = "@executioncontrolprotocol.validation.result"
   return result
 }
 

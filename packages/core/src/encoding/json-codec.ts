@@ -1,4 +1,4 @@
-import { ECP_FORMATS, LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { ECP_FORMATS, LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import type {
   DecodeResult,
   EcpFormatOptions,
@@ -7,7 +7,7 @@ import type {
   EcpVersion,
   EncodeResult,
   ValidationResult,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { emptyValidationResult } from "../validate/workflow-schema.js"
 
 /**
@@ -44,7 +44,7 @@ export function encodeJson(
       : input
 
   return {
-    schema: "@ecp.encode.result",
+    schema: "@executioncontrolprotocol.encode.result",
     version: LATEST_ECP_VERSION,
     success: true,
     format: ECP_FORMATS.JSON,
@@ -65,7 +65,7 @@ export function encodeFailure<T = unknown>(
   partial: Partial<EncodeResult<T>> & { diagnostics: EncodeResult["diagnostics"] }
 ): EncodeResult<T> {
   return {
-    schema: "@ecp.encode.result",
+    schema: "@executioncontrolprotocol.encode.result",
     version: LATEST_ECP_VERSION,
     success: false,
     format: partial.format ?? ECP_FORMATS.JSON,
@@ -93,7 +93,7 @@ export function decodeJson<T = unknown>(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     return {
-      schema: "@ecp.decode.result",
+      schema: "@executioncontrolprotocol.decode.result",
       version: LATEST_ECP_VERSION,
       success: false,
       targetSchema: options.targetSchema,
@@ -111,7 +111,7 @@ export function decodeJson<T = unknown>(
   const success = validation.valid
 
   return {
-    schema: "@ecp.decode.result",
+    schema: "@executioncontrolprotocol.decode.result",
     version: LATEST_ECP_VERSION,
     success,
     targetSchema: options.targetSchema ?? getEcpSchema(document),
@@ -130,7 +130,7 @@ export function decodeFailure(
   partial: Partial<DecodeResult> & { diagnostics: DecodeResult["diagnostics"] }
 ): DecodeResult {
   return {
-    schema: "@ecp.decode.result",
+    schema: "@executioncontrolprotocol.decode.result",
     version: LATEST_ECP_VERSION,
     success: false,
     ...partial,

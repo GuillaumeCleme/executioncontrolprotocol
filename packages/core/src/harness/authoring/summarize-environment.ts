@@ -1,4 +1,10 @@
-import type { EnvironmentDescriptor } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor } from "@executioncontrolprotocol/types"
+import { isHarnessCapabilityId } from "../harness-catalog.js"
+import {
+  allCapabilityInputNames,
+  formatCapabilityInputLabels,
+  introspectCapabilitySchema,
+} from "./summarize-capability-schema.js"
 
 /** Compact capability row for model prompts. @category Harness */
 export interface CompactCapabilityRow {
@@ -6,7 +12,11 @@ export interface CompactCapabilityRow {
   id: string
   /** Owning extension id. */
   extension: string
-  /** Input field names from schema. */
+  /** Required input field names. */
+  requiredInputs: string[]
+  /** Optional input field names. */
+  optionalInputs: string[]
+  /** All input field names (required first). */
   inputs: string[]
   /** Output field names from schema. */
   outputs: string[]
@@ -20,11 +30,19 @@ export interface CompactEnvironmentSummary {
   capabilities: CompactCapabilityRow[]
 }
 
-function summarizeSchemaFields(schema: unknown): string[] {
-  if (schema === null || typeof schema !== "object") return []
-  const props = (schema as { properties?: Record<string, unknown> }).properties
-  if (!props || typeof props !== "object") return []
-  return Object.keys(props)
+function toCapabilityRow(
+  cap: { id: string; extension: string; inputSchema?: unknown; outputSchema?: unknown }
+): CompactCapabilityRow {
+  const inputFields = introspectCapabilitySchema(cap.inputSchema)
+  const outputFields = introspectCapabilitySchema(cap.outputSchema)
+  return {
+    id: cap.id,
+    extension: cap.extension,
+    requiredInputs: inputFields.required,
+    optionalInputs: inputFields.optional,
+    inputs: allCapabilityInputNames(inputFields),
+    outputs: allCapabilityInputNames(outputFields),
+  }
 }
 
 /**
@@ -41,12 +59,7 @@ export function summarizeEnvironmentDescriptor(
       capabilities: [...(ext.capabilities ?? [])],
     }))
 
-  const capabilities = (descriptor.capabilities ?? []).map((cap) => ({
-    id: cap.id,
-    extension: cap.extension,
-    inputs: summarizeSchemaFields(cap.inputSchema),
-    outputs: summarizeSchemaFields(cap.outputSchema),
-  }))
+  const capabilities = (descriptor.capabilities ?? []).map((cap) => toCapabilityRow(cap))
 
   return { extensions, capabilities }
 }
@@ -54,8 +67,27 @@ export function summarizeEnvironmentDescriptor(
 /** How to render capability rows in user prompts. @category Harness */
 export type EnvironmentSummaryFormat = "plain" | "eql-create" | "eql-patch"
 
+const TEST_NON_STEP_CAPABILITY_IDS = new Set(["@executioncontrolprotocol/test.generate"])
+
+const NON_STEP_CAPABILITY_SUFFIXES = new Set([
+  "checkAvailability",
+  "startModelDownload",
+  "getModelInstallState",
+  "evaluate",
+  "guideChat",
+])
+
+function capabilitySuffix(capId: string): string {
+  const parts = capId.split(".")
+  return parts[parts.length - 1] ?? ""
+}
+
 function isWorkflowStepCapability(capId: string): boolean {
-  return capId.startsWith("@executioncontextprotocol/test.") || capId.startsWith("@executioncontextprotocol/demo.")
+  if (isHarnessCapabilityId(capId)) return false
+  if (TEST_NON_STEP_CAPABILITY_IDS.has(capId)) return false
+  const suffix = capabilitySuffix(capId)
+  if (NON_STEP_CAPABILITY_SUFFIXES.has(suffix)) return false
+  return true
 }
 
 function workflowStepCapabilities(summary: CompactEnvironmentSummary): CompactCapabilityRow[] {
@@ -63,29 +95,53 @@ function workflowStepCapabilities(summary: CompactEnvironmentSummary): CompactCa
 }
 
 function capabilityStepId(capId: string): string {
-  const parts = capId.split(".")
-  return parts[parts.length - 1] ?? "step"
+  return capabilitySuffix(capId) || "step"
 }
 
-function sampleWithLines(inputs: string[]): string[] {
-  if (inputs.length === 0) return []
-  const field = inputs[0]!
-  if (field === "value") return [`  WITH value = "hello"`]
-  if (field === "text") return [`  WITH text = REF echo.output`]
-  if (field === "payload") return [`  WITH payload = {"ok": true}`]
-  return [`  WITH ${field} = "..."`]
+function sampleValueForField(field: string): string {
+  if (field === "prompt") return `"..."`
+  if (field === "endpoint") return `"fal-ai/flux/schnell"`
+  if (field === "input") return `{"prompt": "..."}`
+  if (field === "image") return `{"uri": "https://example.com/image.png"}`
+  if (field === "value") return `"hello"`
+  if (field === "text") return `REF echo.output`
+  if (field === "payload") return `{"ok": true}`
+  if (field === "system") return `"..."`
+  if (field === "context") return `REF priorStep.output`
+  if (field === "model") return `"..."`
+  return `"..."`
+}
+
+function sampleWithLines(cap: CompactCapabilityRow): string[] {
+  const fields =
+    cap.requiredInputs.length > 0 || cap.optionalInputs.length > 0
+      ? [...cap.requiredInputs, ...cap.optionalInputs.slice(0, 2)]
+      : cap.inputs
+  if (fields.length === 0) return []
+  return fields.map((field) => `  WITH ${field} = ${sampleValueForField(field)}`)
+}
+
+function formatInputSummary(cap: CompactCapabilityRow): string {
+  if (cap.requiredInputs.length === 0 && cap.optionalInputs.length === 0) {
+    return cap.inputs.length > 0
+      ? `inputs: ${cap.inputs.join(", ")}`
+      : "inputs: none"
+  }
+  return `inputs: ${formatCapabilityInputLabels({
+    required: cap.requiredInputs,
+    optional: cap.optionalInputs,
+  })}`
 }
 
 function capabilityEqlCreateSnippet(cap: CompactCapabilityRow): string[] {
   const stepId = capabilityStepId(cap.id)
+  const outputPart = cap.outputs.length > 0 ? `; outputs: ${cap.outputs.join(", ")}` : ""
   return [
     `# ${cap.id}`,
-    ...(cap.inputs.length > 0 || cap.outputs.length > 0
-      ? [`#   inputs: ${cap.inputs.join(", ") || "none"}; outputs: ${cap.outputs.join(", ") || "none"}`]
-      : []),
+    `#   ${formatInputSummary(cap)}${outputPart}`,
     `STEP ${stepId} USES ${cap.id}`,
     `  LABEL "${stepId.charAt(0).toUpperCase()}${stepId.slice(1)}"`,
-    ...sampleWithLines(cap.inputs),
+    ...sampleWithLines(cap),
     `  AS ${stepId}`,
   ]
 }
@@ -99,11 +155,10 @@ function capabilityEqlPatchSnippet(
       `# ${cap.id} (already used by an existing step — UPDATE STEP or DELETE STEP, not ADD STEP)`,
     ]
   }
+  const outputPart = cap.outputs.length > 0 ? `; outputs: ${cap.outputs.join(", ")}` : ""
   return [
     `# ${cap.id}`,
-    ...(cap.inputs.length > 0 || cap.outputs.length > 0
-      ? [`#   inputs: ${cap.inputs.join(", ") || "none"}; outputs: ${cap.outputs.join(", ") || "none"}`]
-      : []),
+    `#   ${formatInputSummary(cap)}${outputPart}`,
     `#   ADD STEP <newStepId> USES ${cap.id} AFTER|BEFORE <anchorStepId from current workflow>`,
   ]
 }
@@ -145,7 +200,7 @@ export function formatEnvironmentSummaryLines(
   for (const cap of summary.capabilities) {
     const io =
       cap.inputs.length > 0 || cap.outputs.length > 0
-        ? ` (inputs: ${cap.inputs.join(", ") || "none"}; outputs: ${cap.outputs.join(", ") || "none"})`
+        ? ` (${formatInputSummary(cap)}; outputs: ${cap.outputs.join(", ") || "none"})`
         : ""
     lines.push(`- ${cap.id}${io}`)
   }
@@ -155,3 +210,5 @@ export function formatEnvironmentSummaryLines(
   }
   return lines
 }
+
+export type { CapabilitySchemaFields } from "./summarize-capability-schema.js"

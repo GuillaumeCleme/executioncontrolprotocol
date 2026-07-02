@@ -16,7 +16,7 @@ export default tseslint.config(
     },
   },
   // Package boundary: extensions and harnesses are environment-agnostic and must
-  // depend only on @executioncontextprotocol/types + @executioncontextprotocol/core. They may not import host packages.
+  // depend only on @executioncontrolprotocol/types + @executioncontrolprotocol/core. They may not import host packages.
   // Scoped to `src` so integration tests may still use a host runtime.
   {
     files: [
@@ -30,17 +30,17 @@ export default tseslint.config(
           patterns: [
             {
               group: [
-                "@executioncontextprotocol/node",
-                "@executioncontextprotocol/node/*",
-                "@executioncontextprotocol/browser",
-                "@executioncontextprotocol/browser/*",
-                "@executioncontextprotocol/cli",
-                "@executioncontextprotocol/cli/*",
-                "@executioncontextprotocol/mcp",
-                "@executioncontextprotocol/mcp/*",
+                "@executioncontrolprotocol/node",
+                "@executioncontrolprotocol/node/*",
+                "@executioncontrolprotocol/browser",
+                "@executioncontrolprotocol/browser/*",
+                "@executioncontrolprotocol/cli",
+                "@executioncontrolprotocol/cli/*",
+                "@executioncontrolprotocol/mcp",
+                "@executioncontrolprotocol/mcp/*",
               ],
               message:
-                "Extensions and harnesses must not import host packages (@executioncontextprotocol/node, @executioncontextprotocol/browser, @executioncontextprotocol/cli, @executioncontextprotocol/mcp). Depend on @executioncontextprotocol/types and @executioncontextprotocol/core only.",
+                "Extensions and harnesses must not import host packages (@executioncontrolprotocol/node, @executioncontrolprotocol/browser, @executioncontrolprotocol/cli, @executioncontrolprotocol/mcp). Depend on @executioncontrolprotocol/types and @executioncontrolprotocol/core only.",
             },
           ],
         },

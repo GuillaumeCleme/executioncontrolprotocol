@@ -23,7 +23,7 @@ describe("isEnvironmentQuestion", () => {
 describe("buildAssistantSafeReply", () => {
   it("returns a valid harness reply document", () => {
     const reply = buildAssistantSafeReply()
-    expect(reply.schema).toBe("@ecp.harness.reply")
+    expect(reply.schema).toBe("@executioncontrolprotocol.harness.reply")
     expect(reply.answer.length).toBeGreaterThan(10)
   })
 

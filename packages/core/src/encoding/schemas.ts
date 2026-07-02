@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 
 const validationIssueSchema = z.object({
   severity: z.enum(["error", "warning", "info"]),
@@ -10,7 +10,7 @@ const validationIssueSchema = z.object({
 
 const validationResultSchema = z
   .object({
-    schema: z.literal("@ecp.validation.result"),
+    schema: z.literal("@executioncontrolprotocol.validation.result"),
     version: z.string(),
     valid: z.boolean(),
     errors: z.array(validationIssueSchema),
@@ -52,7 +52,7 @@ export const ecpDecodeInputSchema = z.object({
 
 /** Zod schema for encode result output. @category Encoding */
 export const ecpEncodeResultSchema = z.object({
-  schema: z.literal("@ecp.encode.result"),
+  schema: z.literal("@executioncontrolprotocol.encode.result"),
   version: z.string(),
   success: z.boolean(),
   format: z.string(),
@@ -66,7 +66,7 @@ export const ecpEncodeResultSchema = z.object({
 
 /** Zod schema for decode result output. @category Encoding */
 export const ecpDecodeResultSchema = z.object({
-  schema: z.literal("@ecp.decode.result"),
+  schema: z.literal("@executioncontrolprotocol.decode.result"),
   version: z.string(),
   success: z.boolean(),
   targetSchema: z.string().optional(),

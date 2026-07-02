@@ -1,22 +1,32 @@
 {
-  "name": "@executioncontextprotocol/extension-slack",
-  "version": "1.0.0",
+  "name": "@executioncontrolprotocol/extension-slack",
+  "version": "0.0.10",
   "description": "Slack notification extension for ECP",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "README.md"],
-  "scripts": { "build": "tsc -b" },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
   "peerDependencies": {
-    "@executioncontextprotocol/core": "^1.0.0",
-    "@executioncontextprotocol/types": "^1.0.0",
+    "@executioncontrolprotocol/core": "^0.0.10",
+    "@executioncontrolprotocol/types": "^0.0.10",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@executioncontextprotocol/core": "1.0.0",
-    "@executioncontextprotocol/types": "1.0.0",
+    "@executioncontrolprotocol/core": "0.0.10",
+    "@executioncontrolprotocol/types": "0.0.10",
     "typescript": "^5.7.0",
     "zod": "^3.24.0"
   }

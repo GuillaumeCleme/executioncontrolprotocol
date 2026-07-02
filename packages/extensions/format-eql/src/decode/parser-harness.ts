@@ -1,4 +1,4 @@
-import type { ValidationIssue } from "@executioncontextprotocol/types"
+import type { ValidationIssue } from "@executioncontrolprotocol/types"
 import type { EqlHeader, EqlIntentDoc, EqlReplyCitation, EqlReplyDoc, ParsedLine } from "./ast.js"
 import { eqlSyntaxIssue } from "./diagnostics.js"
 import { parseLiteral } from "./values.js"
@@ -7,20 +7,86 @@ function upper(tokens: string[]): string[] {
   return tokens.map((t) => t.toUpperCase())
 }
 
+function parseSummaryFromTokens(tokens: string[], startIndex: number, line: number): {
+  summary?: string
+  nextIndex: number
+} {
+  const t = upper(tokens)
+  const summaryIndex = t.indexOf("SUMMARY")
+  if (summaryIndex < 0) {
+    return { nextIndex: startIndex }
+  }
+  const rest = tokens.slice(summaryIndex + 1).join(" ").trim()
+  if (!rest) {
+    return { nextIndex: tokens.length }
+  }
+  const lit = parseLiteral(rest, line)
+  if (lit.value !== undefined) {
+    return { summary: String(lit.value), nextIndex: tokens.length }
+  }
+  const unquoted = rest.replace(/^["'\u201C\u201D]|["'\u201C\u201D]$/g, "")
+  return { summary: unquoted, nextIndex: tokens.length }
+}
+
+function parseTopicFromTokens(tokens: string[]): string | undefined {
+  const t = upper(tokens)
+  const topicIndex = t.indexOf("TOPIC")
+  if (topicIndex < 0 || !tokens[topicIndex + 1]) {
+    return undefined
+  }
+  const summaryIndex = t.indexOf("SUMMARY")
+  const end = summaryIndex >= 0 ? summaryIndex : tokens.length
+  return tokens.slice(topicIndex + 1, end).join(" ").trim() || undefined
+}
+
 export function parseIntentDocument(
-  row: ParsedLine,
+  lines: ParsedLine[],
+  startIndex: number,
   header: EqlHeader | undefined,
   issues: ValidationIssue[]
 ): EqlIntentDoc | undefined {
+  const row = lines[startIndex]
+  if (!row) {
+    issues.push(eqlSyntaxIssue(1, "Expected INTENT statement"))
+    return undefined
+  }
   const t = upper(row.tokens)
   if (t[0] !== "INTENT" || !row.tokens[1]) {
     issues.push(eqlSyntaxIssue(row.line, "INTENT requires a value"))
     return undefined
   }
+
+  let topic = parseTopicFromTokens(row.tokens)
+  let summary: string | undefined
+  const inlineSummary = parseSummaryFromTokens(row.tokens, 0, row.line)
+  summary = inlineSummary.summary
+
+  let i = startIndex + 1
+  while (i < lines.length) {
+    const child = lines[i]!
+    if (child.indent <= row.indent) {
+      break
+    }
+    const ct = upper(child.tokens)
+    if (ct[0] === "TOPIC" && child.tokens[1]) {
+      topic = child.tokens.slice(1).join(" ").trim()
+    } else if (ct[0] === "SUMMARY") {
+      const summaryText = child.text.replace(/^\s*SUMMARY\s+/i, "").trim()
+      const lit = parseLiteral(summaryText, child.line)
+      summary =
+        lit.value !== undefined
+          ? String(lit.value)
+          : summaryText.replace(/^["'\u201C\u201D]|["'\u201C\u201D]$/g, "")
+    }
+    i++
+  }
+
   return {
     kind: "intent",
     header,
     intent: row.tokens[1]!,
+    ...(topic ? { topic } : {}),
+    ...(summary ? { summary } : {}),
   }
 }
 

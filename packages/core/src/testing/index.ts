@@ -1,5 +1,5 @@
 /**
- * Side-effect entry: catalogs {@link testExtension} for `extension("@executioncontextprotocol/test")` bindings.
+ * Side-effect entry: catalogs {@link testExtension} for `extension("@executioncontrolprotocol/test")` bindings.
  * @category Testing
  */
 import "./test-extension.js"

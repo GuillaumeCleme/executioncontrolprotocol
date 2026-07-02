@@ -5,9 +5,9 @@ import { extension } from "../src/index.js"
 import { createTestEnvironment } from "./helpers.js"
 
 const SAMPLE_TS = `
-import { workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontrolprotocol/core"
 export default workflow("Compiled")
-  .run([step("@executioncontextprotocol/test.echo", "E").with({ value: 1 }).as("out")])
+  .run([step("@executioncontrolprotocol/test.echo", "E").with({ value: 1 }).as("out")])
 `
 
 describe("compileWorkflowSource", () => {
@@ -18,12 +18,12 @@ describe("compileWorkflowSource", () => {
       filename: "workflow.ts",
     })
     expect(result.ok).toBe(true)
-    expect(result.manifest?.schema).toBe("@ecp.workflow")
+    expect(result.manifest?.schema).toBe("@executioncontrolprotocol.workflow")
     expect(result.manifest?.steps[0]?.as).toBe("out")
   })
 
   it("validates against environment descriptor", async () => {
-    const env = (await createTestEnvironment("t")).withExtensions([extension("@executioncontextprotocol/test").with({})])
+    const env = (await createTestEnvironment("t")).withExtensions([extension("@executioncontrolprotocol/test").with({})])
     const ecp = await env.init()
     const descriptor = await ecp.describe()
     const result = await compileAndValidateWorkflowSource({

@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 /** Harness reply document schema id. @category Harness */
-export const ECP_HARNESS_REPLY_SCHEMA = "@ecp.harness.reply" as const
+export const ECP_HARNESS_REPLY_SCHEMA = "@executioncontrolprotocol.harness.reply" as const
 
 /** Citation kind in harness assistant replies. @category Harness */
 export const ECP_HARNESS_REPLY_CITATION_KINDS = {

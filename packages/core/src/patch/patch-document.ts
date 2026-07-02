@@ -10,7 +10,7 @@ export const ecpPatchEntrySchema = z.object({
 
 /** Zod schema for canonical patch documents. @category Patch */
 export const ecpPatchDocumentSchema = z.object({
-  schema: z.literal("@ecp.patch"),
+  schema: z.literal("@executioncontrolprotocol.patch"),
   version: z.string(),
   targetSchema: z.string(),
   patches: z.array(ecpPatchEntrySchema).min(1),

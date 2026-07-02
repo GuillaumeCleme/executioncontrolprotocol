@@ -1,34 +1,43 @@
 {
-  "name": "@executioncontextprotocol/extensions",
-  "version": "1.0.0",
+  "name": "@executioncontrolprotocol/extensions",
+  "version": "0.0.10",
   "description": "Aggregator that registers first-party ECP extensions",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "README.md"],
-  "scripts": { "build": "tsc -b" },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b"
+  },
   "dependencies": {
-    "@executioncontextprotocol/demo": "1.0.0",
-    "@executioncontextprotocol/extension-memory": "1.0.0",
-    "@executioncontextprotocol/extension-ollama": "1.0.0",
-    "@executioncontextprotocol/extension-openai": "1.0.0",
-    "@executioncontextprotocol/extension-slack": "1.0.0",
-    "@executioncontextprotocol/extension-storage": "1.0.0",
-    "@executioncontextprotocol/extension-telemetry": "1.0.0",
-    "@executioncontextprotocol/format-eql": "1.0.0",
-    "@executioncontextprotocol/format-mermaid": "1.0.0",
-    "@executioncontextprotocol/format-toon": "1.0.0"
+    "@executioncontrolprotocol/extension-memory": "0.0.10",
+    "@executioncontrolprotocol/extension-ollama": "0.0.10",
+    "@executioncontrolprotocol/extension-openai": "0.0.10",
+    "@executioncontrolprotocol/extension-slack": "0.0.10",
+    "@executioncontrolprotocol/extension-storage": "0.0.10",
+    "@executioncontrolprotocol/extension-telemetry": "0.0.10",
+    "@executioncontrolprotocol/format-eql": "0.0.10",
+    "@executioncontrolprotocol/format-mermaid": "0.0.10",
+    "@executioncontrolprotocol/format-toon": "0.0.10"
   },
   "peerDependencies": {
-    "@executioncontextprotocol/core": "^1.0.0",
-    "@executioncontextprotocol/types": "^1.0.0",
+    "@executioncontrolprotocol/core": "^0.0.10",
+    "@executioncontrolprotocol/types": "^0.0.10",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@executioncontextprotocol/core": "1.0.0",
-    "@executioncontextprotocol/types": "1.0.0",
+    "@executioncontrolprotocol/core": "0.0.10",
+    "@executioncontrolprotocol/types": "0.0.10",
     "typescript": "^5.7.0",
     "zod": "^3.24.0"
   }

@@ -2,15 +2,16 @@ import {
   catalogHarness,
   defineHarness,
   type HarnessCapabilityContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_MODEL_GENERATE_INTERFACE,
   harnessEvaluateOutputSchema,
   type HarnessEvaluateOutput,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { getHarnessNanoConfig, HARNESS_TASKS, type HarnessTask } from "./harness-nano-config.js"
 import { invokeIntentClassification } from "./intent-classification.js"
+import { invokeMultiShotChat } from "./multi-shot-chat.js"
 import { invokeWorkflowAssistant } from "./workflow-assistant.js"
 import { invokeWorkflowAuthoring } from "./workflow-authoring.js"
 
@@ -30,6 +31,14 @@ const harnessInputSchema = z.discriminatedUnion("task", [
     task: z.literal(HARNESS_TASKS.WORKFLOW_ASSISTANT),
     message: z.string(),
     runContext: z.unknown().optional(),
+    model: z.string().optional(),
+  }),
+  z.object({
+    task: z.literal(HARNESS_TASKS.CHAT),
+    message: z.string(),
+    manifest: z.unknown().optional(),
+    runContext: z.unknown().optional(),
+    conversationSummary: z.string().optional(),
     model: z.string().optional(),
   }),
 ])
@@ -56,14 +65,14 @@ function handlerContextForTask(
     config: {
       ...taskConfig,
       ...ctx.config,
-      repair: { ...taskConfig.repair, ...envConfig.repair },
-      trace: { ...taskConfig.trace, ...envConfig.trace },
-      context: { ...taskConfig.context, ...envConfig.context },
+      repair: { ...envConfig.repair, ...taskConfig.repair },
+      trace: { ...envConfig.trace, ...taskConfig.trace },
+      context: { ...envConfig.context, ...taskConfig.context },
     },
   }
 }
 
-const browserNanoHarnessDefinition = defineHarness("@executioncontextprotocol", "harness-browser-nano")
+const browserNanoHarnessDefinition = defineHarness("@executioncontrolprotocol", "harness-browser-nano")
   .withConfig(harnessBindingSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -86,6 +95,17 @@ const browserNanoHarnessDefinition = defineHarness("@executioncontextprotocol", 
           { message: input.message, runContext: input.runContext, model: input.model },
           taskCtx
         )
+      case HARNESS_TASKS.CHAT:
+        return invokeMultiShotChat(
+          {
+            message: input.message,
+            manifest: input.manifest,
+            runContext: input.runContext,
+            conversationSummary: input.conversationSummary,
+            model: input.model,
+          },
+          taskCtx
+        )
       default: {
         const _exhaustive: never = input
         throw new Error(`Unknown harness task: ${String(_exhaustive)}`)
@@ -94,7 +114,7 @@ const browserNanoHarnessDefinition = defineHarness("@executioncontextprotocol", 
   })
   .build()
 
-/** Register Browser Nano harness (`@executioncontextprotocol/harness-browser-nano`). @category Harness */
+/** Register Browser Nano harness (`@executioncontrolprotocol/harness-browser-nano`). @category Harness */
 export function registerBrowserNanoHarness(): void {
   catalogHarness(browserNanoHarnessDefinition)
 }

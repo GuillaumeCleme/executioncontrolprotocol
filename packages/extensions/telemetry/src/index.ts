@@ -1,7 +1,7 @@
-import { defineExtension, hook, globalRegistry, catalogExtension } from "@executioncontextprotocol/core"
+import { defineExtension, hook, globalRegistry, catalogExtension } from "@executioncontrolprotocol/core"
 
-/** @executioncontextprotocol/telemetry extension. @category Extensions */
-export const telemetryExtension = defineExtension("@executioncontextprotocol", "telemetry")
+/** @executioncontrolprotocol/telemetry extension. @category Extensions */
+export const telemetryExtension = defineExtension("@executioncontrolprotocol", "telemetry")
   .withConfig({})
   .withCapabilities([])
   .withHooks([
@@ -15,7 +15,7 @@ export const telemetryExtension = defineExtension("@executioncontextprotocol", "
 catalogExtension(telemetryExtension)
 
 export async function registerTelemetryExtension(): Promise<void> {
-  if (!globalRegistry.getExtension("@executioncontextprotocol/telemetry")) {
+  if (!globalRegistry.getExtension("@executioncontrolprotocol/telemetry")) {
     await globalRegistry.registerExtension(telemetryExtension)
   }
 }

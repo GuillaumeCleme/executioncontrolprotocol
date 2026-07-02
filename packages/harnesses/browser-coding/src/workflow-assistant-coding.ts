@@ -1,9 +1,7 @@
-import { compileHarnessArtifactSource } from "@executioncontextprotocol/core/compile"
+import { compileHarnessArtifactSource } from "@executioncontrolprotocol/core/compile"
 import {
   answerRedirectsToHarnessScope,
   buildAssistantSafeReply,
-  buildRepairHint,
-  buildWorkflowAssistantCodingSystemPrompt,
   callModelGenerate,
   collectModelOutputFeedback,
   collectValidationFeedback,
@@ -13,14 +11,13 @@ import {
   formatRunContextSummaryLines,
   formatWorkflowSummaryLines,
   HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   isRepairFeedbackEcho,
   runModelRepairLoop,
   stripHarnessTypeScriptOutput,
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_HARNESS_REPLY_SCHEMA,
   ECP_MODEL_GENERATE_INTERFACE,
@@ -35,9 +32,14 @@ import {
   type HarnessRunContext,
   type ValidationResult,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildCodingRepairHint,
+  buildCodingSystemPrompt,
+  CODING_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 const OFF_TOPIC_USER_MESSAGE = /\bjoke\b|weather|cover letter|recipe|pizza\b/i
 const JOKE_USER_MESSAGE = /\bjoke\b/i
@@ -75,15 +77,15 @@ function normalizeAssistantModelRaw(text: string): string {
 }
 
 const harnessConfigSchema = z.object({
-  promptFixture: z.string().default(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_ASSISTANT_CODING),
+  promptFixture: z.string().default(CODING_PROMPT_FIXTURE_IDS.WORKFLOW_ASSISTANT),
   system: z.string().optional(),
   context: z
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-json"),
       includeRunContext: z.boolean().default(true),
-      runContextFormat: z.string().default("@executioncontextprotocol/format-json"),
+      runContextFormat: z.string().default("@executioncontrolprotocol/format-json"),
     })
     .default({}),
   output: z
@@ -123,15 +125,15 @@ function formatReplyAsTypeScript(reply: HarnessReply): string {
   const citations =
     reply.citations?.length &&
     `,\n  citations: ${JSON.stringify(reply.citations, null, 2).replace(/\n/g, "\n  ")}`
-  return `import type { HarnessReply } from "@executioncontextprotocol/types"
+  return `import type { HarnessReply } from "@executioncontrolprotocol/types"
 
 export const reply: HarnessReply = {
-  schema: "@ecp.harness.reply",
+  schema: "@executioncontrolprotocol.harness.reply",
   answer: "${answer}"${citations ?? ""},
 }`
 }
 
-const codingAssistantHarness = defineHarness("@executioncontextprotocol", "browser-coding-workflow-assistant")
+const codingAssistantHarness = defineHarness("@executioncontrolprotocol", "browser-coding-workflow-assistant")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -139,7 +141,7 @@ const codingAssistantHarness = defineHarness("@executioncontextprotocol", "brows
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
-    const system = config.system ?? buildWorkflowAssistantCodingSystemPrompt()
+    const system = config.system ?? buildCodingSystemPrompt(config.promptFixture)
 
     let environmentSummaryLines = ""
     if (config.context.includeEnvironmentDescriptor) {
@@ -180,7 +182,7 @@ const codingAssistantHarness = defineHarness("@executioncontextprotocol", "brows
         lines.push(
           "Previous attempt failed. Return corrected TypeScript only:",
           repairText,
-          buildRepairHint(config.promptFixture)
+          buildCodingRepairHint(config.promptFixture)
         )
       }
       return lines.join("\n")
@@ -299,7 +301,7 @@ const codingAssistantHarness = defineHarness("@executioncontextprotocol", "brows
           if (!looksLikeHarnessTypeScriptSource(raw)) {
             feedback.push(
               collectModelOutputFeedback(
-                "Return only a TypeScript module starting with import type { HarnessReply } from \"@executioncontextprotocol/types\" — no prose outside code."
+                "Return only a TypeScript module starting with import type { HarnessReply } from \"@executioncontrolprotocol/types\" — no prose outside code."
               )
             )
             return { success: false, feedback }
@@ -373,7 +375,7 @@ const codingAssistantHarness = defineHarness("@executioncontextprotocol", "brows
 
 function decodedValidationStub(valid = true): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],

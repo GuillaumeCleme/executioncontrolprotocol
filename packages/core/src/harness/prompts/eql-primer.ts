@@ -6,15 +6,15 @@ export const EQL_ZERO_KNOWLEDGE_INTRO = [
   "",
   "Global rules:",
   "- Output EQL text only. No markdown fences, no JSON, no prose before or after.",
-  "- No ECP header line (no @ecp.patch / @ecp.workflow header in model output).",
+  "- No ECP header line (no @executioncontrolprotocol.patch / @executioncontrolprotocol.workflow header in model output).",
   "- One keyword per line; indent child fields with two spaces under STEP / UPDATE / ADD / REPLY.",
-  "- Capability ids are exact strings from the environment list (e.g. @executioncontextprotocol/test.echo). Never invent ids.",
+  "- Capability ids are exact strings from the environment list (e.g. @executioncontrolprotocol/test.echo). Never invent ids.",
   "- Literals: \"strings\", numbers, true/false, {\"json\": \"objects\"}.",
   "- REF path reads a prior step output (e.g. REF echo.output). Use only step ids that exist in the workflow.",
   "- Examples teach syntax only. Output only what the current user request asks for.",
   "- Never copy example workflow ids, step ids, or field values unless the user request matches that example.",
   "- PATCH WORKFLOW id must always match the workflow id from the user prompt, not an example id.",
-  "- Every @ecp.patch output MUST begin with: PATCH WORKFLOW <workflowId>",
+  "- Every @executioncontrolprotocol.patch output MUST begin with: PATCH WORKFLOW <workflowId>",
 ].join("\n")
 
 export const EQL_VALUE_EXPRESSIONS = [
@@ -26,13 +26,14 @@ export const EQL_VALUE_EXPRESSIONS = [
 ].join("\n")
 
 export const EQL_WORKFLOW_OPERATIONS = [
-  "Supported operations (@ecp.workflow):",
+  "Supported operations (@executioncontrolprotocol.workflow):",
   "- WORKFLOW <id> [\"optional label\"]",
   "- STEP <stepId> USES <capabilityId>",
   "    LABEL \"Human label\"",
   "    WITH <inputField> = <value expression>",
   "    AS <stateKey>",
   "- Repeat STEP for each step in order. stepId is a short name (echo), not a capability id.",
+  "- Each STEP must have a unique stepId. Reusing the same capabilityId on multiple steps still requires distinct ids (poem, summarize — not generate twice).",
 ].join("\n")
 
 export const EQL_PATCH_OPERATIONS = [
@@ -85,10 +86,10 @@ export const EQL_PATCH_CANONICAL_EXAMPLES = [
   "  LABEL \"Short Summary\"",
   "",
   "Example 3 — ADD STEP after an existing step (new step id only):",
-  "User: Add a summarize step after echo using @executioncontextprotocol/demo.summarize.",
+  "User: Add a summarize step after echo using @executioncontrolprotocol/test.summarize.",
   "Output:",
   "PATCH WORKFLOW echo-test",
-  "ADD STEP summarize USES @executioncontextprotocol/demo.summarize AFTER echo",
+  "ADD STEP summarize USES @executioncontrolprotocol/test.summarize AFTER echo",
   "  LABEL \"Summarize\"",
   "  WITH text = REF echo.output",
   "  AS summary",
@@ -105,7 +106,7 @@ export const EQL_PATCH_CANONICAL_EXAMPLES = [
   "Output:",
   "PATCH WORKFLOW two-step-chain",
   "DELETE STEP summarize",
-  "ADD STEP translate USES @executioncontextprotocol/demo.translate AFTER echo",
+  "ADD STEP translate USES @executioncontrolprotocol/test.translate AFTER echo",
   "  LABEL \"Translate\"",
   "  WITH text = REF echo.output",
   "  AS translated",
@@ -144,15 +145,17 @@ export const EQL_PATCH_PRIMER = [
 export const EQL_INTENT_PRIMER = [
   EQL_ZERO_KNOWLEDGE_INTRO,
   "",
-  "Intent (@ecp.intent) grammar:",
-  "- Single line: INTENT <value>",
+  "Intent (@executioncontrolprotocol.intent) grammar:",
+  "- INTENT <value> [TOPIC <topic>] [SUMMARY \"one-line paraphrase\"]",
+  "- Or multi-line: INTENT <value> then indented TOPIC and SUMMARY lines",
   "- <value> must be one of the allowed intent strings from the fixture.",
+  "- TOPIC and SUMMARY are optional but help downstream contextualized shots.",
 ].join("\n")
 
 export const EQL_REPLY_PRIMER = [
   EQL_ZERO_KNOWLEDGE_INTRO,
   "",
-  "Reply (@ecp.harness.reply) grammar:",
+  "Reply (@executioncontrolprotocol.harness.reply) grammar:",
   "- REPLY",
   "    ANSWER \"plain text answer\"",
   "    CITATION step <stepId> [\"optional detail\"]",
@@ -163,13 +166,13 @@ export const EQL_REPLY_PRIMER = [
 /** Pick the EQL primer for a harness output schema id. */
 export function eqlPrimerForOutputSchema(outputSchema: string): string {
   switch (outputSchema) {
-    case "@ecp.patch":
+    case "@executioncontrolprotocol.patch":
       return EQL_PATCH_PRIMER
-    case "@ecp.workflow":
+    case "@executioncontrolprotocol.workflow":
       return EQL_WORKFLOW_PRIMER
-    case "@ecp.intent":
+    case "@executioncontrolprotocol.intent":
       return EQL_INTENT_PRIMER
-    case "@ecp.harness.reply":
+    case "@executioncontrolprotocol.harness.reply":
       return EQL_REPLY_PRIMER
     default:
       return EQL_ZERO_KNOWLEDGE_INTRO

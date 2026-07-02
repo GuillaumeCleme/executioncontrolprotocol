@@ -1,25 +1,25 @@
-import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@executioncontextprotocol/types"
+import { ECP_HARNESS_REPLY_SCHEMA, ECP_INTENT_SCHEMA } from "@executioncontrolprotocol/types"
 
-const INTENT_TEMPLATE = `import type { EcpIntent } from "@executioncontextprotocol/types"
+const INTENT_TEMPLATE = `import type { EcpIntent } from "@executioncontrolprotocol/types"
 
 export const intent: EcpIntent = {
-  schema: "@ecp.intent",
+  schema: "@executioncontrolprotocol.intent",
   intent: "faq",
 }`
 
-const REPLY_TEMPLATE = `import type { HarnessReply } from "@executioncontextprotocol/types"
+const REPLY_TEMPLATE = `import type { HarnessReply } from "@executioncontrolprotocol/types"
 
 export const reply: HarnessReply = {
-  schema: "@ecp.harness.reply",
+  schema: "@executioncontrolprotocol.harness.reply",
   answer: "Your answer here.",
 }`
 
-const WORKFLOW_TEMPLATE = `import { workflow, step, ref } from "@executioncontextprotocol/core"
+const WORKFLOW_TEMPLATE = `import { workflow, step, ref } from "@executioncontrolprotocol/core"
 
 export default workflow("Example")
   .id("example-wf")
   .run([
-    step("@executioncontextprotocol/test.echo", "Echo").id("echo").with({ value: "hello" }).as("echo"),
+    step("@executioncontrolprotocol/test.echo", "Echo").id("echo").with({ value: "hello" }).as("echo"),
   ])`
 
 /**
@@ -29,7 +29,7 @@ export default workflow("Example")
 export function typescriptTemplateForOutputSchema(outputSchema: string): string {
   if (outputSchema === ECP_INTENT_SCHEMA) return INTENT_TEMPLATE
   if (outputSchema === ECP_HARNESS_REPLY_SCHEMA) return REPLY_TEMPLATE
-  if (outputSchema === "@ecp.workflow") return WORKFLOW_TEMPLATE
+  if (outputSchema === "@executioncontrolprotocol.workflow") return WORKFLOW_TEMPLATE
   return `// Export a valid ${outputSchema} document from this module`
 }
 
@@ -39,9 +39,9 @@ export function typescriptTemplateForOutputSchema(outputSchema: string): string 
  */
 export function typescriptPrimerForOutputSchema(outputSchema: string): string {
   const workflowApi =
-    outputSchema === "@ecp.workflow"
+    outputSchema === "@executioncontrolprotocol.workflow"
       ? [
-          "Allowed @executioncontextprotocol/core imports: workflow, step, ref, branch, parallel, loop.",
+          "Allowed @executioncontrolprotocol/core imports: workflow, step, ref, branch, parallel, loop.",
           "Use .id(\"stepId\") on steps when ids must stay stable across edits.",
           "Never output the word typescript on its own line before imports.",
         ]

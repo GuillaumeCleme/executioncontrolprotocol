@@ -1,7 +1,5 @@
-import { compileHarnessArtifactSource } from "@executioncontextprotocol/core/compile"
+import { compileHarnessArtifactSource } from "@executioncontrolprotocol/core/compile"
 import {
-  buildIntentClassificationCodingSystemPrompt,
-  buildRepairHint,
   callModelGenerate,
   collectModelOutputFeedback,
   collectValidationFeedback,
@@ -9,14 +7,13 @@ import {
   formatEnvironmentSummaryLines,
   formatFeedbackForModel,
   HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   isRepairFeedbackEcho,
   runModelRepairLoop,
   stripHarnessTypeScriptOutput,
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   ECP_INTENT_SCHEMA,
   ECP_MODEL_GENERATE_INTERFACE,
@@ -26,20 +23,25 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type ValidationResult,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildCodingRepairHint,
+  buildCodingSystemPrompt,
+  CODING_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z
     .string()
-    .default(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION_CODING),
+    .default(CODING_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION),
   system: z.string().optional(),
   context: z
     .object({
       includeEnvironmentDescriptor: z.boolean().default(false),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-json"),
     })
     .default({}),
   output: z
@@ -71,7 +73,7 @@ const harnessInputSchema = z.object({
   model: z.string().optional(),
 })
 
-const codingIntentHarness = defineHarness("@executioncontextprotocol", "browser-coding-intent-classification")
+const codingIntentHarness = defineHarness("@executioncontrolprotocol", "browser-coding-intent-classification")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -79,7 +81,7 @@ const codingIntentHarness = defineHarness("@executioncontextprotocol", "browser-
   .withHandler(async (input, ctx) => {
     const config = ctx.config
     const format = config.output.format
-    const system = config.system ?? buildIntentClassificationCodingSystemPrompt()
+    const system = config.system ?? buildCodingSystemPrompt(config.promptFixture)
 
     let environmentSummaryLines = ""
     if (config.context.includeEnvironmentDescriptor) {
@@ -110,7 +112,7 @@ const codingIntentHarness = defineHarness("@executioncontextprotocol", "browser-
         lines.push(
           "Previous attempt failed. Fix and return corrected TypeScript only:",
           repairText,
-          buildRepairHint(config.promptFixture)
+          buildCodingRepairHint(config.promptFixture)
         )
       }
       return lines.join("\n")
@@ -224,7 +226,7 @@ const codingIntentHarness = defineHarness("@executioncontextprotocol", "browser-
 
 function decodedValidationStub(valid = true): ValidationResult {
   return {
-    schema: "@ecp.validation.result",
+    schema: "@executioncontrolprotocol.validation.result",
     version: LATEST_ECP_VERSION,
     valid,
     errors: [],

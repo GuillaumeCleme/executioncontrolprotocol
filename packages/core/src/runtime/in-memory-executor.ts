@@ -1,4 +1,4 @@
-import { LATEST_ECP_VERSION } from "@executioncontextprotocol/types"
+import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
 import type {
   PendingMutation,
   RunResult,
@@ -6,7 +6,7 @@ import type {
   StepRunRecord,
   WorkflowManifest,
   WorkflowNode,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { RuntimeExecutor, RuntimeExecutionContext } from "./executor.js"
 import {
   createConsoleLogger,
@@ -37,7 +37,7 @@ function throwIfAborted(signal?: AbortSignal): void {
 }
 
 function evalExpr(
-  expr: import("@executioncontextprotocol/types").ExprValue | undefined,
+  expr: import("@executioncontrolprotocol/types").ExprValue | undefined,
   state: Record<string, unknown>
 ): boolean {
   if (!expr) return true
@@ -138,7 +138,7 @@ export class InMemoryRuntimeExecutor implements RuntimeExecutor {
       })
 
       return {
-        schema: "@ecp.run.result",
+        schema: "@executioncontrolprotocol.run.result",
         version: LATEST_ECP_VERSION,
         run: { id: runId, status: "completed" },
         state,
@@ -153,7 +153,7 @@ export class InMemoryRuntimeExecutor implements RuntimeExecutor {
           state,
         })
         return {
-          schema: "@ecp.run.result",
+          schema: "@executioncontrolprotocol.run.result",
           version: LATEST_ECP_VERSION,
           run: { id: runId, status: "cancelled" },
           state,
@@ -167,7 +167,7 @@ export class InMemoryRuntimeExecutor implements RuntimeExecutor {
         state,
       })
       return {
-        schema: "@ecp.run.result",
+        schema: "@executioncontrolprotocol.run.result",
         version: LATEST_ECP_VERSION,
         run: { id: runId, status: "failed" },
         state,

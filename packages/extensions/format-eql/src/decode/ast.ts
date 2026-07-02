@@ -1,4 +1,4 @@
-import type { ExprValue, InputValue } from "@executioncontextprotocol/types"
+import type { ExprValue, InputValue } from "@executioncontrolprotocol/types"
 
 export interface EqlHeader {
   schema: string
@@ -127,6 +127,10 @@ export interface EqlIntentDoc {
   kind: "intent"
   header?: EqlHeader
   intent: string
+  /** Optional topic bucket. */
+  topic?: string
+  /** Optional request summary. */
+  summary?: string
 }
 
 export interface EqlReplyCitation {

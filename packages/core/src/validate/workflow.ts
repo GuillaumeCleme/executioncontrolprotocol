@@ -1,5 +1,6 @@
-import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@executioncontextprotocol/types"
-import { ECP_PATCH_ERROR_CODES } from "@executioncontextprotocol/types"
+import type { EnvironmentDescriptor, ValidationResult, WorkflowManifest, WorkflowNode } from "@executioncontrolprotocol/types"
+import { ECP_PATCH_ERROR_CODES } from "@executioncontrolprotocol/types"
+import { isHarnessCapabilityId } from "../harness/harness-catalog.js"
 import { buildStepIndex } from "../patch/step-index.js"
 import { emptyValidationResult, workflowManifestSchema } from "./workflow-schema.js"
 import { zodIssuesToValidationIssues } from "./zod-mapper.js"
@@ -10,7 +11,7 @@ function collectStepCommits(
 ): void {
   for (const node of nodes) {
     if (!node.type || node.type === "step") {
-      const step = node as import("@executioncontextprotocol/types").StepNode
+      const step = node as import("@executioncontrolprotocol/types").StepNode
       if (step.as) {
         if (commits.has(step.as)) {
           commits.set(step.as, "duplicate")
@@ -92,7 +93,7 @@ export function validateWorkflow(
       result.warnings.push({
         code: "MISSING_STATE_CONTROL_POLICY",
         message:
-          "Workflow uses state() handles but environment has no @executioncontextprotocol/state-control policy.",
+          "Workflow uses state() handles but environment has no @executioncontrolprotocol/state-control policy.",
         severity: "warning",
       })
     }
@@ -108,7 +109,15 @@ function validateNodeAgainstDescriptor(
   result: ValidationResult
 ): void {
   if (!node.type || node.type === "step") {
-    const step = node as import("@executioncontextprotocol/types").StepNode
+    const step = node as import("@executioncontrolprotocol/types").StepNode
+    if (isHarnessCapabilityId(step.uses)) {
+      result.valid = false
+      result.errors.push({
+        code: "HARNESS_CAPABILITY_NOT_A_STEP",
+        message: `Harness evaluate capability ${step.uses} is invoke-only and cannot be used as a workflow step.`,
+        path: `steps.${step.id}.uses`,
+      })
+    }
     const found = descriptor.capabilities.some((c) => c.id === step.uses)
     if (!found) {
       result.valid = false

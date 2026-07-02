@@ -3,8 +3,8 @@ import {
   LATEST_ECP_VERSION,
   type DecodeResult,
   type EcpSchema,
-} from "@executioncontextprotocol/types"
-import { decodeFailure, ecpPatchDocumentSchema, validateWorkflow, type UtilityCapabilityContext } from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/types"
+import { decodeFailure, ecpPatchDocumentSchema, validateWorkflow, type UtilityCapabilityContext } from "@executioncontrolprotocol/core"
 import type { EqlDecodeInput } from "../schemas.js"
 import { EQL_ERROR_CODES, eqlIssue } from "./diagnostics.js"
 import { detectHeader, parseEql } from "./parser.js"
@@ -65,12 +65,12 @@ export function decodeFromEql(
   }
 
   const supportedDecodeSchemas = [
-    "@ecp.workflow",
-    "@ecp.patch",
-    "@ecp.environment",
-    "@ecp.environment.describe",
-    "@ecp.intent",
-    "@ecp.harness.reply",
+    "@executioncontrolprotocol.workflow",
+    "@executioncontrolprotocol.patch",
+    "@executioncontrolprotocol.environment",
+    "@executioncontrolprotocol.environment.describe",
+    "@executioncontrolprotocol.intent",
+    "@executioncontrolprotocol.harness.reply",
   ] as const
   if (!supportedDecodeSchemas.includes(targetSchema as (typeof supportedDecodeSchemas)[number])) {
     return decodeFailure({
@@ -101,7 +101,7 @@ export function decodeFromEql(
 
   try {
     if (parsed.document.kind === "environment") {
-      if (targetSchema !== "@ecp.environment") {
+      if (targetSchema !== "@executioncontrolprotocol.environment") {
         return decodeFailure({
           targetSchema,
           diagnostics: [
@@ -126,7 +126,7 @@ export function decodeFromEql(
         })
       }
       return {
-        schema: "@ecp.decode.result",
+        schema: "@executioncontrolprotocol.decode.result",
         version: LATEST_ECP_VERSION,
         success: true,
         targetSchema,
@@ -136,7 +136,7 @@ export function decodeFromEql(
     }
 
     if (parsed.document.kind === "describe") {
-      if (targetSchema !== "@ecp.environment.describe") {
+      if (targetSchema !== "@executioncontrolprotocol.environment.describe") {
         return decodeFailure({
           targetSchema,
           diagnostics: [
@@ -161,7 +161,7 @@ export function decodeFromEql(
         })
       }
       return {
-        schema: "@ecp.decode.result",
+        schema: "@executioncontrolprotocol.decode.result",
         version: LATEST_ECP_VERSION,
         success: true,
         targetSchema,
@@ -171,7 +171,7 @@ export function decodeFromEql(
     }
 
     if (parsed.document.kind === "intent") {
-      if (targetSchema !== "@ecp.intent") {
+      if (targetSchema !== "@executioncontrolprotocol.intent") {
         return decodeFailure({
           targetSchema,
           diagnostics: [
@@ -196,7 +196,7 @@ export function decodeFromEql(
         })
       }
       return {
-        schema: "@ecp.decode.result",
+        schema: "@executioncontrolprotocol.decode.result",
         version: LATEST_ECP_VERSION,
         success: true,
         targetSchema,
@@ -206,7 +206,7 @@ export function decodeFromEql(
     }
 
     if (parsed.document.kind === "reply") {
-      if (targetSchema !== "@ecp.harness.reply") {
+      if (targetSchema !== "@executioncontrolprotocol.harness.reply") {
         return decodeFailure({
           targetSchema,
           diagnostics: [
@@ -231,7 +231,7 @@ export function decodeFromEql(
         })
       }
       return {
-        schema: "@ecp.decode.result",
+        schema: "@executioncontrolprotocol.decode.result",
         version: LATEST_ECP_VERSION,
         success: true,
         targetSchema,
@@ -241,7 +241,7 @@ export function decodeFromEql(
     }
 
     if (parsed.document.kind === "workflow") {
-      if (targetSchema !== "@ecp.workflow") {
+      if (targetSchema !== "@executioncontrolprotocol.workflow") {
         return decodeFailure({
           targetSchema,
           diagnostics: [
@@ -255,7 +255,7 @@ export function decodeFromEql(
       const manifest = workflowFromEql(parsed.document)
       const validation = validateWorkflow(manifest)
       return {
-        schema: "@ecp.decode.result",
+        schema: "@executioncontrolprotocol.decode.result",
         version: LATEST_ECP_VERSION,
         success: validation.valid,
         targetSchema,
@@ -267,7 +267,7 @@ export function decodeFromEql(
       }
     }
 
-    if (targetSchema !== "@ecp.patch") {
+    if (targetSchema !== "@executioncontrolprotocol.patch") {
       return decodeFailure({
         targetSchema,
         diagnostics: [
@@ -294,7 +294,7 @@ export function decodeFromEql(
     }
 
     return {
-      schema: "@ecp.decode.result",
+      schema: "@executioncontrolprotocol.decode.result",
       version: LATEST_ECP_VERSION,
       success: true,
       targetSchema,

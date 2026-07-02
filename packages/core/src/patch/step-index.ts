@@ -1,4 +1,4 @@
-import type { StepNode, WorkflowManifest, WorkflowNode } from "@executioncontextprotocol/types"
+import type { StepNode, WorkflowManifest, WorkflowNode } from "@executioncontrolprotocol/types"
 
 /** Index of step ids to lodash paths within a workflow manifest. @category Patch */
 export interface StepIndex {

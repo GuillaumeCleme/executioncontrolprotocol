@@ -46,8 +46,8 @@ export interface EqlFormatOptions {
 Descriptor compression can be v2. For v1, the core need is:
 
 ```txt
-@ecp.workflow JSON ↔ EQL
-@ecp.patch JSON ↔ EQL
+@executioncontrolprotocol.workflow JSON ↔ EQL
+@executioncontrolprotocol.patch JSON ↔ EQL
 ```
 
 ## 3. Keep browser demo out of scope
@@ -58,7 +58,7 @@ The package can still be usable by browser/runtime contexts later, but v1 implem
 
 ---
 
-# Revised `@executioncontextprotocol/format-eql` implementation plan
+# Revised `@executioncontrolprotocol/format-eql` implementation plan
 
 ## Package
 
@@ -91,20 +91,20 @@ packages/extensions/format-eql/
 Published as:
 
 ```txt
-@executioncontextprotocol/format-eql
+@executioncontrolprotocol/format-eql
 ```
 
 Extension ID:
 
 ```txt
-@executioncontextprotocol/format-eql
+@executioncontrolprotocol/format-eql
 ```
 
 Capabilities:
 
 ```txt
-@executioncontextprotocol/format-eql.encode
-@executioncontextprotocol/format-eql.decode
+@executioncontrolprotocol/format-eql.encode
+@executioncontrolprotocol/format-eql.decode
 ```
 
 ---
@@ -116,7 +116,7 @@ This is a very good point and should be captured separately, even if the format 
 The pattern should be:
 
 ```ts
-// from @executioncontextprotocol/types
+// from @executioncontrolprotocol/types
 export interface EncodeCapabilityInput<TValue = unknown> {
   value: TValue;
   from?: EcpSchema | string;
@@ -211,23 +211,23 @@ This fits the existing capability pattern where capabilities define input/output
 ## Create workflow
 
 ```eql
-ECP @ecp.workflow 1.0
+ECP @executioncontrolprotocol.workflow 1.0
 
 WORKFLOW weekly_brief "Weekly leadership brief"
 
-STEP collect_signals USES @executioncontextprotocol/memory.search
+STEP collect_signals USES @executioncontrolprotocol/memory.search
   LABEL "Collect Weekly Signals"
   WITH query = "important risks and decisions this week"
   WITH since = "7d"
   AS signals
 
-STEP generate_brief USES @executioncontextprotocol/openai.generate
+STEP generate_brief USES @executioncontrolprotocol/openai.generate
   LABEL "Generate Executive Brief"
   WITH prompt = "Create a concise leadership brief."
   WITH context = REF signals.results
   AS brief
 
-STEP send_brief USES @executioncontextprotocol/slack.send
+STEP send_brief USES @executioncontrolprotocol/slack.send
   LABEL "Send Brief to Slack"
   WITH message = REF brief.content
 ```
@@ -237,7 +237,7 @@ STEP send_brief USES @executioncontextprotocol/slack.send
 ```eql
 WORKFLOW weekly_brief "Weekly leadership brief"
 
-STEP collect_signals USES @executioncontextprotocol/memory.search
+STEP collect_signals USES @executioncontrolprotocol/memory.search
   WITH query = "important risks and decisions this week"
   AS signals
 ```
@@ -245,7 +245,7 @@ STEP collect_signals USES @executioncontextprotocol/memory.search
 When `header: false`, encoder omits:
 
 ```eql
-ECP @ecp.workflow 1.0
+ECP @executioncontrolprotocol.workflow 1.0
 ```
 
 Decoder accepts both forms. If the header is omitted, `to` must be provided through the standard decode input.
@@ -265,7 +265,7 @@ UPDATE STEP generate_brief
   WITH context = REF signals.results
   AS brief MODE replace
 
-ADD STEP send_email AFTER generate_brief USES @executioncontextprotocol/email.send
+ADD STEP send_email AFTER generate_brief USES @executioncontrolprotocol/email.send
   LABEL "Send Email"
   WITH subject = "Weekly brief"
   WITH body = REF brief.content
@@ -336,7 +336,7 @@ Compiles to:
 ```
 
 ```eql
-ADD STEP send_email AFTER generate_brief USES @executioncontextprotocol/email.send
+ADD STEP send_email AFTER generate_brief USES @executioncontrolprotocol/email.send
   WITH subject = "Weekly brief"
   WITH body = REF brief.content
 ```
@@ -384,7 +384,7 @@ No `compact` in v1.
 
 ## Phase 1: Shared built-in capability interfaces
 
-Add minimum interfaces to `@executioncontextprotocol/types`:
+Add minimum interfaces to `@executioncontrolprotocol/types`:
 
 ```ts
 EncodeCapabilityInput
@@ -400,8 +400,8 @@ CapabilityDiagnostic
 
 Acceptance:
 
-* `@executioncontextprotocol/format-eql.encode` extends `EncodeCapabilityInput`.
-* `@executioncontextprotocol/format-eql.decode` extends `DecodeCapabilityInput`.
+* `@executioncontrolprotocol/format-eql.encode` extends `EncodeCapabilityInput`.
+* `@executioncontrolprotocol/format-eql.decode` extends `DecodeCapabilityInput`.
 * Existing/future model providers can extend `GenerateCapabilityInput`.
 * Existing/future eval providers can extend `EvaluateCapabilityInput`.
 
@@ -414,8 +414,8 @@ Implement:
 ```ts
 formatEqlExtension
 registerFormatEqlExtension()
-@executioncontextprotocol/format-eql.encode
-@executioncontextprotocol/format-eql.decode
+@executioncontrolprotocol/format-eql.encode
+@executioncontrolprotocol/format-eql.decode
 ```
 
 No browser app integration.
@@ -442,12 +442,12 @@ Acceptance:
 ```eql
 WORKFLOW test "Test"
 
-STEP echo USES @executioncontextprotocol/test.echo
+STEP echo USES @executioncontrolprotocol/test.echo
   WITH value = "hi"
   AS echo
 ```
 
-round-trips to a valid `@ecp.workflow`.
+round-trips to a valid `@executioncontrolprotocol.workflow`.
 
 ## Phase 4: Header behavior
 
@@ -459,8 +459,8 @@ options: { header: false }
 
 Acceptance:
 
-* Encode omits `ECP @ecp.workflow 1.0`.
-* Decode succeeds without header when `to: "@ecp.workflow"` is provided.
+* Encode omits `ECP @executioncontrolprotocol.workflow 1.0`.
+* Decode succeeds without header when `to: "@executioncontrolprotocol.workflow"` is provided.
 * Decode returns a diagnostic when both header and `to` are missing.
 
 ## Phase 5: Patch encode/decode
@@ -501,7 +501,7 @@ UPDATE STEP generate_brief
   AS brief MODE replace
 ```
 
-compiles to canonical `@ecp.patch`.
+compiles to canonical `@executioncontrolprotocol.patch`.
 
 ## Phase 6: Flow control
 
@@ -523,14 +523,14 @@ Flow control should mirror the existing workflow node types: `parallel`, `branch
 Document intended usage:
 
 ```ts
-const generated = await ecp.invoke("@executioncontextprotocol/openai.generate", {
+const generated = await ecp.invoke("@executioncontrolprotocol/openai.generate", {
   prompt,
   system: "Return only ECP EQL. No markdown.",
 });
 
 const decoded = await ecp.decode(generated.text)
-  .uses("@executioncontextprotocol/format-eql")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-eql")
+  .to("@executioncontrolprotocol.workflow")
   .with({ header: false });
 ```
 
@@ -556,7 +556,7 @@ UPDATE STEP create_image
 PATCH WORKFLOW weekly_brief
 
 UPDATE STEP generate_brief
-  USES @executioncontextprotocol/claude.generate
+  USES @executioncontrolprotocol/claude.generate
 ```
 
 ## Add a step
@@ -564,7 +564,7 @@ UPDATE STEP generate_brief
 ```eql
 PATCH WORKFLOW weekly_brief
 
-ADD STEP summarize_risks AFTER collect_signals USES @executioncontextprotocol/openai.generate
+ADD STEP summarize_risks AFTER collect_signals USES @executioncontrolprotocol/openai.generate
   LABEL "Summarize Risks"
   WITH prompt = "Summarize the top risks."
   WITH context = REF signals.results
@@ -599,7 +599,7 @@ UPDATE STEP generate_brief
   SET AS = brief
   SET MODE = replace
 
-ADD STEP send_email AFTER generate_brief USES @executioncontextprotocol/email.send
+ADD STEP send_email AFTER generate_brief USES @executioncontrolprotocol/email.send
   LABEL "Send Email"
   WITH subject = "Weekly brief"
   WITH body = REF brief.content
@@ -620,21 +620,21 @@ Input:
 EQL:
 
 ```eql
-ECP @ecp.environment.describe 1.0
+ECP @executioncontrolprotocol.environment.describe 1.0
 
-CAPABILITY @executioncontextprotocol/memory.search
+CAPABILITY @executioncontrolprotocol/memory.search
   LABEL "Search Memory"
   WITH query:string!
   WITH since:string
   OUT results:array
 
-CAPABILITY @executioncontextprotocol/openai.generate
+CAPABILITY @executioncontrolprotocol/openai.generate
   LABEL "Generate Text"
   WITH prompt:string!
   WITH context:any
   OUT content:string
 
-POLICY @executioncontextprotocol/budget
+POLICY @executioncontrolprotocol/budget
   LABEL "Budget Guardrails"
 ```
 
@@ -668,12 +668,12 @@ User request:
 ```eql
 WORKFLOW brand_image_refinement "Brand image refinement"
 
-STEP load_brand_standards USES @executioncontextprotocol/memory.search
+STEP load_brand_standards USES @executioncontrolprotocol/memory.search
   LABEL "Load Brand Standards"
   WITH query = "brand standards, visual identity, approved campaign examples"
   AS brandStandards
 
-STEP initialize_inputs USES @executioncontextprotocol/creative.initializeInputs
+STEP initialize_inputs USES @executioncontrolprotocol/creative.initializeInputs
   LABEL "Initialize Creative Inputs"
   WITH target = STATE creativeInputs
   WITH value = {
@@ -685,21 +685,21 @@ STEP initialize_inputs USES @executioncontextprotocol/creative.initializeInputs
   }
 
 LOOP create_validate_fix UNTIL brandReview.approved == true MAX 3
-  STEP create_image USES @executioncontextprotocol/firefly.generateImage
+  STEP create_image USES @executioncontrolprotocol/firefly.generateImage
     LABEL "Create Image"
     WITH prompt = REF creativeInputs.generationPrompt
     WITH controls = REF creativeInputs.generationControls
     WITH brandContext = REF brandStandards.results
     AS image MODE replace
 
-  STEP validate_image USES @executioncontextprotocol/openai.evaluate
+  STEP validate_image USES @executioncontrolprotocol/openai.evaluate
     LABEL "Validate Image"
     WITH artifact = REF image
     WITH criteria = REF brandStandards.results
     WITH goal = "Evaluate whether the image follows brand standards."
     AS brandReview MODE replace
 
-  STEP fix_inputs USES @executioncontextprotocol/creative.fixInputs
+  STEP fix_inputs USES @executioncontrolprotocol/creative.fixInputs
     LABEL "Fix Creative Inputs"
     WHEN brandReview.approved == false
     WITH target = STATE creativeInputs
@@ -715,14 +715,14 @@ END
 
 # Updated acceptance criteria
 
-`@executioncontextprotocol/format-eql` v1 is complete when:
+`@executioncontrolprotocol/format-eql` v1 is complete when:
 
-1. It exposes `@executioncontextprotocol/format-eql.encode`.
-2. It exposes `@executioncontextprotocol/format-eql.decode`.
+1. It exposes `@executioncontrolprotocol/format-eql.encode`.
+2. It exposes `@executioncontrolprotocol/format-eql.decode`.
 3. Both capabilities use the standard ECP encode/decode minimum interfaces.
 4. It supports `header: false`.
-5. It round-trips `@ecp.workflow`.
-6. It round-trips `@ecp.patch`.
+5. It round-trips `@executioncontrolprotocol.workflow`.
+6. It round-trips `@executioncontrolprotocol.patch`.
 7. Patch syntax uses `WITH x = value`, not `SET WITH.x`.
 8. It supports `REF` and `STATE`.
 9. It preserves step order.
@@ -737,4 +737,4 @@ The updated design principle:
 
 ## Implementation status
 
-`@executioncontextprotocol/format-eql` is implemented under `packages/extensions/format-eql/` (encode/decode, unit tests, README). v1 covers linear workflows, patch documents, `@ecp.environment` manifests, and `@ecp.environment.describe` descriptors; flow control (`PARALLEL`, `BRANCH`, `LOOP`) and `@ecp.environment.search` are deferred. Harness and eval wiring use a separate plan—call `registerFormatEqlExtension()` in the host environment before `ecp.encode` / `ecp.decode`.
+`@executioncontrolprotocol/format-eql` is implemented under `packages/extensions/format-eql/` (encode/decode, unit tests, README). v1 covers linear workflows, patch documents, `@executioncontrolprotocol.environment` manifests, and `@executioncontrolprotocol.environment.describe` descriptors; flow control (`PARALLEL`, `BRANCH`, `LOOP`) and `@executioncontrolprotocol.environment.search` are deferred. Harness and eval wiring use a separate plan—call `registerFormatEqlExtension()` in the host environment before `ecp.encode` / `ecp.decode`.

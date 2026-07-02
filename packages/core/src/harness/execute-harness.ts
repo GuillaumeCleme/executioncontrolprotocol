@@ -5,7 +5,7 @@ import {
   type CapabilityId,
   type HarnessCapabilityId,
   type InvokeResult,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { Environment } from "../environment/environment.js"
 import { createUtilityCapabilityContext } from "../encoding/utility-context.js"
 import { evaluatePolicies } from "../runtime/policy-engine.js"
@@ -18,7 +18,7 @@ import { findHarnessBinding } from "./resolve-harness-binding.js"
 import { EcpImpl } from "../environment/ecp.js"
 
 const INVOKE_STUB_WORKFLOW = {
-  schema: "@ecp.workflow" as const,
+  schema: "@executioncontrolprotocol.workflow" as const,
   version: LATEST_ECP_VERSION,
   workflow: { id: "invoke-stub" },
   steps: [],
@@ -28,10 +28,10 @@ function invokeFailure(
   capabilityId: HarnessCapabilityId,
   code: string,
   message: string,
-  validation?: import("@executioncontextprotocol/types").ValidationResult
+  validation?: import("@executioncontrolprotocol/types").ValidationResult
 ): InvokeResult {
   return {
-    schema: "@ecp.invoke.result",
+    schema: "@executioncontrolprotocol.invoke.result",
     version: LATEST_ECP_VERSION,
     success: false,
     capabilityId,
@@ -192,7 +192,7 @@ export async function executeHarnessInvoke(
   }
 
   return {
-    schema: "@ecp.invoke.result",
+    schema: "@executioncontrolprotocol.invoke.result",
     version: LATEST_ECP_VERSION,
     success: true,
     capabilityId,

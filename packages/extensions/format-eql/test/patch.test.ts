@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { EcpPatchDocument } from "@executioncontextprotocol/types"
+import type { EcpPatchDocument } from "@executioncontrolprotocol/types"
 import { decodePatch, encodePatch, loadPatchFixture } from "./helpers.js"
 
 describe("EQL patch encode/decode", () => {
@@ -17,10 +17,10 @@ describe("EQL patch encode/decode", () => {
   })
 
   it("compiles DELETE, ADD, and MOVE surface syntax", () => {
-    const text = `ECP @ecp.patch 1.0
+    const text = `ECP @executioncontrolprotocol.patch 1.0
 PATCH WORKFLOW chain
 DELETE STEP old
-ADD STEP new USES @executioncontextprotocol/test.echo AFTER echo
+ADD STEP new USES @executioncontrolprotocol/test.echo AFTER echo
   WITH value = "added"
 MOVE STEP new AFTER summarize`
     const decoded = decodePatch(text)
@@ -61,7 +61,7 @@ UPDATE WORKFLOW LABEL "Updated Chain"`
   })
 
   it("compiles UPDATE WORKFLOW label into workflow.label patch entry", () => {
-    const text = `ECP @ecp.patch 1.0
+    const text = `ECP @executioncontrolprotocol.patch 1.0
 PATCH WORKFLOW two-step-chain
 UPDATE WORKFLOW
   LABEL "Updated Chain"`
@@ -81,7 +81,7 @@ UPDATE WORKFLOW
   })
 
   it("compiles UPDATE WHEN into patch entries", () => {
-    const text = `ECP @ecp.patch 1.0
+    const text = `ECP @executioncontrolprotocol.patch 1.0
 PATCH WORKFLOW wf
 UPDATE STEP s
   WHEN ready == true`

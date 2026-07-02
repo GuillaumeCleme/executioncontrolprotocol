@@ -1,6 +1,6 @@
-/** Stub @executioncontextprotocol/node for Vitest browser eval (Node runtime not used). */
-export const NODE_RUNTIME_ID = "@executioncontextprotocol/node"
+/** Stub @executioncontrolprotocol/node for Vitest browser eval (Node runtime not used). */
+export const NODE_RUNTIME_ID = "@executioncontrolprotocol/node"
 
 export async function registerNodeRuntime(): Promise<void> {
-  throw new Error("@executioncontextprotocol/node is not available in browser eval runtime")
+  throw new Error("@executioncontrolprotocol/node is not available in browser eval runtime")
 }

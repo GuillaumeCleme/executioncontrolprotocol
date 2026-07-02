@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { createUsageLedger } from "@executioncontextprotocol/core"
-import type { PolicyContext, UsageLedger } from "@executioncontextprotocol/core"
-import type { PolicyDecision, PolicyLifecycleEvent } from "@executioncontextprotocol/types"
+import { createUsageLedger } from "@executioncontrolprotocol/core"
+import type { PolicyContext, UsageLedger } from "@executioncontrolprotocol/core"
+import type { PolicyDecision, PolicyLifecycleEvent } from "@executioncontrolprotocol/types"
 import { budgetPolicy } from "../src/index.js"
 
 function ledger(values: Partial<Pick<UsageLedger, "modelCalls" | "costUsd" | "tokens" | "retries">>): UsageLedger {
@@ -18,9 +18,9 @@ async function evalBudget(
   const hook = budgetPolicy.hooks.find((h) => h.event === event)
   if (!hook) throw new Error(`missing ${event}`)
   const ctx: PolicyContext & { config: Record<string, unknown> } = {
-    workflow: { schema: "@ecp.workflow", version: "1.0.0", workflow: { id: "stub" }, steps: [] },
+    workflow: { schema: "@executioncontrolprotocol.workflow", version: "1.0.0", workflow: { id: "stub" }, steps: [] },
     run: { id: "run", input: {} },
-    step: { id: "s1", capabilityId: "@executioncontextprotocol/test.echo" },
+    step: { id: "s1", capabilityId: "@executioncontrolprotocol/test.echo" },
     state: {},
     input: {},
     usage,
@@ -29,7 +29,7 @@ async function evalBudget(
   return (await hook.handler(ctx as never)) as PolicyDecision | void
 }
 
-describe("@executioncontextprotocol/budget enforcement", () => {
+describe("@executioncontrolprotocol/budget enforcement", () => {
   it("allows when no limits are configured", async () => {
     const decision = await evalBudget("policy:pre", {}, ledger({ modelCalls: 100, costUsd: 9, tokens: 9999 }))
     expect(decision).toEqual({ type: "allow" })

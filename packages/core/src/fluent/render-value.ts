@@ -1,4 +1,4 @@
-import type { InputValue } from "@executioncontextprotocol/types"
+import type { InputValue } from "@executioncontrolprotocol/types"
 
 /** Track which helpers are required. @category Fluent */
 export interface ImportNeeds {
@@ -6,6 +6,8 @@ export interface ImportNeeds {
   step: boolean
   ref: boolean
   state: boolean
+  secrets: boolean
+  browser: boolean
   expr: boolean
   loop: boolean
   parallel: boolean
@@ -19,6 +21,8 @@ export function createImportNeeds(): ImportNeeds {
     step: true,
     ref: false,
     state: false,
+    secrets: false,
+    browser: false,
     expr: false,
     loop: false,
     parallel: false,
@@ -40,6 +44,14 @@ export function renderInputValue(value: InputValue, needs: ImportNeeds): string 
     if ("$state" in value) {
       needs.state = true
       return `state(${JSON.stringify((value as { $state: string }).$state)})`
+    }
+    if ("$secret" in value) {
+      needs.secrets = true
+      return `secrets(${JSON.stringify((value as { $secret: string }).$secret)})`
+    }
+    if ("$browser" in value) {
+      needs.browser = true
+      return `browser(${JSON.stringify((value as { $browser: string }).$browser)})`
     }
     const entries = Object.entries(value).map(
       ([k, v]) => `${JSON.stringify(k)}: ${renderInputValue(v as InputValue, needs)}`

@@ -1,4 +1,4 @@
-import type { EcpPatchInput, EcpSchema, PatchResult } from "@executioncontextprotocol/types"
+import type { EcpPatchInput, EcpSchema, PatchResult } from "@executioncontrolprotocol/types"
 import { applyPatch } from "./apply-patch.js"
 
 /** Fluent builder for `ecp.patch()`. @category Patch */
@@ -15,7 +15,7 @@ export interface PatchOperationBuilder<T = unknown> {
  */
 export function createPatchBuilder<T>(
   document: T,
-  targetSchema: EcpSchema = "@ecp.workflow"
+  targetSchema: EcpSchema = "@executioncontrolprotocol.workflow"
 ): PatchOperationBuilder<T> {
   let patchInput: EcpPatchInput | undefined
 
@@ -29,7 +29,7 @@ export function createPatchBuilder<T>(
         throw new Error("Patch operation requires .with(patchInput) before .process()")
       }
       return applyPatch(
-        document as import("@executioncontextprotocol/types").WorkflowManifest,
+        document as import("@executioncontrolprotocol/types").WorkflowManifest,
         patchInput,
         targetSchema
       ) as PatchResult<T>

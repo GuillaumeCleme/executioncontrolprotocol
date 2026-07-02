@@ -4,8 +4,8 @@ import type {
   EcpSchema,
   EcpVersion,
   NamespacedId,
-} from "@executioncontextprotocol/types"
-import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION, ecpIntentSchema } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
+import { ECP_ENCODING_ERROR_CODES, LATEST_ECP_VERSION, ecpIntentSchema } from "@executioncontrolprotocol/types"
 import type { EncodingEnvironmentHost } from "../environment/encoding-host.js"
 import { EcpError } from "./errors.js"
 import { invokeDecodeCapability } from "./invoke-utility.js"
@@ -38,18 +38,18 @@ interface DecodeState {
 function validateDecodedDocument(
   document: unknown,
   targetSchema?: EcpSchema
-): import("@executioncontextprotocol/types").ValidationResult {
-  if (targetSchema === "@ecp.workflow") {
-    return validateWorkflow(document as import("@executioncontextprotocol/types").WorkflowManifest)
+): import("@executioncontrolprotocol/types").ValidationResult {
+  if (targetSchema === "@executioncontrolprotocol.workflow") {
+    return validateWorkflow(document as import("@executioncontrolprotocol/types").WorkflowManifest)
   }
-  if (targetSchema === "@ecp.patch") {
+  if (targetSchema === "@executioncontrolprotocol.patch") {
     const parsed = ecpPatchDocumentSchema.safeParse(document)
     if (parsed.success) return emptyValidationResult(true)
     const result = emptyValidationResult(false)
     result.errors.push(...zodIssuesToValidationIssues(parsed.error.issues))
     return result
   }
-  if (targetSchema === "@ecp.intent") {
+  if (targetSchema === "@executioncontrolprotocol.intent") {
     const parsed = ecpIntentSchema.safeParse(document)
     if (parsed.success) return emptyValidationResult(true)
     const result = emptyValidationResult(false)
@@ -97,7 +97,7 @@ export function createDecodeBuilder(
       if (!state.extensionId) {
         throw new EcpError(ECP_ENCODING_ERROR_CODES.FORMAT_DECODER_NOT_FOUND, {
           message:
-            "Decode requires .uses(formatterId), e.g. .uses(\"@executioncontextprotocol/format-json\") or .uses(\"@executioncontextprotocol/format-toon\").",
+            "Decode requires .uses(formatterId), e.g. .uses(\"@executioncontrolprotocol/format-json\") or .uses(\"@executioncontrolprotocol/format-toon\").",
         })
       }
 

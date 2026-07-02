@@ -1,7 +1,7 @@
 {
-  "schema": "@ecp.patch",
+  "schema": "@executioncontrolprotocol.patch",
   "version": "1.0",
-  "targetSchema": "@ecp.workflow",
+  "targetSchema": "@executioncontrolprotocol.workflow",
   "patches": [
     {
       "path": "workflow.id",

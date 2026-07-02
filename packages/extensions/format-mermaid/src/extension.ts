@@ -6,15 +6,15 @@ import {
   ecpEncodeResultSchema,
   encodeFailure,
   validateWorkflow,
-} from "@executioncontextprotocol/core"
-import { LATEST_ECP_VERSION, type EcpEncodeInput, type EncodeResult } from "@executioncontextprotocol/types"
-import type { WorkflowManifest } from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/core"
+import { LATEST_ECP_VERSION, type EcpEncodeInput, type EncodeResult } from "@executioncontrolprotocol/types"
+import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 import { workflowToMermaid } from "./workflow-to-mermaid.js"
 import { type MermaidEncodeOptions } from "./options.js"
 
 function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
   const sourceSchema = input.sourceSchema
-  if (sourceSchema !== "@ecp.workflow") {
+  if (sourceSchema !== "@executioncontrolprotocol.workflow") {
     return encodeFailure({
       format: "mermaid",
       sourceSchema,
@@ -22,7 +22,7 @@ function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
         {
           severity: "error",
           code: "FORMAT_UNSUPPORTED_SOURCE_SCHEMA",
-          message: "Mermaid encoder supports @ecp.workflow only",
+          message: "Mermaid encoder supports @executioncontrolprotocol.workflow only",
         },
       ],
     })
@@ -39,7 +39,7 @@ function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
   }
 
   return {
-    schema: "@ecp.encode.result",
+    schema: "@executioncontrolprotocol.encode.result",
     version: LATEST_ECP_VERSION,
     success: true,
     format: "mermaid",
@@ -52,9 +52,9 @@ function encodeToMermaid(input: EcpEncodeInput): EncodeResult<string> {
 }
 
 /** Mermaid format extension (encode-only). @category Extensions */
-export const formatMermaidExtension = defineExtension("@executioncontextprotocol", "format-mermaid")
+export const formatMermaidExtension = defineExtension("@executioncontrolprotocol", "format-mermaid")
   .withCapabilities([
-    capabilityFor("@executioncontextprotocol/format-mermaid", "encode")
+    capabilityFor("@executioncontrolprotocol/format-mermaid", "encode")
       .withInput(ecpEncodeInputSchema)
       .withOutput(ecpEncodeResultSchema)
       .withHandler((input) => encodeToMermaid(input as EcpEncodeInput)),

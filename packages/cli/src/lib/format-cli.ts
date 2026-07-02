@@ -1,11 +1,11 @@
-import { ECP_CORE_FORMATTER_IDS, ECP_FORMATS } from "@executioncontextprotocol/types"
+import { ECP_CORE_FORMATTER_IDS, ECP_FORMATS } from "@executioncontrolprotocol/types"
 
 /** CLI `--format` values. */
 export type CliFormat = "json" | "toon" | "fluent"
 
 const FORMAT_EXTENSION: Record<CliFormat, string> = {
   json: ECP_CORE_FORMATTER_IDS.JSON,
-  toon: "@executioncontextprotocol/format-toon",
+  toon: "@executioncontrolprotocol/format-toon",
   fluent: ECP_CORE_FORMATTER_IDS.FLUENT,
 }
 

@@ -1,4 +1,4 @@
-import type { ValidationResult, WorkflowManifest } from "@executioncontextprotocol/types"
+import type { ValidationResult, WorkflowManifest } from "@executioncontrolprotocol/types"
 
 /** Transpile or syntax error. @category Compile */
 export interface CompileDiagnostic {
@@ -21,6 +21,6 @@ export interface CompileWorkflowSourceOptions {
   source: string
   filename?: string
   format?: "esm"
-  /** Browser demo: resolve @ecp imports via globalThis.__ecpWorkflowShim. */
+  /** Browser demo: resolve @executioncontrolprotocol imports via globalThis.__ecpWorkflowShim. */
   resolveImports?: "browser-global"
 }

@@ -1,4 +1,4 @@
-import { globalRegistry, type Registry } from "@executioncontextprotocol/core"
+import { globalRegistry, type Registry } from "@executioncontrolprotocol/core"
 import { formatMermaidExtension } from "./extension.js"
 
 export { formatMermaidExtension } from "./extension.js"
@@ -10,7 +10,7 @@ export { mermaidFlowchartHeader } from "./options.js"
 export async function registerFormatMermaidExtension(
   registry: Registry = globalRegistry
 ): Promise<void> {
-  if (!registry.getExtension("@executioncontextprotocol/format-mermaid")) {
+  if (!registry.getExtension("@executioncontrolprotocol/format-mermaid")) {
     await registry.registerExtension(formatMermaidExtension)
   }
 }

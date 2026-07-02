@@ -6,6 +6,8 @@
 export { ref } from "./helpers/ref.js"
 export { state } from "./helpers/state.js"
 export { env } from "./helpers/env.js"
+export { secrets } from "./helpers/secrets.js"
+export { browser } from "./helpers/browser.js"
 export { expr } from "./helpers/expr.js"
 
 export * from "./config-schema/index.js"
@@ -27,6 +29,8 @@ export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
 export {
   compileWorkflowSource,
   compileAndValidateWorkflowSource,
+  warmBrowserWorkflowCompile,
+  ESBUILD_WASM_URL_KEY,
   type CompileWorkflowResult,
   type CompileWorkflowSourceOptions,
 } from "./compile/index.browser.js"

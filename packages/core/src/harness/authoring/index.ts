@@ -6,6 +6,12 @@ export {
   type EnvironmentSummaryFormat,
 } from "./summarize-environment.js"
 export {
+  introspectCapabilitySchema,
+  formatCapabilityInputLabels,
+  allCapabilityInputNames,
+} from "./summarize-capability-schema.js"
+export type { CapabilitySchemaFields } from "./summarize-capability-schema.js"
+export {
   summarizeHarnessRunContext,
   formatRunContextSummaryLines,
   type CompactRunContextSummary,
@@ -19,6 +25,10 @@ export {
 export {
   formatFeedbackForModel,
   formatStructuredRepairForModel,
+  formatModelRepairDialogLines,
+  truncatePriorModelOutput,
+  HARNESS_REPAIR_PRIOR_OUTPUT_MAX_CHARS,
+  type ModelRepairDialogOptions,
   isRepairTemplateEcho,
   isRepairFeedbackEcho,
   isIssuesOnlyOutput,
@@ -27,7 +37,29 @@ export { normalizeWorkflowDocumentCandidate } from "./normalize-workflow-output.
 export {
   normalizePatchEqlRawOutput,
   substitutePatchRepairTemplate,
+  normalizeMalformedPatchStepLabel,
+  sanitizePatchEqlRawOutput,
+  recoverPatchFromRepairHintProse,
+  isGarbledPatchEqlOutput,
+  buildMinimalLabelPatchEql,
+  recoverMinimalLabelPatch,
+  recoverTroubleshootStepPatch,
 } from "./normalize-patch-eql-output.js"
+export {
+  takeFirstWorkflowEqlBlock,
+  splitWorkflowEqlBlocks,
+  selectBestWorkflowEqlBlock,
+  normalizeCreateEqlRawOutput,
+  deduplicateWorkflowEqlStepIds,
+  filterWorkflowEqlToRequiredCapabilities,
+  synthesizeCreateEqlFromRequiredCapabilities,
+  createEqlIncludesRequiredCapabilities,
+} from "./normalize-create-eql-output.js"
+export {
+  recoverStructuredPatchFromRequest,
+  type StructuredPatchRecoveryContext,
+} from "./recover-structured-patch.js"
+export { normalizeIntentEqlRawOutput, coerceIntentEqlRawOutput } from "./normalize-intent-eql-output.js"
 export {
   repairWorkflowJsonSyntax,
   repairPatchJsonSyntax,
@@ -36,8 +68,31 @@ export {
 export { encodeForPrompt } from "./encode-prompt-text.js"
 export { isEnvironmentQuestion } from "./environment-question.js"
 export {
+  buildContextBundle,
+  CONTEXT_PROMPT_BUDGET,
+  type ContextBundle,
+  type ContextBundleOptions,
+} from "./context-policy.js"
+export {
+  deriveIntentTopicFallback,
+  deriveIntentSummaryFallback,
+  enrichClassifiedIntent,
+  correctClassifiedIntent,
+  inferIntentFromMessageHeuristic,
+  canonicalizeIntentTopic,
+  isClassifiedIntentValue,
+  CLASSIFIED_INTENT_VALUES,
+  formatClassifiedIntentBlock,
+  formatIntentRoutingHintLines,
+} from "./classified-intent.js"
+export {
   answerRedirectsToHarnessScope,
   buildAssistantSafeReply,
+  tryBuildRunContextReply,
+  tryBuildFaqReply,
+  tryBuildEnvironmentReply,
+  tryBuildRegisterRefusalReply,
+  tryBuildOffTopicReply,
   HARNESS_ASSISTANT_OUT_OF_SCOPE_ANSWER,
   HARNESS_ASSISTANT_SAFE_REPLY_MESSAGE,
   HARNESS_ASSISTANT_SCOPE_REDIRECT_PHRASE,

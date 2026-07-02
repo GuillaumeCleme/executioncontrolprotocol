@@ -2,7 +2,7 @@ import type {
   CapabilityId,
   LifecycleEvent,
   NamespacedId,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import type { z } from "zod"
 import type { ConfigSchema } from "../config-schema/index.js"
 
@@ -42,6 +42,8 @@ export interface ExtensionDefinition {
   configSchema?: ConfigSchema
   capabilities: CapabilityDefinition[]
   hooks: HookDefinition[]
+  /** When set, extension may only be bound to these runtimes. Omit = all runtimes. */
+  supportedRuntimes?: NamespacedId[]
 }
 
 /** Runtime definition. @category Definitions */

@@ -1,4 +1,4 @@
-import type { EnvValue } from "@executioncontextprotocol/types"
+import type { EnvValue } from "@executioncontrolprotocol/types"
 
 /** Options for environment variable refs. */
 export interface EnvOptions {

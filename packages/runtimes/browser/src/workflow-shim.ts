@@ -8,7 +8,7 @@ import {
   parallel,
   branch,
   loop,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 
 /** Workflow builder symbols exposed to browser Fluent compile via globalThis. */
 export interface BrowserWorkflowShim {

@@ -1,15 +1,15 @@
-# @executioncontextprotocol/format-eql
+# @executioncontrolprotocol/format-eql
 
-ECP format extension for **EQL** (ECP Query Language): keyword-driven text for `@ecp.workflow` and `@ecp.patch` documents.
+ECP format extension for **EQL** (ECP Query Language): keyword-driven text for `@executioncontrolprotocol.workflow` and `@executioncontrolprotocol.patch` documents.
 
 ## Capabilities
 
 | Capability                                    | Description                                                   |
 | --------------------------------------------- | ------------------------------------------------------------- |
-| `@executioncontextprotocol/format-eql.encode` | Workflow, patch, environment, or describe document → EQL text |
-| `@executioncontextprotocol/format-eql.decode` | EQL text → workflow, patch, environment, or describe document |
+| `@executioncontrolprotocol/format-eql.encode` | Workflow, patch, environment, or describe document → EQL text |
+| `@executioncontrolprotocol/format-eql.decode` | EQL text → workflow, patch, environment, or describe document |
 
-Input/output types use generic `EncodeCapabilityInput` / `DecodeCapabilityInput` from `@executioncontextprotocol/types`, with options `EcpFormatOptions & EqlFormatOptions`.
+Input/output types use generic `EncodeCapabilityInput` / `DecodeCapabilityInput` from `@executioncontrolprotocol/types`, with options `EcpFormatOptions & EqlFormatOptions`.
 
 ## Options
 
@@ -29,14 +29,14 @@ Input/output types use generic `EncodeCapabilityInput` / `DecodeCapabilityInput`
 - `REF` / `STATE` in workflow `WITH` clauses; basic `WHEN field == value`
 - Line/column diagnostics on parse errors
 
-**Not in v1:** `PARALLEL` / `BRANCH` / `LOOP`, `@ecp.environment.search`, harness wiring.
+**Not in v1:** `PARALLEL` / `BRANCH` / `LOOP`, `@executioncontrolprotocol.environment.search`, harness wiring.
 
 ## Usage
 
 Register the extension (tests or apps only— not part of core formats):
 
 ```ts
-import { registerFormatEqlExtension } from "@executioncontextprotocol/format-eql"
+import { registerFormatEqlExtension } from "@executioncontrolprotocol/format-eql"
 
 await registerFormatEqlExtension()
 ```
@@ -44,14 +44,14 @@ await registerFormatEqlExtension()
 ```ts
 const encoded = await ecp
   .encode(manifest)
-  .uses("@executioncontextprotocol/format-eql")
+  .uses("@executioncontrolprotocol/format-eql")
   .with({ options: { headers: false } })
   .process()
 
 const decoded = await ecp
   .decode(encoded.result)
-  .uses("@executioncontextprotocol/format-eql")
-  .to("@ecp.workflow")
+  .uses("@executioncontrolprotocol/format-eql")
+  .to("@executioncontrolprotocol.workflow")
   .with({ options: { headers: false } })
   .process()
 ```

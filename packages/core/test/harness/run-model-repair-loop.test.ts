@@ -39,4 +39,25 @@ describe("runModelRepairLoop", () => {
       })
     ).rejects.toThrow(/always fails/)
   })
+
+  it("passes prior raw output to generate on repair attempts", async () => {
+    const seenPrior: Array<string | undefined> = []
+    await runModelRepairLoop({
+      maxAttempts: 2,
+      generate: async ({ attempt, priorRaw }) => {
+        seenPrior.push(priorRaw)
+        return { raw: attempt === 0 ? "first-output" : "second-output" }
+      },
+      evaluate: async (raw) => {
+        if (raw === "second-output") {
+          return { success: true, artifact: { ok: true }, feedback: [] }
+        }
+        return {
+          success: false,
+          feedback: [collectModelOutputFeedback("retry")],
+        }
+      },
+    })
+    expect(seenPrior).toEqual([undefined, "first-output"])
+  })
 })

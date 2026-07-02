@@ -7,17 +7,17 @@ import {
   registerTestExtension,
 } from "../../src/index.js"
 import { compileWorkflowSource } from "../../src/compile/index.js"
-import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontextprotocol/node"
-import { registerFormatToonExtension } from "@executioncontextprotocol/format-toon"
-import type { WorkflowManifest } from "@executioncontextprotocol/types"
+import { NODE_RUNTIME_ID, registerNodeRuntime } from "@executioncontrolprotocol/node"
+import { registerFormatToonExtension } from "@executioncontrolprotocol/format-toon"
+import type { WorkflowManifest } from "@executioncontrolprotocol/types"
 
 const fluentSource = `
-import { workflow, step } from "@executioncontextprotocol/core";
+import { workflow, step } from "@executioncontrolprotocol/core";
 
 export default workflow("Weekly Brief")
   .id("weekly-brief")
   .run([
-    step("@executioncontextprotocol/test.echo", "Write Brief")
+    step("@executioncontrolprotocol/test.echo", "Write Brief")
       .with({ value: "Create a brief", options: { maxWords: 100 } })
       .as("brief"),
   ]);
@@ -32,8 +32,8 @@ describe("patch compaction loop", () => {
     const env = environment("test")
       .withRuntime(runtime(NODE_RUNTIME_ID))
       .withExtensions([
-        extension("@executioncontextprotocol/test").with({}),
-        extension("@executioncontextprotocol/format-toon").with({}),
+        extension("@executioncontrolprotocol/test").with({}),
+        extension("@executioncontrolprotocol/format-toon").with({}),
       ])
     const ecp = await env.init()
 
@@ -46,22 +46,22 @@ describe("patch compaction loop", () => {
 
     const toon = await ecp
       .encode(manifestA)
-      .uses("@executioncontextprotocol/format-toon")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-toon")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false, compact: true })
       .process()
     expect(toon.success).toBe(true)
 
     const decodedWorkflow = await ecp
       .decode(toon.result)
-      .uses("@executioncontextprotocol/format-toon")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-toon")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false, compact: true })
       .process()
     expect(decodedWorkflow.success).toBe(true)
 
     const writeBriefId = (
-      (decodedWorkflow.result as WorkflowManifest).steps[0] as import("@executioncontextprotocol/types").StepNode
+      (decodedWorkflow.result as WorkflowManifest).steps[0] as import("@executioncontrolprotocol/types").StepNode
     ).id
 
     const patched = await ecp
@@ -77,23 +77,23 @@ describe("patch compaction loop", () => {
 
     const compactToon = await ecp
       .encode(patched.result!)
-      .uses("@executioncontextprotocol/format-toon")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-toon")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false, compact: true })
       .process()
     expect(compactToon.success).toBe(true)
 
     const decoded = await ecp
       .decode(compactToon.result)
-      .uses("@executioncontextprotocol/format-toon")
-      .to("@ecp.workflow")
+      .uses("@executioncontrolprotocol/format-toon")
+      .to("@executioncontrolprotocol.workflow")
       .with({ headers: false, compact: true })
       .process()
     expect(decoded.success).toBe(true)
 
     const fluent = await ecp
       .encode(decoded.result as WorkflowManifest)
-      .uses("@executioncontextprotocol/format-fluent")
+      .uses("@executioncontrolprotocol/format-fluent")
       .process()
     expect(fluent.success).toBe(true)
 

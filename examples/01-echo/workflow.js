@@ -1,4 +1,4 @@
-import { workflow, step } from "@executioncontextprotocol/core"
+import { workflow, step } from "@executioncontrolprotocol/core"
 
 export default workflow("Echo JS")
-  .run([step("@executioncontextprotocol/test.echo", "Echo").with({ value: "hello from JavaScript" }).as("echo")])
+  .run([step("@executioncontrolprotocol/test.echo", "Echo").with({ value: "hello from JavaScript" }).as("echo")])

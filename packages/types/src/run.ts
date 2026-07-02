@@ -5,7 +5,7 @@ import type { WorkflowManifest } from "./workflow.js"
 
 /** Run request document. @category Runtime */
 export interface RunRequest {
-  schema: "@ecp.run.request"
+  schema: "@executioncontrolprotocol.run.request"
   version: EcpVersion
   workflow: WorkflowManifest
   input?: Record<string, unknown>
@@ -25,7 +25,7 @@ export interface StepRunRecord {
 
 /** Run result document. @category Runtime */
 export interface RunResult {
-  schema: "@ecp.run.result"
+  schema: "@executioncontrolprotocol.run.result"
   version: EcpVersion
   run: {
     id: string

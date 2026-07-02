@@ -31,19 +31,3 @@ export const harnessPromptFixtureSchema = z.object({
 
 /** Parsed harness prompt fixture. @category Harness */
 export type HarnessPromptFixture = z.infer<typeof harnessPromptFixtureSchema>
-
-/** Known harness prompt fixture ids. @category Harness */
-export const HARNESS_PROMPT_FIXTURE_IDS = {
-  INTENT_CLASSIFICATION: "intent-classification",
-  WORKFLOW_AUTHORING_CREATE: "workflow-authoring-create",
-  WORKFLOW_AUTHORING_PATCH: "workflow-authoring-patch",
-  WORKFLOW_ASSISTANT: "workflow-assistant",
-  INTENT_CLASSIFICATION_CODING: "intent-classification-coding",
-  WORKFLOW_AUTHORING_CREATE_CODING: "workflow-authoring-create-coding",
-  WORKFLOW_AUTHORING_PATCH_CODING: "workflow-authoring-patch-coding",
-  WORKFLOW_ASSISTANT_CODING: "workflow-assistant-coding",
-} as const
-
-/** Harness prompt fixture id union. @category Harness */
-export type HarnessPromptFixtureId =
-  (typeof HARNESS_PROMPT_FIXTURE_IDS)[keyof typeof HARNESS_PROMPT_FIXTURE_IDS]

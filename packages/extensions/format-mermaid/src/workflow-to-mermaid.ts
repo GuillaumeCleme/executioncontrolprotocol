@@ -1,4 +1,4 @@
-import type { StepNode, WorkflowManifest, WorkflowNode } from "@executioncontextprotocol/types"
+import type { StepNode, WorkflowManifest, WorkflowNode } from "@executioncontrolprotocol/types"
 import {
   type MermaidEncodeOptions,
   type MermaidFlowchartDirection,

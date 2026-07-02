@@ -1,4 +1,4 @@
-import type { HarnessRunContext } from "@executioncontextprotocol/types"
+import type { HarnessRunContext } from "@executioncontrolprotocol/types"
 
 /** Compact run context for assistant harness prompts. @category Harness */
 export interface CompactRunContextSummary {

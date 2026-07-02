@@ -6,12 +6,16 @@ const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1"
 function walk(dir) {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name)
-    if (statSync(p).isDirectory()) {
-      if (name === "dist" || name === "node_modules" || name.endsWith(".tsbuildinfo")) {
-        if (name === "dist" || name.endsWith(".tsbuildinfo")) rmSync(p, { recursive: true, force: true })
-      } else {
-        walk(p)
+    const st = statSync(p)
+    if (st.isDirectory()) {
+      if (name === "node_modules") continue
+      if (name === "dist") {
+        rmSync(p, { recursive: true, force: true })
+        continue
       }
+      walk(p)
+    } else if (name.endsWith(".tsbuildinfo")) {
+      rmSync(p, { force: true })
     }
   }
 }

@@ -1,6 +1,6 @@
 /**
  * Node host conveniences: file loaders and workflow compile (native esbuild).
- * Import from `@executioncontextprotocol/core/node` in Node runtimes; browser apps use `@executioncontextprotocol/core/browser`.
+ * Import from `@executioncontrolprotocol/core/node` in Node runtimes; browser apps use `@executioncontrolprotocol/core/browser`.
  * @packageDocumentation
  */
 

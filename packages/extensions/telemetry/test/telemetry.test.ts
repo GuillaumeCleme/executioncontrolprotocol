@@ -1,14 +1,14 @@
 import { describe, expect, it, beforeEach } from "vitest"
-import { globalRegistry } from "@executioncontextprotocol/core"
+import { globalRegistry } from "@executioncontrolprotocol/core"
 import { registerTelemetryExtension, telemetryExtension } from "../src/index.js"
 
-describe("@executioncontextprotocol/telemetry", () => {
+describe("@executioncontrolprotocol/telemetry", () => {
   beforeEach(async () => {
     await registerTelemetryExtension()
   })
 
   it("registers the extension with no capabilities", () => {
-    const ext = globalRegistry.getExtension("@executioncontextprotocol/telemetry")
+    const ext = globalRegistry.getExtension("@executioncontrolprotocol/telemetry")
     expect(ext).toBe(telemetryExtension)
     expect(ext?.capabilities).toHaveLength(0)
   })

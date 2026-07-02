@@ -1,8 +1,5 @@
-import { compileWorkflowSource } from "@executioncontextprotocol/core/compile"
+import { compileWorkflowSource } from "@executioncontrolprotocol/core/compile"
 import {
-  buildRepairHint,
-  buildWorkflowCreateCodingSystemPrompt,
-  buildWorkflowPatchCodingSystemPrompt,
   callModelGenerate,
   collectModelOutputFeedback,
   collectValidationFeedback,
@@ -10,7 +7,6 @@ import {
   formatEnvironmentSummaryLines,
   formatStructuredRepairForModel,
   HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   isRepairFeedbackEcho,
   renderWorkflowToFluent,
@@ -19,12 +15,12 @@ import {
   summarizeEnvironmentDescriptor,
   type HarnessCapabilityContext,
   type CompactEnvironmentSummary,
-} from "@executioncontextprotocol/core"
+} from "@executioncontrolprotocol/core"
 import {
   buildRequestCapabilityHintLines,
   collectCreateCapabilityFeedback,
   collectCreateStepCountFeedback,
-} from "@executioncontextprotocol/harnesses-browser-nano"
+} from "@executioncontrolprotocol/harnesses-browser-nano"
 import {
   buildFluentPatchHintLines,
   collectFluentCompileErrorFeedback,
@@ -37,9 +33,14 @@ import {
   type HarnessInvokeResult,
   type HarnessOperationFeedback,
   type WorkflowManifest,
-} from "@executioncontextprotocol/types"
+} from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildCodingRepairHint,
+  buildCodingSystemPrompt,
+  CODING_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<string> {
   const uses = new Set<string>()
@@ -53,7 +54,7 @@ function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<str
 }
 
 const outputConfigSchema = z.object({
-  schema: z.string().default("@ecp.workflow"),
+  schema: z.string().default("@executioncontrolprotocol.workflow"),
   format: z.string().default(HARNESS_OUTPUT_FORMAT_TYPESCRIPT),
   validate: z.boolean().default(true),
 })
@@ -65,7 +66,7 @@ const harnessConfigSchema = z.object({
     .object({
       includeEnvironmentDescriptor: z.boolean().default(true),
       includeEncodedDescriptor: z.boolean().default(false),
-      descriptorFormat: z.string().default("@executioncontextprotocol/format-json"),
+      descriptorFormat: z.string().default("@executioncontrolprotocol/format-json"),
     })
     .default({}),
   output: outputConfigSchema.default({}),
@@ -92,7 +93,7 @@ const harnessInputSchema = z.object({
   model: z.string().optional(),
 })
 
-const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol", "browser-coding-workflow-authoring")
+const codingWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol", "browser-coding-workflow-authoring")
   .withConfig(harnessConfigSchema)
   .withInput(harnessInputSchema)
   .withOutput(harnessEvaluateOutputSchema)
@@ -108,14 +109,11 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
     const promptFixtureId =
       config.promptFixture ??
       (isPatch
-        ? HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH_CODING
-        : HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE_CODING)
+        ? CODING_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH
+        : CODING_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
 
     const system =
-      config.system ??
-      (isPatch
-        ? buildWorkflowPatchCodingSystemPrompt()
-        : buildWorkflowCreateCodingSystemPrompt())
+      config.system ?? buildCodingSystemPrompt(promptFixtureId)
 
     let environmentSummaryLines = ""
     let environmentSummary: CompactEnvironmentSummary | undefined
@@ -150,9 +148,13 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
         ? ["Environment capabilities:", environmentSummaryLines, ""]
         : []
 
+      const importHint =
+        'Required import: import { workflow, step, ref } from "@executioncontrolprotocol/core" (include ref when any step uses ref()).'
+
       const lines = isPatch
         ? [
             `User request: ${input.request}`,
+            importHint,
             ...(patchHints.length > 0 ? ["Fluent edit rules:", ...patchHints, ""] : []),
             "Current workflow:",
             baselineManifest ? renderWorkflowToFluent(baselineManifest) : "",
@@ -161,7 +163,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
           ]
         : [
             `User request: ${input.request}`,
-            'Required import: import { workflow, step, ref } from "@executioncontextprotocol/core" (include ref even for single-step workflows).',
+            importHint,
             ...requestHints,
             ...envBlock,
           ]
@@ -170,7 +172,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
         lines.push(
           "Previous attempt failed. Output only corrected TypeScript:",
           repairText,
-          buildRepairHint(promptFixtureId)
+          buildCodingRepairHint(promptFixtureId)
         )
       }
       return lines.filter((l) => l.length > 0).join("\n")
@@ -279,7 +281,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontextprotocol"
       harness: BROWSER_CODING_HARNESS_ID,
       provider: ctx.uses,
       model: input.model,
-      outputSchema: "@ecp.workflow",
+      outputSchema: "@executioncontrolprotocol.workflow",
       outputFormat: format,
       decodeSucceeded: true,
       validationSucceeded: validation.valid,
