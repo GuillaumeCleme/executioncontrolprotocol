@@ -126,11 +126,8 @@ export {
 } from "./harness/run-model-repair-loop.js"
 export {
   harnessPromptFixtureSchema,
-  HARNESS_PROMPT_FIXTURE_IDS,
   type HarnessPromptFixture,
-  type HarnessPromptFixtureId,
 } from "./harness/prompts/harness-prompt-fixture-schema.js"
-export { loadHarnessPromptFixture } from "./harness/prompts/load-harness-prompt.browser.js"
 export {
   loadSchemaExample,
   loadSchemaExampleEql,
@@ -138,10 +135,6 @@ export {
   formatSchemaExampleEql,
   loadRepairNeutralExampleEql,
 } from "./harness/prompts/load-schema-example.browser.js"
-export {
-  buildSystemPrompt,
-  buildWorkflowCreateSystemPrompt,
-  buildWorkflowPatchSystemPrompt,
-} from "./harness/prompts/build-system-prompt.js"
-export { buildRepairHint } from "./harness/prompts/build-repair-hint.js"
+export { buildSystemPromptFromFixture } from "./harness/prompts/build-system-prompt.js"
+export { buildRepairHintFromFixture } from "./harness/prompts/build-repair-hint.js"
 export * from "./harness/authoring/index.js"

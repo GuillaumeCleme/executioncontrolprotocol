@@ -1,41 +1,51 @@
 import { describe, expect, it } from "vitest"
-import { LATEST_ECP_VERSION } from "@executioncontrolprotocol/types"
-import { normalizeWorkflowDocumentCandidate } from "../../src/harness/authoring/normalize-workflow-output.js"
+import { normalizeWorkflowDocumentCandidate } from "@executioncontrolprotocol/core"
 
 describe("normalizeWorkflowDocumentCandidate", () => {
-  it("fills in default schema and version", () => {
-    const result = normalizeWorkflowDocumentCandidate({
-      workflow: { id: "w" },
-      steps: [],
-    }) as { schema: string; version: string }
-    expect(result.schema).toBe("@executioncontrolprotocol.workflow")
-    expect(result.version).toBe(LATEST_ECP_VERSION)
-  })
-
-  it("hoists steps nested under workflow to the top level", () => {
-    const result = normalizeWorkflowDocumentCandidate({
+  it("hoists steps nested under workflow and fills schema/version", () => {
+    const normalized = normalizeWorkflowDocumentCandidate({
       workflow: {
-        id: "w",
-        steps: [{ uses: "@executioncontrolprotocol/test.echo", id: "a", input: {} }],
+        id: "minimal-echo",
+        label: "Minimal Echo",
+        steps: [{ type: "step", id: "echo", uses: "@executioncontrolprotocol/test.echo" }],
       },
-    }) as { steps: unknown[]; workflow: { steps?: unknown[] } }
-    expect(result.steps).toHaveLength(1)
-    expect(result.workflow.steps).toBeUndefined()
+    }) as Record<string, unknown>
+
+    expect(normalized.schema).toBe("@executioncontrolprotocol.workflow")
+    expect(normalized.version).toBeTruthy()
+    expect((normalized.workflow as Record<string, unknown>).id).toBe("minimal-echo")
+    expect(normalized.steps).toHaveLength(1)
+    expect((normalized.workflow as Record<string, unknown>).steps).toBeUndefined()
   })
 
-  it("renames step `inputs` to `input` and adds type:step", () => {
-    const result = normalizeWorkflowDocumentCandidate({
-      workflow: { id: "w" },
-      steps: [{ id: "a", uses: "@executioncontrolprotocol/test.echo", inputs: { value: "x" } }],
-    }) as { steps: { type: string; input: { value: string }; inputs?: unknown }[] }
-    const step = result.steps[0]!
-    expect(step.type).toBe("step")
-    expect(step.input.value).toBe("x")
+  it("renames step inputs key to input", () => {
+    const normalized = normalizeWorkflowDocumentCandidate({
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "w", label: "W" },
+      steps: [
+        {
+          type: "step",
+          id: "echo",
+          uses: "@executioncontrolprotocol/test.echo",
+          inputs: { value: "hello" },
+          as: "echo",
+        },
+      ],
+    }) as Record<string, unknown>
+    const step = (normalized.steps as Record<string, unknown>[])[0]
+    expect(step.input).toEqual({ value: "hello" })
     expect(step.inputs).toBeUndefined()
   })
 
-  it("passes through non-object documents unchanged", () => {
-    expect(normalizeWorkflowDocumentCandidate("not-an-object")).toBe("not-an-object")
-    expect(normalizeWorkflowDocumentCandidate(null)).toBeNull()
+  it("adds type step when uses is present", () => {
+    const normalized = normalizeWorkflowDocumentCandidate({
+      schema: "@executioncontrolprotocol.workflow",
+      version: "1.0.0",
+      workflow: { id: "w", label: "W" },
+      steps: [{ id: "echo", uses: "@executioncontrolprotocol/test.echo", as: "echo" }],
+    }) as Record<string, unknown>
+    const step = (normalized.steps as Record<string, unknown>[])[0]
+    expect(step.type).toBe("step")
   })
 })

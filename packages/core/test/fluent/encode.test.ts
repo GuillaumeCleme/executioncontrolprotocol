@@ -14,9 +14,9 @@ import { compileWorkflowSource } from "../../src/compile/index.js"
 import { ECP_FORMATS, type WorkflowManifest } from "@executioncontrolprotocol/types"
 import { initEncodingTestEcp } from "../helpers.js"
 
-const evalFixturesRoot = path.resolve(
+const workflowFixturesRoot = path.resolve(
   fileURLToPath(new URL(".", import.meta.url)),
-  "../../../evals/fixtures/workflows"
+  "../../../harnesses/browser-nano/fixtures/workflows"
 )
 
 describe("renderWorkflowToFluent", () => {
@@ -38,7 +38,7 @@ describe("renderWorkflowToFluent", () => {
   })
 
   it("renders echo-workflow with stable step .id for coding patch baselines", () => {
-    const raw = readFileSync(path.join(evalFixturesRoot, "echo-workflow.json"), "utf8")
+    const raw = readFileSync(path.join(workflowFixturesRoot, "echo-workflow.json"), "utf8")
     const manifest = JSON.parse(raw) as WorkflowManifest
     const source = renderWorkflowToFluent(manifest)
     expect(source).toContain('.id("echo")')

@@ -2,7 +2,18 @@
 
 **Browser Nano** harness — catalog id **`@executioncontrolprotocol/harness-browser-nano`**. Tuned for on-device and small (~1B) models: short EQL replies, compact context, repair loop, identity primer.
 
-Used by the browser demo and `@executioncontrolprotocol/evals` matrix tests (Ollama gemma3:1b, Chrome Nano). **Same harness binding** (`HARNESS_NANO_BINDING`); the browser demo defaults to Chrome AI and may override the model provider at invoke.
+Used by the browser demo and harness-owned eval matrices (Ollama gemma3:1b, Chrome Nano). **Same harness binding** (`HARNESS_NANO_BINDING`); the browser demo defaults to Chrome AI and may override the model provider at invoke.
+
+## Fixtures and evals
+
+| Asset | Location |
+| ----- | -------- |
+| Prompt fixtures | `fixtures/harness-prompts/*.prompt.json` |
+| Eval cases | `fixtures/eval-cases/*.cases.json` (81 cases incl. chat + flow) |
+| Support fixtures | `fixtures/workflows/`, `fixtures/runs/` |
+| Matrix tests | `test/eval/` (Ollama), `test/eval/browser/` (Chrome Nano) |
+
+Run matrix: `npm run eval:matrix -w @executioncontrolprotocol/harnesses-browser-nano`
 
 For stronger cloud models, add a separate harness package (e.g. `@executioncontrolprotocol/harnesses-browser-nano-standard`) with its own prompts and output shaping.
 

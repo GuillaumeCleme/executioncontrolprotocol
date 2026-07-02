@@ -10,7 +10,7 @@ import {
 
 const fixturesRoot = path.resolve(
   fileURLToPath(new URL(".", import.meta.url)),
-  "../../../evals/fixtures/workflows"
+  "../fixtures/workflows"
 )
 
 function loadWorkflow(name: string): WorkflowManifest {

@@ -7,8 +7,5 @@ export const CORE_PACKAGE_ROOT = path.resolve(
   "../../.."
 )
 
-/** Directory for harness prompt JSON fixtures. @category Harness */
-export const HARNESS_PROMPTS_DIR = path.join(CORE_PACKAGE_ROOT, "fixtures/harness-prompts")
-
 /** Directory for schema output example JSON fixtures. @category Harness */
 export const SCHEMA_EXAMPLES_DIR = path.join(CORE_PACKAGE_ROOT, "fixtures/schema-examples")

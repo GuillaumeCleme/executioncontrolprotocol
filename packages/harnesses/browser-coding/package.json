@@ -11,11 +11,16 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./prompts": {
+      "types": "./dist/prompts/index.d.ts",
+      "import": "./dist/prompts/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "fixtures", "README.md"],
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "eval:matrix": "vitest run --config ../../../vitest.config.ts --project eval packages/harnesses/browser-coding/test/eval"
   },
   "peerDependencies": {
     "@executioncontrolprotocol/core": "^1.0.0",
@@ -27,6 +32,10 @@
   },
   "devDependencies": {
     "@executioncontrolprotocol/core": "1.0.0",
+    "@executioncontrolprotocol/evals": "1.0.0",
+    "@executioncontrolprotocol/extension-ollama": "1.0.0",
+    "@executioncontrolprotocol/format-toon": "1.0.0",
+    "@executioncontrolprotocol/node": "1.0.0",
     "@executioncontrolprotocol/types": "1.0.0",
     "typescript": "^5.7.0",
     "zod": "^3.24.0"

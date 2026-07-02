@@ -43,3 +43,11 @@ export {
   inferRequiredCapabilityIds,
   inferRequiredStepCount,
 } from "./_internal/request-capability-hints.js"
+
+export {
+  NANO_PROMPT_FIXTURE_IDS,
+  buildNanoRepairHint,
+  buildNanoSystemPrompt,
+  loadNanoHarnessPromptFixture,
+  type NanoPromptFixtureId,
+} from "./prompts/index.js"

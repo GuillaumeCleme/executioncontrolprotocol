@@ -3,13 +3,6 @@ export {
   createHarnessOllamaWorkflowEnvironment,
   createHarnessOllamaIntentEnvironment,
 } from "./environments/harness-ollama.js"
-export { createHarnessOllamaMatrixEnvironment } from "./environments/harness-ollama-matrix.js"
-export { createHarnessOllamaCodingMatrixEnvironment } from "./environments/harness-ollama-coding-matrix.js"
-export { createHarnessNodeCodingMatrixEnvironment } from "./environments/create-harness-node-coding-matrix-environment.js"
-export { createHarnessChromeMatrixEnvironment } from "./environments/harness-chrome-matrix.js"
-export { createHarnessMatrixEnvironment } from "./environments/create-harness-matrix-environment.js"
-export { createHarnessBrowserMatrixEnvironment } from "./environments/create-harness-browser-matrix-environment.js"
-export { createHarnessNodeMatrixEnvironment } from "./environments/create-harness-node-matrix-environment.js"
 export { OLLAMA_GEMMA_1B_EVAL, OLLAMA_GEMMA_1B_BASE_URL, type OllamaGemmaEvalProfile } from "./profiles/ollama-gemma.js"
 export {
   OLLAMA_QWEN_CODER_15B_EVAL,
@@ -82,8 +75,26 @@ export {
   loadHarnessRunFixture,
   resolveSingleEvalCaseInput,
   countOllamaEvalCases,
+  loadEvalCasesFromDir,
+  createNodeEvalFixturesLoader,
+  createBrowserEvalFixturesLoader,
+  loadWorkflowFixtureFromRoot,
+  loadHarnessRunFixtureFromRoot,
+  resolveSingleEvalCaseInputFromRoot,
+  resolveEvalFixturePathUnderRoot,
   type LoadEvalCasesOptions,
+  type EvalFixturesPaths,
+  type NodeEvalFixturesLoader,
+  type BrowserEvalFixtureModules,
+  type BrowserEvalFixturesLoader,
+  EVAL_SUITE_FILE_NAMES,
 } from "./fixtures/load-eval-cases.js"
+export {
+  loadEvalCasesBrowser,
+  loadWorkflowFixtureBrowser,
+  resolveSingleEvalCaseInputBrowser,
+  countBrowserEvalCases,
+} from "./fixtures/load-eval-cases.browser.js"
 export { runEvalCase, runSingleEvalCase, runFlowEvalCase, type RunEvalCaseOptions } from "./fixtures/run-eval-case.js"
 export {
   evalDebugMode,

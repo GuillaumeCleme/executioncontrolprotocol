@@ -1,8 +1,5 @@
 import { compileWorkflowSource } from "@executioncontrolprotocol/core/compile"
 import {
-  buildRepairHint,
-  buildWorkflowCreateCodingSystemPrompt,
-  buildWorkflowPatchCodingSystemPrompt,
   callModelGenerate,
   collectModelOutputFeedback,
   collectValidationFeedback,
@@ -10,7 +7,6 @@ import {
   formatEnvironmentSummaryLines,
   formatStructuredRepairForModel,
   HARNESS_OUTPUT_FORMAT_TYPESCRIPT,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   isRepairFeedbackEcho,
   renderWorkflowToFluent,
@@ -40,6 +36,11 @@ import {
 } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_CODING_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildCodingRepairHint,
+  buildCodingSystemPrompt,
+  CODING_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 function existingCapabilityUses(manifest: WorkflowManifest | undefined): Set<string> {
   const uses = new Set<string>()
@@ -108,14 +109,11 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol"
     const promptFixtureId =
       config.promptFixture ??
       (isPatch
-        ? HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH_CODING
-        : HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE_CODING)
+        ? CODING_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH
+        : CODING_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
 
     const system =
-      config.system ??
-      (isPatch
-        ? buildWorkflowPatchCodingSystemPrompt()
-        : buildWorkflowCreateCodingSystemPrompt())
+      config.system ?? buildCodingSystemPrompt(promptFixtureId)
 
     let environmentSummaryLines = ""
     let environmentSummary: CompactEnvironmentSummary | undefined
@@ -174,7 +172,7 @@ const codingWorkflowAuthoringHarness = defineHarness("@executioncontrolprotocol"
         lines.push(
           "Previous attempt failed. Output only corrected TypeScript:",
           repairText,
-          buildRepairHint(promptFixtureId)
+          buildCodingRepairHint(promptFixtureId)
         )
       }
       return lines.filter((l) => l.length > 0).join("\n")

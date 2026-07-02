@@ -178,4 +178,4 @@ Reusable harness helpers are exported from `@executioncontrolprotocol/core`: `de
 
 - Do not delete, skip, or weaken **valid** failing matrix/smoke eval tests to green CI.
 - Do not fail-open quality gates (`@executioncontrolprotocol/ollama.evaluate` judge, schema validation) on errors.
-- Triage harness prompts vs model vs fixture before changing assertions. Harness prompts: `packages/core/fixtures/harness-prompts/`; eval inputs: `packages/evals/fixtures/cases/`.
+- Triage harness prompts vs model vs fixture before changing assertions. Harness prompts: `packages/harnesses/*/fixtures/harness-prompts/`; eval framework: `@executioncontrolprotocol/evals`; eval cases: `packages/harnesses/*/fixtures/eval-cases/`.

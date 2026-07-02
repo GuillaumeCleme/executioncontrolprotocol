@@ -1,13 +1,10 @@
 import {
-  buildRepairHint,
-  buildSystemPrompt,
   callModelGenerate,
   type HarnessCapabilityContext,
   collectDecodeFeedback,
   collectModelOutputFeedback,
   collectValidationFeedback,
   defineHarness,
-  HARNESS_PROMPT_FIXTURE_IDS,
   inferResponseFormatFromFormatter,
   runModelRepairLoop,
   stripMarkdownCodeFences,
@@ -33,11 +30,16 @@ import {
 } from "@executioncontrolprotocol/types"
 import { z } from "zod"
 import { BROWSER_NANO_HARNESS_ID } from "./harness-ids.js"
+import {
+  buildNanoRepairHint,
+  buildNanoSystemPrompt,
+  NANO_PROMPT_FIXTURE_IDS,
+} from "./prompts/index.js"
 
 const harnessConfigSchema = z.object({
   promptFixture: z
     .string()
-    .default(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION),
+    .default(NANO_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION),
   system: z.string().optional(),
   context: z
     .object({
@@ -93,7 +95,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontrolprotoco
     const outputIsEql = format === "@executioncontrolprotocol/format-eql" || format.endsWith("/format-eql")
     const descriptorFormat = config.context.descriptorFormat ?? format
     const promptFixtureId = config.promptFixture
-    const system = config.system ?? buildSystemPrompt(promptFixtureId)
+    const system = config.system ?? buildNanoSystemPrompt(promptFixtureId)
     const promptPhase = config.context.promptPhase as HarnessPromptPhase
 
     const contextBundle = await buildContextBundle(ctx.ecp, {
@@ -132,7 +134,7 @@ const evalsIntentClassificationHarness = defineHarness("@executioncontrolprotoco
                 priorOutputMaxChars: config.repair.priorOutputMaxChars,
                 priorRaw,
                 repairFeedback,
-                repairHint: buildRepairHint(promptFixtureId),
+                repairHint: buildNanoRepairHint(promptFixtureId),
                 repairLead: "Previous attempt failed. Fix these issues and return corrected EQL only:",
               })
             : []

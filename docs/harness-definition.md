@@ -17,17 +17,17 @@ Product harnesses (prompts, eval-specific normalization) live outside core:
 
 See [harness-eval.md](harness-eval.md) for local Ollama evaluation.
 
-## Prompt and schema fixtures (shared harness prompts)
+## Prompt and schema fixtures
 
-Product harness handlers load **harness prompts** from `@executioncontrolprotocol/core` — not from eval case JSON.
+**Core** owns protocol schema examples and prompt assembly (`buildSystemPromptFromFixture`, `buildRepairHintFromFixture`). **Harness packages** own product prompt JSON and eval corpora.
 
 | Tier | Location | Contents |
 | ---- | -------- | -------- |
-| Schema examples | `packages/core/fixtures/schema-examples/` | Valid JSON literals per output schema (`@executioncontrolprotocol.intent`, `@executioncontrolprotocol.workflow`, …) |
-| Harness prompts | `packages/core/fixtures/harness-prompts/*.prompt.json` | Role, task, intent definitions, few-shots, repair hints |
-| Eval cases | `packages/evals/fixtures/cases/*.cases.json` | Inputs and assertions only (no system prompt text) |
+| Schema examples | `packages/core/fixtures/schema-examples/` | Valid JSON/EQL literals per output schema (`@executioncontrolprotocol.intent`, `@executioncontrolprotocol.workflow`, …) |
+| Harness prompts | `packages/harnesses/*/fixtures/harness-prompts/*.prompt.json` | Role, task, intent definitions, few-shots, repair hints (per harness) |
+| Eval cases | `packages/harnesses/*/fixtures/eval-cases/*.cases.json` | Inputs and assertions only (no system prompt text) |
 
-API: `buildSystemPrompt(fixtureId)`, `buildRepairHint(fixtureId)`, `loadSchemaExample(outputSchema)` from `@executioncontrolprotocol/core`.
+API: `buildSystemPromptFromFixture(fixture)`, `buildRepairHintFromFixture(fixture)`, `loadSchemaExample(outputSchema)` from `@executioncontrolprotocol/core`. Harness handlers load local fixtures and pass them to the core builders.
 
 **Handler internals:** compact descriptor/workflow/run summaries, repair presentation, and JSON normalization for small models are exported from `@executioncontrolprotocol/core` (`summarizeEnvironmentDescriptor`, `formatStructuredRepairForModel`, `normalizeWorkflowDocumentCandidate`, etc.). Product-specific heuristics (e.g. capability hints) stay in harness packages such as `@executioncontrolprotocol/harnesses-browser-nano`.
 

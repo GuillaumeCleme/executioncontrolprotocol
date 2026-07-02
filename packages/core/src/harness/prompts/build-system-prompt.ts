@@ -1,7 +1,5 @@
-import { loadHarnessPromptFixture } from "./load-harness-prompt.js"
-import { formatSchemaExampleEql, formatSchemaExampleJson } from "./load-schema-example.js"
 import type { HarnessPromptFixture } from "./harness-prompt-fixture-schema.js"
-import { HARNESS_PROMPT_FIXTURE_IDS } from "./harness-prompt-fixture-schema.js"
+import { formatSchemaExampleEql, formatSchemaExampleJson } from "./load-schema-example.js"
 import { eqlPrimerForOutputSchema } from "./eql-primer.js"
 import { ECP_ASSISTANT_IDENTITY_PRIMER } from "./identity-primer.js"
 import { typescriptPrimerForOutputSchema } from "./typescript-primer.js"
@@ -52,11 +50,10 @@ function formatFewShots(fixture: HarnessPromptFixture): string[] {
 }
 
 /**
- * Build the system prompt string for a harness prompt fixture.
+ * Build the system prompt string from an in-memory harness prompt fixture.
  * @category Harness
  */
-export function buildSystemPrompt(fixtureId: string): string {
-  const fixture = loadHarnessPromptFixture(fixtureId)
+export function buildSystemPromptFromFixture(fixture: HarnessPromptFixture): string {
   const identityBlock = fixture.identity ? [ECP_ASSISTANT_IDENTITY_PRIMER] : []
 
   if (usesTypeScript(fixture)) {
@@ -103,52 +100,4 @@ export function buildSystemPrompt(fixtureId: string): string {
       ]
 
   return sections.filter((s) => s.length > 0).join("\n\n")
-}
-
-/**
- * System prompt for workflow authoring create path.
- * @category Harness
- */
-export function buildWorkflowCreateSystemPrompt(): string {
-  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE)
-}
-
-/**
- * System prompt for workflow authoring patch path.
- * @category Harness
- */
-export function buildWorkflowPatchSystemPrompt(): string {
-  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH)
-}
-
-/**
- * System prompt for coding harness workflow create.
- * @category Harness
- */
-export function buildWorkflowCreateCodingSystemPrompt(): string {
-  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_CREATE_CODING)
-}
-
-/**
- * System prompt for coding harness workflow patch.
- * @category Harness
- */
-export function buildWorkflowPatchCodingSystemPrompt(): string {
-  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_AUTHORING_PATCH_CODING)
-}
-
-/**
- * System prompt for coding harness intent classification.
- * @category Harness
- */
-export function buildIntentClassificationCodingSystemPrompt(): string {
-  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.INTENT_CLASSIFICATION_CODING)
-}
-
-/**
- * System prompt for coding harness workflow assistant.
- * @category Harness
- */
-export function buildWorkflowAssistantCodingSystemPrompt(): string {
-  return buildSystemPrompt(HARNESS_PROMPT_FIXTURE_IDS.WORKFLOW_ASSISTANT_CODING)
 }
