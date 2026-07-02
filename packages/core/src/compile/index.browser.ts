@@ -14,6 +14,12 @@ export type {
 } from "./types.js"
 
 export { extractWorkflowFromModule } from "./evaluate-browser.js"
+export {
+  warmBrowserWorkflowCompile,
+  ESBUILD_WASM_URL_KEY,
+  unpkgEsbuildWasmUrl,
+  resolveEsbuildWasmInitializeUrl,
+} from "./transpile-browser.js"
 
 /**
  * Compile TypeScript or JavaScript workflow source to a manifest (browser-safe).
@@ -37,10 +43,9 @@ export async function compileWorkflowSource(
         : options.source
     const manifest = await evaluateWorkflowModule(code, filename.replace(/\.tsx?$/, ".js"))
     const validation = validateWorkflow(manifest)
-    const ok = validation.valid
     return {
-      ok,
-      manifest: ok ? manifest : undefined,
+      ok: validation.valid,
+      manifest,
       validation,
     }
   } catch (err) {

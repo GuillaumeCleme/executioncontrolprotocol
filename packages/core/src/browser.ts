@@ -29,6 +29,8 @@ export { zodIssuesToValidationIssues } from "./validate/zod-mapper.js"
 export {
   compileWorkflowSource,
   compileAndValidateWorkflowSource,
+  warmBrowserWorkflowCompile,
+  ESBUILD_WASM_URL_KEY,
   type CompileWorkflowResult,
   type CompileWorkflowSourceOptions,
 } from "./compile/index.browser.js"
